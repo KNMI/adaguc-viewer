@@ -1,0 +1,1 @@
+var WMJSExtApplications = []; //Key value pair: name should give the constructor Object of the application

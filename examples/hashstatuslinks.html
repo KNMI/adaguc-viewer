@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="hashstatuslinks.css" />
+  <title>Mapviewer</title>
+  
+    <!-- JQuery -->
+    <link rel="stylesheet" href="../jquery/jquery-ui.css" />
+    <script src="../jquery/jquery-1.8.3.js"></script>
+    <script src="../jquery/jquery-ui.js"></script>
+    <script src="../jquery/jquery.mousewheel.js"></script>
+    <script src="../jquery/globalize.js"></script>
+    <script src="../jquery/hammer.min.js"></script>
+
+    <script type="text/javascript">
+      function changeMapView(adagucStatusLink){
+        var iframe = $('#viewerframe');
+        $(iframe).attr('src',"../#?"+adagucStatusLink+"&clearhash=1");
+      }
+      $(document).ready(function() {
+        changeMapView("collapse=1");
+      });
+   </script>
+</head>
+<body>
+<h1>Status links</h1>
+<iframe style="border:1px solid #EEE;" id="viewerframe" width="1000" height="600" frameBorder="0" src="../?collapse=1#collapse=1">Browser not compatible</iframe>
+<br/>
+
+Choose:<br/>
+
+<button onclick='changeMapView("srs=EPSG%3A3857&bbox=-6998333.333333332,2119081.632653063,5731666.666666664,12510918.367346937&service=http%253A%252F%252Fmsgcpp-ogc-realtime.knmi.nl%252Fmsgrt.cgi%253F&layer=atmosphere_optical_thickness_due_to_cloud%2524image%252Fpng%2524true%2524cot-gray%252Fnearest%25240.60%25240&selected=0&dims=&baselayers=streetmap");'>MSG cloud optical thickness</button>
+<button onclick='changeMapView("srs=EPSG%3A3857&bbox=-21746.031746031716,6500000,1241746.0317460317,7200000&service=http%253A%252F%252Fgeoservices.knmi.nl%252Fcgi-bin%252FRADNL_OPER_R___25PCPRR_L3.cgi%253F&layer=RADNL_OPER_R___25PCPRR_L3_COLOR%2524image%252Fpng%2524true%2524default%25241%25240&selected=0&dims=&baselayers=streetmap$world_line");'>Radar</button>
+<button onclick='changeMapView("srs=EPSG%3A3857&bbox=-1906828.1203641514,4007736.6010031267,4598408.112352373,9318133.525669677&service=http%253A%252F%252Fgeoservices.knmi.nl%252Fcgi-bin%252FRADNL_OPER_R___25PCPRR_L3.cgi%253F%2Chttp%3A%2F%2Fmsgcpp-ogc-realtime.knmi.nl%2Fmsgrt.cgi%3F&layer=RADNL_OPER_R___25PCPRR_L3_COLOR%2524image%252Fpng%2524true%2524default%25241%25240%2Clwe_precipitation_rate%24image%2Fpng%24true%24precip%2Fnearest%240.64%241&selected=0&dims=&baselayers=naturalearth2$world_line");'>Latest MSGCPP + Radar</button>
+</body>
+</html>

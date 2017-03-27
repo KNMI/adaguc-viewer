@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+ <!--<link rel="icon" type="image/png" href="/impactportal/favicon.ico"/>-->
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Viewer</title>
+  
+  <!-- Configuration -->
+  <script type="text/javascript" src="config.js"></script>
+  
+  <!-- Proj4 -->
+  <script type="text/javascript" src="proj4js/lib/proj4js.js"></script>
+  
+  <!-- Webmapjs, webmapjsext, ExtJS and JQuery-->
+  <script type="text/javascript" src="builds/adagucviewer.min.js"></script>
+  
+  <!-- Style sheets -->
+  <link rel="stylesheet" href="jquery/jquery-ui.css" />
+  <link rel="stylesheet" type="text/css" href="extjs-4.2.1/resources/css/ext-all.css" />
+  <link rel="stylesheet" type="text/css" href="webmapjs/WMJSStyles.css" />
+  <link rel="stylesheet" type="text/css" href="webmapjsext/WMJSExtStyles.css" /> 
+  
+  <script type="text/javascript">
+    Ext.onReady(function(){
+      var readyFunction = function(layer){
+        mainWebmapJS.webMapJS.setProjection(layer.WMJSLayer.getProjection("EPSG:28992"));
+        mainWebmapJS.webMapJS.draw();        
+      }
+      createNewLayerPanel(mainWebmapJS.webMapJS,{service:'http://geoservices.knmi.nl/cgi-bin/RADNL_OPER_R___25PCPRR_L3.cgi?',name:'RADNL_OPER_R___25PCPRR_L3_COLOR',ready:readyFunction});
+    });
+  </script>
+</head>
+<body>
+   
+</body>
+</html>

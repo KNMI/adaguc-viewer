@@ -265,7 +265,6 @@ Ext.onReady(function(){
     regexText:'Format should be YYYY-MM-DDThh:mm:ssZ'
   });
   var stopDate = Ext.create('Ext.form.field.Text',{value:'3000-01-01T00:00:00Z',
-      value:'3000-01-01T00:00:00Z',
     regex:ISO_8601_re,
     regexText:'Format should be YYYY-MM-DDThh:mm:ssZ'
   });
@@ -720,9 +719,9 @@ Ext.onReady(function(){
           if(isDefined(hashLocationNotfiyAddLayer)){
             notifyadded = hashLocationNotfiyAddLayer;
           }
-          if(notifyadded === true && firstTimeOpening === true){
-            alert("Adding "+name)
-          }
+//           if(notifyadded === true && firstTimeOpening === true){
+//             alert("Adding "+name)
+//           }
           firstTimeOpening = true;
           createNewLayerPanel(mainWebmapJS.webMapJS, {service:service,name:name,zoomtolayer:false,notifyadded:true});
 

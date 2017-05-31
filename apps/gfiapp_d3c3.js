@@ -281,4 +281,6 @@ var gfiapp_d3c3 = function(element, webmapjs) {
   _this.enable();
 };
 
-WMJSExtApplications["Time series mode"]=gfiapp_d3c3;
+try{
+  WMJSExtApplications["Time series mode"]=gfiapp_d3c3;
+}catch(e){}

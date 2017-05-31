@@ -107,7 +107,7 @@ Ext.define('webmapjsext.WMJSExt.DataPanel', {
       //if(!isDefined(customWMSWindow)){
       customWMSWindow = Ext.create('Ext.window.Window',{
         title: I18n.add_custom_service.text,
-                                   width:620,height:200,layout:'fit',autoDestroy:true,autoScroll:false,modal:true,layout:'border',
+                                   width:620,height:200,autoDestroy:true,autoScroll:false,modal:true,layout:'border',
                                    items:[
                                    {
                                      xtype:'panel',region:'north',layout:'fit',border:false,//title:'WMS service address:',

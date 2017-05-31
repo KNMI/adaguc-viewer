@@ -2892,7 +2892,7 @@ _map.flipBuffers = function(){
                   if(dialog.moveToMouseCursor == true){
                     dialog.setXY(mouseUpX,mouseUpY);
                   }else{
-                    dialog.setXY(320,5);
+                    dialog.setXY(5,5);
                   }
                 }
                  
@@ -3005,19 +3005,19 @@ _map.flipBuffers = function(){
       updateBoundingBox(updateBBOX);
       _map.zoomTo(updateBBOX);
       _map.draw("mapPanEnd");
-      return;
-
-      
-      for(var j=0;j<gfiDialogList.length;j++){
-        if(gfiDialogList[j].hasBeenDragged == false){
-          if(gfiDialogList[j].moveToMouseCursor == true){
-            gfiDialogList[j].setXY(gfiDialogList[j].origX+x,gfiDialogList[j].origY+y);
-            gfiDialogList[j].origX=gfiDialogList[j].origX+x;
-            gfiDialogList[j].origY=gfiDialogList[j].origY+y;
-          }
-        }
-        
-      }
+//       return;
+// 
+//       
+//       for(var j=0;j<gfiDialogList.length;j++){
+//         if(gfiDialogList[j].hasBeenDragged == false){
+//           if(gfiDialogList[j].moveToMouseCursor == true){
+//             gfiDialogList[j].setXY(gfiDialogList[j].origX+x,gfiDialogList[j].origY+y);
+//             gfiDialogList[j].origX=gfiDialogList[j].origX+x;
+//             gfiDialogList[j].origY=gfiDialogList[j].origY+y;
+//           }
+//         }
+//         
+//       }
     };
     
     var mapZooming = 0;

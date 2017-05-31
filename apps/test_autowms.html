@@ -23,8 +23,8 @@
     <script src="../d3/c3.min.js"></script>
     <link rel="stylesheet" type="text/css" href="../d3/c3.css">
 
-    <script src="gfiapp_d3c3.js"></script>
-    <link rel="stylesheet" href="gfiapp_d3c3.css" />
+    <script src="autowms_app.js"></script>
+    <link rel="stylesheet" href="autowms_app.css" />
 
 
     <!-- webmapjs -->
@@ -83,42 +83,23 @@
         baselayers.push(new WMJSLayer(baseLayerConfiguration[j]));
       }
       webMapJS.setBaseLayers(baselayers);
-    
-      var layer = new WMJSLayer({
-        service:'http://geoservices.knmi.nl/cgi-bin/HARM_N25.cgi',
-        name:'air_temperature__at_2m'
-      });
-      layer.onReady = function(){
-        console.log("OK");
-        webMapJS.zoomToLayer(layer);
-        var timeDim = layer.getDimension("time");
-        var currentTimeValue = new Date().toISOString();
-        console.log("Searching closest time for "+currentTimeValue);
-        var index = timeDim.getIndexForValue(currentTimeValue);
-        console.log("Found index " + index);
-        var timeValue = timeDim.getValueForIndex(index);
-        webMapJS.setDimension("time", timeValue);
-        
-        webMapJS.draw();
-      };
-      
-      webMapJS.addLayer(layer);
-      var G = new gfiapp_d3c3($("#app"),webMapJS);
-      G.disable();
+      webMapJS.draw();
+      var autowmsApp = new autowms_app($("#app"),webMapJS);
+      //autowmsApp.disable();
       $("#app").html("");
       
-      
+       autowmsApp.enable();
       var b = $("#enable_disable").button().click(function(){
         if(enabledTrue_disabledFalse==false){
           enabledTrue_disabledFalse = true;
            $("#enable_disable span").text("disable");
           
-           G.enable();
+           autowmsApp.enable();
         }else{
           enabledTrue_disabledFalse= false;
            $("#enable_disable span").text("enable");
           webMapJS.enableInlineGetFeatureInfo(true);
-          G.disable();
+          autowmsApp.disable();
           $("#app").html("");
         }
       });

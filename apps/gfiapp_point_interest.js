@@ -42,7 +42,6 @@ var gfiapp_point_interest = function(element, webmapjs) {
       $.ajax({
         type: "GET",
         url: fullUrl,
-        dataType: "xml",
         success: success,
         dataType: "jsonp",
         contentType: "application/jsonp",
@@ -73,7 +72,6 @@ var gfiapp_point_interest = function(element, webmapjs) {
                 $.ajax({
                   type: "GET",
                   url: fullUrl,
-                  dataType: "xml",
                   success: success,
                   dataType: "jsonp",
                   contentType: "application/jsonp",

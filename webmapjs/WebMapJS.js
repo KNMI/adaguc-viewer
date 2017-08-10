@@ -1527,7 +1527,7 @@ event.stopPropagation();
           if(layer.legendIsDimensionDependant==true){
             legendURL +=  _map.getDimensionRequestString(layer)+"&";
           }
-          legendURL+="&transparent=true&width=90&height=250&"
+          legendURL+="&transparent=true&width=300&height=300&"
         }catch(e){
           return undefined;
         }

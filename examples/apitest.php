@@ -85,7 +85,6 @@
     var setLayer = function(layer,layerName){
       layer.onReady = undefined;
       layer.setName(layerName);
-      layer.draw();
     };
       
   </script>

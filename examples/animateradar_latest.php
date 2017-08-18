@@ -61,7 +61,7 @@
      
       $( window ).resize(function() {
         webMapJS.setSize($( window ).width(),$( document ).height())
-        webMapJS.draw();
+        webMapJS.draw('resize');
       });
       webMapJS.setSize($( window ).width(),$( document ).height())
       var baseLayer = new WMJSLayer({
@@ -122,7 +122,6 @@
             dates.push({name:'time', value:timeDim.getValueForIndex(j)});
           }
           webMapJS.draw(dates);
-          //webMapJS.draw();
         }
         
         setTimeout(function(){layer.parseLayer(updateAnimation,true);},10000);
@@ -149,7 +148,7 @@
         //webMapJS.zoomIn(0.5);
         updateAnimation(layer);  
         layer.onReady = undefined;
-        webMapJS.draw();
+        // webMapJS.draw('radarlayerready');
       };
       
       webMapJS.addListener("onnextanimationstep",nextAnimationStepEvent,true);

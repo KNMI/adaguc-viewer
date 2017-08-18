@@ -88,7 +88,19 @@ var maxAnimationSteps = 1000;
 legendImageStore = new WMJSImageStore(maxAnimationSteps * 5, 'wmjslegendbuffer');
 getMapImageStore = new WMJSImageStore(maxAnimationSteps * 5, 'wmjsimagebuffer');
 bgMapImageStore = new WMJSImageStore(5000, 'wmjsimagebuffer', {randomizer:false});
-
+var setBaseURL = function (_baseURL) {
+  base = _baseURL;
+  //base_plus_dir = base + 'adaguc/webmapjs';
+  noimage = base + '/img/blank.gif?';
+  loadingImageSrc = base + '/img/ajax-loader.gif';
+  WMSControlsImageSrc = base + '/img/mapcontrols.gif';
+  mapPinImageSrc = base + '/img/dot.gif';
+  if (!isDefined(scaleBarURL)) {
+    scaleBarURL = base + '/php/makeScaleBar.php?';
+  }
+  xml2jsonrequestURL =  base + '/php/xml2jsonrequest.php?'
+};
+/**
 /**
   * WMJSMap class
   */
@@ -699,7 +711,6 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     bbox.top = 90;
     srs = 'EPSG:4326';
     _map.setSize(mainElement.style.width, mainElement.style.height);
-
     // IMAGE buffers
     for (var j = 0; j < 2; j++) {
       let d = new WMJSCanvasBuffer(callBack, 'imagebuffer', getMapImageStore, _map.getWidth(), _map.getHeight());
@@ -1304,7 +1315,9 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
   this.resizeWidth=-1;
   this.resizeHeight=-1;
-
+  var resizeTimerBusy = false;
+  var resizeTimer = new WMJSTimer();
+  
   this.setSize = function (w, h) {
     if (enableConsoleDebugging)console.log('setSize', w, h);
     if (parseInt(w) < 4 || parseInt(h) < 4 ) {
@@ -1313,24 +1326,21 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     }
     // return;
     // this._setSize(w - 50, h);
-    this.resizeWidth = w;
-    this.resizeHeight = h;
+    this.resizeWidth = parseInt(w);
+    this.resizeHeight = parseInt(h);
     /**
     Enable following line to enable smooth scaling during resize transitions. Is heavier for browser.
     */
     // _map._setSize((_map.resizeWidth) | 0, (_map.resizeHeight) | 0);
 
-    if (!this.resizeTimer) {
-      this.resizeTimer = new WMJSTimer();
-    } else {
-      this.resizeTimer.reset();
+    if (resizeTimerBusy === false) {
+      resizeTimerBusy = true;  
+      _map._setSize(_map.resizeWidth, _map.resizeHeight);
       return;
-    }
-
-    this.resizeTimer.init(200, function () {
-      _map._setSize((_map.resizeWidth) | 0, (_map.resizeHeight) | 0);
-      _map.resizeTimer = null;
-
+    } 
+    resizeTimer.init(200, function () {
+       resizeTimerBusy = false;
+      _map._setSize(_map.resizeWidth, _map.resizeHeight);
       _map.draw('resizeTimer');
     });
   };
@@ -1699,7 +1709,10 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   var drawTimerAnimationList;
 
   this.draw = function (animationList) {
-    // console.log('draw', animationList);
+    if (_map.isAnimating ) { 
+      if (enableConsoleDebugging)console.log('ANIMATING: Skipping draw:' + animationList);
+      return;
+    }
     drawTimerAnimationList = animationList;
     if (drawTimerBusy === true) {
       if (drawTimerPending === true) return;
@@ -1718,22 +1731,21 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
    * API Function called to draw the layers, fires getmap request and shows the layers on the screen
    */
   this._draw = function (animationList) {
+    
     if (enableConsoleDebugging)console.log('draw:' + animationList);
 
-    if (_map.isAnimating) {
-      if (enableConsoleDebugging)console.log('ANIMATING: Skipping draw:' + animationList);
-      return;
-    }
+
     if (enableConsoleDebugging)console.log('drawnBBOX.setBBOX(bbox)');
     drawnBBOX.setBBOX(bbox);
     _drawAndLoad(animationList);
   };
 
   var _drawAndLoad = function (animationList) {
-    if(width < 4 || height < 4 ) {
-      console.log('map too small, skipping');
-      return;
-    }
+//     if(width < 4 || height < 4 ) {
+//       console.log('map too small, skipping');
+//       return;
+//     }
+
     callBack.triggerEvent('beforedraw');
 
     // debug("WebMapJS::draw():"+animationList);

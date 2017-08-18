@@ -4,12 +4,14 @@ var baseLayerConfiguration = [
     name:"naturalearth2",
     title:"World base layer Natural Earth ",
     enabled: true,
+    type: 'twms',
     format:"image/gif"
   },{
     service:"http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?",
     name:"streetmap",
     title:"Open streetmap",
     enabled: false,
+    type: 'twms',
     format:"image/png"
   },{
     service:"http://geoservices.knmi.nl/cgi-bin/MODIS_Netherlands.cgi?",
@@ -71,7 +73,7 @@ var baseLayerConfiguration = [
 
 var defaultProjection = {srs:'EPSG:4326',bbox:'-180,-90,180,90'};
 
-var hashLocationNotfiyAddLayer = true;
+var hashLocationNotfiyAddLayer = false;
 
 var getFeatureInfoApplications = [
   {name:'Time series mode',iconCls:'button_getfeatureinfo',location:'apps/gfiapp_d3c3.html'}
@@ -187,43 +189,43 @@ var mapTypeConfiguration = [
     title: 'World WGS84', 
     bbox: [-180,-90,180,90], 
     srs: 'EPSG:4326',
-    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2'}
+    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2',type: 'twms'}
   },/*{ 
     title: 'Mollweide (7399)', 
     bbox: [-18157572.744146045,-11212941.682924412,18085661.018022258,11419683.192411266],
     srs: 'EPSG:7399',
-    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2'}
+    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2',type: 'twms'}
   },*/
   { 
     title: 'Robinson', 
     bbox: [-17036744.451383516,-10711364.114367772,16912038.081015453,10488456.659686875],
     srs: 'EPSG:54030',
-    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2'}
+    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2',type: 'twms'}
   },{ 
     title: 'World Mercator', 
     bbox: [-19000000,-19000000,19000000,19000000],
     srs: 'EPSG:3857',
-    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2'}
+    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2',type: 'twms'}
   },{ 
     title: 'Openstreetmap', 
     bbox: [-19000000,-19000000,19000000,19000000],   
     srs: 'EPSG:3857', 
-    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'streetmap'}
+    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'streetmap',type: 'twms'}
   },{ 
     title: 'Northern Hemisphere', 
     bbox: [-5661541.927991125,-3634073.745615984,5795287.923063262,2679445.334384017],
     srs: 'EPSG:3411',
-    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2'}
+    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2',type: 'twms'}
   },{ 
     title: 'Southern Hemisphere', 
     bbox: [-4589984.273212382,-2752857.546211313,5425154.657417289,2986705.2537886878],
     srs: 'EPSG:3412',
-    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2'}
+    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2',type: 'twms'}
   },{ 
     title: 'Europe North Pole', 
     bbox: [-13000000,-13000000,13000000,13000000],
     srs: 'EPSG:3575',
-    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2'}
+    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2',type: 'twms'}
   },
   
   
@@ -234,34 +236,34 @@ var mapTypeConfiguration = [
     title: 'Europe stereographic', 
     bbox: [-2776118.977564746,-6499490.259201691,9187990.785775745,971675.53185069], 
     srs: 'EPSG:32661',
-    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2'}
+    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2',type: 'twms'}
   }, { 
     title: 'North America', 
     bbox: [-2015360.8716608454,-697107.5349683464,9961718.159421016,6782157.107682772],
     srs: 'EPSG:50001',
-    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2'}
+    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2',type: 'twms'}
   },
   
   { 
     title: 'Openstreetmap NL', 
     bbox: [220000,6500000,1000000,7200000],   
     srs: 'EPSG:3857', 
-    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'streetmap'}
+    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'streetmap',type: 'twms'}
   }/*,{ 
     title: 'The Netherlands (28992)', 
     bbox: [-350000,125000,700000,900000 ],
     srs: 'EPSG:28992',
-    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2'}
+    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2',type: 'twms'}
   },*//*{ 
     title: 'PDOK BRT NL', 
     bbox: [-350000,125000,700000,900000],   
     srs: 'EPSG:28992', 
-    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'streetmap'}
+    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'streetmap',type: 'twms'}
   },*//*{ 
     title: 'Openstreetmap Schiphol', 
     bbox: [515813.2988839851,6850485.5537392385,544160.8241851525,6869318.449956324],   
     srs: 'EPSG:3857', 
-    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'streetmap'}
+    baselayer:{service:'http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'streetmap',type: 'twms'}
   }*/
   
   /*,{ 

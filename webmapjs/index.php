@@ -21,6 +21,7 @@
     <script type="text/javascript" src="../webmapjs/WMJSISO8601.js"></script>
     <script type="text/javascript" src="../webmapjs/WMJSProj4Definitions.js"></script>
     <script type="text/javascript" src="../webmapjs/WMJSJqueryprototypes.js"></script>
+    <script type="text/javascript" src="../webmapjs/WMJSTileRenderer.js"></script>
     <script type="text/javascript" src="../webmapjs/WebMapJS.js"></script>
     <script type="text/javascript" src="../webmapjs/WMJSLayer.js"></script>
     <script type="text/javascript" src="../webmapjs/WMJSBBOX.js"></script>

@@ -25,7 +25,7 @@
               fn:function(){
                 if(!_this.webMapJS){
                   _this.webMapJS = new WMJSMap(Ext.fly(_this.webmapjsid).dom);
-                  
+                  _this.webMapJS.setBaseURL('./webmapjs/');
                   var baseLayers = [];
                   for(var j=0;j<baseLayerConfiguration.length;j++){
                     var a = new WMJSLayer(baseLayerConfiguration[j]); 
@@ -43,12 +43,11 @@
                   }
                   _this.webMapJS.setBaseLayers(baseLayers);
                   
-                  //_this.webMapJS.addControls();
-                  _this.webMapJS.setProjection(defaultProjection);
-                
                   var size=_this.getSize();
                   _this.webMapJS.setSize(size.width,size.height);
-                  _this.webMapJS.draw("resize event");
+                  _this.webMapJS.setProjection(defaultProjection);
+                  //_this.webMapJS.draw("resize event");
+                  
                 }
               }
             },

@@ -32,13 +32,6 @@ Ext.define('webmapjsext.WMJSExt.CheckColumn', {
     
     constructor: function() {
         this.addEvents(
-            /**
-             * @event checkchange
-             * Fires when the checked state of a row changes
-             * @param {Ext.ux.CheckColumn} this
-             * @param {Number} rowIndex The row index
-             * @param {Boolean} checked True if the box is checked
-             */
             'checkchange'
         );
         this.callParent(arguments);

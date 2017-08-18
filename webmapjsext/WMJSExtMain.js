@@ -239,7 +239,7 @@ var timeselectorPanel = Ext.create("Ext.panel.Panel",{
 
 //Ext OnReady
 Ext.onReady(function(){
-  setBaseURL("./webmapjs");
+  base = './webmapjs';
 
   
   // var scaleBarURL        = "http://webgis.nmdc.eu/viewer2.0/webmapjs/php/makeScaleBar.php?";

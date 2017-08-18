@@ -24,6 +24,7 @@
 <script type="text/javascript" src="../webmapjs/WMJSTimeSelector.js"></script>
 <script type="text/javascript" src="../webmapjs/WMJSDialog.js"></script>
 <script type="text/javascript" src="../webmapjs/WMJSAnimate.js"></script>
+<script type="text/javascript" src="../webmapjs/WMJSTileRenderer.js"></script>
 <script type="text/javascript" src="../webmapjs/WebMapJS.js"></script>
 
 <link rel="stylesheet" type="text/css" href="../webmapjs/WMJSStyles.css" />

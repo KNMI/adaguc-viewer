@@ -1,5 +1,7 @@
 var autowms_app = function(element, webmapjs) {
 
+  element.addClass("autowms_app_container");
+  
   var _this = this;
 
   var currentData = {};
@@ -78,6 +80,7 @@ var autowms_app = function(element, webmapjs) {
         if(fileObj.leaf === false){
           makeFileListRequest(fileObj.path);
         }else{
+          element.html("... working ... ");
           console.log("WMS!"+fileObj.path);
           var wmsServiceURL = data.adagucserver+"source="+URLEncode(fileObj.path) + "&";
        
@@ -128,7 +131,7 @@ var autowms_app = function(element, webmapjs) {
       type: "GET",
       url: autowmsURL+"request=getfiles&path="+path,
       success: succes,
-      error:_this.errormessage
+      error:errormessage
     });
     
     

@@ -185,7 +185,7 @@ var timeselectorWindow = Ext.create("Ext.window.Window",{
       fn:function(t){
         var wmjstimecallback = function(value){
           mainWebmapJS.webMapJS.setDimension("time",value);
-          mainWebmapJS.webMapJS.draw();
+          mainWebmapJS.webMapJS.draw('timeselectorWindow');
         };
         var timeselector = new WMJSTimeSelector($(this.getEl().dom).find(".timeselector"),wmjstimecallback);
         mainWebmapJS.webMapJS.addListener("onmapdimupdate",function(){timeselector.dimensionUpdate(mainWebmapJS.webMapJS);},true);
@@ -217,7 +217,7 @@ var timeselectorPanel = Ext.create("Ext.panel.Panel",{
       fn:function(t){
         var wmjstimecallback = function(value){
           mainWebmapJS.webMapJS.setDimension("time",value);
-          mainWebmapJS.webMapJS.draw();
+          mainWebmapJS.webMapJS.draw('timeselectorPanel');
         };
         var timeselector = new WMJSTimeSelector($(this.getEl().dom).find(".timeselector"),wmjstimecallback);
         mainWebmapJS.webMapJS.addListener("onmapdimupdate",function(){timeselector.dimensionUpdate(mainWebmapJS.webMapJS);},true);

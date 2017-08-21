@@ -728,12 +728,13 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       legendDivBuffer.push(d);
     }
 
-    callBack.addToCallback('draw', _map.draw, true);
+    callBack.addToCallback('display', _map.display, true);
+    callBack.addToCallback('draw', function () {console.log('draw event triggered externally, skipping'); }, true);
     // callBack.addToCallback("drawbuffers",_map.flipBuffers,true);
 
     wmjsAnimate = new WMJSAnimate(_map);
 
-    bgMapImageStore.addLoadEventCallback(_map.draw);
+    bgMapImageStore.addLoadEventCallback(function(img){_map.draw('bgMapImageStore loaded');});
     let adagucBeforeDraw = (ctx) => {
        if (baseLayers) {
         for (var l = 0; l < baseLayers.length; l++) {
@@ -1708,24 +1709,31 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   var drawTimerPending = false;
   var drawTimerAnimationList;
 
+  this.display = function () {
+    divBuffer[currentSwapBuffer].display(updateBBOX, loadedBBOX);
+    // divBuffer[currentSwapBuffer].display();
+    if (enableConsoleDebugging)console.log('drawnBBOX.setBBOX(bbox)');
+    drawnBBOX.setBBOX(bbox);
+  };
+  
   this.draw = function (animationList) {
     if (_map.isAnimating ) { 
       if (enableConsoleDebugging)console.log('ANIMATING: Skipping draw:' + animationList);
       return;
     }
-    drawTimerAnimationList = animationList;
-    if (drawTimerBusy === true) {
-      if (drawTimerPending === true) return;
-      drawTimerPending = true;
-      drawTimer.init(10, () => {
-        drawTimerBusy = false;
-        drawTimerPending = false;
-        _map._draw(drawTimerAnimationList);
-      });
-      return;
-    }
-    drawTimerBusy = true;
-    _map._draw(drawTimerAnimationList);
+//     drawTimerAnimationList = animationList;
+//     if (drawTimerBusy === true) {
+//       if (drawTimerPending === true) return;
+//       drawTimerPending = true;
+//       drawTimer.init(10, () => {
+//         drawTimerBusy = false;
+//         drawTimerPending = false;
+//         _map._draw(drawTimerAnimationList);
+//       });
+//       return;
+//     }
+//     drawTimerBusy = true;
+    _map._draw(animationList);
   };
   /**
    * API Function called to draw the layers, fires getmap request and shows the layers on the screen
@@ -1741,10 +1749,10 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
 
   var _drawAndLoad = function (animationList) {
-//     if(width < 4 || height < 4 ) {
-//       console.log('map too small, skipping');
-//       return;
-//     }
+    if(width < 4 || height < 4 ) {
+      console.log('map too small, skipping');
+      return;
+    }
 
     callBack.triggerEvent('beforedraw');
 
@@ -2034,6 +2042,8 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
   _map.redrawBuffer = function () {
     divBuffer[currentSwapBuffer].display();
+    if (enableConsoleDebugging)console.log('drawnBBOX.setBBOX(bbox)');
+    drawnBBOX.setBBOX(bbox);
   };
 
   this.addBaseLayers = function (layer) {
@@ -2083,8 +2093,11 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   var mouseWheelBusy = 0;
   var mouseWheelBusyDelayTimer = new WMJSTimer();
 
-  var flyZoomToBBOXTimerLoop = 0;
-  var flyZoomToBBOXTimer = new WMJSTimer();
+  
+  var flyZoomToBBOXTimerStart = 1;
+  var flyZoomToBBOXTimerSteps = 5;
+  var flyZoomToBBOXTimerLoop;
+  var flyZoomToBBOXTimer = new WMJSDebouncer();
   var flyZoomToBBOXScaler=0;
   var flyZoomToBBOXCurrent = new WMJSBBOX();
   var flyZoomToBBOXNew = new WMJSBBOX();
@@ -2092,6 +2105,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   var flyZoomToBBOXTimerFuncBusy = 0;
   var flyZoomToBBOXTimerFuncBusyAndContinue= 0;
   var flyZoomToBBOXTimerFunc = () => {
+    flyZoomToBBOXScaler = (flyZoomToBBOXTimerLoop / flyZoomToBBOXTimerSteps);
     let z1 = 1 - flyZoomToBBOXScaler;
     var nbbox = new WMJSBBOX (
       flyZoomToBBOXCurrent.left * z1 + flyZoomToBBOXNew.left * flyZoomToBBOXScaler,
@@ -2099,12 +2113,13 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       flyZoomToBBOXCurrent.right * z1 + flyZoomToBBOXNew.right * flyZoomToBBOXScaler,
       flyZoomToBBOXCurrent.top * z1 + flyZoomToBBOXNew.top * flyZoomToBBOXScaler);
     updateBoundingBox(nbbox);
+    
     flyZoomToBBOXTimerLoop += 1;
-    flyZoomToBBOXScaler += (1 / 6);
-    if (flyZoomToBBOXTimerLoop > 5) {
-      flyZoomToBBOXTimerLoop = 0;
-      flyZoomToBBOXScaler = 0;
-      _map.zoomTo(nbbox);
+    
+    if (flyZoomToBBOXTimerLoop > flyZoomToBBOXTimerSteps) {
+      flyZoomToBBOXTimerLoop = flyZoomToBBOXTimerStart;
+      _map.setBBOX(nbbox);
+      _map.display();
       if (flyZoomToBBOXTimerFuncBusyAndContinue === 0) {
         flyZoomToBBOXTimerFuncBusyAndContinue = 0;
         flyZoomToBBOXTimerFuncBusy = 0;
@@ -2116,7 +2131,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       }
       return;
     }
-    flyZoomToBBOXTimer.init(10, flyZoomToBBOXTimerFunc);
+    flyZoomToBBOXTimer.init(30, flyZoomToBBOXTimerFunc);
   };
 
   var flyZoomToBBOXStartZoom = (currentbox, newbox) => {
@@ -2127,8 +2142,8 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     }
     flyZoomToBBOXCurrent.copy(currentbox);
     flyZoomToBBOXNew.copy(newbox);
-    flyZoomToBBOXTimerLoop = 0;
-    flyZoomToBBOXScaler = 0;
+    flyZoomToBBOXTimerLoop = flyZoomToBBOXTimerStart;
+    flyZoomToBBOXTimerFuncBusyAndContinue = 0;
     if (flyZoomToBBOXTimerFuncBusy === 0) {
       flyZoomToBBOXTimerFuncBusy = 1;
       flyZoomToBBOXTimerFunc();
@@ -2138,11 +2153,13 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   // this.mouseWheel = function(delta){
   let mouseWheelEventBBOXCurrent = new WMJSBBOX();
   let mouseWheelEventBBOXNew = new WMJSBBOX();
+  
+  
   this.mouseWheelEvent = function (event, delta, deltaX, deltaY) {
-
+    /*console.log('mousewheelevent');
     event.stopPropagation();
     preventdefault_event(event);
-    // alert(element.top);
+    */// alert(element.top);
     // if(drawBusy==1)return;
     if (mouseWheelBusy == 1) return;
     mouseWheelBusy = 1;
@@ -2166,11 +2183,11 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     var zoomW;
     var zoomH;
     if (delta < 0) {
-      zoomW = w * -0.3;
-      zoomH = h * -0.3;
+      zoomW = w * -0.35;
+      zoomH = h * -0.35;
     } else {
-      zoomW = w * 0.20;// delta;
-      zoomH = h * 0.20;//* delta;
+      zoomW = w * 0.25;// delta;
+      zoomH = h * 0.25;//* delta;
     }
     var newLeft = updateBBOX.left + zoomW;
     var newTop = updateBBOX.top + zoomH;
@@ -2205,9 +2222,9 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     mouseWheelEventBBOXNew.top = newTop;
 
 
-
-    flyZoomToBBOXStartZoom(mouseWheelEventBBOXCurrent, mouseWheelEventBBOXNew);
     mouseWheelBusy =0;
+    flyZoomToBBOXStartZoom(mouseWheelEventBBOXCurrent, mouseWheelEventBBOXNew);
+    
     return;
   };
 
@@ -2817,7 +2834,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   this.updateMouseCursorCoordinates = function (coordinates) {
     mouseUpdateCoordinates = coordinates;
     mouseGeoCoordXY = _map.getGeoCoordFromPixelCoord(coordinates);
-    _map.draw('updateMouseCursorCoordinates');
+    _map.display('updateMouseCursorCoordinates');
   };
 
   this.mouseDownEvent = function (e) {

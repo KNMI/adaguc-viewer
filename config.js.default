@@ -160,9 +160,9 @@ var dataChooserConfiguration = [
     
   },{
     title:'MSG Seviri Ash products',
-    thumbnail:'http://geoservices.knmi.nl/cgi-bin/SEVIR_OPER_R___VOLE____L2.cgi?SERVICE=WMS&&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=baselayer,ash_loading,overlay&WIDTH=400&HEIGHT=300&CRS=EPSG%3A4326&BBOX=-74.36030201,-123.8533563909424,74.88885300999999,123.8533563909424&STYLES=ash_loading%2Fnearest&FORMAT=image/png&TRANSPARENT=TRUE&&timecurrent&title=MSG%20Seviri%20Ash',
+    thumbnail:'http://geoservices.knmi.nl/cgi-bin/SEVIR_OPER_R___VOLE____L2.cgi?SERVICE=WMS&&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=baselayer,MSG3/ash_loading,overlay&WIDTH=400&HEIGHT=300&CRS=EPSG%3A4326&BBOX=-74.36030201,-123.8533563909424,74.88885300999999,123.8533563909424&STYLES=ash_loading%2Fnearest&FORMAT=image/png&TRANSPARENT=TRUE&&timecurrent&title=MSG%20Seviri%20Ash',
     service:'http://geoservices.knmi.nl/cgi-bin/SEVIR_OPER_R___VOLE____L2.cgi',
-    layer:'ash_loading'    
+    layer:'MSG3/ash_loading'    
 
     
   },{

@@ -492,96 +492,6 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     baseDiv.append(loadingDiv);
 
 
-//       jQuery('<div/>', {
-//         id: makeComponentId('fooslider'),
-//         css:{
-//           position:'absolute',
-//           right:'10px',
-//           bottom:'20px',
-//           width:'220px',
-//           zIndex:3000
-//         },
-//         mousedown:function(event){
-//           event.stopPropagation();
-//           preventdefault_event(event);
-//         }
-//       }).appendTo(baseDiv);
-
-    // jQuery('<div/>', {
-    //   id: makeComponentId('buttonzoomin'),
-    //   css:{
-    //     position:'absolute',
-    //     right:'30px',
-    //     top:'-8px',
-    //     width:'48px',
-    //     height:'48px',
-    //     margin:'0px',
-    //     padding:'0px',
-    //     zIndex:3000
-    //   },
-    //   mousedown:function (event) {
-    //     event.stopPropagation();
-    //     preventdefault_event(event);
-    //   },
-    //   click:function () {
-    //     _map.zoomIn();
-    //   }
-
-    // }).appendTo(baseDiv);
-
-    // var buttonZoomBox = jQuery('<div/>', {
-    //   id: makeComponentId('buttonzoombox'),
-    //   css:{
-    //     position:'absolute',
-    //     right:'30px',
-    //     top:'42px',
-    //     width:'48px',
-    //     height:'48px',
-    //     margin:'0px',
-    //     padding:'0px',
-    //     zIndex:3000
-    //   },
-    //   mousedown:function (event) {
-    //     event.stopPropagation();
-    //     preventdefault_event(event);
-    //   },
-    //   click:function () {
-    //     _map.setMapModeZoomBoxIn();
-    //     buttonZoomBox.iconbutton({ icons: { primary: 'wmjs-icon-zoombox-activated' } });
-    //     buttonDragMap.iconbutton({ icons: { primary: 'wmjs-icon-dragpan' } });
-    //     // if(mapMode=='zoom'){
-    //       // buttonZoomBox.iconbutton({icons: {primary: 'wmjs-icon-zoombox-activated'}});
-
-    //     // }else{
-    //       // buttonZoomBox.iconbutton({icons: {primary: 'wmjs-icon-zoombox'}});
-
-    //      // }
-    //   }
-
-    // }).appendTo(baseDiv);
-
-    // jQuery('<div/>', {
-    //   id: makeComponentId('buttonzoomhome'),
-    //   css:{
-    //     position:'absolute',
-    //     right:'30px',
-    //     top:'87px',
-    //     width:'48px',
-    //     height:'48px',
-    //     margin:'0px',
-    //     padding:'0px',
-    //     zIndex:3000
-    //   },
-    //   mousedown:function (event) {
-    //     event.stopPropagation();
-    //     preventdefault_event(event);
-    //   },
-    //   click:function () {
-    //     _map.zoomToLayer();
-    //   }
-
-    // }).appendTo(baseDiv);
-
     /* ONLY VISIBLE IF USERNAME FOR GEONAMES API IS SET */
     if (typeof (defaultUsernameSearch) !== 'undefined') {
       /* Creating the div for the input */
@@ -599,7 +509,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
         id: makeComponentId('searchboxbutton'),
         mousedown:function (event) { event.stopPropagation(); },
         click:function () {
-          var value = $('#searchtextfield').attr('value');
+          var value = $('#searchtextfield').val();//attr('value');
           _map.searchForLocation(value);
         } })
       .addClass('webmapjs_locationbutton')
@@ -608,98 +518,13 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       /* On Enter */
       $('#searchtextfield').keypress(function (e) {
         if (e.which == 13) {
-          var value = $('#searchtextfield').attr('value');
+          var value = $('#searchtextfield').val();//('value');
           _map.searchForLocation(value);
           return false;
         }
       });
     }
 
-    // var buttonDragMap = jQuery('<div/>', {
-    //   id: makeComponentId('buttondragmap'),
-    //   css:{
-    //     position:'absolute',
-    //     right:'30px',
-    //     top:'135px',
-    //     width:'48px',
-    //     height:'48px',
-    //     margin:'0px',
-    //     padding:'0px',
-    //     zIndex:3000
-    //   },
-    //   mousedown:function (event) {
-    //     event.stopPropagation();
-    //     preventdefault_event(event);
-    //   },
-    //   click:function () {
-    //     _map.setMapModePan();
-    //      // if(mapMode=='pan'){
-    //     buttonDragMap.iconbutton({ icons: { primary: 'wmjs-icon-dragpan-activated' } });
-    //     buttonZoomBox.iconbutton({ icons: { primary: 'wmjs-icon-zoombox' } });
-    //      // }else{
-    //       // buttonDragMap.iconbutton({icons: {primary: 'wmjs-icon-dragpan'}});
-    //      // }
-    //   }
-
-    // }).appendTo(baseDiv);
-
-    // jQuery('<div/>', {
-    //   id: makeComponentId('buttonzoomout'),
-    //   css:{
-    //     position:'absolute',
-    //     right:'30px',
-    //     top:'181px',
-    //     width:'48px',
-    //     height:'48px',
-    //     margin:'0px',
-    //     padding:'0px',
-    //     zIndex:2000
-    //   },
-    //   mousedown:function (event) {
-    //     event.stopPropagation();
-    //     preventdefault_event(event);
-    //   },
-    //   mouseup:function (event) {
-    //     event.stopPropagation();
-    //     preventdefault_event(event);
-    //   },
-    //   click:function (event) {
-    //     event.stopPropagation();
-    //     preventdefault_event(event);
-    //     _map.zoomOut();
-    //   }
-
-    // }).appendTo(baseDiv);
-    $('#' + makeComponentId('buttonzoomout')).click(function (event) {
-      event.stopPropagation();
-// do something
-    });
-   // $('#'+makeComponentId('fooslider')).slider();
-
-    $('#' + makeComponentId('buttonzoomin')).iconbutton({ text:false, icons:{ primary:'wmjs-icon-zoomin' } });
-    $('#' + makeComponentId('buttonzoomhome')).iconbutton({ text:false, icons:{ primary:'wmjs-icon-zoomhome' } });
-    $('#' + makeComponentId('buttonzoombox')).iconbutton({ text:false, icons:{ primary:'wmjs-icon-zoombox' } });
-    $('#' + makeComponentId('buttondragmap')).iconbutton({ text:false, icons:{ primary:'wmjs-icon-dragpan-activated' } });
-    $('#' + makeComponentId('buttonzoomout')).iconbutton({ text:false, icons:{ primary:'wmjs-icon-zoomout' } });
-
-/*
-    for(var j=0;j<2;j++){
-      gfiDialogList.push(createDialog({x:Math.random()*600+100,y:Math.random()*600+100}));
-    }
-
-*/
-
-    // createDialog('d2',250,250);
-
-    // $( '#'+makeComponentId('dialog1')).dialog('option', 'position', [50, 50] );
-    // $( '#'+makeComponentId('dialog1')).dialog('option', 'zIndex', 3000 );
-    // $( '#'+makeComponentId('dialog1')).appendTo(baseDiv);
-
-    // $(baseDiv).mousedown( function(e){ _map.mouseDownEvent(e);;});
-
-    // mainElement.style.zIndex=1;
-    // mainElement.style.display='block';
-    // wegbbaseDiv.style.border='none';//1px solid #444';
     // wegbbaseDiv.style.backgroundColor= '#FFF';
 
     // Attach events
@@ -735,7 +560,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     wmjsAnimate = new WMJSAnimate(_map);
 
     bgMapImageStore.addLoadEventCallback(function(img){_map.draw('bgMapImageStore loaded');});
-    let adagucBeforeDraw = (ctx) => {
+    let adagucBeforeDraw = function (ctx) {
        if (baseLayers) {
         for (var l = 0; l < baseLayers.length; l++) {
           if (baseLayers[l].enabled) {
@@ -750,7 +575,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
     _map.addListener('beforecanvasstartdraw', adagucBeforeDraw, true);
 
-    let drawTextBG = (ctx, txt, x, y, fontSize) => {
+    let drawTextBG = function (ctx, txt, x, y, fontSize) {
       ctx.textBaseline = 'top';
       ctx.fillStyle = '#FFF';
       ctx.globalAlpha = 0.75;
@@ -761,7 +586,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       ctx.fillText(txt, x, y + 2);
     };
 
-    let adagucBeforeCanvasDisplay = (ctx) => {
+    let adagucBeforeCanvasDisplay = function (ctx) {
       // Map header
       ctx.beginPath();
       ctx.rect(0, 0, width, mapHeader.height);
@@ -789,7 +614,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
       // ScaleBar
       if (showScaleBarInMap === true) {
-        let getScaleBarProperties = () => {
+        let getScaleBarProperties = function () {
           let desiredWidth = 25;
           let realWidth = 0;
           let numMapUnits = 1.0 / 10000000.0;
@@ -909,7 +734,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
         if (srs === 'EPSG:3857') {
           units = 'meter';
         }
-        ctx.fillText('CoordXY: (' + xText + ', ' + yText + ') ' + units, 5, height - 50);
+        ctx.fillText('CoordYX: (' + yText + ', ' + xText + ') ' + units, 5, height - 40);
       }
       // Mouse latlon coords
       if (isDefined(mouseUpdateCoordinates)) {
@@ -1318,7 +1143,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   this.resizeHeight=-1;
   var resizeTimerBusy = false;
   var resizeTimer = new WMJSTimer();
-  
+
   this.setSize = function (w, h) {
     if (enableConsoleDebugging)console.log('setSize', w, h);
     if (parseInt(w) < 4 || parseInt(h) < 4 ) {
@@ -1335,10 +1160,10 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     // _map._setSize((_map.resizeWidth) | 0, (_map.resizeHeight) | 0);
 
     if (resizeTimerBusy === false) {
-      resizeTimerBusy = true;  
+      resizeTimerBusy = true;
       _map._setSize(_map.resizeWidth, _map.resizeHeight);
       return;
-    } 
+    }
     resizeTimer.init(200, function () {
        resizeTimerBusy = false;
       _map._setSize(_map.resizeWidth, _map.resizeHeight);
@@ -1715,9 +1540,10 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     if (enableConsoleDebugging)console.log('drawnBBOX.setBBOX(bbox)');
     drawnBBOX.setBBOX(bbox);
   };
-  
+
   this.draw = function (animationList) {
-    if (_map.isAnimating ) { 
+
+    if (_map.isAnimating ) {
       if (enableConsoleDebugging)console.log('ANIMATING: Skipping draw:' + animationList);
       return;
     }
@@ -1739,7 +1565,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
    * API Function called to draw the layers, fires getmap request and shows the layers on the screen
    */
   this._draw = function (animationList) {
-    
+
     if (enableConsoleDebugging)console.log('draw:' + animationList);
 
 
@@ -1980,6 +1806,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     divBuffer[currentSwapBuffer].mapbbox = updateBBOX;
     _map.showBoundingBox(divBoundingBox.bbox, updateBBOX);
     callBack.triggerEvent('onupdatebbox', updateBBOX);
+    _map.repositionMapPin(_mapbbox);
   };
 
 
@@ -2091,34 +1918,32 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
 
   var mouseWheelBusy = 0;
-  var mouseWheelBusyDelayTimer = new WMJSTimer();
 
-  
   var flyZoomToBBOXTimerStart = 1;
-  var flyZoomToBBOXTimerSteps = 5;
+  var flyZoomToBBOXTimerSteps = 6;
   var flyZoomToBBOXTimerLoop;
   var flyZoomToBBOXTimer = new WMJSDebouncer();
-  var flyZoomToBBOXScaler=0;
+  var flyZoomToBBOXScaler = 0;
   var flyZoomToBBOXCurrent = new WMJSBBOX();
+  var flyZoomToBBOXFly = new WMJSBBOX();
   var flyZoomToBBOXNew = new WMJSBBOX();
   var flyZoomToBBOXContinueNew = new WMJSBBOX();
   var flyZoomToBBOXTimerFuncBusy = 0;
-  var flyZoomToBBOXTimerFuncBusyAndContinue= 0;
-  var flyZoomToBBOXTimerFunc = () => {
+  var flyZoomToBBOXTimerFuncBusyAndContinue = 0;
+  var flyZoomToBBOXTimerFunc = function () {
     flyZoomToBBOXScaler = (flyZoomToBBOXTimerLoop / flyZoomToBBOXTimerSteps);
     let z1 = 1 - flyZoomToBBOXScaler;
-    var nbbox = new WMJSBBOX (
-      flyZoomToBBOXCurrent.left * z1 + flyZoomToBBOXNew.left * flyZoomToBBOXScaler,
-      flyZoomToBBOXCurrent.bottom * z1 + flyZoomToBBOXNew.bottom * flyZoomToBBOXScaler,
-      flyZoomToBBOXCurrent.right * z1 + flyZoomToBBOXNew.right * flyZoomToBBOXScaler,
-      flyZoomToBBOXCurrent.top * z1 + flyZoomToBBOXNew.top * flyZoomToBBOXScaler);
-    updateBoundingBox(nbbox);
-    
+    flyZoomToBBOXFly.left = flyZoomToBBOXCurrent.left * z1 + flyZoomToBBOXNew.left * flyZoomToBBOXScaler;
+    flyZoomToBBOXFly.bottom = flyZoomToBBOXCurrent.bottom * z1 + flyZoomToBBOXNew.bottom * flyZoomToBBOXScaler;
+    flyZoomToBBOXFly.right = flyZoomToBBOXCurrent.right * z1 + flyZoomToBBOXNew.right * flyZoomToBBOXScaler;
+    flyZoomToBBOXFly.top = flyZoomToBBOXCurrent.top * z1 + flyZoomToBBOXNew.top * flyZoomToBBOXScaler;
+    updateBoundingBox(flyZoomToBBOXFly);
+
     flyZoomToBBOXTimerLoop += 1;
-    
+
     if (flyZoomToBBOXTimerLoop > flyZoomToBBOXTimerSteps) {
       flyZoomToBBOXTimerLoop = flyZoomToBBOXTimerStart;
-      _map.setBBOX(nbbox);
+      _map.setBBOX(flyZoomToBBOXFly);
       _map.display();
       if (flyZoomToBBOXTimerFuncBusyAndContinue === 0) {
         flyZoomToBBOXTimerFuncBusyAndContinue = 0;
@@ -2131,10 +1956,19 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       }
       return;
     }
-    flyZoomToBBOXTimer.init(30, flyZoomToBBOXTimerFunc);
+    flyZoomToBBOXTimer.init(10, flyZoomToBBOXTimerFunc);
   };
 
-  var flyZoomToBBOXStartZoom = (currentbox, newbox) => {
+  var flyZoomToBBOXStop = function (currentbox, newbox) {
+    if (flyZoomToBBOXTimerFuncBusy) {
+      _map.setBBOX(flyZoomToBBOXFly);
+    }
+    flyZoomToBBOXTimerFuncBusyAndContinue = 0;
+    flyZoomToBBOXTimerFuncBusy = 0;
+    flyZoomToBBOXTimer.stop();
+
+  };
+  var flyZoomToBBOXStartZoom = function (currentbox, newbox) {
     if (flyZoomToBBOXTimerFuncBusy === 1) {
       flyZoomToBBOXContinueNew.copy(newbox);
       flyZoomToBBOXTimerFuncBusyAndContinue = 1;
@@ -2153,8 +1987,8 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   // this.mouseWheel = function(delta){
   let mouseWheelEventBBOXCurrent = new WMJSBBOX();
   let mouseWheelEventBBOXNew = new WMJSBBOX();
-  
-  
+
+
   this.mouseWheelEvent = function (event, delta, deltaX, deltaY) {
     /*console.log('mousewheelevent');
     event.stopPropagation();
@@ -2224,7 +2058,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
     mouseWheelBusy =0;
     flyZoomToBBOXStartZoom(mouseWheelEventBBOXCurrent, mouseWheelEventBBOXNew);
-    
+
     return;
   };
 
@@ -2666,13 +2500,15 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     _map.showMapPin();
   };
 
-  this.repositionMapPin = function () {
-    var newpos = _map.getPixelCoordFromGeoCoord({ x:divMapPin.geoPosX, y:divMapPin.geoPosY });
-    _map.setMapPin(newpos.x, newpos.y);
+  this.repositionMapPin = function (_bbox) {
+    var b = bbox;
+    if(isDefined(_bbox))b = _bbox;
+    var newpos = _map.getPixelCoordFromGeoCoord({ x:divMapPin.geoPosX, y:divMapPin.geoPosY },b);
+    _map.setMapPin(newpos.x, newpos.y, b);
     // debug(newpos.x+)
   };
 
-  this.setMapPin = function (_x, _y) {
+  this.setMapPin = function (_x, _y, _bbox) {
     var x = _x;
     var y = _y;
 
@@ -2690,7 +2526,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     divMapPin.exactY = parseFloat(y);
     debug('Input coords: ' + _x + ', ' + _y);
     debug('Exact coords: ' + divMapPin.exactX + ', ' + divMapPin.exactY);
-    var geopos = _map.getGeoCoordFromPixelCoord({ x:divMapPin.exactX, y:divMapPin.exactY });
+    var geopos = _map.getGeoCoordFromPixelCoord({ x:divMapPin.exactX, y:divMapPin.exactY }, _bbox);
     divMapPin.geoPosX = geopos.x;
     divMapPin.geoPosY = geopos.y;
     divMapPin.style.left = divMapPin.x - 5 + 'px';
@@ -3080,6 +2916,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   var mapPanning = 0;
   var mapPanStartGeoCoords;
   var mapPanStart = function (_x, _y) {
+    flyZoomToBBOXStop();
     // if(drawBusy==1||mapBusy)return;
     baseDiv.css('cursor', 'move');
     var x = parseInt(_x); var y = parseInt(_y);
@@ -3093,7 +2930,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     mapPanning = 1;
     if (enableConsoleDebugging)console.log('updateBBOX.setBBOX(drawnBBOX)');
     updateBBOX.setBBOX(drawnBBOX);
-    mapPanStartGeoCoords = _map.getGeoCoordFromPixelCoord({ x:x, y:y }, drawnBBOX);
+    mapPanStartGeoCoords = _map.getGeoCoordFromPixelCoord({ x:x, y:y }, bbox);
   };
 
   var mapPan = function (_x, _y) {
@@ -3104,14 +2941,14 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       mapPanEnd(x, y);
       return;
     }
-    var mapPanGeoCoords = _map.getGeoCoordFromPixelCoord({ x:x, y:y }, drawnBBOX);
+    
+    var mapPanGeoCoords = _map.getGeoCoordFromPixelCoord({ x:x, y:y }, updateBBOX);
     var diff_x = mapPanGeoCoords.x - mapPanStartGeoCoords.x;
     var diff_y = mapPanGeoCoords.y - mapPanStartGeoCoords.y;
-    _map.setMapPin(divMapPin.oldx + (diff_x / (bbox.right - bbox.left)) * width, divMapPin.oldy + (diff_y / (bbox.bottom - bbox.top)) * height);
-    updateBBOX.left = drawnBBOX.left - diff_x;
-    updateBBOX.bottom = drawnBBOX.bottom - diff_y;
-    updateBBOX.right = drawnBBOX.right - diff_x;
-    updateBBOX.top = drawnBBOX.top - diff_y;
+    updateBBOX.left = updateBBOX.left - diff_x;
+    updateBBOX.bottom = updateBBOX.bottom - diff_y;
+    updateBBOX.right = updateBBOX.right - diff_x;
+    updateBBOX.top = updateBBOX.top - diff_y;
     updateBoundingBox(updateBBOX);
   };
 
@@ -3122,12 +2959,10 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     if (mapPanning == 0) return;
     mapPanning = 0;
 
+    
     var mapPanGeoCoords = _map.getGeoCoordFromPixelCoord({ x:x, y:y }, drawnBBOX);
     var diff_x = mapPanGeoCoords.x - mapPanStartGeoCoords.x;
     var diff_y = mapPanGeoCoords.y - mapPanStartGeoCoords.y;
-    mapPanStartGeoCoords = _map.getGeoCoordFromPixelCoord({ x:x, y:y }, drawnBBOX);
-    _map.setMapPin(divMapPin.oldx + (diff_x / (bbox.right - bbox.left)) * width, divMapPin.oldy + (diff_y / (bbox.bottom - bbox.top)) * height);
-
     updateBBOX.left = drawnBBOX.left - diff_x;
     updateBBOX.bottom = drawnBBOX.bottom - diff_y;
     updateBBOX.right = drawnBBOX.right - diff_x;
@@ -3135,7 +2970,6 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     updateBoundingBox(updateBBOX);
     _map.zoomTo(updateBBOX);
     _map.draw('mapPanEnd');
-
 //     for (var j = 0; j < gfiDialogList.length; j++) {
 //       if (gfiDialogList[j].hasBeenDragged == false) {
 //         if (gfiDialogList[j].moveToMouseCursor == true) {
@@ -3269,7 +3103,6 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
     var resetMapPinAndDialogs = function () {
       var newpos = _map.getPixelCoordFromGeoCoord({ x:divMapPin.geoPosX, y:divMapPin.geoPosY });
-      _map.setMapPin(newpos.x, newpos.y);
       for (var j = 0; j < gfiDialogList.length; j++) {
         var newpos = _map.getPixelCoordFromGeoCoord({ x:gfiDialogList[j].geoPosX, y:gfiDialogList[j].geoPosY });
         if (gfiDialogList[j].hasBeenDragged == false) {
@@ -3341,6 +3174,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
 
   this.WCJSSearchRequest = function (searchDefinition) {
+    console.log(searchDefinition);
     /* ------------ */
     /*  Validation  */
     /* ------------ */
@@ -3353,8 +3187,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       return;
     }
 
-    if (typeof (geoNamesURL) === 'undefined' ||
-      typeof (knmiGeoNamesURL) === 'undefined') {
+    if (typeof (geoNamesURL) === 'undefined' && typeof (knmiGeoNamesURL) === 'undefined') {
       error(I18n.no_urls_in_config.text);
       return;
     }
@@ -3380,7 +3213,17 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
      * First attempt if getting the lat/lng from GeoNames.org.
      * If not succesful, try our own SQLite3 DB.
      */
-    var urlKNMIGeoNames = knmiGeoNamesURL.replace('{searchTerm}', searchDef);
+    var urlKNMIGeoNames;
+    if (typeof (knmiGeoNamesURL) !== 'undefined') {
+      urlKNMIGeoNames = knmiGeoNamesURL.replace('{searchTerm}', searchDef);
+    }else{
+      /* If only geonames is configured, try this instead */
+      var urlApiGeonames = geoNamesURL.replace('{searchTerm}', searchDef)
+       .replace('{username}', defaultUsernameSearch);
+       console.log('urlApiGeonames', urlApiGeonames);
+      _map.WCJSSearchRequestGeoNames(urlApiGeonames);
+      return;
+    }
 
     /* Debugging text */
     debug(I18n.debug_searching_location.text);
@@ -3406,6 +3249,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       if ($(obj).length === 0) {
         var urlApiGeonames = geoNamesURL.replace('{searchTerm}', searchDef)
           .replace('{username}', defaultUsernameSearch);
+        console.log('urlApiGeonames', urlApiGeonames);
         _map.WCJSSearchRequestGeoNames(urlApiGeonames);
         return;
       }

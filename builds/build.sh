@@ -63,7 +63,7 @@ java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES
 
 echo "" > adagucviewer.min.js
 cat ../jquery/hammer.min.js >> adagucviewer.min.js
-cat ../jquery/jquery-1.8.3.min.js >> adagucviewer.min.js
+cat ../jquery/jquery-1.12.4.min.js >> adagucviewer.min.js
 cat ../jquery/jquery-ui.min.js >> adagucviewer.min.js
 cat jquery-addons.min.js >> adagucviewer.min.js
 cat ../d3/d3.v3.min.js >> adagucviewer.min.js

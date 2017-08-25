@@ -213,6 +213,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
   var currentCursor = 'default';
   var mapIsActivated = false;
+  var isMapHeaderEnabled = false;
 
   var loadingDiv = $('<div class="WMJSDivBuffer-loading"/>', {});
   var initialized = 0;
@@ -472,6 +473,8 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     divMapPin.style.height = '100px';
     divMapPin.style.zIndex = 1000;
     divMapPin.oncontextmenu = function () { return false; };
+    divMapPin.innerHTML = '<img src=\'' + mapPinImageSrc + '\'>';
+    divMapPin.style.display = '';
 
     baseDiv.append(divMapPin);
     // Attach divDimInfo
@@ -588,17 +591,19 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
     let adagucBeforeCanvasDisplay = function (ctx) {
       // Map header
-      ctx.beginPath();
-      ctx.rect(0, 0, width, mapHeader.height);
-      if (mapIsActivated === false) {
-        ctx.globalAlpha = mapHeader.hovering ? mapHeader.hover.opacity : mapHeader.fill.opacity;
-        ctx.fillStyle = mapHeader.hovering ? mapHeader.hover.color : mapHeader.fill.color;
-      } else {
-        ctx.globalAlpha = mapHeader.hovering ? mapHeader.hoverSelected.opacity : mapHeader.selected.opacity;
-        ctx.fillStyle = mapHeader.hovering ? mapHeader.hoverSelected.color : mapHeader.selected.color;
+      if(isMapHeaderEnabled){
+        ctx.beginPath();
+        ctx.rect(0, 0, width, mapHeader.height);
+        if (mapIsActivated === false) {
+          ctx.globalAlpha = mapHeader.hovering ? mapHeader.hover.opacity : mapHeader.fill.opacity;
+          ctx.fillStyle = mapHeader.hovering ? mapHeader.hover.color : mapHeader.fill.color;
+        } else {
+          ctx.globalAlpha = mapHeader.hovering ? mapHeader.hoverSelected.opacity : mapHeader.selected.opacity;
+          ctx.fillStyle = mapHeader.hovering ? mapHeader.hoverSelected.color : mapHeader.selected.color;
+        }
+        ctx.fill();
+        ctx.globalAlpha = 1;
       }
-      ctx.fill();
-      ctx.globalAlpha = 1;
 
       // Time offset message
       if (setTimeOffsetValue !== '') {
@@ -905,6 +910,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   /* Indicate weather this map component is active or not */
   this.setActive = function (active) {
     mapIsActivated = active;
+    isMapHeaderEnabled = true;
   };
 
   this.setActiveLayer = function (layer) {
@@ -1920,7 +1926,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   var mouseWheelBusy = 0;
 
   var flyZoomToBBOXTimerStart = 1;
-  var flyZoomToBBOXTimerSteps = 6;
+  var flyZoomToBBOXTimerSteps = 4;
   var flyZoomToBBOXTimerLoop;
   var flyZoomToBBOXTimer = new WMJSDebouncer();
   var flyZoomToBBOXScaler = 0;
@@ -1956,7 +1962,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       }
       return;
     }
-    flyZoomToBBOXTimer.init(10, flyZoomToBBOXTimerFunc);
+    flyZoomToBBOXTimer.init(20, flyZoomToBBOXTimerFunc);
   };
 
   var flyZoomToBBOXStop = function (currentbox, newbox) {
@@ -1990,10 +1996,10 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
 
   this.mouseWheelEvent = function (event, delta, deltaX, deltaY) {
-    /*console.log('mousewheelevent');
+    // console.log('mousewheelevent');
     event.stopPropagation();
     preventdefault_event(event);
-    */// alert(element.top);
+    
     // if(drawBusy==1)return;
     if (mouseWheelBusy == 1) return;
     mouseWheelBusy = 1;
@@ -2539,7 +2545,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
 
   this.showMapPin = function () {
-    divMapPin.innerHTML = '<img src=\'' + mapPinImageSrc + '\'>';
+    console.log('showMapPin');
     divMapPin.style.display = '';
   };
 
@@ -2607,7 +2613,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
 
   this.mouseDown = function (mouseCoordX, mouseCoordY, event) {
-
+  console.log(mapMode);
 
     var shiftKey = false;
     if (event) {
@@ -2880,6 +2886,9 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
               _map.showMapPin();
               callBack.triggerEvent('beforegetfeatureinfo');
               _map.getFeatureInfo(mouseDownX, mouseDownY);
+            }else{
+              _map.setMapPin(mouseDownX, mouseDownY);
+              _map.showMapPin();
             }
           }
         }

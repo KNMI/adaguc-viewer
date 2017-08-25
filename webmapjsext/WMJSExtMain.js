@@ -1,4 +1,4 @@
-var versionInfo = 'ADAGUC viewer version 2.0.5.';
+var versionInfo = 'ADAGUC viewer version 3.0.0.';
 var mainWebmapJS;
 
 function decimalFormatter(input,width){

@@ -60,6 +60,28 @@ java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES
 --js ../jquery/globalize.js \
 --js_output_file jquery-addons.min.js
 
+rm -rf adagucwebmapjs
+mkdir  adagucwebmapjs
+echo "" > adagucwebmapjs/webmapjs.min.js
+cat ../I18n/lang.en.js >> adagucwebmapjs/webmapjs.min.js
+cat ../proj4js/lib/proj4js.js >> adagucwebmapjs/webmapjs.min.js
+cat ../proj4js/lib/projCode/stere.js >> adagucwebmapjs/webmapjs.min.js
+cat ../jquery/hammer.min.js >> adagucwebmapjs/webmapjs.min.js
+cat ../jquery/jquery-1.12.4.min.js >> adagucwebmapjs/webmapjs.min.js
+cat ../jquery/jquery-ui.min.js >> adagucwebmapjs/webmapjs.min.js
+cat jquery-addons.min.js >> adagucwebmapjs/webmapjs.min.js
+cat ../d3/d3.v3.min.js >> adagucwebmapjs/webmapjs.min.js
+cat ../d3/c3.min.js >> adagucwebmapjs/webmapjs.min.js
+cat WMJS.min.js >> adagucwebmapjs/webmapjs.min.js
+
+echo "" > adagucwebmapjs/webmapjs.min.css
+cat ../webmapjs/WMJSStyles.css >> adagucwebmapjs/webmapjs.min.css
+cat ../webmapjs/WMJS_GFITimeElevation.css >> adagucwebmapjs/webmapjs.min.css
+cat ../webmapjs/WMJSTimeSelector.css >> adagucwebmapjs/webmapjs.min.css
+
+cp -r ../webmapjs/php ./adagucwebmapjs/
+cp -r ../webmapjs/img ./adagucwebmapjs/
+
 
 echo "" > adagucviewer.min.js
 cat ../jquery/hammer.min.js >> adagucviewer.min.js

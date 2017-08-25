@@ -60,10 +60,10 @@
     
      
       $( window ).resize(function() {
-        webMapJS.setSize($( window ).width(),$( document ).height())
+        webMapJS.setSize(window.innerWidth,window.innerHeight);
         webMapJS.draw('resize');
       });
-      webMapJS.setSize($( window ).width(),$( document ).height())
+      webMapJS.setSize(window.innerWidth,window.innerHeight);
       var baseLayer = new WMJSLayer({
         service:"http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?",
         name:"streetmap",
@@ -121,6 +121,7 @@
           for(var j=numTimeSteps-12;j<numTimeSteps;j++){
             dates.push({name:'time', value:timeDim.getValueForIndex(j)});
           }
+          console.log('drawing dates');
           webMapJS.draw(dates);
         }
         
@@ -163,6 +164,10 @@
   </script>
 </head>
 <body onLoad="initializeWebMapJS()">
-<div id="webmap1" style="width:1024px;height:768px;"></div>
+
+<div style="overflow: 'visible', width:0; height:0;" >
+<div id="webmap1" ></div>
+
+</div>
 </body >
 </html>

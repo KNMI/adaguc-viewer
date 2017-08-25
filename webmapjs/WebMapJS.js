@@ -397,14 +397,24 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   // Is called when the WebMapJS object is created
   function constructor () {
     // console.log('creating new WMJSMAP');
+    
+    
+    
+    if(!mainElement.style.height){
+      mainElement.style.height = '1px';
+    }
+    if(!mainElement.style.width){
+      mainElement.style.width = '1px';
+    }
+    
     var baseDivId = makeComponentId('baseDiv');
     jQuery('<div/>', {
       id:baseDivId,
       css:{
         position:'relative',
         overflow:'hidden',
-        width:mainElement.style.width,
-        height:mainElement.style.height,
+        width:mainElement.clientWidth,
+        height:mainElement.clientHeight,
         border:'0px  solid black',
         margin:0,
         padding:0,
@@ -538,7 +548,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     bbox.right = 180;
     bbox.top = 90;
     srs = 'EPSG:4326';
-    _map.setSize(mainElement.style.width, mainElement.style.height);
+    _map.setSize(mainElement.clientWidth, mainElement.clientHeight);
     // IMAGE buffers
     for (var j = 0; j < 2; j++) {
       let d = new WMJSCanvasBuffer(callBack, 'imagebuffer', getMapImageStore, _map.getWidth(), _map.getHeight());
@@ -1581,10 +1591,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
 
   var _drawAndLoad = function (animationList) {
-    if(width < 4 || height < 4 ) {
-      console.log('map too small, skipping');
-      return;
-    }
+
 
     callBack.triggerEvent('beforedraw');
 
@@ -1615,6 +1622,11 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
           }
         }
       }
+    }
+    
+    if(width < 4 || height < 4 ) {
+      console.log('map too small, skipping');
+      return;
     }
 
 /*    if (_map.isAnimating == true) {
@@ -2946,7 +2958,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     if (mapPanning == 0) return;
     var x = parseInt(_x); var y = parseInt(_y);
 
-    if (mouseX < 0 || mouseY < 0 || mouseX > parseInt(mainElement.style.width) || mouseY > parseInt(mainElement.style.height)) {
+    if (mouseX < 0 || mouseY < 0 || mouseX > parseInt(mainElement.clientWidth) || mouseY > parseInt(mainElement.clientHeight)) {
       mapPanEnd(x, y);
       return;
     }

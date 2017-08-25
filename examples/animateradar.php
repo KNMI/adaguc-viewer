@@ -72,7 +72,7 @@
         webMapJS.setProjection(layer.getProjection("EPSG:28992"));  
         var dates = [];
         for(var j=0;j<48;j++){
-          dates.push({name:'time', value:layer.getDimension('time').getValueForIndex(j+20)});
+          dates.push({name:'time', value:layer.getDimension('time').getValueForIndex((layer.getDimension('time').size() - 48) + j)});
         }
         webMapJS.setAnimationDelay(100);
         webMapJS.zoomIn();

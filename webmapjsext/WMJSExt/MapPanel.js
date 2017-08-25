@@ -46,7 +46,7 @@
                   var size=_this.getSize();
                   _this.webMapJS.setSize(size.width,size.height);
                   _this.webMapJS.setProjection(defaultProjection);
-                  //_this.webMapJS.draw("resize event");
+                  _this.webMapJS.draw("resize event");
                   
                 }
               }

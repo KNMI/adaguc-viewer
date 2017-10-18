@@ -1,4 +1,4 @@
-Copyright (C) 2009-2013, Royal Netherlands Meteorological Institute (KNMI)
+Copyright (C) 2009-2017, Royal Netherlands Meteorological Institute (KNMI)
 Licensing:
 The ADAGUC portal makes use of two different frameworks: WebMapJS and WebMapJSExt.
  -WebMapJSExt is licensed under GPLv3 and requires Sencha's ExtJS framework v4. For more info please visit: http://www.sencha.com/products/extjs/license/
@@ -11,7 +11,7 @@ Prerequisites:
  
 - Packaged JavaScript libraries:
  - extjs-4.2.1
- - jquery 1.8.3
+ - jquery 1.12.4
  - proj4js
 
  

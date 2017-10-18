@@ -1,10 +1,13 @@
 #!/bin/bash
 
-java -jar ../../closure/compiler.jar \
+rm -rf WMJS.min.js
+java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES5_STRICT \
 --js ../webmapjs/WMJSTools.js \
 --js ../webmapjs/WMJSISO8601.js \
 --js ../webmapjs/WMJSProj4Definitions.js \
 --js ../webmapjs/WMJSJqueryprototypes.js \
+--js ../webmapjs/WMJSTileRenderer.js \
+--js ../webmapjs/WMJSImageStore.js \
 --js ../webmapjs/WebMapJS.js \
 --js ../webmapjs/WMJSLayer.js \
 --js ../webmapjs/WMJSBBOX.js \
@@ -16,8 +19,6 @@ java -jar ../../closure/compiler.jar \
 --js ../webmapjs/WMJSProcessing.js \
 --js ../webmapjs/WMJSCoverage.js \
 --js ../webmapjs/WMJSImage.js \
---js ../webmapjs/WMJSImageStore.js \
---js ../webmapjs/WMJSDivBuffer.js \
 --js ../webmapjs/WMJSCanvasBuffer.js \
 --js ../webmapjs/WMJSTimeSelector.js \
 --js ../webmapjs/WMJS_GFITimeElevation.js \
@@ -25,8 +26,8 @@ java -jar ../../closure/compiler.jar \
 --js ../webmapjs/WMJSDialog.js \
 --js_output_file  WMJS.min.js
 
-
-java -jar ../../closure/compiler.jar \
+rm WMJSExt.min.js
+java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES5_STRICT \
 --js ../apps/appframework.js \
 --js ../webmapjsext/WMJSExt/LayerPropertiesPanel.js \
 --js ../webmapjsext/WMJSExt/StylePanel.js \
@@ -52,17 +53,39 @@ java -jar ../../closure/compiler.jar \
 --js ../apps/autowms_app.js \
 --js_output_file  WMJSExt.min.js
 
-
-java -jar ../../closure/compiler.jar \
+rm -rf jquery-addons.min.js
+java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES5_STRICT \
 --js ../jquery/jquery.mousewheel.js \
 --js ../jquery/jquery-ui-timepicker-addon.js \
 --js ../jquery/globalize.js \
 --js_output_file jquery-addons.min.js
 
+rm -rf adagucwebmapjs
+mkdir  adagucwebmapjs
+echo "" > adagucwebmapjs/webmapjs.min.js
+cat ../I18n/lang.en.js >> adagucwebmapjs/webmapjs.min.js
+cat ../proj4js/lib/proj4js.js >> adagucwebmapjs/webmapjs.min.js
+cat ../proj4js/lib/projCode/stere.js >> adagucwebmapjs/webmapjs.min.js
+cat ../jquery/hammer.min.js >> adagucwebmapjs/webmapjs.min.js
+cat ../jquery/jquery-1.12.4.min.js >> adagucwebmapjs/webmapjs.min.js
+cat ../jquery/jquery-ui.min.js >> adagucwebmapjs/webmapjs.min.js
+cat jquery-addons.min.js >> adagucwebmapjs/webmapjs.min.js
+cat ../d3/d3.v3.min.js >> adagucwebmapjs/webmapjs.min.js
+cat ../d3/c3.min.js >> adagucwebmapjs/webmapjs.min.js
+cat WMJS.min.js >> adagucwebmapjs/webmapjs.min.js
+
+echo "" > adagucwebmapjs/webmapjs.min.css
+cat ../webmapjs/WMJSStyles.css >> adagucwebmapjs/webmapjs.min.css
+cat ../webmapjs/WMJS_GFITimeElevation.css >> adagucwebmapjs/webmapjs.min.css
+cat ../webmapjs/WMJSTimeSelector.css >> adagucwebmapjs/webmapjs.min.css
+
+cp -r ../webmapjs/php ./adagucwebmapjs/
+cp -r ../webmapjs/img ./adagucwebmapjs/
+
 
 echo "" > adagucviewer.min.js
 cat ../jquery/hammer.min.js >> adagucviewer.min.js
-cat ../jquery/jquery-1.8.3.min.js >> adagucviewer.min.js
+cat ../jquery/jquery-1.12.4.min.js >> adagucviewer.min.js
 cat ../jquery/jquery-ui.min.js >> adagucviewer.min.js
 cat jquery-addons.min.js >> adagucviewer.min.js
 cat ../d3/d3.v3.min.js >> adagucviewer.min.js

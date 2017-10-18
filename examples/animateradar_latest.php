@@ -11,8 +11,8 @@
 
     <!-- JQuery -->
     <link rel="stylesheet" href="../jquery/jquery-ui.css" />
-    <script src="../jquery/jquery-1.8.3.js"></script>
-    <script src="../jquery/jquery-ui.js"></script>
+    <script src="../jquery/jquery-1.12.4.min.js"></script>
+    <script src="../jquery/jquery-ui.min.js"></script>
     <script src="../jquery/jquery.mousewheel.js"></script>
     <script src="../jquery/jquery-ui-timepicker-addon.js"></script>
     <script src="../jquery/globalize.js"></script>
@@ -60,10 +60,10 @@
     
      
       $( window ).resize(function() {
-        webMapJS.setSize($( window ).width(),$( document ).height())
-        webMapJS.draw();
+        webMapJS.setSize(window.innerWidth,window.innerHeight);
+        webMapJS.draw('resize');
       });
-      webMapJS.setSize($( window ).width(),$( document ).height())
+      webMapJS.setSize(window.innerWidth,window.innerHeight);
       var baseLayer = new WMJSLayer({
         service:"http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?",
         name:"streetmap",
@@ -121,8 +121,8 @@
           for(var j=numTimeSteps-12;j<numTimeSteps;j++){
             dates.push({name:'time', value:timeDim.getValueForIndex(j)});
           }
+          console.log('drawing dates');
           webMapJS.draw(dates);
-          //webMapJS.draw();
         }
         
         setTimeout(function(){layer.parseLayer(updateAnimation,true);},10000);
@@ -149,7 +149,7 @@
         //webMapJS.zoomIn(0.5);
         updateAnimation(layer);  
         layer.onReady = undefined;
-        webMapJS.draw();
+        // webMapJS.draw('radarlayerready');
       };
       
       webMapJS.addListener("onnextanimationstep",nextAnimationStepEvent,true);
@@ -164,6 +164,10 @@
   </script>
 </head>
 <body onLoad="initializeWebMapJS()">
-<div id="webmap1" style="width:1024px;height:768px;"></div>
+
+<div style="overflow: 'visible', width:0; height:0;" >
+<div id="webmap1" ></div>
+
+</div>
 </body >
 </html>

@@ -1,4 +1,7 @@
-body { margin: 0 }
+body { 
+  margin: 0;
+  overflow:hidden; 
+}
 .row, .col { overflow: hidden; position: absolute; }
 .row { left: 0; right: 0; }
 .col { top: 0; bottom: 0; }

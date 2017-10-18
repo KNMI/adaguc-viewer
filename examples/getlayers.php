@@ -9,8 +9,8 @@
 
     <!-- JQuery -->
     <link rel="stylesheet" href="../jquery/jquery-ui.css" />
-    <script src="../jquery/jquery-1.8.3.js"></script>
-    <script src="../jquery/jquery-ui.js"></script>
+    <script src="../jquery/jquery-1.12.4.min.js"></script>
+    <script src="../jquery/jquery-ui.min.js"></script>
     <script src="../jquery/jquery.mousewheel.js"></script>
     <script src="../jquery/jquery-ui-timepicker-addon.js"></script>
     <script src="../jquery/globalize.js"></script>
@@ -52,7 +52,7 @@
         //Create animation
         var dates = [];
         for(var j=0;j<48;j++){
-          dates.push({name:'time', value:layer.getDimension('time').getValueForIndex(j+20)});
+          dates.push({name:'time', value:layer.getDimension('time').getValueForIndex((layer.getDimension('time').size() - 48) + j)});
         }
         
         //Set delay and draw the animation

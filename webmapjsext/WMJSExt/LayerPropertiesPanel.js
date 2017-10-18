@@ -114,7 +114,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPropertiesPanel', {
                   var bbox = record.get('bbox');
                   var srs = record.get('srs');
                   _this.WMJSLayerObject.parentMaps[0].setProjection({srs:srs,bbox:bbox});
-                  _this.WMJSLayerObject.parentMaps[0].draw();
+                  _this.WMJSLayerObject.parentMaps[0].draw('wmsprojectionpanel');
                 } 
               }
             }

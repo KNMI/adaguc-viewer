@@ -7,6 +7,11 @@ var baseLayerConfiguration = [
     type: 'wms',
     format:"image/gif"
   },{
+    title:"arcGisCanvas",
+    name:"arcGisCanvas",
+    type: 'twms',
+    enabled:false
+  }, {
     service:"http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?",
     name:"streetmap",
     title:"Open streetmap",

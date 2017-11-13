@@ -53,19 +53,17 @@
     "http://www.ecad.eu/",
     "http://bhlgsie01.knmi.nl/",
     "http://bhw512.knmi.nl",
-    "http://adaguc-server",
-    "http://localhost",
+    "http://adaguc-server"
   );
   
   function replaceHostName($url){
   
-    // Some firewalls do not allow to request data from their own server. In this case the hostname should be changed to localhost
-    //$HOSTNAME=gethostbyaddr (gethostbyname ($_SERVER["SERVER_NAME"])); 
-    //$url = str_replace($HOSTNAME,"localhost", $url);
-    //$url = str_replace("https://data.knmi.nl/wms","http://kdc-preview.knmi.nl:8380",$url);
-    //$url = str_replace("http://data.knmi.nl/wms","http://kdc-preview.knmi.nl:8380", $url);
-    $url = str_replace("localhost","adaguc-server", $url);
+    $localaddr = getenv('LOCAL_ADAGUCSERVER_ADDR');
+    $remoteaddr = getenv('REMOTE_ADAGUCSERVER_ADDR');
     
+    if ($localaddr != FALSE && $remoteaddr != FALSE) {
+      $url = str_replace($localaddr,$remoteaddr, $url);
+    }
     
     return $url;
     

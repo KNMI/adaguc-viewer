@@ -53,7 +53,8 @@
     "http://www.ecad.eu/",
     "http://bhlgsie01.knmi.nl/",
     "http://bhw512.knmi.nl",
-    "http://adaguc-server"
+    "http://adaguc-server",
+    "http://localhost",
   );
   
   function replaceHostName($url){

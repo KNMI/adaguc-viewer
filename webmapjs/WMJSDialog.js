@@ -12,9 +12,13 @@ WMJSDialog.createDialog = function (options, baseDiv, _map) {
   var id = 'auto_' + WMJSDialogsCreated++;
   var x = 0;
   var y = 0;
+  var show = true;
   var autoDestroy = true;
   if (isDefined(options.id)) {
     id = options.id;
+  }
+  if (isDefined(options.show)) {
+    show = options.show;
   }
 
   if (isDefined(options.x)) {
@@ -55,8 +59,11 @@ WMJSDialog.createDialog = function (options, baseDiv, _map) {
       event.stopPropagation();
         // preventdefault_event(event);
     }
+  });
 
-  }).appendTo(baseDiv);
+  if(show) {
+    dialog.appendTo(baseDiv);
+  }
 
   dialog.hasBeenDragged = false;
 

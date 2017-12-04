@@ -1,7 +1,7 @@
 /*
  * Name        : WebMapJS.js
  * Author      : MaartenPlieger (plieger at knmi.nl)
- * Version     : 0.5 (June 2011)
+ * Version     : 0.7 (September 2017)
  * Description : This is a basic interface for portrayal of OGC WMS services
  * Copyright KNMI
  */
@@ -37,6 +37,7 @@ var logging = false;
 var base = './';
 // var xml2jsonrequestURL;
 var noimage;
+var showDialog = true;
 
 var loadingImageSrc;
 
@@ -100,6 +101,10 @@ var setBaseURL = function (_baseURL) {
   }
   xml2jsonrequestURL =  base + '/php/xml2jsonrequest.php?'
 };
+
+var showDialogs = function (shouldShow) {
+  showDialog = shouldShow;
+}
 /**
 /**
   * WMJSMap class
@@ -117,6 +122,10 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       scaleBarURL = base + '/php/makeScaleBar.php?';
     }
   };
+
+  this.showDialogs = function (shouldShow) {
+    showDialog = shouldShow;
+  }
   this.setBaseURL(base);
 
   this.setXML2JSONURL = function (_xml2jsonrequest) {
@@ -189,7 +198,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   var divBuffer = [];
 
   var mapHeader = {
-    height:30,
+    height:0,
     fill:{
       color:'#EEE',
       opacity:0.4
@@ -397,16 +406,12 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   // Is called when the WebMapJS object is created
   function constructor () {
     // console.log('creating new WMJSMAP');
-    
-    
-    
     if(!mainElement.style.height){
       mainElement.style.height = '1px';
     }
     if(!mainElement.style.width){
       mainElement.style.width = '1px';
     }
-    
     var baseDivId = makeComponentId('baseDiv');
     jQuery('<div/>', {
       id:baseDivId,
@@ -1591,7 +1596,10 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
 
   var _drawAndLoad = function (animationList) {
-
+    if(width < 4 || height < 4 ) {
+      // console.log('map too small, skipping');
+      return;
+    }
 
     callBack.triggerEvent('beforedraw');
 
@@ -1623,7 +1631,6 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
         }
       }
     }
-    
     if(width < 4 || height < 4 ) {
       console.log('map too small, skipping');
       return;
@@ -1938,7 +1945,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   var mouseWheelBusy = 0;
 
   var flyZoomToBBOXTimerStart = 1;
-  var flyZoomToBBOXTimerSteps = 4;
+  var flyZoomToBBOXTimerSteps = 1;
   var flyZoomToBBOXTimerLoop;
   var flyZoomToBBOXTimer = new WMJSDebouncer();
   var flyZoomToBBOXScaler = 0;
@@ -1974,7 +1981,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       }
       return;
     }
-    flyZoomToBBOXTimer.init(20, flyZoomToBBOXTimerFunc);
+    flyZoomToBBOXTimer.init(10, flyZoomToBBOXTimerFunc);
   };
 
   var flyZoomToBBOXStop = function (currentbox, newbox) {
@@ -2008,7 +2015,6 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
 
   this.mouseWheelEvent = function (event, delta, deltaX, deltaY) {
-    // console.log('mousewheelevent');
     event.stopPropagation();
     preventdefault_event(event);
     
@@ -2035,11 +2041,11 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     var zoomW;
     var zoomH;
     if (delta < 0) {
-      zoomW = w * -0.35;
-      zoomH = h * -0.35;
+      zoomW = w * -0.15;
+      zoomH = h * -0.15;
     } else {
-      zoomW = w * 0.25;// delta;
-      zoomH = h * 0.25;//* delta;
+      zoomW = w * 0.1;// delta;
+      zoomH = h * 0.1;//* delta;
     }
     var newLeft = updateBBOX.left + zoomW;
     var newTop = updateBBOX.top + zoomH;
@@ -2557,7 +2563,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
 
   this.showMapPin = function () {
-    console.log('showMapPin');
+    divMapPin.innerHTML = '<img src=\'' + mapPinImageSrc + '\'>';
     divMapPin.style.display = '';
   };
 
@@ -2625,7 +2631,6 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
 
   this.mouseDown = function (mouseCoordX, mouseCoordY, event) {
-  console.log(mapMode);
 
     var shiftKey = false;
     if (event) {
@@ -2870,7 +2875,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
               var dialog;
 
               if (gfiDialogList.length == 0) {
-                dialog = WMJSDialog.createDialog({ x:mouseUpX, y:mouseUpY, autoDestroy:false }, baseDiv, _map);
+                dialog = WMJSDialog.createDialog({ show: showDialog, x:mouseUpX, y:mouseUpY, autoDestroy:false }, baseDiv, _map);
                 gfiDialogList.push(dialog);
               } else {
                 dialog = gfiDialogList[0];
@@ -2962,7 +2967,6 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       mapPanEnd(x, y);
       return;
     }
-    
     var mapPanGeoCoords = _map.getGeoCoordFromPixelCoord({ x:x, y:y }, updateBBOX);
     var diff_x = mapPanGeoCoords.x - mapPanStartGeoCoords.x;
     var diff_y = mapPanGeoCoords.y - mapPanStartGeoCoords.y;
@@ -2980,7 +2984,6 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     if (mapPanning == 0) return;
     mapPanning = 0;
 
-    
     var mapPanGeoCoords = _map.getGeoCoordFromPixelCoord({ x:x, y:y }, drawnBBOX);
     var diff_x = mapPanGeoCoords.x - mapPanStartGeoCoords.x;
     var diff_y = mapPanGeoCoords.y - mapPanStartGeoCoords.y;

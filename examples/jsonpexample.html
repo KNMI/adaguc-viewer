@@ -1,0 +1,43 @@
+<html>
+<head>
+<title>ADAGUC service with JSONP example</title>
+   <script type="text/javascript" src="../jquery/jquery-1.8.3.js">
+   </script>
+   <script type="text/javascript">
+     $(document).ready(function(){
+       $('#result').html('ready');
+//       var url="http://bvmlab-218-41.knmi.nl/cgi-bin/ECMD_EUR.cgi?&SERVICE=WMS&REQUEST=GetPointValue&VERSION=1.1.1&SRS=EPSG:4326&QUERY_LAYERS=201306130000%2FLS_precipitation&INFO_FORMAT=application/json&time=2013-06-13T00:00:00Z/2013-06-16T00:00:00Z&X=5&Y=52&JSONP=?";
+       var url="http://geoservices.knmi.nl/cgi-bin/GLAMEPS2.cgi?&SERVICE=WMS&REQUEST=GetPointValue&VERSION=1.1.1&SRS=EPSG:4326&QUERY_LAYERS=20130311_18/members/Dewpoint,20130311_18/members/Temperature_2m&X=5.2&Y=52.0&INFO_FORMAT=application/json&time=2013-03-11T18:00:00/2013-03-13T18:00:00Z&DIM_member=AladEPS_mbr000,AladEPS_mbr025&JSONP=?";
+       $.ajax({
+         type: 'GET',
+	 url: url,
+	 dataType: 'jsonp',
+	 success: function(dataWeGotViaJsonp){
+	   var text='';
+	   var len = dataWeGotViaJsonp.length;
+	   for(var i=0;i<len;i++){
+	     dataItem = dataWeGotViaJsonp[i];
+	     text+=dataItem.name+" -  "+dataItem.standard_name+" "+dataItem.data+"<br/>";
+             console.dir(dataItem.data);
+             for (var d in dataItem.data) {
+               text+="  "+d+" ==> "+dataItem.data[d]+"<br/>";
+               for (var d2 in dataItem.data[d]) {
+                 text+="    "+d2+" ==> "+dataItem.data[d][d2]+"<br/>";
+               }
+             }
+	   }
+	   $('#result').html(text);
+         },
+         error: function(jqXHR, textStatus, errorThrown) {
+           $('result').html("Error "+errorThrown);
+           console.log("Error "+errorThrown);
+         }
+       });
+       $('#result').html('Fired '+url);
+     });
+   </script>
+</head>
+<body>
+  <div id="result">Startup</div>
+</body>
+</html>

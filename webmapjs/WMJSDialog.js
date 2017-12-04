@@ -17,7 +17,6 @@ WMJSDialog.createDialog = function (options, baseDiv, _map) {
   if (isDefined(options.id)) {
     id = options.id;
   }
-
   if (isDefined(options.show)) {
     show = options.show;
   }
@@ -60,8 +59,6 @@ WMJSDialog.createDialog = function (options, baseDiv, _map) {
       event.stopPropagation();
         // preventdefault_event(event);
     }
-
-  // Disable dialog
   });
 
   if(show) {

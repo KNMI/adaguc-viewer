@@ -9,8 +9,8 @@
 
     <!-- JQuery -->
     <link rel="stylesheet" href="../jquery/jquery-ui.css" />
-    <script src="../jquery/jquery-1.8.3.js"></script>
-    <script src="../jquery/jquery-ui.js"></script>
+    <script src="../jquery/jquery-1.12.4.min.js"></script>
+    <script src="../jquery/jquery-ui.min.js"></script>
     <script src="../jquery/jquery.mousewheel.js"></script>
     <script src="../jquery/jquery-ui-timepicker-addon.js"></script>
     <script src="../jquery/globalize.js"></script>
@@ -21,6 +21,7 @@
     <script type="text/javascript" src="../webmapjs/WMJSISO8601.js"></script>
     <script type="text/javascript" src="../webmapjs/WMJSProj4Definitions.js"></script>
     <script type="text/javascript" src="../webmapjs/WMJSJqueryprototypes.js"></script>
+    <script type="text/javascript" src="../webmapjs/WMJSTileRenderer.js"></script>
     <script type="text/javascript" src="../webmapjs/WebMapJS.js"></script>
     <script type="text/javascript" src="../webmapjs/WMJSLayer.js"></script>
     <script type="text/javascript" src="../webmapjs/WMJSBBOX.js"></script>

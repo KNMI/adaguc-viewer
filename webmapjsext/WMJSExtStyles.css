@@ -1,0 +1,264 @@
+#images-view .x-panel-body{
+    background: white;
+    font: 11px Arial, Helvetica, sans-serif;
+}
+#images-view .thumb{
+    background: #dddddd;
+    padding: 3px;
+    padding-bottom: 0;
+}
+
+.x-quirks #images-view .thumb {
+    padding-bottom: 3px;
+}
+
+#images-view .thumb img{
+    height: 150px;
+    width: 200px;
+    
+}
+#images-view .thumb-wrap{
+    float: left;
+    margin: 4px;
+    margin-right: 0;
+    padding: 5px;
+}
+#images-view .thumb-wrap span {
+    
+    display: block;
+    overflow: hidden;
+    text-align: center;
+    width: 206px; /* for ie to ensure that the text is centered */
+}
+
+#images-view .x-item-over{
+    border:1px solid #dddddd;
+    background: #efefef url(img/over.gif) repeat-x left top;
+    padding: 4px;
+}
+
+#images-view .x-item-selected{
+    background: #eff5fb url(img/selected.gif) no-repeat right bottom;
+    border:1px solid #99bbe8;
+    padding: 4px;
+}
+#images-view .x-item-selected .thumb{
+    background:transparent;
+}
+
+#images-view .loading-indicator {
+    font-size:11px;
+    background-image:url('webmapjs/img/ajax-loader.gif');
+    background-repeat: no-repeat;
+    background-position: left;
+    padding-left:20px;
+    margin:10px;
+}
+
+
+/** maptypeselector **/
+#maptypeselector .x-panel-body{
+    background: white;
+    font: 11px Arial, Helvetica, sans-serif;
+}
+#maptypeselector .thumb{
+    background: #fff;
+    padding: 3px;
+    padding-bottom: 0;
+}
+
+.x-quirks #maptypeselector .thumb {
+    padding-bottom: 3px;
+}
+
+#maptypeselector .thumb img{
+    width: 110px;
+    height: 80px;
+    
+}
+#maptypeselector .thumb-wrap{
+    float: left;
+    margin: 1px;
+    margin-right: 0;
+    padding: 5px;
+    
+}
+#maptypeselector .thumb-wrap span {
+    
+    display: block;
+    overflow: hidden;
+    text-align: center;
+    width: 116px; /* for ie to ensure that the text is centered */
+}
+
+#maptypeselector .x-item-over{
+    border:1px solid #dddddd;
+    background: #efefef url(img/over.gif) repeat-x left top;
+    padding: 4px;
+}
+
+#maptypeselector .x-item-selected{
+    background: #eff5fb url(img/selected.gif) no-repeat right bottom;
+    border:1px solid #99bbe8;
+    padding: 4px;
+}
+#maptypeselector .x-item-selected .thumb{
+    background:transparent;
+}
+
+#maptypeselector .loading-indicator {
+    font-size:11px;
+    background-image:url('webmapjs/img/ajax-loader.gif');
+    background-repeat: no-repeat;
+    background-position: left;
+    padding-left:20px;
+    margin:10px;
+}
+
+.x-view-selector {
+    position:absolute;
+    left:0;
+    top:0;
+    width:0;
+    border:1px dotted;
+    opacity: .5;
+    -moz-opacity: .5;
+    filter:alpha(opacity=50);
+    zoom:1;
+    background-color:#c3daf9;
+    border-color:#3399bb;
+}.ext-strict .ext-ie .x-tree .x-panel-bwrap{
+    position:relative;
+    overflow:hidden;
+}
+
+.flatButton .x-btn-inner {
+    color: black;
+    background:#FAFAFA;
+    border:none;
+}
+
+.x-grid-checkheader {
+    height: 14px;
+    background-image: url('img/unchecked.gif');
+    background-position: 50% -2px;
+    background-repeat: no-repeat;
+    background-color: transparent;
+}
+
+.x-grid-checkheader-checked {
+    background-image: url('img/checked.gif');
+}
+
+.x-grid-checkheader-editor .x-form-cb-wrap {
+    text-align: center;
+}
+
+.test-lbl-text-align
+  {text-align:center;}
+  
+.legendimage {
+  padding:4px;
+  margin:4px;
+
+}
+
+.dimensionPositionLabel{
+
+}
+
+.dimensionTitleLabel{
+ 
+ 
+}
+
+.dimensionValueLabel{
+  
+  
+}
+
+
+.x-window{
+  box-shadow: 0px 0px 4px 1px #444;
+}
+
+.layerlistbg{
+  background-color: #e8e1fF;
+  background-image: url('img/60-lines.png');
+
+}
+
+.LayersAndMapsTab .x-tab-bar-strip {
+    top: 41px !important; /* Default value is 20, we add 20 = 40 */
+}
+
+.LayersAndMapsTab .x-tab-bar .x-tab-bar-body {
+    height: 41px !important; /* Default value is 23, we add 20 = 43 */
+    border: 0 !important; /* Overides the border that appears on resizing the grid */
+}
+
+.LayersAndMapsTab .x-tab-bar .x-tab-bar-body .x-box-inner {
+    height: 41px !important; /* Default value is 21, we add 20 = 41 */
+}
+
+.LayersAndMapsTab .x-tab-bar .x-tab-bar-body .x-box-inner .x-tab {
+    height: 41px !important; /* Default value is 21, we add 20 = 41 */
+}
+
+.LayersAndMapsTab .x-tab-bar .x-tab-bar-body .x-box-inner .x-tab button {
+    height: 33px !important; /* Default value 13, we add 20 = 33 */
+    line-height: 33px !important; /* Default value 13, we add 20 = 33 */
+}
+.LayersAndMapsTab .x-tab-bar-default-horizontal{
+  height: 40px ;
+}
+
+.LayersAndMapsTab .x-tab-default .x-tab-icon-el{
+  width:32px;
+  height:32px;
+  margin-top:2px;
+  line-height:34px;
+}
+
+.LayersAndMapsTab .x-tab-default .x-tab-inner{
+   line-height:34px;
+}
+
+.LayersAndMapsTab .x-tab-default-icon-text-left .x-tab-inner{
+  padding-left:38px;
+}
+
+.timeselector{
+
+}
+
+.WMJSExtLayerPanelDimensionHeader .x-panel-header-text {
+    font-weight:normal;
+}
+.WMJSExtLayerPanelDimensionHeader .x-panel-header {
+  background:#E8E8EF;
+  
+}
+
+.webmapjs_customapplication{
+  width:100%;
+}
+
+
+.adagucviewer_wmsjsext_layerpanel_abstract  {
+    border-collapse: collapse;
+    width: 100%;
+
+    
+}
+
+.adagucviewer_wmsjsext_layerpanel_abstract th, .adagucviewer_wmsjsext_layerpanel_abstract td {
+    text-align: left;
+    padding: 4px;
+    
+
+}
+
+.adagucviewer_wmsjsext_layerpanel_abstract tr:nth-child(odd){background-color: #f0fFf0}
+.adagucviewer_wmsjsext_layerpanel_abstract tr:nth-child(even){background-color: #f2f2fF}
+1

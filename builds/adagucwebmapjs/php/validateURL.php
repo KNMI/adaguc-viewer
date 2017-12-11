@@ -126,11 +126,6 @@ function isValidURL($url){
     return false;
 }
 
-/*
-function isValidURLold($url){
-    
-    return preg_match('|^http(s)?://[A-Za-z0-9-\-]+(.[A-Za-z0-9-\-]+)*(:[0-9]+)?(/.*)?$|i', $url);
-} */ 
 
 function validateUrl($url) {
       if(isValidURL($url)==true){

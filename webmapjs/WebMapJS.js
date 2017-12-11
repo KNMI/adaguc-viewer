@@ -131,6 +131,10 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   this.setXML2JSONURL = function (_xml2jsonrequest) {
     xml2jsonrequest = _xml2jsonrequest;
   };
+  
+  this.setWMJSTileRendererTileSettings = function(_WMJSTileRendererTileSettings) {
+    tileRenderSettings = _WMJSTileRendererTileSettings;    
+  };
 
   var mainElement = _element;
   try {
@@ -405,6 +409,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
   // Is called when the WebMapJS object is created
   function constructor () {
+    try { tileRenderSettings = WMJSTileRendererTileSettings; } catch(e) {}
     // console.log('creating new WMJSMAP');
     if(!mainElement.style.height){
       mainElement.style.height = '1px';
@@ -584,7 +589,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
           if (baseLayers[l].enabled) {
             if (baseLayers[l].keepOnTop === false) {
               if (baseLayers[l].type && baseLayers[l].type !== 'twms') continue;
-              WMJSTileRenderer(bbox, updateBBOX, srs, width, height, ctx, bgMapImageStore, WMJSTileRendererTileSettings, baseLayers[l].name);
+              WMJSTileRenderer(bbox, updateBBOX, srs, width, height, ctx, bgMapImageStore, tileRenderSettings, baseLayers[l].name);
             }
           }
         }

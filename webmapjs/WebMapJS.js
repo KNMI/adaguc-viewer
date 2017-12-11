@@ -37,6 +37,7 @@ var logging = false;
 var base = './';
 // var xml2jsonrequestURL;
 var noimage;
+var showDialog = true;
 
 var loadingImageSrc;
 
@@ -95,12 +96,15 @@ var setBaseURL = function (_baseURL) {
   loadingImageSrc = base + '/img/ajax-loader.gif';
   WMSControlsImageSrc = base + '/img/mapcontrols.gif';
   mapPinImageSrc = base + '/img/dot.gif';
-  console.log(mapPinImageSrc);
   if (!isDefined(scaleBarURL)) {
     scaleBarURL = base + '/php/makeScaleBar.php?';
   }
   xml2jsonrequestURL =  base + '/php/xml2jsonrequest.php?'
 };
+
+var showDialogs = function (shouldShow) {
+  showDialog = shouldShow;
+}
 /**
 /**
   * WMJSMap class
@@ -114,11 +118,14 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     loadingImageSrc = base + '/img/ajax-loader.gif';
     WMSControlsImageSrc = base + '/img/mapcontrols.gif';
     mapPinImageSrc = base + '/img/dot.gif';
-
     if (!isDefined(scaleBarURL)) {
       scaleBarURL = base + '/php/makeScaleBar.php?';
     }
   };
+
+  this.showDialogs = function (shouldShow) {
+    showDialog = shouldShow;
+  }
   this.setBaseURL(base);
 
   this.setXML2JSONURL = function (_xml2jsonrequest) {
@@ -191,7 +198,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   var divBuffer = [];
 
   var mapHeader = {
-    height:30,
+    height:0,
     fill:{
       color:'#EEE',
       opacity:0.4
@@ -215,6 +222,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
   var currentCursor = 'default';
   var mapIsActivated = false;
+  var isMapHeaderEnabled = false;
 
   var loadingDiv = $('<div class="WMJSDivBuffer-loading"/>', {});
   var initialized = 0;
@@ -398,14 +406,20 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   // Is called when the WebMapJS object is created
   function constructor () {
     // console.log('creating new WMJSMAP');
+    if(!mainElement.style.height){
+      mainElement.style.height = '1px';
+    }
+    if(!mainElement.style.width){
+      mainElement.style.width = '1px';
+    }
     var baseDivId = makeComponentId('baseDiv');
     jQuery('<div/>', {
       id:baseDivId,
       css:{
         position:'relative',
         overflow:'hidden',
-        width:mainElement.style.width,
-        height:mainElement.style.height,
+        width:mainElement.clientWidth,
+        height:mainElement.clientHeight,
         border:'0px  solid black',
         margin:0,
         padding:0,
@@ -474,6 +488,8 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     divMapPin.style.height = '100px';
     divMapPin.style.zIndex = 1000;
     divMapPin.oncontextmenu = function () { return false; };
+    divMapPin.innerHTML = '<img src=\'' + mapPinImageSrc + '\'>';
+    divMapPin.style.display = '';
 
     baseDiv.append(divMapPin);
     // Attach divDimInfo
@@ -537,7 +553,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     bbox.right = 180;
     bbox.top = 90;
     srs = 'EPSG:4326';
-    _map.setSize(mainElement.style.width, mainElement.style.height);
+    _map.setSize(mainElement.clientWidth, mainElement.clientHeight);
     // IMAGE buffers
     for (var j = 0; j < 2; j++) {
       let d = new WMJSCanvasBuffer(callBack, 'imagebuffer', getMapImageStore, _map.getWidth(), _map.getHeight());
@@ -590,17 +606,19 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
     let adagucBeforeCanvasDisplay = function (ctx) {
       // Map header
-      ctx.beginPath();
-      ctx.rect(0, 0, width, mapHeader.height);
-      if (mapIsActivated === false) {
-        ctx.globalAlpha = mapHeader.hovering ? mapHeader.hover.opacity : mapHeader.fill.opacity;
-        ctx.fillStyle = mapHeader.hovering ? mapHeader.hover.color : mapHeader.fill.color;
-      } else {
-        ctx.globalAlpha = mapHeader.hovering ? mapHeader.hoverSelected.opacity : mapHeader.selected.opacity;
-        ctx.fillStyle = mapHeader.hovering ? mapHeader.hoverSelected.color : mapHeader.selected.color;
+      if(isMapHeaderEnabled){
+        ctx.beginPath();
+        ctx.rect(0, 0, width, mapHeader.height);
+        if (mapIsActivated === false) {
+          ctx.globalAlpha = mapHeader.hovering ? mapHeader.hover.opacity : mapHeader.fill.opacity;
+          ctx.fillStyle = mapHeader.hovering ? mapHeader.hover.color : mapHeader.fill.color;
+        } else {
+          ctx.globalAlpha = mapHeader.hovering ? mapHeader.hoverSelected.opacity : mapHeader.selected.opacity;
+          ctx.fillStyle = mapHeader.hovering ? mapHeader.hoverSelected.color : mapHeader.selected.color;
+        }
+        ctx.fill();
+        ctx.globalAlpha = 1;
       }
-      ctx.fill();
-      ctx.globalAlpha = 1;
 
       // Time offset message
       if (setTimeOffsetValue !== '') {
@@ -907,6 +925,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   /* Indicate weather this map component is active or not */
   this.setActive = function (active) {
     mapIsActivated = active;
+    isMapHeaderEnabled = true;
   };
 
   this.setActiveLayer = function (layer) {
@@ -1612,6 +1631,10 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
         }
       }
     }
+    if(width < 4 || height < 4 ) {
+      console.log('map too small, skipping');
+      return;
+    }
 
 /*    if (_map.isAnimating == true) {
       for (var j = 0; j < _map.animationList.length; j++) {
@@ -1992,10 +2015,9 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
 
   this.mouseWheelEvent = function (event, delta, deltaX, deltaY) {
-    /*console.log('mousewheelevent');
     event.stopPropagation();
     preventdefault_event(event);
-    */// alert(element.top);
+    
     // if(drawBusy==1)return;
     if (mouseWheelBusy == 1) return;
     mouseWheelBusy = 1;
@@ -2610,7 +2632,6 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
   this.mouseDown = function (mouseCoordX, mouseCoordY, event) {
 
-
     var shiftKey = false;
     if (event) {
       if (event.shiftKey == true) {
@@ -2854,7 +2875,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
               var dialog;
 
               if (gfiDialogList.length == 0) {
-                dialog = WMJSDialog.createDialog({ x:mouseUpX, y:mouseUpY, autoDestroy:false }, baseDiv, _map);
+                dialog = WMJSDialog.createDialog({ show: showDialog, x:mouseUpX, y:mouseUpY, autoDestroy:false }, baseDiv, _map);
                 gfiDialogList.push(dialog);
               } else {
                 dialog = gfiDialogList[0];
@@ -2882,6 +2903,9 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
               _map.showMapPin();
               callBack.triggerEvent('beforegetfeatureinfo');
               _map.getFeatureInfo(mouseDownX, mouseDownY);
+            }else{
+              _map.setMapPin(mouseDownX, mouseDownY);
+              _map.showMapPin();
             }
           }
         }
@@ -2939,11 +2963,10 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     if (mapPanning == 0) return;
     var x = parseInt(_x); var y = parseInt(_y);
 
-    if (mouseX < 0 || mouseY < 0 || mouseX > parseInt(mainElement.style.width) || mouseY > parseInt(mainElement.style.height)) {
+    if (mouseX < 0 || mouseY < 0 || mouseX > parseInt(mainElement.clientWidth) || mouseY > parseInt(mainElement.clientHeight)) {
       mapPanEnd(x, y);
       return;
     }
-
     var mapPanGeoCoords = _map.getGeoCoordFromPixelCoord({ x:x, y:y }, updateBBOX);
     var diff_x = mapPanGeoCoords.x - mapPanStartGeoCoords.x;
     var diff_y = mapPanGeoCoords.y - mapPanStartGeoCoords.y;
@@ -2960,7 +2983,6 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     var y = parseInt(_y);
     if (mapPanning == 0) return;
     mapPanning = 0;
-
 
     var mapPanGeoCoords = _map.getGeoCoordFromPixelCoord({ x:x, y:y }, drawnBBOX);
     var diff_x = mapPanGeoCoords.x - mapPanStartGeoCoords.x;

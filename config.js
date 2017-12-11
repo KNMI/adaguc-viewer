@@ -12,6 +12,11 @@ var baseLayerConfiguration = [
     type: 'twms',
     enabled:false
   }, {
+    title:"OSM",
+    name:"OSM",
+    type: 'twms',
+    enabled:false
+  },{
     service:"http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?",
     name:"streetmap",
     title:"Open streetmap",
@@ -308,3 +313,178 @@ var xml2jsonrequestURL = "webmapjs/php/xml2jsonrequest.php?"
 // xml2jsonrequestURL = 'http://localhost:8080/adaguc-services/xml2json?'
 // autowmsURL = 'http://localhost:8080/adaguc-services/autowms?';
 // getFeatureInfoApplications.push({name:'AutoWMS',iconCls:'button_getfeatureinfo'});
+
+var WMJSTileRendererTileSettings = {
+  arcGisCanvas: {
+    'EPSG:3857': {
+      home: 'http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/',
+      minLevel: 1,
+      maxLevel: 16,
+      tileServerType: 'arcgisonline',
+      copyRight: 'Basemap copyright: 2013 Esri, DeLorme, NAVTEQ'
+    },
+    'EPSG:28992': {
+      home: 'http://services.arcgisonline.nl/arcgis/rest/services/Basiskaarten/Canvas/MapServer/tile/',
+      minLevel: 1,
+      maxLevel: 12,
+      origX:-285401.92,
+      origY:903401.92,
+      resolution:3440.64,
+      tileServerType: 'arcgisonline',
+      copyRight: 'Basiskaart bronnen: Esri Nederland, Esri, Kadaster, CBS en Rijkswaterstaat'
+    }
+  },
+  arcGisTopo: {
+    'EPSG:3857': {
+      home: 'http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/',
+      minLevel: 1,
+      maxLevel: 19,
+      tileServerType: 'arcgisonline',
+      copyRight: 'Basemap sources: Esri, DeLorme, NAVTEQ, TomTom, Intermap, increment P Corp., GEBCO, USGS, FAO, NPS, NRCAN, GeoBase, ' +
+        'IGN, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+    },
+    'EPSG:28992': {
+      home: 'http://services.arcgisonline.nl/arcgis/rest/services/Basiskaarten/Topo/MapServer/tile/',
+      minLevel: 1,
+      maxLevel: 12,
+      origX:-285401.92,
+      origY:903401.92,
+      resolution:3440.64,
+      tileServerType: 'arcgisonline',
+      copyRight: 'Basiskaart bronnen: Esri Nederland, Esri, Kadaster, CBS, Min VROM, Rijkswaterstaat en gemeenten: Rotterdam, Breda, Tilburg'
+    }
+  },
+  arcGisOceanBaseMap:  {
+    home: 'http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/',
+    minLevel: 1,
+    maxLevel: 19,
+    tileServerType: 'arcgisonline',
+    copyRight: 'Basemap sources: Esri, GEBCO, NOAA, National Geographic, DeLorme, NAVTEQ, Geonames.org, and other contributors'
+  },
+  arcGisSat: {
+    'EPSG:4326': {
+      home: 'http://services.arcgisonline.com/ArcGIS/rest/services/ESRI_Imagery_World_2D/MapServer/tile/',
+      minLevel: 1,
+      maxLevel: 15,
+      tileServerType: 'arcgisonline',
+      origX:-180,
+      origY:90,
+      resolution:0.3515625,
+      tileSize:512
+    },
+    'EPSG:3857': {
+      home: 'http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/',
+      minLevel: 1,
+      maxLevel: 18,
+      tileServerType: 'arcgisonline'
+    }
+  },
+  OSM: {
+    'EPSG:3857': {
+      home: 'https://b.tile.openstreetmap.org/',
+      minLevel: 1,
+      maxLevel: 16,
+      tileServerType: 'osm'
+    },
+    'EPSG:28992': {
+      home: 'http://services.arcgisonline.nl/ArcGIS/rest/services/Basiskaarten/PDOK_BRT/MapServer/tile/',
+      minLevel: 1,
+      maxLevel: 12,
+      origX:-285401.92,
+      origY:903401.92,
+      resolution:3440.64,
+      tileServerType: 'arcgisonline',
+      copyRight: 'Basiskaart bronnen: PDOK, Kadaster, OpenStreetMap'
+    }
+  },
+  NaturalEarth2: {
+    'EPSG:3411': {
+      home: 'http://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG3411/',
+      minLevel: 1,
+      maxLevel: 6,
+      origX:-12400000,
+      origY:12400000,
+      resolution:96875,
+      tileServerType: 'wmst',
+      copyRight: 'NPS - Natural Earth II'
+    },
+    'EPSG:3412': {
+      home: 'http://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG3412/',
+      minLevel: 1,
+      maxLevel: 6,
+      origX:-12400000,
+      origY:12400000,
+      resolution:96875,
+      tileServerType: 'wmst',
+      copyRight: 'NPS - Natural Earth II'
+    },
+    'EPSG:3575': {
+      home: 'http://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG3575/',
+      minLevel: 1,
+      maxLevel: 6,
+      origX:-13000000,
+      origY:13000000,
+      resolution:101562.5,
+      tileServerType: 'wmst',
+      copyRight: 'NPS - Natural Earth II'
+    },
+    'EPSG:3857': {
+      home: 'http://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG3857/',
+      minLevel: 1,
+      maxLevel: 7,
+      tileServerType: 'wmst',
+      copyRight: 'NPS - Natural Earth II'
+    },
+    'EPSG:4258': {
+      home: 'http://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG4326/',
+      minLevel: 1,
+      maxLevel: 6,
+      origX:-180,
+      origY:90,
+      resolution:0.703125,
+      tileServerType: 'wmst',
+      copyRight: 'NPS - Natural Earth II'
+    },
+    'EPSG:4326': {
+      home: 'http://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG4326/',
+      minLevel: 1,
+      maxLevel: 6,
+      origX:-180,
+      origY:90,
+      resolution:0.703125,
+      tileServerType: 'wmst',
+      copyRight: 'NPS - Natural Earth II'
+    },
+    'EPSG:28992': {
+      home: 'http://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG28992/',
+      minLevel: 1,
+      maxLevel: 5,
+      origX:-2999000,
+      origY:2995500,
+      resolution:23437,
+      tileServerType: 'wmst',
+      copyRight: 'NPS - Natural Earth II'
+    },
+    'EPSG:32661': {
+      home: 'http://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG32661/',
+      minLevel: 1,
+      maxLevel: 7,
+      origX:-5000000.0,
+      origY:4000000.0,
+      resolution:58593.75,
+      tileServerType: 'wmst',
+      copyRight: 'NPS - Natural Earth II'
+    },
+    'EPSG:54030': {
+      home: 'http://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG54030/',
+      minLevel: 1,
+      maxLevel: 7,
+      origX:-17000000.0,
+      origY:8625830.0,
+      resolution:132812.5,
+      tileServerType: 'wmst',
+      copyRight: 'NPS - Natural Earth II'
+    }
+  }
+};
+

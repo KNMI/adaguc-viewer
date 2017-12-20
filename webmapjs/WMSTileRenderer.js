@@ -59,6 +59,7 @@ function WMSTileRenderer(){
     
     canvas.width = canvas.width;
   }
+  
   /**
    * renders on the given bbox
    */

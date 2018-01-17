@@ -85,7 +85,7 @@ var WMJSCanvasBuffer = function (webmapJSCallback, _type, _imageStore, w, h) {
   // };
 
   this.display = function (newbbox, loadedbbox) {
-
+    let errorList = [];
     //console.log('======= WMJSCanvasBuffer:display'+newbbox);
     if ((newbbox && !loadedbbox)) {
       console.log('skipping WMJSCanvasBuffer:display because newbbox is undefined');
@@ -169,11 +169,36 @@ var WMJSCanvasBuffer = function (webmapJSCallback, _type, _imageStore, w, h) {
             ctx.drawImage(el, 0, 0, width, height);
           }
         }
-      } /*else {
-        error("<a target=\'_blank\' href='" + _this.layerstodisplay[j].getSrc() + "'>" + _this.layerstodisplay[j].getSrc() + '</a>', false);
-      }*/
+      } else {
+        errorList.push(_this.layerstodisplay[j]);
+      }
     }
     ctx.globalAlpha = 1;
+
+    /* Display errors */
+    if (type === 'imagebuffer') {
+      ctx.beginPath();
+      let mw=width / 2, mh = 8 + errorList.length* 20, mx = width - mw,my = 0;//height - mh;
+      ctx.rect(mx, my, mx + mw, my + mh);
+      ctx.fillStyle = 'white';
+      ctx.globalAlpha = 0.9;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = 'black';
+      ctx.font = "12pt Helvetica";
+      
+      for(let j=0;j< errorList.length; j++){
+        console.log(errorList[j]);
+        if ( errorList[j].linkedInfo){
+          // console.log(errorList[j].linkedInfo.title);
+          ctx.fillText("Layer " + (j + 1) + " with title '" + errorList[j].linkedInfo.title +"' failed to load",mx+5 ,my+15 + j* 20); 
+        } else {
+          ctx.fillText("Layer " + (j + 1) + " failed to load.",mx+5 ,my+15 + j* 20);
+        }
+      }
+    }
+
+    
     if (type === 'imagebuffer') {
       webmapJSCallback.triggerEvent('beforecanvasdisplay', ctx);
     }
@@ -190,6 +215,9 @@ var WMJSCanvasBuffer = function (webmapJSCallback, _type, _imageStore, w, h) {
     _this.ready = true;
     for (var j = 0; j < _this.layers.length; j++) {
       _this.layerstodisplay[j] = _this.layers[j];
+      if(_this.layers[j].hasError()){
+         error("Unable to get image <a target=\'_blank\' href='" + _this.layerstodisplay[j].getSrc() + "'>" + _this.layerstodisplay[j].getSrc() + '</a>', false);
+      }
     }
     try {
       if (isDefined(_this.onLoadReadyFunction)) {
@@ -263,13 +291,14 @@ var WMJSCanvasBuffer = function (webmapJSCallback, _type, _imageStore, w, h) {
     }
   };
 
-  this.setSrc = function (layerIndex, imageSource, width, height) {
+  this.setSrc = function (layerIndex, imageSource, width, height, linkedInfo) {
     if (!isDefined(imageSource)) { console.log('undefined'); return; }
     while (layerIndex >= this.layers.length) {
       this.layers.push(defaultImage);
     }
     var image = imageStore.getImage(imageSource);
     image.setZIndex(layerIndex);
+    image.linkedInfo = linkedInfo;
     this.layers[layerIndex] = image;
   };
 

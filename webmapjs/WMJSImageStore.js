@@ -9,7 +9,7 @@ var WMJSImageStore = function (maxNumberOfImages, _type, options) {
   var type = _type;
   var loadEventCallbackList = []; // Array of callbacks, as multiple instances can register listeners
 
-  var imageLoadEventCallback = function (_img) {
+  var imageLoadEventCallback = function (_img, hasError) {
     for (var j = 0; j < loadEventCallbackList.length; j++) {
       loadEventCallbackList[j](_img);
     }

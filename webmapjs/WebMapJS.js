@@ -1751,7 +1751,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
               request = buildWMSGetMapRequest(baseLayers[l]);
 
               if (request) {
-                divBuffer[newSwapBuffer].setSrc(currentLayerIndex, request, _map.getWidth(), _map.getHeight());
+                divBuffer[newSwapBuffer].setSrc(currentLayerIndex, request, _map.getWidth(), _map.getHeight(), baseLayers[l]);
                 divBuffer[newSwapBuffer].setOpacity(currentLayerIndex, baseLayers[l].opacity);
                  // _map.setBufferImageSrc(newSwapBuffer,currentLayerIndex,request);
                // _map.setBufferImageOpacity(newSwapBuffer,currentLayerIndex,baseLayers[l].opacity);
@@ -1773,7 +1773,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
           if (request) {
             // _map.setBufferImageSrc(newSwapBuffer,currentLayerIndex,request);
             // _map.setBufferImageOpacity(newSwapBuffer,currentLayerIndex,layers[j].opacity);
-            divBuffer[newSwapBuffer].setSrc(currentLayerIndex, request);
+            divBuffer[newSwapBuffer].setSrc(currentLayerIndex, request, _map.getWidth(), _map.getHeight(), layers[j]);
             divBuffer[newSwapBuffer].setOpacity(currentLayerIndex, layers[j].opacity);
             layers[j].image = divBuffer[newSwapBuffer].layers[currentLayerIndex];
             currentLayerIndex++;
@@ -1790,7 +1790,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
               if (request) {
                 // _map.setBufferImageSrc(newSwapBuffer,currentLayerIndex,request);
                 // _map.setBufferImageOpacity(newSwapBuffer,currentLayerIndex,baseLayers[l].opacity);
-                divBuffer[newSwapBuffer].setSrc(currentLayerIndex, request);
+                divBuffer[newSwapBuffer].setSrc(currentLayerIndex, request, _map.getWidth(), _map.getHeight(), baseLayers[l]);
                 divBuffer[newSwapBuffer].setOpacity(currentLayerIndex, baseLayers[l].opacity);
                 currentLayerIndex++;
               }
@@ -2889,7 +2889,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
                 if (dialog.moveToMouseCursor == true) {
                   dialog.setXY(mouseUpX, mouseUpY);
                 } else {
-                  dialog.setXY(5, 35);
+                  dialog.setXY(5, 45);
                 }
               }
 

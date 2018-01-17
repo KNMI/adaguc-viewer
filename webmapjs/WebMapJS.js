@@ -2547,14 +2547,14 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     }
     if (!x || !y) return;
 
-    debug("setMapPin ("+x+";"+y+")");
+    /*debug("setMapPin ("+x+";"+y+")");*/
     divMapPin.x = parseInt(x);
     divMapPin.y = parseInt(y);
 
     divMapPin.exactX = parseFloat(x);
     divMapPin.exactY = parseFloat(y);
-    debug('Input coords: ' + _x + ', ' + _y);
-    debug('Exact coords: ' + divMapPin.exactX + ', ' + divMapPin.exactY);
+/*    debug('Input coords: ' + _x + ', ' + _y);
+    debug('Exact coords: ' + divMapPin.exactX + ', ' + divMapPin.exactY);*/
     var geopos = _map.getGeoCoordFromPixelCoord({ x:divMapPin.exactX, y:divMapPin.exactY }, _bbox);
     divMapPin.geoPosX = geopos.x;
     divMapPin.geoPosY = geopos.y;

@@ -177,28 +177,11 @@ var WMJSCanvasBuffer = function (webmapJSCallback, _type, _imageStore, w, h) {
 
     /* Display errors */
     if (type === 'imagebuffer') {
-      ctx.beginPath();
-      let mw=width / 2, mh = 8 + errorList.length* 20, mx = width - mw,my = 0;//height - mh;
-      ctx.rect(mx, my, mx + mw, my + mh);
-      ctx.fillStyle = 'white';
-      ctx.globalAlpha = 0.9;
-      ctx.fill();
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = 'black';
-      ctx.font = "12pt Helvetica";
-      
-      for(let j=0;j< errorList.length; j++){
-        console.log(errorList[j]);
-        if ( errorList[j].linkedInfo){
-          // console.log(errorList[j].linkedInfo.title);
-          ctx.fillText("Layer " + (j + 1) + " with title '" + errorList[j].linkedInfo.title +"' failed to load",mx+5 ,my+15 + j* 20); 
-        } else {
-          ctx.fillText("Layer " + (j + 1) + " failed to load.",mx+5 ,my+15 + j* 20);
-        }
+      if( errorList.length > 0) {
+        webmapJSCallback.triggerEvent('canvasonerror', errorList);
       }
     }
-
-    
+      
     if (type === 'imagebuffer') {
       webmapJSCallback.triggerEvent('beforecanvasdisplay', ctx);
     }

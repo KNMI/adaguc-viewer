@@ -91,8 +91,7 @@ function WMJSListener () {
             no++;
             returnList.push(callBacks[j].functionpointer(param, _this));
           } catch (e) {
-            console.log('Error for event ' + name + ' with ' + param);
-            console.log(e);
+            console.log('Error for event [' + name + ']: ', param, e);
           }
         }
       }

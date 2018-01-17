@@ -31,6 +31,7 @@
 */
 var WebMapJSMapNo = 0;
 
+var WebMapJSMapVersion = '3.0.3';
 
 var logging = false;
 
@@ -407,6 +408,8 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       setTimeOffsetValue = message;
     }
   };
+  
+  this.canvasErrors = [];
   // Is called when the WebMapJS object is created
   function constructor () {
     try { tileRenderSettings = WMJSTileRendererTileSettings; } catch(e) {}
@@ -624,6 +627,51 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
         ctx.fill();
         ctx.globalAlpha = 1;
       }
+      
+      for (i = 0; i < layers.length; i++) { 
+        var request = '';
+        for (var j = 0; j < layers[i].dimensions.length; j++) {
+          request += '&' + getCorrectWMSDimName(layers[i].dimensions[j].name);
+          request += '=' + URLEncode(layers[i].dimensions[j].currentValue);
+          if        (layers[i].dimensions[j].currentValue == WMJSDateOutSideRange) {
+            _map.canvasErrors.push({linkedInfo:{layer:layers[i], message: 'Time outside range'}});
+          } else if (layers[i].dimensions[j].currentValue == WMJSDateTooEarlyString) {
+            _map.canvasErrors.push({linkedInfo:{layer:layers[i], message: 'Time too early'}});
+          } else if (layers[i].dimensions[j].currentValue == WMJSDateTooLateString) {
+            _map.canvasErrors.push({linkedInfo:{layer:layers[i], message: 'Time too late'}});
+          }
+        }
+      }
+        
+      
+      /* Display errors found during drawing canvas */
+      if(_map.canvasErrors && _map.canvasErrors.length > 0){
+        let mw=width / 2;
+        let mh = 6 + _map.canvasErrors.length* 15;
+        let mx = width - mw;
+        let my = isMapHeaderEnabled ?  mapHeader.height : 0;
+        ctx.beginPath();
+        ctx.rect(mx, my, mx + mw, my + mh);
+        ctx.fillStyle = 'white';
+        ctx.globalAlpha = 0.9;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = 'black';
+        ctx.font = "10pt Helvetica";
+        
+        for(let j=0;j< _map.canvasErrors.length; j++){
+          //console.log(_map.canvasErrors[j]);
+          
+          if ( _map.canvasErrors[j].linkedInfo){
+            let message = _map.canvasErrors[j].linkedInfo.message ? ', ' + _map.canvasErrors[j].linkedInfo.message : '';
+            // console.log(_map.canvasErrors[j].linkedInfo.title);
+            ctx.fillText("Layer with title " + _map.canvasErrors[j].linkedInfo.layer.title +" failed to load" + message,mx+5 ,my+11 + j* 15); 
+          } else {
+            ctx.fillText("Layer failed to load.",mx+5 ,my+11 + j* 15);
+          }
+        }
+        _map.canvasErrors = [];
+      }
 
       // Time offset message
       if (setTimeOffsetValue !== '') {
@@ -777,10 +825,18 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       }
       ctx.fillStyle = '#000000';
       ctx.fillText('Map projection: ' + srs, 5, height - 26);
+      
+      ctx.font = '7px Helvetica';
+      ctx.fillText('ADAGUC webmapjs ' + WebMapJSMapVersion, width - 85, height - 5);
+      
+      
     };
 
 
     _map.addListener('beforecanvasdisplay', adagucBeforeCanvasDisplay, true);
+    
+    
+    _map.addListener('canvasonerror', function(e){_map.canvasErrors = e;}, true);
     initialized = 1;
   };
 
@@ -881,6 +937,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     for (i = 0; i < layers.length; i++) {
       for (var j = 0; j < layers[i].dimensions.length; j++) {
         var dim = layers[i].dimensions[j];
+
         var mapdim = _map.getDimension(dim.name);
         if (isDefined(mapdim)) {
           mapdim.used = true;
@@ -932,6 +989,8 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     mapIsActivated = active;
     isMapHeaderEnabled = true;
   };
+
+  
 
   this.setActiveLayer = function (layer) {
     activeLayer = layer;
@@ -1751,7 +1810,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
               request = buildWMSGetMapRequest(baseLayers[l]);
 
               if (request) {
-                divBuffer[newSwapBuffer].setSrc(currentLayerIndex, request, _map.getWidth(), _map.getHeight(), baseLayers[l]);
+                divBuffer[newSwapBuffer].setSrc(currentLayerIndex, request, _map.getWidth(), _map.getHeight(), {layer:baseLayers[l]});
                 divBuffer[newSwapBuffer].setOpacity(currentLayerIndex, baseLayers[l].opacity);
                  // _map.setBufferImageSrc(newSwapBuffer,currentLayerIndex,request);
                // _map.setBufferImageOpacity(newSwapBuffer,currentLayerIndex,baseLayers[l].opacity);
@@ -1773,7 +1832,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
           if (request) {
             // _map.setBufferImageSrc(newSwapBuffer,currentLayerIndex,request);
             // _map.setBufferImageOpacity(newSwapBuffer,currentLayerIndex,layers[j].opacity);
-            divBuffer[newSwapBuffer].setSrc(currentLayerIndex, request, _map.getWidth(), _map.getHeight(), layers[j]);
+            divBuffer[newSwapBuffer].setSrc(currentLayerIndex, request, _map.getWidth(), _map.getHeight(), {layer:layers[j]});
             divBuffer[newSwapBuffer].setOpacity(currentLayerIndex, layers[j].opacity);
             layers[j].image = divBuffer[newSwapBuffer].layers[currentLayerIndex];
             currentLayerIndex++;
@@ -1790,7 +1849,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
               if (request) {
                 // _map.setBufferImageSrc(newSwapBuffer,currentLayerIndex,request);
                 // _map.setBufferImageOpacity(newSwapBuffer,currentLayerIndex,baseLayers[l].opacity);
-                divBuffer[newSwapBuffer].setSrc(currentLayerIndex, request, _map.getWidth(), _map.getHeight(), baseLayers[l]);
+                divBuffer[newSwapBuffer].setSrc(currentLayerIndex, request, _map.getWidth(), _map.getHeight(), {layer:baseLayers[l]});
                 divBuffer[newSwapBuffer].setOpacity(currentLayerIndex, baseLayers[l].opacity);
                 currentLayerIndex++;
               }
@@ -2199,15 +2258,14 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
   // Returns all dimensions with its current values as URL
   var getMapDimURL = function (layer) {
-    var layerDimensions = layer.dimensions;// getLayerDimensions(layer);
     var request = '';
-    for (var j = 0; j < layerDimensions.length; j++) {
-      request += '&' + getCorrectWMSDimName(layerDimensions[j].name);
-      request += '=' + URLEncode(layerDimensions[j].currentValue);
+    for (var j = 0; j < layer.dimensions.length; j++) {
+      request += '&' + getCorrectWMSDimName(layer.dimensions[j].name);
+      request += '=' + URLEncode(layer.dimensions[j].currentValue);
 
-      if (layerDimensions[j].currentValue == WMJSDateOutSideRange ||
-        layerDimensions[j].currentValue == WMJSDateTooEarlyString ||
-        layerDimensions[j].currentValue == WMJSDateTooLateString) {
+      if (layer.dimensions[j].currentValue == WMJSDateOutSideRange ||
+        layer.dimensions[j].currentValue == WMJSDateTooEarlyString ||
+        layer.dimensions[j].currentValue == WMJSDateTooLateString) {
         throw (WMJSDateOutSideRange);
       }
     }

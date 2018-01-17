@@ -117,7 +117,8 @@ function WMJSDimension (config) {
     }
     return nextValue;
   };
-  this.getClosestValue = function (newValue) {
+  this.getClosestValue = function (newValue, evenWhenOutsideRange) {
+    evenWhenOutsideRange = typeof evenWhenOutsideRange !== 'undefined' ? evenWhenOutsideRange : false;
     var index = -1;
     var _value = WMJSDateOutSideRange;
     try {
@@ -132,9 +133,9 @@ function WMJSDimension (config) {
 
     if (newValue == 'current' || newValue == 'default' || newValue == '') {
       _value = this.defaultValue;
-    } else if (newValue == 'latest') {
-      _value = this.getValueForIndex(dim.size() - 1);
-    } else if (newValue == 'earliest') {
+    } else if (newValue == 'latest' || (evenWhenOutsideRange && _value === WMJSDateTooLateString)) {
+      _value = this.getValueForIndex(this.size() - 1);
+    } else if (newValue == 'earliest' || (evenWhenOutsideRange && _value === WMJSDateTooEarlyString)) {
       _value = this.getValueForIndex(0);
     } else if (newValue == 'middle') {
       var middleIndex = (this.size() / 2) - 1;

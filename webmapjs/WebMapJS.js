@@ -1558,6 +1558,32 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
   var zoomBeforeLoadBBOX;
   var srsBeforeLoadBBOX;
+  // Animate between last point and point up to `n` time-units ago of the active layer
+  // E.g. Draw the last three hours of a layer
+  this.drawLastTimes = function (hoursAgo, timeUnit) {
+    if (!timeUnit) {
+      timeUnit = 'hours';
+    }
+    if (layers.length === 0) return;
+    var layer = this.getActiveLayer();
+    if (!layer) {
+      return;
+    }
+    var timeDimension = layer.getDimension('time');
+    if (!timeDimension) {
+      return;
+    }
+    var lastIndex = timeDimension.size() - 1;
+    var drawDates = [];
+    var lastTime = moment.utc(timeDimension.getValueForIndex(lastIndex));
+    var begin = lastTime.subtract(hoursAgo, timeUnit);
+    while (lastIndex > 0) {
+      lastTime = timeDimension.getValueForIndex(lastIndex--);
+      if (!lastTime || lastTime === WMJSDateTooEarlyString || begin.isAfter(moment.utc(lastTime))) break;
+      drawDates.unshift({ name: 'time', value: lastTime });
+    }
+    this.draw(drawDates);
+  }
   // Animate between start and end dates with the smallest available resolution
   this.drawAutomatic = function (start, end) {
     if (layers.length === 0) {

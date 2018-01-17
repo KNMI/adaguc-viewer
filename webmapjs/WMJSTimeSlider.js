@@ -25,8 +25,8 @@ var RelativeSlider = function (config) {
   var absoluteValue = 0;
   var previousRelValue = 50;
 
-  var sliderChangeRelative = function (relativeValue) {
-    absoluteValue += relativeValue;
+  var sliderChangeRelative = function (relativeValue) 
+{    absoluteValue += relativeValue;
     if (absoluteValue > maxValue - 1)absoluteValue = maxValue - 1;
     if (absoluteValue < 0)absoluteValue = 0;
     if (isDefined(config.change)) {

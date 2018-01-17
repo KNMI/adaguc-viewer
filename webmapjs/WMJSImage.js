@@ -104,7 +104,7 @@ var WMJSImage = function (src, callback, __type, options) {
     el.load(function () {
       loadEvent(_this, false);
     });
-    el.error(function () {
+    el.error(function (e) {
       loadEvent(_this, true);
     });
     if (randomize) {
@@ -118,7 +118,7 @@ var WMJSImage = function (src, callback, __type, options) {
 
   var loadEvent = function (image, hasError) {
     if (_isLoading == false && _isLoaded == true) {
-      // console.log("---------------->Skipping WMJSImage:loadEvent");
+      console.log("---------------->Skipping WMJSImage:loadEvent");
       return;
     }
     // console.log("WMJSImage:ready "+this.srcToLoad);

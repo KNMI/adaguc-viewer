@@ -182,7 +182,6 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         _this.setLoading(false);
         var msg = 'Unable to parse layer '+_this.WMJSLayer.name+'\n'+msg2;
         _this.WMJSLayer.hasError = true;
-        alert(msg);
         error(msg);
       };
       

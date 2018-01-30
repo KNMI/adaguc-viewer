@@ -186,10 +186,14 @@ function WMJSLayer (options) {
     var extents = toArray(jsonlayer.Extent);
     layer.dimensions = [];
     for (var j = 0; j < dimensions.length; j++) {
-      var dim = new WMJSDimension();
+      var dim;
+      if (dimensions[j].attr.name.toLowerCase() === 'reference_time') {
+        dim = new WMJSDimension({ linked: false });
+      } else {
+        dim = new WMJSDimension();
+      }
       dim.name = dimensions[j].attr.name.toLowerCase();
       dim.units = dimensions[j].attr.units;
-
       // WMS 1.1.1 Mode:
       for (var i = 0; i < extents.length; i++) {
         if (extents[i].attr.name.toLowerCase() == dim.name) {
@@ -222,7 +226,7 @@ function WMJSLayer (options) {
 
       if (layer.parentMaps.length > 0) {
         var mapDim = layer.parentMaps[0].getDimension(dim.name);
-        if (isDefined(mapDim)) {
+        if (isDefined(mapDim) && mapDim.linked) {
           if (isDefined(mapDim.currentValue)) {
             defaultValue = dim.getClosestValue(mapDim.currentValue);
             debug('WMJSLayer::configureDimensions Dimension ' + dim.name + ' default value [' + defaultValue + '] is based on map value [' + mapDim.currentValue + ']');

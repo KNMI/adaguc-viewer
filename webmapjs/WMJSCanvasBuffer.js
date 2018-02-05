@@ -34,6 +34,9 @@ var WMJSCanvasBuffer = function (webmapJSCallback, _type, _imageStore, w, h) {
   this.imageLoadComplete = function (image) {
     statDivBufferImageLoaded();
     webmapJSCallback.triggerEvent('onimageload');
+    if (type === 'imagebuffer') {
+      webmapJSCallback.triggerEvent('onimagebufferimageload', image);
+    }
   };
 
   var statDivBufferImageLoaded = function () {

@@ -1354,7 +1354,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
 
   // Build a valid WMS request for a certain layer
-  function buildWMSGetMapRequest (layer) {
+  this.buildWMSGetMapRequest = function (layer) {
     if (!isDefined(layer.name)) return;
     if (!layer.format) { layer.format = 'image/png'; error('layer format missing!'); }
     if (layer.name.length < 1) return;
@@ -1760,7 +1760,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     var n = _map.getNumLayers();
     for (j = 0; j < n; j++) {
       if (layers[j].service && layers[j].enabled) {
-        var request = buildWMSGetMapRequest(layers[j]);
+        var request = _map.buildWMSGetMapRequest(layers[j]);
         if (request) {
           requests.push(request);
         }
@@ -1833,7 +1833,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
             if (baseLayers[l].keepOnTop === false) {
               if (baseLayers[l].type && baseLayers[l].type === 'twms') continue;
               numBaseLayers++;
-              request = buildWMSGetMapRequest(baseLayers[l]);
+              request = _map.buildWMSGetMapRequest(baseLayers[l]);
 
               if (request) {
                 divBuffer[newSwapBuffer].setSrc(currentLayerIndex, request, _map.getWidth(), _map.getHeight(), {layer:baseLayers[l]});
@@ -1854,7 +1854,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
         if (layers[j].service && layers[j].enabled) {
           // Get the dimension object for this layer
           var layerDimensionsObject = layers[j].dimensions;// getLayerDimensions(layers[j]);
-          request = buildWMSGetMapRequest(layers[j], layerDimensionsObject);
+          request = _map.buildWMSGetMapRequest(layers[j], layerDimensionsObject);
           if (request) {
             // _map.setBufferImageSrc(newSwapBuffer,currentLayerIndex,request);
             // _map.setBufferImageOpacity(newSwapBuffer,currentLayerIndex,layers[j].opacity);
@@ -1871,7 +1871,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
         for (var l = 0; l < baseLayers.length; l++) {
           if (baseLayers[l].enabled) {
             if (baseLayers[l].keepOnTop == true) {
-              request = buildWMSGetMapRequest(baseLayers[l]);
+              request = _map.buildWMSGetMapRequest(baseLayers[l]);
               if (request) {
                 // _map.setBufferImageSrc(newSwapBuffer,currentLayerIndex,request);
                 // _map.setBufferImageOpacity(newSwapBuffer,currentLayerIndex,baseLayers[l].opacity);

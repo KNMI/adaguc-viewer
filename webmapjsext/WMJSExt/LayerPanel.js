@@ -179,8 +179,13 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
       };
       
       var failed = function(msg2){
+        let errorMessage = msg2;
+        if(msg2.message){
+          errorMessage = msg2.message;
+        }
         _this.setLoading(false);
-        var msg = 'Unable to parse layer '+_this.WMJSLayer.name+'\n'+msg2;
+        var msg = 'Unable to parse layer '+_this.WMJSLayer.name+'\n'+errorMessage;
+        console.log(msg);
         _this.WMJSLayer.hasError = true;
         error(msg);
       };
@@ -295,6 +300,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         try{
           _this.styleButton.loadStyles();
         }catch(e){
+          console.log(e);
         }
       
        var layerHasName = false; 
@@ -373,7 +379,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
       try{
         _this.WMJSLayer.parseLayer(layerParsedCallback,forceReload,"LayerPanel::parseLayer");
       }catch(e){
-     
+        console.log(e);
         failed(e);
       }
       
@@ -498,6 +504,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
                       
                       _this.setStyleText(_this.WMJSLayer.getStyleObject(_this.WMJSLayer.currentStyle));
                     }catch(e){
+                      console.log(e);
                     }
                   }
                   //_this.styleNameLabel.setText(styleText);
@@ -602,6 +609,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         try{
           _this.WMJSLayer.setStyle(styleObject.name);
         }catch(e){
+          console.log(e);
         }
         _this.WMJSLayer.draw("LayerPanel::setStyle");
         _this.stylePanel.hide();

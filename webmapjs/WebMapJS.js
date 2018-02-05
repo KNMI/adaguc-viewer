@@ -47,7 +47,7 @@ var mapPinImageSrc;
 var scaleBarURL;
 
 var enableConsoleDebugging = false;
-var enableConsoleErrors = false;
+var enableConsoleErrors = true;
 /**
  * Set base URL of several sources used wihtin webmapjs
  */

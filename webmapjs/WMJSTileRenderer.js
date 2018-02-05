@@ -21,7 +21,7 @@ var WMJSTileRenderer = function (currentBBOX, newBBOX, srs, width, height, ctx, 
         for (var epsgCode in tileOptions[tileOption]) {
           if (tileOptions[tileOption].hasOwnProperty(epsgCode)) {
             if (epsgCode === srs) {
-              console.log('Projection not supported by tileserver: Falling back to ', tileOption, epsgCode);
+              // console.log('Projection not supported by tileserver: Falling back to ', tileOption, epsgCode);
               tileSettings = tileOptions[tileOption][epsgCode];
             }
           }

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 rm -rf WMJS.min.js
+#java -jar ../../closure/compiler.jar --module_resolution=BROWSER --language_in=ECMASCRIPT6 --language_out ES5_STRICT \
 java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES5_STRICT \
 --js ../webmapjs/WMJSTools.js \
 --js ../webmapjs/WMJSISO8601.js \
@@ -19,6 +20,7 @@ java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES
 --js ../webmapjs/WMJSProcessing.js \
 --js ../webmapjs/WMJSCoverage.js \
 --js ../webmapjs/WMJSImage.js \
+--js ../webmapjs/WMJSXMLParser.js \
 --js ../webmapjs/WMJSCanvasBuffer.js \
 --js ../webmapjs/WMJSTimeSelector.js \
 --js ../webmapjs/WMJS_GFITimeElevation.js \
@@ -26,32 +28,6 @@ java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES
 --js ../webmapjs/WMJSDialog.js \
 --js_output_file  WMJS.min.js
 
-rm WMJSExt.min.js
-java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES5_STRICT \
---js ../apps/appframework.js \
---js ../webmapjsext/WMJSExt/LayerPropertiesPanel.js \
---js ../webmapjsext/WMJSExt/StylePanel.js \
---js ../webmapjsext/WMJSExt/DimensionPanel.js \
---js ../webmapjsext/WMJSExt/MapPanel.js \
---js ../webmapjsext/WMJSExt/ServicePanel.js \
---js ../webmapjsext/WMJSExt/ServicePanelManager.js \
---js ../webmapjsext/WMJSExt/LayerPanel.js \
---js ../webmapjsext/WMJSExt/DataPanel.js \
---js ../webmapjsext/WMJSExt/BaseMapSelector.js \
---js ../webmapjsext/WMJSExt/MapTypeSelector.js \
---js ../webmapjsext/WMJSExt/AnimationPanel.js \
---js ../webmapjsext/WMJSExt/PermaLinkPanel.js \
---js ../webmapjsext/WMJSExt/UxDateTimeForm.js \
---js ../webmapjsext/WMJSExt/CheckColumn.js \
---js ../webmapjsext/WMJSExt/IFramePanel.js \
---js ../webmapjsext/WMJSExt/WCSPanel.js \
---js ../webmapjsext/WMJSExt/WindowFader.js \
---js ../webmapjsext/WMJSExtMain.js \
---js ../apps/gfiapp_d3c3.js \
---js ../apps/gfiapp_point_interest.js \
---js ../apps/gfiapp_eprofile.js \
---js ../apps/autowms_app.js \
---js_output_file  WMJSExt.min.js
 
 rm -rf jquery-addons.min.js
 java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES5_STRICT \
@@ -85,22 +61,48 @@ cat ../webmapjs/WMJSTimeSelector.css >> adagucwebmapjs/webmapjs.min.css
 cp -r ../webmapjs/php ./adagucwebmapjs/
 cp -r ../webmapjs/img ./adagucwebmapjs/
 
-
-echo "" > adagucviewer.min.js
-cat ../jquery/hammer.min.js >> adagucviewer.min.js
-cat ../jquery/jquery-1.12.4.min.js >> adagucviewer.min.js
-cat ../jquery/jquery-ui.min.js >> adagucviewer.min.js
-cat jquery-addons.min.js >> adagucviewer.min.js
-cat ../d3/d3.v3.min.js >> adagucviewer.min.js
-cat ../d3/c3.min.js >> adagucviewer.min.js
-cat ../extjs-4.2.1/ext-all.js >> adagucviewer.min.js
-cat WMJS.min.js >> adagucviewer.min.js
-cat WMJSExt.min.js >> adagucviewer.min.js
-
-# rm WMJS.min.js
 # rm WMJSExt.min.js
-# rm jquery-addons.min.js
-
-
-
-
+# java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES5_STRICT \
+# --js ../apps/appframework.js \
+# --js ../webmapjsext/WMJSExt/LayerPropertiesPanel.js \
+# --js ../webmapjsext/WMJSExt/StylePanel.js \
+# --js ../webmapjsext/WMJSExt/DimensionPanel.js \
+# --js ../webmapjsext/WMJSExt/MapPanel.js \
+# --js ../webmapjsext/WMJSExt/ServicePanel.js \
+# --js ../webmapjsext/WMJSExt/ServicePanelManager.js \
+# --js ../webmapjsext/WMJSExt/LayerPanel.js \
+# --js ../webmapjsext/WMJSExt/DataPanel.js \
+# --js ../webmapjsext/WMJSExt/BaseMapSelector.js \
+# --js ../webmapjsext/WMJSExt/MapTypeSelector.js \
+# --js ../webmapjsext/WMJSExt/AnimationPanel.js \
+# --js ../webmapjsext/WMJSExt/PermaLinkPanel.js \
+# --js ../webmapjsext/WMJSExt/UxDateTimeForm.js \
+# --js ../webmapjsext/WMJSExt/CheckColumn.js \
+# --js ../webmapjsext/WMJSExt/IFramePanel.js \
+# --js ../webmapjsext/WMJSExt/WCSPanel.js \
+# --js ../webmapjsext/WMJSExt/WindowFader.js \
+# --js ../webmapjsext/WMJSExtMain.js \
+# --js ../apps/gfiapp_d3c3.js \
+# --js ../apps/gfiapp_point_interest.js \
+# --js ../apps/gfiapp_eprofile.js \
+# --js ../apps/autowms_app.js \
+# --js_output_file  WMJSExt.min.js
+# 
+# echo "" > adagucviewer.min.js
+# cat ../jquery/hammer.min.js >> adagucviewer.min.js
+# cat ../jquery/jquery-1.12.4.min.js >> adagucviewer.min.js
+# cat ../jquery/jquery-ui.min.js >> adagucviewer.min.js
+# cat jquery-addons.min.js >> adagucviewer.min.js
+# cat ../d3/d3.v3.min.js >> adagucviewer.min.js
+# cat ../d3/c3.min.js >> adagucviewer.min.js
+# cat ../extjs-4.2.1/ext-all.js >> adagucviewer.min.js
+# cat WMJS.min.js >> adagucviewer.min.js
+# cat WMJSExt.min.js >> adagucviewer.min.js
+# 
+# # rm WMJS.min.js
+# # rm WMJSExt.min.js
+# # rm jquery-addons.min.js
+# 
+# 
+# 
+# 

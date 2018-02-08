@@ -112,6 +112,7 @@ var showDialogs = function (shouldShow) {
   */
 function WMJSMap (_element, _xml2jsonrequestURL) {
 
+
   this.setBaseURL = function (_baseURL) {
     base = _baseURL;
     //base_plus_dir = base + 'adaguc/webmapjs';
@@ -724,6 +725,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
           let roundedMapUnits = numMapUnits;
 
+          
           let d = Math.pow(10, Math.round(Math.log10(numMapUnits) + 0.5) - 1);
 
           roundedMapUnits = Math.round(roundedMapUnits / d);

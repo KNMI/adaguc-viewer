@@ -3,6 +3,7 @@
 rm -rf WMJS.min.js
 #java -jar ../../closure/compiler.jar --module_resolution=BROWSER --language_in=ECMASCRIPT6 --language_out ES5_STRICT \
 java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES5_STRICT \
+--js ../webmapjs/WMJSPolyfills.js \
 --js ../webmapjs/WMJSTools.js \
 --js ../webmapjs/WMJSISO8601.js \
 --js ../webmapjs/WMJSProj4Definitions.js \

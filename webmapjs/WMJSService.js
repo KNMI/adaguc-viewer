@@ -10,9 +10,15 @@ var WMSVersion = {
   version130: '1.3.0'
 };
 
+if (!String.prototype.startsWith) {
+  String.prototype.startsWith = function(searchString, position) {
+    position = position || 0;
+    return this.indexOf(searchString, position) === position;
+  };
+}
 
 
-let loadGetCapabilitiesViaProxy = (url, succes, fail, xml2jsonrequestURL) =>{
+let loadGetCapabilitiesViaProxy = (url, succes, fail, xml2jsonrequestURL) => {
  // console.log('loadGetCapabilitiesViaProxy', url);
   var getcapreq = xml2jsonrequestURL + 'request=';
 

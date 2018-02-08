@@ -31,7 +31,7 @@
 */
 var WebMapJSMapNo = 0;
 
-var WebMapJSMapVersion = '3.0.3';
+var WebMapJSMapVersion = '3.0.4';
 
 var logging = false;
 

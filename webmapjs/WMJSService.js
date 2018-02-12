@@ -69,7 +69,7 @@ var WMJSGetCapabilities = function (service, forceReload, succes, fail) {
     fail(I18n.service_url_empty.text);
     return;
   }
-  if  (!service.startsWith('http://') && !service.startsWith('https:')) {
+  if  (!service.startsWith('http://') && !service.startsWith('https:') && !service.startsWith('//')) {
     console.log('Service does not start with HTTPS');
     fail(I18n.service_url_empty.text);
     return;

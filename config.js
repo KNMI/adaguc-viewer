@@ -381,7 +381,7 @@ var WMJSTileRendererTileSettings = {
   },
   OSM: {
     'EPSG:3857': {
-      home: 'https://b.tile.openstreetmap.org/',
+      home: '//b.tile.openstreetmap.org/',
       minLevel: 1,
       maxLevel: 16,
       tileServerType: 'osm'

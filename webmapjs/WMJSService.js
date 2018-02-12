@@ -10,68 +10,86 @@ var WMSVersion = {
   version130: '1.3.0'
 };
 
-/**
-  * Global getcapabilities function
-  */
-var WMJSGetCapabilities = function (service, forceReload, succes, fail) {
-  // Make the regetCapabilitiesJSONquest
-  if (isDefined(service) == false) {
-    fail(I18n.no_service_defined.text);
-    return;
-  }
-  if (service.length == 0) {
-    fail(I18n.service_url_empty.text);
-    return;
-  }
+if (!String.prototype.startsWith) {
+  String.prototype.startsWith = function(searchString, position) {
+    position = position || 0;
+    return this.indexOf(searchString, position) === position;
+  };
+}
 
+
+let loadGetCapabilitiesViaProxy = (url, succes, fail, xml2jsonrequestURL) => {
+ // console.log('loadGetCapabilitiesViaProxy', url);
   var getcapreq = xml2jsonrequestURL + 'request=';
-  if (service.indexOf('?') == -1) {
-    service += '?';
-  }
-  debug('GetCapabilities:');
-  var url = service + '&service=WMS&request=GetCapabilities';
+
+  var errormessage = function (message) {
+    fail(I18n.unable_to_do_getcapabilities.text + ':\n' + getcapreq + '\n' + I18n.result.text + ':\n' + message);
+  };
+
   debug("<a target=\'_blank\' href='" + url + "'>" + url + '</a>', false);
   getcapreq += URLEncode(url);
+  console.log('loadGetCapabilitiesViaProxy wrapped', getcapreq);
   debug(getcapreq);
-
   debug(URLEncode(url));
   debug(url);
   // Error message in case the request goes wrong
-  var errormessage = function (message) {
-    console.log('errormesasge');
-    fail(I18n.unable_to_do_getcapabilities.text + ':\n' + getcapreq + '\n' + I18n.result.text + ':\n' + message);
-  };
   try {
     $.ajax({
       url: getcapreq,
       crossDomain:true,
       dataType:"jsonp"
     }).done(function(d) {
+      console.log('loadGetCapabilitiesViaProxy succesfully finished');
       succes(d);
     }).fail(function() {
       errormessage({ "error":"Request failed for " + getcapreq });
     });
   } catch (e) {
     console.log('catch: ', e);
+    errormessage({ "error":"Request failed for " + getcapreq });
   }
-  // try{
-  //   $.ajax({
-  //     dataType: 'jsonp',
-  //     async: false,
-  //     url: getcapreq,
-  //     success: succes,
-  //     error:errormessage,
-  //     statusCode: {
-  //       500: errormessage
-  //     }
-  //   }).fail(function(jqXHR, textStatus, errorThrown){
-  //     alert("Got some error: " + errorThrown);
-  //   });
-  // }catch(e){
-  //   console.log('excaption');
-  //   fail(e);
-  // }
-  // MakeJSONPRequest(getcapreq,succes,errormessage);
+
+};
+
+
+// import WMJSXMLParser from './WMJSXMLParser.js';
+/**
+  * Global getcapabilities function
+  */
+var WMJSGetCapabilities = function (service, forceReload, succes, fail) {
+  // Make the regetCapabilitiesJSONquest
+  console.log(service);
+  if (isDefined(service) == false) {
+    console.log('Service not defined');
+    fail(I18n.no_service_defined.text);
+    return;
+  }
+  if (service.length == 0) {
+    console.log('Service is empty');
+    fail(I18n.service_url_empty.text);
+    return;
+  }
+  if  (!service.startsWith('http://') && !service.startsWith('https:')) {
+    console.log('Service does not start with HTTPS');
+    fail(I18n.service_url_empty.text);
+    return;
+  }
+
+  if (service.indexOf('?') == -1) {
+    service += '?';
+  }
+  debug('GetCapabilities:');
+
+  var url = service + '&service=WMS&request=GetCapabilities';
+
+  let parser = new WMJSXMLParser();
+  parser.fetchXMLAndParseToJSON(url, succes, () => {
+    console.log('Unable to use browser based XML reading, trying proxy');
+    loadGetCapabilitiesViaProxy(url, succes, () => {fail("Request failed for " + url );}, xml2jsonrequestURL);
+  });
+
+  
+  
 };
 
 /**
@@ -158,10 +176,9 @@ function WMJSService (options) {
   };
 
   this.checkVersion = function (jsonData) {
+
     var errormessage = '';
-
-    var version = WMSVersion.version111;
-
+    var version = null;
     try {
       if (WMSVersion.version100 == jsonData.WMT_MS_Capabilities.attr.version)version = WMSVersion.version100;
       if (WMSVersion.version111 == jsonData.WMT_MS_Capabilities.attr.version)version = WMSVersion.version111;
@@ -172,9 +189,18 @@ function WMJSService (options) {
         if (WMSVersion.version111 == jsonData.WMS_Capabilities.attr.version)version = WMSVersion.version111;
         if (WMSVersion.version130 == jsonData.WMS_Capabilities.attr.version)version = WMSVersion.version130;
       } catch (e) {
+        console.log('165');
         var message = _this.checkException(jsonData);
-        throw (message);
+        if (message) {
+          console.log(message);
+          throw (new Error(message));
+        } else {
+          throw (new Error('Unable to determine WMS version'));
+        }
       }
+    }
+    if(version === null){
+      throw (new Error('Unable to determine WMS version'));
     }
     if (version == WMSVersion.version111) {
       checkVersion111(jsonData);
@@ -206,6 +232,7 @@ function WMJSService (options) {
     if (!_this.getcapabilitiesDoc || forceReload == true) {
       _this.busy = true;
       var fail = function (jsonData) {
+        console.log('Failed');
         _this.busy = false;
         for (var j = 0; j < functionCallbackList.length; j++) {
           functionCallbackList[j].fail(jsonData);
@@ -220,7 +247,8 @@ function WMJSService (options) {
         try {
           _this.version = _this.checkVersion(jsonData);
         } catch (e) {
-          fail(e);
+          console.log('version error', e);
+          fail(e.message);
           return;
         }
 
@@ -273,21 +301,24 @@ function WMJSService (options) {
   };
 
   this.checkException = function (jsonData) {
-    if (jsonData.ServiceExceptionReport) {
-      var code = 'Undefined';
-      var value = code;
-      var se = jsonData.ServiceExceptionReport.ServiceException;
-      if (se) {
-        try {
-          if (se.attr.code)code = se.attr.code;
-        } catch (e) {}
-        if (se.value) {
-          value = se.value;
-          return ('Exception: ' + code + '.\n' + value);
+    console.log('271');
+    try{
+      if (jsonData.ServiceExceptionReport) {
+        var code = 'Undefined';
+        var value = code;
+        var se = jsonData.ServiceExceptionReport.ServiceException;
+        if (se) {
+          try {
+            if (se.attr.code)code = se.attr.code;
+          } catch (e) {}
+          if (se.value) {
+            value = se.value;
+            return ('Exception: ' + code + '.\n' + value);
+          }
         }
+        return (I18n.wms_service_exception_code.text + code);
       }
-      return (I18n.wms_service_exception_code.text + code);
-    }
+    }catch(e){}
     return undefined;
   };
 

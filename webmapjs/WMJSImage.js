@@ -54,7 +54,7 @@ var WMJSImage = function (src, callback, __type, options) {
    */
   _this.setSource = function (src) {
     if (_isLoading) {
-      // console.log("-------------------------> Source set while still loading!!! ");
+      console.log("-------------------------> Source set while still loading!!! ");
       return;
     }
     this.srcToLoad = src;
@@ -90,14 +90,26 @@ var WMJSImage = function (src, callback, __type, options) {
     _hasError = false;
     if (_isLoaded == true) {
        // console.log("==== Already isloaded ==== :"+_isLoaded);
-      loadEvent(_this);
+      loadEvent(_this, false);
       return;
     }
     _isLoading = true;
+    
+    if(!this.srcToLoad){
+      console.log("Source not set");
+      loadEvent(_this, true);
+      return;
+    }
+    
+    if(this.srcToLoad.startsWith("http") === false){
+      console.log("Source does not start with http");
+      loadEvent(_this, true);
+      return;
+    }
 
     if (this.srcToLoad == _srcLoaded) {
       // console.log("==== Already loaded ==== :"+this.srcToLoad);
-      loadEvent(_this);
+      loadEvent(_this, false);
       return;
     }
 
@@ -117,10 +129,10 @@ var WMJSImage = function (src, callback, __type, options) {
   // var setImageProps = function(image){
 
   var loadEvent = function (image, hasError) {
-    if (_isLoading == false && _isLoaded == true) {
-      console.log("---------------->Skipping WMJSImage:loadEvent");
-      return;
-    }
+//     if (_isLoading == false && _isLoaded == true) {
+//       console.log("---------------->Skipping WMJSImage:loadEvent");
+//       return;
+//     }
     // console.log("WMJSImage:ready "+this.srcToLoad);
     // console.log("WMJSImage:loadEvent");
     _hasError = hasError;

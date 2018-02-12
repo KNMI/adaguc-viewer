@@ -101,7 +101,7 @@ var WMJSImage = function (src, callback, __type, options) {
       return;
     }
     
-    if(this.srcToLoad.startsWith("http") === false){
+    if(this.srcToLoad.startsWith("http") === false && this.srcToLoad.startsWith("//") === false){
       console.log("Source does not start with http");
       loadEvent(_this, true);
       return;

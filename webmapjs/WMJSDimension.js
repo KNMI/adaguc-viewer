@@ -31,6 +31,16 @@ function WMJSDimension (config) {
   var allDates = [];        // Used for individual timevalues
   var type;// Can be timestartstopres, timevalues, anyvalue
   var allValues = [];
+
+  this.setStartTime = function(val) {
+    if (Array.isArray(this.values)) {
+      this.values[0] = val;
+    } else {
+      var times = this.values.split('/');
+      times[0] = val;
+      this.values = times.join('/');
+    }
+  };
   var initialize = function (_this) {
     if (initialized == true) return;
     if (!isDefined(_this.values)) return;

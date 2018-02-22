@@ -2288,12 +2288,13 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   var getMapDimURL = function (layer) {
     var request = '';
     for (var j = 0; j < layer.dimensions.length; j++) {
+      let currentValue = layer.dimensions[j].getValue();
       request += '&' + getCorrectWMSDimName(layer.dimensions[j].name);
-      request += '=' + URLEncode(layer.dimensions[j].currentValue);
+      request += '=' + URLEncode(currentValue);
 
-      if (layer.dimensions[j].currentValue == WMJSDateOutSideRange ||
-        layer.dimensions[j].currentValue == WMJSDateTooEarlyString ||
-        layer.dimensions[j].currentValue == WMJSDateTooLateString) {
+      if (currentValue == WMJSDateOutSideRange ||
+        currentValue == WMJSDateTooEarlyString ||
+        currentValue == WMJSDateTooLateString) {
         throw (WMJSDateOutSideRange);
       }
     }
@@ -2331,6 +2332,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
               _map.buildLayerDimsBusy = true;
               layerDim.setClosestValue(mapDim.currentValue);
               _map.buildLayerDimsBusy = false;
+              
               /* }else{
                 if(layerDim.units == mapDim.units){
                   var index = -1;
@@ -3499,60 +3501,36 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       error('Unable to set dimension with undefined value or name');
       return;
     }
-    var dim;
-    for (var i = 0; i < mapdimensions.length; i++) {
-      // debug("WebMapJS::comparing"+mapdimensions[i].name+" - "+name);
-
-      if (mapdimensions[i].name == name) {
-        dim = mapdimensions[i]; break;
-      }
-    }
-
-    // if(value == WMJSDateTooEarlyString)alert("BUG");
-
+    var dim = _map.getDimension(name);;
+    
     if (isDefined(dim) == false) {
       dim = { name:name, currentValue:value };
       mapdimensions.push(dim);
     }
 
-    if (isDefined(dim)) {
-      if (isDefined(mainTimeSlider)) {
-       // debug("WebMapJS::setDimension::2('"+name+"','"+value+"')");
-        mainTimeSlider.setValue(name, value);
-      }
-
-      if (dim.currentValue != value) {
-        // debug("WebMapJS::setDimension "+name+"="+value);
-        var cv = dim.currentValue;
-        dim.currentValue = value;
-        buildLayerDims();
-
-       // if(cv!=value){
-
-        if ( triggerEvent !== false) {
-          triggerEvent = true;
-        }
-        if (triggerEvent === true) {
-          callBack.triggerEvent('ondimchange', name);
-        }
-      // }
-
-        // callBack.triggerEvent("ondimchange");
-        // Keep a store of recently used currentvalues of certain dims. Can be used to reset currentvalues,
-//           for(i in dimensionValueCache){
-//             if(dimensionValueCache[i].name==dim.name){
-//               if(dimensionValueCache[i].units==dim.units){
-//                 //debug("Caching val:"+value);
-//                 dimensionValueCache[i].currentValue=value;
-//                 return;
-//               }
-//             }
-//           }
-//           dimensionValueCache.push(dim);
-      }
-    } else {
-      error('WebMapJS::setDimension: Dimension ' + name + ' not found');
+    
+    if (isDefined(mainTimeSlider)) {
+      // debug("WebMapJS::setDimension::2('"+name+"','"+value+"')");
+      mainTimeSlider.setValue(name, value);
     }
+
+    if (dim.currentValue != value) {
+      // console.log("WebMapJS::setDimension "+name+"="+value);
+      var cv = dim.currentValue;
+      dim.currentValue = value;
+      buildLayerDims();
+
+      // if(cv!=value){
+
+      if ( triggerEvent !== false) {
+        triggerEvent = true;
+      }
+      if (triggerEvent === true) {
+        callBack.triggerEvent('ondimchange', name);
+      }
+
+    }
+   
   };
 
 //     //Resume/suspend map drawing

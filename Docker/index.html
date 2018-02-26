@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+ <!--<link rel="icon" type="image/png" href="/impactportal/favicon.ico"/>-->
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Viewer</title>
+
+    <!-- Style sheets -->
+  <link rel="stylesheet" href="jquery/jquery-ui.css" />
+  <link rel="stylesheet" type="text/css" href="extjs-4.2.1/resources/css/ext-all.css" />
+  <link rel="stylesheet" type="text/css" href="webmapjsext/WMJSExtStyles.css" /> 
+  <link rel="stylesheet" type="text/css" href="webmapjs/WMJSStyles.css" />
+  <link rel="stylesheet" type="text/css" href="webmapjs/WMJSTimeSelector.css" />
+  <link rel="stylesheet" type="text/css" href="webmapjs/WMJS_GFITimeElevation.css" />
+  <link rel="stylesheet" type="text/css" href="d3/c3.css">
+  <link rel="stylesheet" href="./apps/gfiapp_d3c3.css" />
+  <link rel="stylesheet" href="./apps/autowms_app.css" />
+
+  
+  <!-- Configuration -->
+  <script type="text/javascript" src="config.js"></script>
+
+  <?php
+  echo "<script type=\"text/javascript\">var autowmsURL = '".getenv('ADAGUCSERVICES_AUTOWMS')."';</script>";
+  ?>
+  
+  <!-- I18n -->
+  <script>
+    if ( typeof(defaultLanguage) === 'undefined' ) {
+      document.write('<script src="I18n/lang.en.js"><\/script>');
+    } else {
+      document.write('<script src="I18n/lang.' + defaultLanguage.language + '.js"><\/script>');
+    }
+  </script>
+  
+  <!-- Proj4 -->
+  <script type="text/javascript" src="proj4js/lib/proj4js.js"></script>
+  
+  <!-- Webmapjs, webmapjsext, ExtJS and JQuery-->
+  <script type="text/javascript" src="builds/adagucviewer.min.js"></script>
+  
+</head>
+<body>
+   
+</body>
+</html>

@@ -8,7 +8,7 @@
 .autowms_app_fileitem{
   display:block;
   margin:1px;
-  padding:3px;
+  padding:5px;
   background-color:#DDD;
   cursor:pointer;
 }
@@ -16,7 +16,7 @@
 .autowms_app_layeritem{
   display:block;
   margin:1px;
-  padding:3px;
+  padding:5px;
   background-color:#DDD;
   cursor:pointer;
 }
@@ -24,7 +24,7 @@
 .autowms_app_fileitem_return{
   display:block;
   margin:1px;
-  padding:3px;
+  padding:5px;
   background-color:#DDD;
   cursor:pointer;
 }
@@ -32,6 +32,6 @@
 .autowms_app_currentpath{
  display:block;
   margin:1px;
-  padding:3px;
+  padding:5px;
   background-color:#DDF;
 }

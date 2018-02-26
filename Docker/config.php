@@ -56,6 +56,8 @@
     "http://adaguc-server"
   );
   
+  
+  
   function replaceHostName($url){
   
     $localaddr = getenv('LOCAL_ADAGUCSERVER_ADDR');
@@ -68,5 +70,10 @@
     return $url;
     
   }
+  
+  
+  
+  
+  
 
 /*--- Now new line at the end of this file allowed --- */?>

@@ -14,6 +14,7 @@ function WMJSDimension (config) {
   this.currentValue = undefined;  // The current value of the dimension, changed by setValue and read by getValue
   this.defaultValue = undefined;
   this.parentLayer = undefined;
+  this.timeRangeDuration = undefined;
   this.linked = true;
   var _this = this;
   if (isDefined(config)) {
@@ -31,16 +32,26 @@ function WMJSDimension (config) {
   var allDates = [];        // Used for individual timevalues
   var type;// Can be timestartstopres, timevalues, anyvalue
   var allValues = [];
-  var initialize = function (_this) {
+  
+  _this.reInitializeValues = function(values){
+    initialized = false;
+    initialize(_this, values);
+  }
+  
+  var initialize = function (_this, forceothervalues) {
     if (initialized == true) return;
-    if (!isDefined(_this.values)) return;
-
+    let ogcdimvalues = _this.values;
+    if (forceothervalues){
+      ogcdimvalues = forceothervalues;
+    }
+    if (!isDefined(ogcdimvalues)) return;
+    allValues = [];
     initialized = true;
     if (_this.units == 'ISO8601') {
-      if (_this.values.indexOf('/') > 0) {
+      if (ogcdimvalues.indexOf('/') > 0) {
         type = 'timestartstopres';
-        timeRangeDurationDate = new parseISOTimeRangeDuration(_this.values);
-        // alert(timeRangeDurationDate.getTimeSteps()+" - "+_this.values);
+        timeRangeDurationDate = new parseISOTimeRangeDuration(ogcdimvalues);
+        // alert(timeRangeDurationDate.getTimeSteps()+" - "+ogcdimvalues);
       } else {
         // TODO Parse 2007-03-27T00:00:00.000Z/2007-03-31T00:00:00.000Z/PT1H,2007-04-07T00:00:00.000Z/2007-04-11T00:00:00.000Z/PT1H
         type = 'timevalues';
@@ -50,7 +61,7 @@ function WMJSDimension (config) {
       _this.linked = false;
     }
     if (type != 'timestartstopres') {
-      var values = _this.values.split(',');
+      var values = ogcdimvalues.split(',');
       for (var j = 0; j < values.length; j++) {
         var valuesRanged = values[j].split('/');
         if (valuesRanged.length == 3) {
@@ -81,16 +92,21 @@ function WMJSDimension (config) {
     if (!isDefined(_this.currentValue)) {
       _this.currentValue = _this.getValueForIndex(0);
     }
+    
+    _this.dimMinValue = _this.getValueForIndex(0);
+    _this.dimMaxValue = _this.getValueForIndex(_this.size() - 1);
   };
 
   /**
     * Returns the current value of this dimensions
     */
   _this.getValue = function () {
+    let value = this.defaultValue;
     if (isDefined(this.currentValue)) {
-      return this.currentValue;
+      value =  _this.currentValue;
     }
-    return this.defaultValue;
+    value = _this.addTimeRangeDurationToValue(value);
+    return value;
   };
 
   /**
@@ -117,7 +133,52 @@ function WMJSDimension (config) {
     }
     return nextValue;
   };
+  
+
+  this.addTimeRangeDurationToValue = function(value) {
+    if (value == WMJSDateOutSideRange ||
+      value == WMJSDateTooEarlyString ||
+      value == WMJSDateTooLateString) {
+      return value;
+    }
+    if(_this.timeRangeDuration && _this.timeRangeDuration.length > 0) {
+      let interval = parseISO8601IntervalToDateInterval(_this.timeRangeDuration);
+      let value2date=parseISO8601DateToDate(value);
+      value2date.add(interval);
+      let value2 = value2date.toISO8601();
+      return value + "/" + value2;
+    }
+    return value;
+  }
+  
+  
+  this.setTimeRangeDuration = function(duration) {
+    _this.timeRangeDuration = duration;
+    if(duration && duration.length > 0) {
+      _this.reInitializeValues(_this.values);
+      let startDate = parseISO8601DateToDate(_this.dimMinValue);
+      let stopDate = (_this.dimMaxValue);   
+      let interval = parseISO8601IntervalToDateInterval(_this.timeRangeDuration);
+      if(interval.second!=0) startDate.setUTCSeconds(0);
+      if(interval.minute!=0) {startDate.setUTCSeconds(0);startDate.setUTCMinutes(0);}
+      if(interval.hour!=0) {startDate.setUTCSeconds(0);startDate.setUTCMinutes(0);startDate.setUTCSHours(0);}
+      if(interval.day!=0) {startDate.setUTCSeconds(0);startDate.setUTCMinutes(0);startDate.setUTCSHours(0);startDate.setUTCDate(0);}
+      if(interval.month!=0) {startDate.setUTCSeconds(0);startDate.setUTCMinutes(0);startDate.setUTCSHours(0);startDate.setUTCDate(0);}
+      
+      _this.reInitializeValues(startDate.toISO8601() +'/'+stopDate+'/'+ _this.timeRangeDuration);
+    } else {     
+      console.log('reset');
+      _this.reInitializeValues(_this.values);
+    }
+  };
+  
+  
+      
   this.getClosestValue = function (newValue, evenWhenOutsideRange) {
+  
+    if(newValue && newValue.indexOf("/")!=-1){
+      newValue = newValue.split("/")[0];
+    }
     evenWhenOutsideRange = typeof evenWhenOutsideRange !== 'undefined' ? evenWhenOutsideRange : false;
     var index = -1;
     var _value = WMJSDateOutSideRange;

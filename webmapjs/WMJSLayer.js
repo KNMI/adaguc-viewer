@@ -185,9 +185,12 @@ function WMJSLayer (options) {
 
     var extents = toArray(jsonlayer.Extent);
     layer.dimensions = [];
+    var hasRefTimeDimension = false;
+
     for (var j = 0; j < dimensions.length; j++) {
       var dim;
       if (dimensions[j].attr.name.toLowerCase() === 'reference_time') {
+        hasRefTimeDimension = true;
         dim = new WMJSDimension({ linked: false });
       } else {
         dim = new WMJSDimension();
@@ -246,6 +249,29 @@ function WMJSLayer (options) {
       } else {
         error('Skipping dimension ' + dim.name);
       }
+    }
+
+    if (hasRefTimeDimension) {
+      var timeDimension = undefined;
+      var refTimeDimension = undefined;
+      var timeDimensionIdx = -1;
+      for (var j = 0; j < layer.dimensions.length; j++) { 
+        if (dimensions[j].attr.name.toLowerCase() === 'time') {
+          timeDimension = layer.dimensions[j];
+          timeDimensionIdx = j;
+        }
+        if (dimensions[j].attr.name.toLowerCase() === 'reference_time') {
+          refTimeDimension = layer.dimensions[j];
+        }
+      }
+      // Copy time to all_times dimension
+      var timesStartingFromRefTime = timeDimension.clone();
+      timeDimension.name = 'all_times';
+      layer.dimensions[timeDimensionIdx] = timeDimension;
+
+      // Filter time such that minimum time is reftime value
+      timesStartingFromRefTime.setStartTime(refTimeDimension.currentValue);
+      layer.dimensions.push(timesStartingFromRefTime);
     }
   };
 

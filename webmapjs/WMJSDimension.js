@@ -28,11 +28,48 @@ function WMJSDimension (config) {
   }
 
   var initialized = false;
-  var timeRangeDurationDate;// Used for timerange (start/stop/res)
-  var allDates = [];        // Used for individual timevalues
-  var type;// Can be timestartstopres, timevalues, anyvalue
+  var timeRangeDurationDate;  // Used for timerange (start/stop/res)
+  var allDates = [];          // Used for individual timevalues
+  var type;                   // Can be 'timestartstopres', 'timevalues' or 'anyvalue'
   var allValues = [];
   
+  /* This function set the first value of the dimension to given value
+   * This is useful when a reference_time is used in combination with time.
+   * By default the time values prior to the reference_time will not give valid results.
+   * This function can be used to remove the first time values from the dimension by setting the start date 
+   * a bit later in time
+   */
+  this.setStartTime = function(val) {
+    if (!val || val.length === 0) {
+      _this.reInitializeValues(_this.values);
+      return;
+    }
+    
+    if (type === 'timestartstopres'){
+      let v = _this.values;
+      /* Adjust the first value for start/stop/res */
+      let newValue = val + "/" + v.substring(v.indexOf("/"));
+      console.log(newValue);
+      _this.reInitializeValues(newValue);
+      return;
+    } else if (type === 'timevalues'){
+      /* Filter all dates from the array which are lower than given start value */
+      let newValue = parseISO8601DateToDate(val);
+      console.log(newValue);
+      var new_arr = arr.filter(function(x) {
+        return allDates[j] >= newValue;
+      });
+      var newValues = '';
+      for (var j=0;j<new_arr.length;j++){
+        if (j > 0) newValues += '/';
+        newValues += new_arr[j].toISO8601();
+      }
+      console.log(newValues);
+      _this.reInitializeValues(newValues);
+      return;
+    }
+  };
+
   _this.reInitializeValues = function(values){
     initialized = false;
     initialize(_this, values);

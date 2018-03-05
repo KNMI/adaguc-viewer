@@ -3496,7 +3496,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
 
   this.setDimension = function (name, value, triggerEvent) {
-    // debug("WebMapJS::setDimension('"+name+"','"+value+"')");
+    debug("WebMapJS::setDimension('"+name+"','"+value+"')");
     if (!isDefined(name) || !isDefined(value)) {
       error('Unable to set dimension with undefined value or name');
       return;

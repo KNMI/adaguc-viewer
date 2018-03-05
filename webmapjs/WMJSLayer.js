@@ -133,6 +133,17 @@ function WMJSLayer (options) {
       this.parentMaps[j].draw('WMJSLayer::draw::' + e);
     }
   };
+  
+  this.handleReferenceTime = function(name, value) {
+    if(name === 'reference_time'){
+      var timeDim = this.getDimension('time');
+      if (timeDim){
+//         console.log('from reftime setting time dim to ', value);
+        timeDim.setStartTime(value);
+        this.parentMaps[0].getListener().triggerEvent('ondimchange','time');
+      }
+    }
+  };
 
   this.setDimension = function (name, value) {
     var dim;
@@ -146,6 +157,11 @@ function WMJSLayer (options) {
 
     dim.setValue(value);
 
+    this.handleReferenceTime(name, value);
+    
+    
+
+    
     if (dim.linked == true) {
       for (var j = 0; j < this.parentMaps.length; j++) {
         this.parentMaps[j].setDimension(name, dim.getValue());
@@ -241,7 +257,7 @@ function WMJSLayer (options) {
         debug('WMJSLayer::configureDimensions Layer has no parentmaps');
       }
       // debug("Dimension "+dim.name+" default value is "+defaultValue);
-      dim.currentValue = defaultValue;
+      dim.setValue(defaultValue);
 
       dim.parentLayer = layer;
       if (isDefined(dim.values)) {
@@ -252,26 +268,8 @@ function WMJSLayer (options) {
     }
 
     if (hasRefTimeDimension) {
-      var timeDimension = undefined;
-      var refTimeDimension = undefined;
-      var timeDimensionIdx = -1;
-      for (var j = 0; j < layer.dimensions.length; j++) { 
-        if (dimensions[j].attr.name.toLowerCase() === 'time') {
-          timeDimension = layer.dimensions[j];
-          timeDimensionIdx = j;
-        }
-        if (dimensions[j].attr.name.toLowerCase() === 'reference_time') {
-          refTimeDimension = layer.dimensions[j];
-        }
-      }
-      // Copy time to all_times dimension
-      var timesStartingFromRefTime = timeDimension.clone();
-      timeDimension.name = 'all_times';
-      layer.dimensions[timeDimensionIdx] = timeDimension;
-
-      // Filter time such that minimum time is reftime value
-      timesStartingFromRefTime.setStartTime(refTimeDimension.currentValue);
-      layer.dimensions.push(timesStartingFromRefTime);
+      var refTimeDimension = layer.getDimension('reference_time');
+      this.handleReferenceTime('reference_time', refTimeDimension.getValue());
     }
   };
 

@@ -1579,7 +1579,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     var drawDates = [];
     var lastTime = moment.utc(timeDimension.getValueForIndex(lastIndex));
     var begin = lastTime.subtract(hoursAgo, timeUnit);
-    while (lastIndex > 0) {
+    while (lastIndex >= 0) {
       lastTime = timeDimension.getValueForIndex(lastIndex--);
       if (!lastTime || lastTime === WMJSDateTooEarlyString || begin.isAfter(moment.utc(lastTime))) break;
       drawDates.unshift({ name: 'time', value: lastTime });
@@ -3496,7 +3496,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
 
   this.setDimension = function (name, value, triggerEvent) {
-    // debug("WebMapJS::setDimension('"+name+"','"+value+"')");
+    debug("WebMapJS::setDimension('"+name+"','"+value+"')");
     if (!isDefined(name) || !isDefined(value)) {
       error('Unable to set dimension with undefined value or name');
       return;

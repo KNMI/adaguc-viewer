@@ -28,17 +28,68 @@ function WMJSDimension (config) {
   }
 
   var initialized = false;
-  var timeRangeDurationDate;// Used for timerange (start/stop/res)
-  var allDates = [];        // Used for individual timevalues
-  var type;// Can be timestartstopres, timevalues, anyvalue
+  var timeRangeDurationDate;  // Used for timerange (start/stop/res)
+  var allDates = [];          // Used for individual timevalues
+  var type;                   // Can be 'timestartstopres', 'timevalues' or 'anyvalue'
   var allValues = [];
   
+  /* This function set the first value of the dimension to given value
+   * This is useful when a reference_time is used in combination with time.
+   * By default the time values prior to the reference_time will not give valid results.
+   * This function can be used to remove the first time values from the dimension by setting the start date 
+   * a bit later in time
+   */
+  this.setStartTime = function(val) {
+//     console.log('setStartTime', val);
+    if(!initialized){
+      initialize(this);
+    }
+//     console.log('set start time', val);
+    if (!val || val.length === 0) {
+      _this.reInitializeValues(_this.values);
+      timeDim.setClosestValue(true);
+      console.log('returning');
+      return;
+    }
+    
+
+    val = parseISO8601DateToDate(val).toISO8601();
+//     console.log('type = ' + type);
+//     console.log('setStartTime', val);
+    if (type === 'timestartstopres'){
+      let v = _this.values;
+      /* Adjust the first value for start/stop/res */
+      let newValue = val + v.substring(v.indexOf("/"));
+//       console.log(newValue);
+      _this.reInitializeValues(newValue);
+      _this.setClosestValue();
+      return;
+    } else if (type === 'timevalues'){
+      /* Filter all dates from the array which are lower than given start value */
+      let newValue = parseISO8601DateToDate(val);
+      console.log(newValue);
+      var new_arr = arr.filter(function(x) {
+        return allDates[j] >= newValue;
+      });
+      var newValues = '';
+      for (var j=0;j<new_arr.length;j++){
+        if (j > 0) newValues += '/';
+        newValues += new_arr[j].toISO8601();
+      }
+      console.log(newValues);
+      _this.reInitializeValues(newValues);
+      _this.setClosestValue();
+      return;
+    }
+  };
+
   _this.reInitializeValues = function(values){
     initialized = false;
     initialize(_this, values);
   }
   
   var initialize = function (_this, forceothervalues) {
+    
     if (initialized == true) return;
     let ogcdimvalues = _this.values;
     if (forceothervalues){
@@ -51,6 +102,8 @@ function WMJSDimension (config) {
       if (ogcdimvalues.indexOf('/') > 0) {
         type = 'timestartstopres';
         timeRangeDurationDate = new parseISOTimeRangeDuration(ogcdimvalues);
+        
+//         console.log('timeRangeDurationDate size = ',timeRangeDurationDate.getTimeSteps());
         // alert(timeRangeDurationDate.getTimeSteps()+" - "+ogcdimvalues);
       } else {
         // TODO Parse 2007-03-27T00:00:00.000Z/2007-03-31T00:00:00.000Z/PT1H,2007-04-07T00:00:00.000Z/2007-04-11T00:00:00.000Z/PT1H
@@ -101,6 +154,9 @@ function WMJSDimension (config) {
     * Returns the current value of this dimensions
     */
   _this.getValue = function () {
+    if(!initialized){
+      initialize(_this);
+    }
     let value = this.defaultValue;
     if (isDefined(this.currentValue)) {
       value =  _this.currentValue;
@@ -113,14 +169,24 @@ function WMJSDimension (config) {
     * Set current value of this dimension
     */
   this.setValue = function (value) {
+    if(!initialized){
+      initialize(_this);
+    }
+    
     if (value == WMJSDateOutSideRange || value == WMJSDateTooEarlyString || value == WMJSDateTooLateString) {
       return;
     }
     this.currentValue = value;
+    
+  
   };
 
-  this.setClosestValue = function (newValue) {
-    this.currentValue = this.getClosestValue(newValue);
+  this.setClosestValue = function (newValue, evenWhenOutsideRange) {
+    if(!newValue){
+      newValue = this.getValue();
+      evenWhenOutsideRange = true;
+    }
+    this.currentValue = this.getClosestValue(newValue, evenWhenOutsideRange);
   };
 
   this.getNextClosestValue = function (newValue) {
@@ -325,14 +391,21 @@ function WMJSDimension (config) {
    */
   this.clone = function () {
     var dim = new WMJSDimension();
-    dim.name = this.name;
-    dim.units = this.units;
-    dim.values = this.values;
-    dim.currentValue = this.currentValue;
-    dim.defaultValue = this.defaultValue;
-    dim.parentLayer = this.parentLayer;
-    dim.linked = this.linked;
+    dim.name = _this.name;
+    dim.units = _this.units;
+    dim.values = _this.values;
+    dim.initialize();
+    dim.currentValue = _this.currentValue;
+    dim.defaultValue = _this.defaultValue;
+    dim.parentLayer = _this.parentLayer;
+    dim.linked = _this.linked;
+    
+    
     return dim;
   };
-  initialize(this);
+  // initialize(this);
+  
+  this.initialize = function () {
+    initialize(this);
+  };
 };

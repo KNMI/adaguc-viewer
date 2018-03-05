@@ -6,7 +6,8 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
     
     var _this = this;
     
-    var maxIndex=this.dimension.size()-1;
+    _this.currentValue = undefined;
+    _this.currentSize = undefined
     var defaultIndex=0;
     try{
       defaultIndex = this.dimension.getIndexForValue(this.dimension.defaultValue);
@@ -18,7 +19,7 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
     }
     
     if(defaultIndex == -1){
-      defaultIndex = maxIndex;
+      defaultIndex = (_this.dimension.size() - 1);
     }
     
     _this.currentIndex=defaultIndex;
@@ -34,7 +35,7 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
     _this.dimSlider = Ext.create('Ext.slider.Single',{
       width:50,useTips:false,
       region:'center',
-      value:defaultIndex,minValue:0,maxValue:maxIndex,increment:1,
+      value:defaultIndex,minValue:0,maxValue:(_this.dimension.size() - 1),increment:1,
       listeners:{
         drag:{fn:function(t){_this.sliderChanged(t.getValue());}},
                                  change:{fn:function(t){_this.sliderChanged(t.getValue());}}
@@ -45,21 +46,24 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
     
     _this.setValue = function(value){
       
-      if(value == _this.getValue()){
+      if(value === _this.currentValue && _this.dimension.size() === _this.currentSize){
+//         console.log('already set to ',value);
         return;
       }
+      
       return _this._setValue(value);
     };
     
     _this._setValue = function(value){
-      //console.log("thisname="+_this.dimension.name+" value "+value);
-      
+//       console.log("thisname="+_this.dimension.name+" value "+value);
+      _this.currentValue = value;
+      _this.currentSize = _this.dimension.size();
       try{
         if(value == WMJSDateTooEarlyString){
           _this.currentIndex = 0;
           _this.dimensionValueLabel.setValueText(WMJSDateTooEarlyString);
         }else if(value == WMJSDateTooLateString){
-          _this.currentIndex = maxIndex;
+          _this.currentIndex = (_this.dimension.size() - 1);
           _this.dimensionValueLabel.setValueText(WMJSDateTooLateString);
         }else{
           _this.currentIndex = this.dimension.getIndexForValue(value);
@@ -155,7 +159,7 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
       if(isDefined(_this.dateTimeWindow)){
         _this.dateTimeWindow.setDimension(this.dimension);
       }
-      _this.checkReferenceTime(_this.dimension);
+//       _this.checkReferenceTime(_this.dimension);
     };
     
     _this.getValue = function(){
@@ -170,11 +174,11 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
     _this.dimensionValueLabel.setValueText = function(text){
       if(text == WMJSDateOutSideRange || text == WMJSDateTooEarlyString || text == WMJSDateTooLateString){
         try{_this.dimensionValueLabel.getEl().setStyle("backgroundColor",'#FFAAAA');}catch(e){}
-        _this.dimensionPositionLabel.setText(" - (-/"+(maxIndex+1)+")");
+        _this.dimensionPositionLabel.setText(" - (-/"+((_this.dimension.size() - 1)+1)+")");
         _this.dimensionValueLabel.setText(text);
       }else{
         try{_this.dimensionValueLabel.getEl().setStyle("backgroundColor",'white');}catch(e){}
-        _this.dimensionPositionLabel.setText(" - ("+(_this.currentIndex+1)+"/"+(maxIndex+1)+")");
+        _this.dimensionPositionLabel.setText(" - ("+(_this.currentIndex+1)+"/"+((_this.dimension.size() - 1)+1)+")");
         //var date = parseISO8601DateToDate(text)
         //_this.dimensionValueLabel.setText(date.toString().replace(/GMT.*/g,""));
         _this.dimensionValueLabel.setText(text);
@@ -253,7 +257,7 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
               }
               _this.dimension.setTimeRangeDuration(_this.timeRangeDuration);
               _this.dimSlider.setMaxValue(_this.dimension.size()-1);
-              maxIndex = _this.dimension.size()-1;
+              
               console.log("Setting value back:" + currentValue);
         
               _this.layer.setDimension(_this.dimension.name,currentValue);

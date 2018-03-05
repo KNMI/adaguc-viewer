@@ -140,7 +140,9 @@ function WMJSLayer (options) {
       if (timeDim){
 //         console.log('from reftime setting time dim to ', value);
         timeDim.setStartTime(value);
-        this.parentMaps[0].getListener().triggerEvent('ondimchange','time');
+        if (this.parentMaps && this.parentMaps.length>0){
+          this.parentMaps[0].getListener().triggerEvent('ondimchange','time');
+        }
       }
     }
   };

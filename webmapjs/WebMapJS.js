@@ -2269,7 +2269,6 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       mc.on('pinchstart', function (ev) { ev.preventDefault(); _map.pinchStart(ev.center.x, ev.center.y, ev); });
       mc.on('pinchmove', function (ev) { ev.preventDefault(); _map.pinchMove(ev.center.x, ev.center.y, ev); });
       mc.on('pinchend', function (ev) { ev.preventDefault(); _map.pinchEnd(ev.center.x, ev.center.y, ev); });
-      _map.hideControls();
     }
 
     _map.setMapModePan();

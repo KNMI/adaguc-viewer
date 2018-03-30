@@ -4,7 +4,10 @@ function WMJSXMLParser () {
     let t=this;
     $.ajax({
       url: url,
-      crossDomain:true
+      crossDomain:true,
+      xhrFields: {
+        withCredentials: true
+      }
     }).done(function(data) {
       let path = '';
       let json = {};

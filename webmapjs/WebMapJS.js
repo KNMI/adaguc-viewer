@@ -1141,7 +1141,9 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     if (!isDefined(layer)) {
       return;
     }
-    layer.parentMaps.push(_map);
+    if (!layer.parentMaps.includes(_map)) {
+      layer.parentMaps.push(_map);
+    }
     layers.push(layer);
     var done = function (layer) {
       for (var j = 0; j < layer.dimensions.length; j++) {
@@ -2290,7 +2292,6 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       let currentValue = layer.dimensions[j].getValue();
       request += '&' + getCorrectWMSDimName(layer.dimensions[j].name);
       request += '=' + URLEncode(currentValue);
-
       if (currentValue == WMJSDateOutSideRange ||
         currentValue == WMJSDateTooEarlyString ||
         currentValue == WMJSDateTooLateString) {

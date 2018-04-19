@@ -4,7 +4,7 @@ var baseLayerConfiguration = [
     name:"naturalearth2",
     title:"World base layer Natural Earth ",
     enabled: true,
-    type: 'wms',
+    type: 'twms',
     format:"image/gif"
   },{
     title:"arcGisCanvas",
@@ -12,17 +12,10 @@ var baseLayerConfiguration = [
     type: 'twms',
     enabled:false
   }, {
-    title:"OSM",
     name:"OSM",
+    title:"Open streetmap",
     type: 'twms',
     enabled:false
-  },{
-    service:"http://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?",
-    name:"streetmap",
-    title:"Open streetmap",
-    enabled: false,
-    type: 'wms',
-    format:"image/png"
   },{
     service:"http://geoservices.knmi.nl/cgi-bin/MODIS_Netherlands.cgi?",
     name:"modis_250m_netherlands_8bit",

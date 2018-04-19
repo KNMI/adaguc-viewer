@@ -1194,7 +1194,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
 
   this.getBBOX = function () {
-    return bbox;
+    return updateBBOX;
   };
 
   this.getProjection = function (srsName) {
@@ -3265,7 +3265,16 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   this.proj4.srs = 'empty';
   this.proj4.projection = undefined;
   var longlat = new Proj4js.Proj('EPSG:4326');
-
+  
+  this.getProj4 = function() {
+    if (_map.proj4.srs != srs || !isDefined(this.proj4.projection)) {
+      _map.proj4.projection = new Proj4js.Proj(srs);
+      _map.proj4.srs = srs;
+    }
+    return {lonlat: longlat, proj4: _map.proj4.projection, Proj4js: Proj4js}
+  }
+  
+ 
   this.getPixelCoordFromLatLong = function (coordinates) {
     var p = new Proj4js.Point();
 

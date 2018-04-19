@@ -5,10 +5,14 @@ ADAGUC is a geographical information system to visualize netCDF files via the we
 # Docker
 
 ```
-docker build -t adaguc-viewer .
+docker pull openearth/adaguc-viewer
 ```
 
 ```
-docker run -e ADAGUCSERVICES_AUTOWMS="http://localhost:8090/adaguc-services/autowms?" -p 8091:80 -it adaguc-viewer
+docker run -e ADAGUCSERVICES_AUTOWMS="http://localhost:8090/adaguc-services/autowms?" -p 8091:80 -it openearth/adaguc-viewer
 ```
+
 Visit http://localhost:8091/adaguc-viewer/
+
+
+Done!

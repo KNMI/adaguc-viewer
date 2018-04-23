@@ -16,6 +16,18 @@ function WMJSDimension (config) {
   this.parentLayer = undefined;
   this.timeRangeDuration = undefined;
   this.linked = true;
+
+  this.generateAllValues = () => {
+    const vals = [];
+    if (this.size() > 5000) {
+      throw "Error: Dimension too large to query all possible values at once";
+    }
+    for (let i = 0; i < this.size(); i++) {
+      vals.push(this.getValueForIndex(i));
+    }
+    return vals;
+  }
+
   var _this = this;
   if (isDefined(config)) {
     if (isDefined(config.name)) { this.name = config.name; }
@@ -67,7 +79,6 @@ function WMJSDimension (config) {
     } else if (type === 'timevalues'){
       /* Filter all dates from the array which are lower than given start value */
       let newValue = parseISO8601DateToDate(val);
-      console.log(newValue);
       var new_arr = arr.filter(function(x) {
         return allDates[j] >= newValue;
       });
@@ -76,7 +87,6 @@ function WMJSDimension (config) {
         if (j > 0) newValues += '/';
         newValues += new_arr[j].toISO8601();
       }
-      console.log(newValues);
       _this.reInitializeValues(newValues);
       _this.setClosestValue();
       return;
@@ -89,7 +99,6 @@ function WMJSDimension (config) {
   }
   
   var initialize = function (_this, forceothervalues) {
-    
     if (initialized == true) return;
     let ogcdimvalues = _this.values;
     if (forceothervalues){
@@ -153,12 +162,12 @@ function WMJSDimension (config) {
   /**
     * Returns the current value of this dimensions
     */
-  _this.getValue = function () {
+  this.getValue = function () {
     if(!initialized){
       initialize(_this);
     }
-    let value = this.defaultValue;
-    if (isDefined(this.currentValue)) {
+    let value = _this.defaultValue;
+    if (isDefined(_this.currentValue)) {
       value =  _this.currentValue;
     }
     value = _this.addTimeRangeDurationToValue(value);
@@ -176,9 +185,7 @@ function WMJSDimension (config) {
     if (value == WMJSDateOutSideRange || value == WMJSDateTooEarlyString || value == WMJSDateTooLateString) {
       return;
     }
-    this.currentValue = value;
-    
-  
+    _this.currentValue = value;  
   };
 
   this.setClosestValue = function (newValue, evenWhenOutsideRange) {

@@ -132,7 +132,7 @@ var WMJSAnimate = function (_map) {
         // console.log("checkAnimation:getNumImagesLoading:"+getNumImagesLoading );
       if (getNumImagesLoading < maxSimultaneousLoads) {
 
-        var numberPreCacheSteps = 6;// _map.animationList.length;
+        var numberPreCacheSteps = _map.animationList.length;
         if (_map.animationList.length > 0) {
           for (var j = 0; j < numberPreCacheSteps; j++) {
             var index = j + _map.currentAnimationStep;

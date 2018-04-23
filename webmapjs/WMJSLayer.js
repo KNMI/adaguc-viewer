@@ -156,7 +156,6 @@ function WMJSLayer (options) {
     }
     if (isDefined(dim) == false) { return; }
     if (isDefined(value) == false) { return; }
-
     dim.setValue(value);
 
     this.handleReferenceTime(name, value);
@@ -173,6 +172,7 @@ function WMJSLayer (options) {
 
   this.configureDimensions = function () {
     var layer = this;
+    var currentLayer = this.cloneLayer();
     var jsonlayer = layer.jsonlayer_v1_1_1;
     // alert(dump(layer.objectpath.length));//getCapabilitiesDoc
     if (!jsonlayer) return;
@@ -258,8 +258,16 @@ function WMJSLayer (options) {
       } else {
         debug('WMJSLayer::configureDimensions Layer has no parentmaps');
       }
-      // debug("Dimension "+dim.name+" default value is "+defaultValue);
-      dim.setValue(defaultValue);
+      if (currentLayer.dimensions.filter((d) => d.name === dim.name).length === 1) {
+        const oldDim = currentLayer.dimensions.filter((d) => d.name === dim.name)[0];
+        if (isDefined(oldDim.currentValue)) {
+          dim.setValue(oldDim.currentValue);
+        } else {
+          dim.setValue(defaultValue);
+        }
+      } else {
+        dim.setValue(defaultValue);
+      }
 
       dim.parentLayer = layer;
       if (isDefined(dim.values)) {

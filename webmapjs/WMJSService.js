@@ -58,7 +58,7 @@ let loadGetCapabilitiesViaProxy = (url, succes, fail, xml2jsonrequestURL) => {
   */
 var WMJSGetCapabilities = function (service, forceReload, succes, fail) {
   // Make the regetCapabilitiesJSONquest
-  console.log(service);
+  // console.log(service);
   if (isDefined(service) == false) {
     console.log('Service not defined');
     fail(I18n.no_service_defined.text);

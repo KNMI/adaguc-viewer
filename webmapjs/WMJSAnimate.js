@@ -126,7 +126,7 @@ var WMJSAnimate = function (_map) {
         // _map.setDimension(animationStep.name,animationStep.value);
         // animationStep.imagesInPrefetch = _map.prefetch(animationStep.requests);
 
-      var maxSimultaneousLoads = 8;
+      var maxSimultaneousLoads = 4;
 
       var getNumImagesLoading = imageStore.getNumImagesLoading();
         // console.log("checkAnimation:getNumImagesLoading:"+getNumImagesLoading );

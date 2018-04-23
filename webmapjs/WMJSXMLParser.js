@@ -59,7 +59,7 @@ function WMJSXMLParser () {
       };
       traverse(data, '',json);
       try{
-        console.log("WMJSXMLParser succesfully completed", json);
+        // console.log("WMJSXMLParser succesfully completed", json);
         ready(json);
       }catch(e){
         error({"error":"WMJSXMLParser: ready failed","exception":e});

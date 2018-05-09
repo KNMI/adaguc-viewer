@@ -53,6 +53,7 @@ var WMJSTileRenderer = function (currentBBOX, newBBOX, srs, width, height, ctx, 
   let drawBGTiles = function (level) {
     let home = tileSettings.home;
     let tileServerType = tileSettings.tileServerType; // 'osm' or 'argisonline'
+    let tmsEnabled = tileSettings.tms || false; // 'osm' or 'argisonline'
     if (level < tileSettings.minLevel) level = tileSettings.minLevel;
     if (level > tileSettings.maxLevel) level = tileSettings.maxLevel;
     let numTilesAtLevel = Math.pow(2, level);
@@ -87,7 +88,11 @@ var WMJSTileRenderer = function (currentBBOX, newBBOX, srs, width, height, ctx, 
 
       let imageURL;
       if (tileServerType === 'osm') {
-        imageURL = home + level + '/' + x + '/' + (y) + '.png';
+        if (tmsEnabled) {
+          imageURL = home + level + '/' + x + '/' + ((numTilesAtLevelY -1) - y) + '.png';
+        } else {
+          imageURL = home + level + '/' + x + '/' + (y) + '.png';
+        }
       }
       if (tileServerType === 'arcgisonline' || tileServerType === 'wmst') {
         imageURL = home + level + '/' + y + '/' + (x);
@@ -121,4 +126,3 @@ var WMJSTileRenderer = function (currentBBOX, newBBOX, srs, width, height, ctx, 
   };
   drawBGTiles(level);
 };
-

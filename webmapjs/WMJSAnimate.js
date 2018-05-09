@@ -126,13 +126,13 @@ var WMJSAnimate = function (_map) {
         // _map.setDimension(animationStep.name,animationStep.value);
         // animationStep.imagesInPrefetch = _map.prefetch(animationStep.requests);
 
-      var maxSimultaneousLoads = 8;
+      var maxSimultaneousLoads = 4;
 
       var getNumImagesLoading = imageStore.getNumImagesLoading();
         // console.log("checkAnimation:getNumImagesLoading:"+getNumImagesLoading );
       if (getNumImagesLoading < maxSimultaneousLoads) {
 
-        var numberPreCacheSteps = 6;// _map.animationList.length;
+        var numberPreCacheSteps = _map.animationList.length;
         if (_map.animationList.length > 0) {
           for (var j = 0; j < numberPreCacheSteps; j++) {
             var index = j + _map.currentAnimationStep;

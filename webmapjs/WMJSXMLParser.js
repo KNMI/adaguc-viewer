@@ -9,6 +9,12 @@ function WMJSXMLParser () {
         withCredentials: true
       }
     }).done(function(data) {
+      if (typeof data !== 'object') {
+        data = new DOMParser().parseFromString(data, "text/xml");
+        if (data.documentElement.nodeName === 'parseerror') {
+          throw 'Error while parsing: ' + data;
+        }
+      }
       let path = '';
       let json = {};
       let traverse = (data,path,json) => {
@@ -53,7 +59,7 @@ function WMJSXMLParser () {
       };
       traverse(data, '',json);
       try{
-        console.log("WMJSXMLParser succesfully completed", json);
+        // console.log("WMJSXMLParser succesfully completed", json);
         ready(json);
       }catch(e){
         error({"error":"WMJSXMLParser: ready failed","exception":e});

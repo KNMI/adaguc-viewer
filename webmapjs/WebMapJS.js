@@ -1331,7 +1331,16 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
 
   this.isTouchDevice = function () {
-    return typeof window.ontouchstart !== 'undefined';
+    let _webMapJSSettings = null;
+    try{
+      _webMapJSSettings = webMapJSSettings;
+    }catch(e){
+      console.log('no webMapJSSettings set');
+    }
+    if (_webMapJSSettings !== null && _webMapJSSettings.enableTouchDevice === true) {
+      return typeof window.ontouchstart !== 'undefined';
+    }
+    return false;
   };
 
   this.getDimensionRequestString = function (layer) {

@@ -290,7 +290,11 @@ var mapTypeConfiguration = [
 var defaultLanguage = { language: 'en' }; // <-- Language for the ADAGUC viewer.
 var defaultUsernameSearch = "adaguc"; // <-- Username for the GeoNames API. 1
 var geoNamesURL = "http://api.geonames.org/search?q={searchTerm}&username={username}&maxRows=1"; // <-- URL for the GeoNames API. Requires 'defaultUsernameSearch'    
-      
+
+var webMapJSSettings = {
+  enableTouchDevice:true
+}
+
 //FOR JSP:
 /*
 var scaleBarURL        = "http://webgis.nmdc.eu/viewer2.0/webmapjs/php/makeScaleBar.php?";

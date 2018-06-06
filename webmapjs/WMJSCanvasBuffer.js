@@ -9,6 +9,13 @@ var WMJSCanvasBuffer = function (webmapJSCallback, _type, _imageStore, w, h) {
   ctx.canvas.width = w;
   ctx.canvas.height = h;
 
+  ctx.mozImageSmoothingEnabled = true;
+  ctx.webkitImageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.msImageSmoothingEnabled = true;
+  ctx.imageSmoothingEnabled = true;
+
+
   var imageStore = _imageStore;
   this.ready = true;
   this.hidden = true;

@@ -288,17 +288,16 @@ Ext.onReady(function(){
     
     tbar:[
       
-      {xtype:'label',text:'App',scale:'large'},
+      {xtype:'label',text:'App',scale:'large', itemId:'paneltitle'},
       {xtype:'tbfill',scale:'large'},  
       {xtype:'tool',scale:'large',type:'close',handler:function(){
-        eastPanelGFI.hide();mainWebmapJS.webMapJS.enableInlineGetFeatureInfo(true);
-        
-        mainWebmapJS.webMapJS.removeListener('mouseclicked');
+        eastPanelGFI.hide();
       }}
     ],
     listeners:{
       show:{
         fn:function(){
+          eastPanelGFI.getDockedComponent(0).getComponent('paneltitle').setText("App '" + eastPanelGFI.applicationSettings.name || eastPanelGFI.applicationSettings.title + "'");
           eastPanelGFI.update("<div id=\"webmapjs_customapplication\" class=\"webmapjs_customapplication\"></div>")
           
           var APP = WMJSExtApplications[eastPanelGFI.applicationSettings.name];
@@ -315,6 +314,8 @@ Ext.onReady(function(){
             eastPanelGFI.applicationSettings.app.disable();
             eastPanelGFI.applicationSettings.app = undefined;
           }
+          mainWebmapJS.webMapJS.enableInlineGetFeatureInfo(true);
+          mainWebmapJS.webMapJS.removeListener('mouseclicked');  
         }
       },resize:{
         fn:function(){
@@ -517,10 +518,13 @@ Ext.onReady(function(){
   }
   
   for(var j=0;j<getFeatureInfoApplications.length;j++){
-    var location = getFeatureInfoApplications[j];
+    let location = getFeatureInfoApplications[j];
     mainOptionMenuItems.push({
-      text:getFeatureInfoApplications[j].name,iconCls:getFeatureInfoApplications[j].iconCls,location:location,handler:function(){eastPanelGFI.setApplication(this.location);eastPanelGFI.show();}
+      text:getFeatureInfoApplications[j].name,iconCls:getFeatureInfoApplications[j].iconCls,location:location,handler:function(){eastPanelGFI.setApplication(location);eastPanelGFI.hide();eastPanelGFI.show();}
     });
+    if (getFeatureInfoApplications.open && location.name === getFeatureInfoApplications.open) {
+      eastPanelGFI.setApplication(location);
+    }
   }
   
   mainOptionMenuItems.push({
@@ -928,7 +932,9 @@ Ext.onReady(function(){
   }
   
   checkIfHashTagChanged(hashTagHasChanged);
-  //eastPanelGFI.show();
+  if (getFeatureInfoApplications.open) {
+    eastPanelGFI.show();
+  }
   
  //mainWebmapJS.webMapJS.showBoundingBox(new WMJSBBOX(-10,-10,10,10));
   

@@ -733,6 +733,13 @@ function WMJSLayer (options) {
     // throw("Style "+styleName+" not found");
   };
 
+  this.getStyles = function (){
+    if (this.styles) {
+      return this.styles;
+    } else return [];
+  }
+  
+  
   /**
    * Get the styleobject by name
    * @param styleName The name of the style

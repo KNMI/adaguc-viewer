@@ -48,7 +48,7 @@ var WMJSTileRenderer = function (currentBBOX, newBBOX, srs, width, height, ctx, 
   let tileSetWidth = originShiftX2 - originShiftX;
   let tileSetHeight = originShiftY - originShiftY2;
   let levelF = Math.log((Math.abs(originShiftX2 - originShiftX)) / ((bboxw / screenWidth) * tileSize)) / Math.log(2);
-  let level = parseInt(levelF);
+  let level = parseInt(levelF + 0.5) ;
 
   let drawBGTiles = function (level) {
     let home = tileSettings.home;

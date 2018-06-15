@@ -1,6 +1,11 @@
 # adaguc-viewer
-ADAGUC WMS Viewer
+ADAGUC WMS Viewer for visualizing OGC Web Map Services.
+
 ADAGUC is a geographical information system to visualize netCDF files via the web. The software consists of a server side C++ application and a client side JavaScript application. The software provides several features to access and visualize data over the web, it uses OGC standards for data dissemination. 
+
+# Adaguc-server
+
+This viewer is best used with adaguc-server, please check https://github.com/KNMI/adaguc-server
 
 # Docker
 

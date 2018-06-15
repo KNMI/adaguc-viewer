@@ -4,7 +4,7 @@ var baseLayerConfiguration = [
     name:"naturalearth2",
     title:"World base layer Natural Earth ",
     enabled: true,
-    type: 'wms',
+    type: 'twms',
     format:"image/gif"
   },{
     title:"arcGisCanvas",

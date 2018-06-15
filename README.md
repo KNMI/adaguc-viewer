@@ -9,10 +9,11 @@ docker pull openearth/adaguc-viewer
 ```
 
 ```
-docker run -e ADAGUCSERVICES_AUTOWMS="http://localhost:8090/adaguc-services/autowms?" -p 8091:80 -it openearth/adaguc-viewer
+docker run -e ADAGUCSERVICES_AUTOWMS="http://localhost:8090/adaguc-services/autowms?" -p 8091:80 --name my-adaguc-viewer -d openearth/adaguc-viewer
 ```
 
 Visit http://localhost:8091/adaguc-viewer/
 
+![alt text](./raw/master/docs/screenshot-viewer-autowms.png "Adaguc AutoWMS App")
 
 Done!

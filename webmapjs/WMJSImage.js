@@ -183,6 +183,8 @@ var WMJSImage = function (src, callback, __type, options) {
   };
 
   var el = $(document.createElement('img'));
+//   el.attr('crossOrigin', 'use-credentials'); // This enables CORS
+  
   el.onselectstart = function () { return false; };
   el.ondrag = function () { return false; };
 

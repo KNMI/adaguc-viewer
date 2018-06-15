@@ -307,6 +307,8 @@ var scaleBarURL        = "http://euro4mvis.knmi.nl/adagucviewer/webmapjs/php/mak
 var requestProxy       = "webmapjs/php/MakeRequest.php?";
 var xml2jsonrequestURL = "webmapjs/php/xml2jsonrequest.php?"
 
+// getFeatureInfoApplications.push({name:'AutoWMS',iconCls:'button_getfeatureinfo'});
+// getFeatureInfoApplications.open = 'AutoWMS';
 // xml2jsonrequestURL = 'http://localhost:8080/adaguc-services/xml2json?'
 // autowmsURL = 'http://localhost:8080/adaguc-services/autowms?';
 // getFeatureInfoApplications.push({name:'AutoWMS',iconCls:'button_getfeatureinfo'});

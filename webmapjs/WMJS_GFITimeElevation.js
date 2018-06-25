@@ -35,7 +35,6 @@
     webMapJS = new WMJSMap(mapEl);
     webMapJS.hideScaleBar();
     webMapJS.displayLegendInMap(false);
-    webMapJS.getOverlayElement().css('border', '1px solid black');
     _this.setSize(element.width(), element.height());
 
     this.updateBBOX = function (bbox) {

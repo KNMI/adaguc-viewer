@@ -4,7 +4,7 @@ var baseLayerConfiguration = [
     name:"naturalearth2",
     title:"World base layer Natural Earth ",
     enabled: true,
-    type: 'wms',
+    type: 'twms',
     format:"image/gif"
   },{
     title:"arcGisCanvas",
@@ -311,8 +311,8 @@ var requestProxy       = "webmapjs/php/MakeRequest.php?";
 var xml2jsonrequestURL = "webmapjs/php/xml2jsonrequest.php?"
 
 // xml2jsonrequestURL = 'http://localhost:8080/adaguc-services/xml2json?'
-// getFeatureInfoApplications.push({name:'AutoWMS',iconCls:'button_getfeatureinfo'});
-// getFeatureInfoApplications.open = 'AutoWMS';
+getFeatureInfoApplications.push({name:'AutoWMS',iconCls:'button_getfeatureinfo'});
+getFeatureInfoApplications.open = 'AutoWMS';
 
 
 var WMJSTileRendererTileSettings = {

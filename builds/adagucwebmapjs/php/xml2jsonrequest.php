@@ -29,7 +29,7 @@
   $callback = isset($_REQUEST['callback'])?$_REQUEST['callback']:"";
   
   if($request == "")die("Invalid request");
-  if($callback == "")die("Invalid request");
+  // if($callback == "")die("Invalid request");
   
 
  
@@ -80,8 +80,14 @@
       echo $theData;//."for ".$request;
       return;
     }
-    header('Content-type: application/json');
-    echo $callback."(".$parsedXMLData.");";
+    
+    if ($callback==""){
+      header('Content-type: application/json');
+      echo $parsedXMLData;
+    } else {
+      header('Content-type: application/javascript');
+      echo $callback."(".$parsedXMLData.");";
+    }
 
     return;
   }else die();

@@ -8,6 +8,7 @@ RUN rm -rf /var/www/html/adaguc-viewer/index.html
 COPY Docker/config.* /var/www/html/adaguc-viewer/
 COPY Docker/index.html /var/www/html/adaguc-viewer/index.php
 COPY Docker/redirtoindex.html /var/www/html/index.html
+ENV ADAGUCSERVICES_AUTOWMS="http://localhost:8090/adaguc-services/autowms?"
 
 
 

@@ -411,7 +411,7 @@ function WMJSService (options) {
   /** Calls succes with an array of all layernames
    * Calls failure when something goes wrong
    */
-  this.getLayerNames = function (succes, failure) {
+  this.getLayerNames = function (succes, failure, forceReload) {
     var callback = function (data) {
       var layerNames = [];
       var getNames = function (layers) {
@@ -428,13 +428,13 @@ function WMJSService (options) {
       getNames(data.children);
       succes(layerNames);
     };
-    this.getNodes(callback, failure);
+    this.getNodes(callback, failure, forceReload);
   };
 
   /** Calls succes with an array of all layerobjects
    * Calls failure when something goes wrong
    */
-  this.getLayerObjectsFlat = function (succes, failure) {
+  this.getLayerObjectsFlat = function (succes, failure, forceReload) {
     if (isDefined(flatLayerObject)) {
       succes(flatLayerObject);
     }
@@ -456,6 +456,6 @@ function WMJSService (options) {
 
       succes(flatLayerObject);
     };
-    this.getNodes(callback, failure);
+    this.getNodes(callback, failure, forceReload);
   };
 };

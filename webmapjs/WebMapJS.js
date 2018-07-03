@@ -177,7 +177,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   _map.renderer = 'WMJSCanvasBuffer';
   var layersBusy = 0;
   var mapBusy = false;
-
+  var hasGeneratedId = false;
 
   var divZoomBox = document.createElement('div');
   var divBoundingBox = document.createElement('div');
@@ -271,6 +271,9 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   var makeComponentId = function (id) {
     if (!mainElement.id) {
       mainElement.id = 'WebMapJSMapNo_' + WebMapJSMapNo;
+    }
+    if (hasGeneratedId === false){
+      hasGeneratedId = true;
       WebMapJSMapNo++;
     }
     return mainElement.id + '_' + id;
@@ -421,9 +424,9 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     if(!mainElement.style.width){
       mainElement.style.width = '1px';
     }
-    var baseDivId = makeComponentId('baseDiv');
+    this.baseDivId = makeComponentId('baseDiv');
     jQuery('<div/>', {
-      id:baseDivId,
+      id:this.baseDivId,
       css:{
         position:'relative',
         overflow:'hidden',
@@ -437,7 +440,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
         top:'0px'
       }
     }).appendTo(mainElement);
-    baseDiv = $('#' + baseDivId);
+    baseDiv = $('#' + this.baseDivId);
 
     baseDiv.css('cursor', 'default');
 
@@ -2437,7 +2440,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
 
   // Makes a valid getfeatureinfoURL for each layer
-  this.getWMSGetFeatureInfoRequestURL = function (layer, x, y) {
+  this.getWMSGetFeatureInfoRequestURL = function (layer, x, y, format = 'text/html') {
     var request = WMJScheckURL(layer.service);
     request += '&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=' + layer.version;
 
@@ -2457,7 +2460,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       request += '&J=' + y;
     }
     request += '&FORMAT=image/gif';
-    request += '&INFO_FORMAT=text/html';
+    request += '&INFO_FORMAT=' + format;
     request += '&STYLES=';
     try {
       request += '&' + getMapDimURL(layer);
@@ -2517,7 +2520,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       return;
     }
     getPointInfoBusy = true;
-    callBack.triggerEvent('beforegetpointinfo');
+    callBack.triggerEvent('beforegetpointinfo', {x: x, y: y});
 
     var gr = _map.getGraphingData();
 
@@ -2743,13 +2746,22 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
         shiftKey = true;
       }
     }
+    
+    function detectLeftButton(evt) {
+      evt = evt || window.event;
+      if ("buttons" in evt) {
+          return evt.buttons == 1;
+      }
+      var button = evt.which || evt.button;
+      return button == 1;
+    };
 
     mouseDownX = mouseCoordX;
     mouseDownY = mouseCoordY;
     mouseDownPressed = 1;
     if (mouseDragging === 0) {
       if (checkInvalidMouseAction(mouseDownX, mouseDownY) === 0) {
-        let triggerResults = callBack.triggerEvent('beforemousedown', { mouseX:mouseCoordX, mouseY:mouseCoordY, mouseDown:true, event:event });
+        let triggerResults = callBack.triggerEvent('beforemousedown', { mouseX:mouseCoordX, mouseY:mouseCoordY, mouseDown:true, event:event, leftButton: detectLeftButton(event), shiftKey: shiftKey });
         for (let j = 0; j < triggerResults.length; j++) {
           if (triggerResults[j] === false) {
             return;
@@ -3186,6 +3198,10 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     }
     baseDiv.css('cursor', currentCursor);
   };
+  
+  this.getId = function () {
+    return makeComponentId('webmapjsinstance');
+  }
 
   this.zoomTo = function (_newbbox) {
     if (enableConsoleDebugging)console.log('zoomTo');

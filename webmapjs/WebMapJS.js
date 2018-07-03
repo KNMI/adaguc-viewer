@@ -1233,10 +1233,10 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   var resizeTimerBusy = false;
   var resizeTimer = new WMJSTimer();
 
-  this.setSize = function (w, h) {
+  this.setSize = function (w, h, nodraw) {
     if (enableConsoleDebugging)console.log('setSize', w, h);
     if (parseInt(w) < 4 || parseInt(h) < 4 ) {
-      console.log('Skipping setSize', w, h);
+//       console.log('Skipping setSize', w, h);
       return;
     }
     // return;
@@ -1248,6 +1248,10 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     */
     // _map._setSize((_map.resizeWidth) | 0, (_map.resizeHeight) | 0);
 
+    if (nodraw === true) {
+      _map._setSize(_map.resizeWidth, _map.resizeHeight);
+      return;
+    }
     if (resizeTimerBusy === false) {
       resizeTimerBusy = true;
       _map._setSize(_map.resizeWidth, _map.resizeHeight);
@@ -1335,7 +1339,6 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     try{
       _webMapJSSettings = webMapJSSettings;
     }catch(e){
-      console.log('no webMapJSSettings set');
     }
     if (_webMapJSSettings !== null && _webMapJSSettings.enableTouchDevice === true) {
       return typeof window.ontouchstart !== 'undefined';

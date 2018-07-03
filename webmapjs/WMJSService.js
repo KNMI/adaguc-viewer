@@ -83,8 +83,8 @@ var WMJSGetCapabilities = function (service, forceReload, succes, fail) {
   var url = service + '&service=WMS&request=GetCapabilities';
 
   let parser = new WMJSXMLParser();
-  parser.fetchXMLAndParseToJSON(url, succes, () => {
-    console.log('Unable to use browser based XML reading, trying proxy');
+  parser.fetchXMLAndParseToJSON(url, succes, (e) => {
+    console.log('Unable to use browser based XML reading, trying proxy: ', e);
     loadGetCapabilitiesViaProxy(url, succes, () => {fail("Request failed for " + url );}, xml2jsonrequestURL);
   });
 

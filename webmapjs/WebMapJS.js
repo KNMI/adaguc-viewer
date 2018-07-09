@@ -1182,12 +1182,16 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       _bbox = _srs.bbox;
       _srs = _srs.srs;
     }
-
+    if (!_srs)_srs = 'EPSG:4326';
     srs = _srs;
     updateSRS = srs;
 
     if (_map.proj4.srs != srs || !isDefined(this.proj4.projection)) {
-      _map.proj4.projection = new Proj4js.Proj(srs);
+      if (srs === 'GFI:TIME_ELEVATION'){
+        _map.proj4.projection = new Proj4js.Proj('EPSG:4326');
+      }else{
+        _map.proj4.projection = new Proj4js.Proj(srs);
+      }
       _map.proj4.srs = srs;
     }
     // alert(srs+""+_bbox);
@@ -1393,8 +1397,12 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       var baseLayers = layer.name.split(',');
       request += '&QUERY_LAYERS=' + URLEncode(baseLayers[baseLayers.length - 1]);
       request += '&BBOX=' + _bbox;
-      request += '&CRS=' + URLEncode(_srs) + '&';
-
+      if (layer.version == WMSVersion.version100 || layer.version == WMSVersion.version111) {
+        request += '&SRS=' + URLEncode(_srs) + '&';
+      }
+      if (layer.version == WMSVersion.version130) {
+        request += '&CRS=' + URLEncode(_srs) + '&';
+      }
       request += 'WIDTH=' + width;
       request += '&HEIGHT=' + height;
       if (layer.version == WMSVersion.version100 || layer.version == WMSVersion.version111) {
@@ -3296,6 +3304,9 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   var longlat = new Proj4js.Proj('EPSG:4326');
   
   this.getProj4 = function() {
+    if (!srs || srs === 'GFI:TIME_ELEVATION') {
+      return null;
+    }
     if (_map.proj4.srs != srs || !isDefined(this.proj4.projection)) {
       _map.proj4.projection = new Proj4js.Proj(srs);
       _map.proj4.srs = srs;
@@ -3305,7 +3316,11 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   
  
   this.getPixelCoordFromLatLong = function (coordinates) {
-    var p = new Proj4js.Point();
+    if (!srs || srs === 'GFI:TIME_ELEVATION') {
+      return coordinates;
+    }
+    var p = new Proj4js.Point();  
+    
 
     try {
       p.x = parseFloat(coordinates.x);
@@ -3469,6 +3484,9 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
 
   this.getLatLongFromPixelCoord = function (coordinates) {
+    if (!srs || srs === 'GFI:TIME_ELEVATION') {
+      return coordinates;
+    }
     var p = new Proj4js.Point();
     try {
       p.x = (coordinates.x / width) * (bbox.right - bbox.left) + bbox.left;

@@ -116,7 +116,7 @@
     webMapJS.addListener('onupdatebbox', _this.updateBBOX, true);
 //     webMapJS.addListener("onlegendready",_this.drawLegend,true);
 
-    webMapJS.setProjection('GFI:TIME_ELEVATION', [new Date('2016-04-01T00:00:00Z').getTime(), 0, new Date('2016-04-02T00:00:00Z').getTime(), 15270]);
+    webMapJS.setProjection('GFI:TIME_ELEVATION', [new Date('2018-07-05T00:00:00Z').getTime(), 0, new Date('2018-07-05T08:50:00Z').getTime(), 15270]);
 
     _this.updateBBOX(webMapJS.getProjection().bbox);
 

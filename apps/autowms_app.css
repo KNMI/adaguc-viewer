@@ -34,6 +34,8 @@
   padding:8px 1px 12px 8px;
   background-color: #FAFAFF;
   color:#444;
+  max-height:120px;
+  overflow-y:scroll;
 }
 
 .autowms_app_layeritem{
@@ -100,7 +102,6 @@
   float:right
 }
 
-
 .autowms_app_currentpath{
  display:block;
   margin:1px;
@@ -108,3 +109,37 @@
   background-color:#DDF;
 }
 
+.autowms_app_request_container{
+   width:100%;
+   display:flex;
+}
+
+.autowms_app_request_input{
+  width:inherit;
+  flex:1;
+}
+
+.autowms_app_request_button{
+  cursor:pointer;
+  width:25px;
+  height:23px;
+  line-height:23px;
+  background-color:white;
+  display:inline-block;
+  text-align:center;
+  border:1px solid #71a0dd;
+  color:#264390;
+  border-radius:2px;
+}
+
+.autowms_app_error_container{
+  background:#FF8080;
+  padding:20px;
+  display:block;
+}
+
+.autowms_app_error_container_header{
+  font-weight:bold;
+  height:20px;
+  display:block;
+}

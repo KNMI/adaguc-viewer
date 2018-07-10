@@ -88,7 +88,22 @@ var autowms_app = function(element, webmapjs) {
       html+="<span class='autowms_app_serviceabstract'><b>"+service.title.replace(new RegExp('!', 'g'),"<br/>")+"</b><hr/>"+service.abstract.replace(new RegExp('!', 'g'),"<br/>");
       
       if(wmsServiceURL){
-        html+="<hr/>WMS URL: <a target=\"_blank\" href=\""+wmsServiceURL+"&service=WMS&request=GetCapabilities\">"+wmsServiceURL+"</a>";
+        html+="<hr/>WMS: <a target=\"_blank\" href=\""+wmsServiceURL+"&service=WMS&request=GetCapabilities\">"+wmsServiceURL+"</a>";
+        if(wmsServiceURL.split("?").length>1){
+          let kvps = WMJSKVP(wmsServiceURL.split("?")[1]);
+          console.log(kvps);
+          let dapURL = wmsServiceURL.split("?")[0].replace("adagucserver","adagucopendap/");
+          dapURL = dapURL.replace(/([^:]\/)\/+/g, "$1");
+          if(kvps.source){
+            dapURL+=kvps.source;
+          }
+          if(kvps.dataset){
+            dapURL+=kvps.dataset + "/";
+          }
+          html+="<hr/>OpenDAP: <span class='autowms_app_opendaplinks'><a target=\"_blank\" href=\""+dapURL+"\">"+dapURL+"</a>";
+          html+="<a target=\"_blank\" href=\""+dapURL+".das\">DAS</a>";
+          html+="<a target=\"_blank\" href=\""+dapURL+".dds\">DDS</a></span>";
+        }
       }
       
       html+="</span>";

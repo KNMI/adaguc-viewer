@@ -143,3 +143,10 @@
   height:20px;
   display:block;
 }
+
+.autowms_app_opendaplinks{
+}
+
+.autowms_app_opendaplinks a {
+  padding:3px;
+}

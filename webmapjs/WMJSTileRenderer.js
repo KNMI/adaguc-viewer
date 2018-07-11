@@ -116,8 +116,8 @@ var WMJSTileRenderer = function (currentBBOX, newBBOX, srs, width, height, ctx, 
     if (tilenleft < 1)tilenleft = 1; if (tilenleft > numTilesAtLevelX)tilenleft = numTilesAtLevelX;
     if (tilentop < 1)tilentop = 1; if (tilentop > numTilesAtLevelY)tilentop = numTilesAtLevelY;
     if (tilenright < 1)tilenright = 1; if (tilenright > numTilesAtLevelX)tilenright = numTilesAtLevelX;
-    if (tilentop - tilenbottom > 10) return;
-    if (tilenright - tilenleft > 10) return;
+    if (tilentop - tilenbottom > 20) {console.error('Too many tiles in vertical', tilentop - tilenbottom);return;}
+    if (tilenright - tilenleft > 20) {console.error('Too many tiles in horizontal', tilentop - tilenbottom);return;}
     for (let ty = tilenbottom - 1; ty < tilentop; ty++) {
       for (let tx = tilenleft - 1; tx < tilenright; tx++) {
         drawTile(ctx, level, tx, ty);

@@ -305,10 +305,11 @@ var requestProxy = "/impactportal/AdagucViewer?SERVICE=PROXY&";
 //For PHP:
 var scaleBarURL        = "http://euro4mvis.knmi.nl/adagucviewer/webmapjs/php/makeScaleBar.php?";
 var requestProxy       = "webmapjs/php/MakeRequest.php?";
-var xml2jsonrequestURL = "webmapjs/php/xml2jsonrequest.php?"
+var xml2jsonrequestURL = "./webmapjs/php/xml2jsonrequest.php?"
 
+getFeatureInfoApplications.push({name:'EProfile',iconCls:'button_getfeatureinfo'});
 getFeatureInfoApplications.push({name:'AutoWMS',iconCls:'button_getfeatureinfo'});
-getFeatureInfoApplications.open = 'AutoWMS';
+// getFeatureInfoApplications.open = 'EProfile';
 // xml2jsonrequestURL = 'http://localhost:8080/adaguc-services/xml2json?'
 // autowmsURL = 'http://localhost:8080/adaguc-services/autowms?';
 // getFeatureInfoApplications.push({name:'AutoWMS',iconCls:'button_getfeatureinfo'});

@@ -175,7 +175,7 @@ function parseISO8601DateToDate (_isotime) {
 function parseISO8601IntervalToDateInterval (isotime) {
   if (isotime.charAt(0) == 'P') {
     var splittedOnT = isotime.split('T');
-    var years = 0, months = 0, days = 0, hours = 0; minutes = 0; seconds = 0;
+    var years = 0, months = 0, days = 0, hours = 0, minutes = 0, seconds = 0;
     var YYYYMMDDPart = splittedOnT[0].split('P')[1];
 
     // Parse the left part

@@ -3,8 +3,8 @@
   * Author : MaartenPlieger (plieger at knmi.nl)
   * Copyright KNMI
   */
-WMJSEmptyLayerName = 'empty_layer';
-WMJSEmptyLayerTitle = 'empty layer';
+var WMJSEmptyLayerName = 'empty_layer';
+var WMJSEmptyLayerTitle = 'empty layer';
 function WMJSLayer (options) {
   this.autoupdate = false;
   this.timer = undefined;
@@ -639,7 +639,7 @@ function WMJSLayer (options) {
 
   this.cloneLayer = function () {
     var layer = new WMJSLayer();
-    for (i in this) {
+    for (var i in this) {
       layer[i] = this[i];
     }
     return layer;

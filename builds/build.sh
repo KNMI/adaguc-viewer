@@ -5,13 +5,13 @@ rm -rf WMJS.min.js
 java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES5_STRICT \
 --js ../webmapjs/WMJSPolyfills.js \
 --js ../webmapjs/WMJSTools.js \
+--js ../webmapjs/WMJSLayer.js \
 --js ../webmapjs/WMJSISO8601.js \
 --js ../webmapjs/WMJSProj4Definitions.js \
 --js ../webmapjs/WMJSJqueryprototypes.js \
 --js ../webmapjs/WMJSTileRenderer.js \
 --js ../webmapjs/WMJSImageStore.js \
 --js ../webmapjs/WebMapJS.js \
---js ../webmapjs/WMJSLayer.js \
 --js ../webmapjs/WMJSBBOX.js \
 --js ../webmapjs/WMJSDimension.js \
 --js ../webmapjs/WMJSService.js \
@@ -62,7 +62,7 @@ cat ../webmapjs/WMJSTimeSelector.css >> adagucwebmapjs/webmapjs.min.css
 cp -r ../webmapjs/php ./adagucwebmapjs/
 cp -r ../webmapjs/img ./adagucwebmapjs/
 
-rm WMJSExt.min.js
+rm -f WMJSExt.min.js
 java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES5_STRICT \
 --js ../apps/appframework.js \
 --js ../webmapjsext/WMJSExt/LayerPropertiesPanel.js \

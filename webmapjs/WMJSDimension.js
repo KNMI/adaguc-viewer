@@ -4,9 +4,9 @@
   * Author : MaartenPlieger (plieger at knmi.nl)
    * Copyright KNMI
   */
-WMJSDateOutSideRange = 'outside range';
-WMJSDateTooEarlyString = 'date too early';
-WMJSDateTooLateString = 'date too late';
+var WMJSDateOutSideRange = 'outside range';
+var WMJSDateTooEarlyString = 'date too early';
+var WMJSDateTooLateString = 'date too late';
 function WMJSDimension (config) {
   this.name = undefined;          // Name of the dimension, e.g. 'time'
   this.units = undefined;         // Units of the dimension, e.g. 'ISO8601'

@@ -1,6 +1,12 @@
 var isDefined, WMJSMap, WMJSLayer, getUrlVars, checkIfHashTagChanged, WMJSTimer, WMJSGetServiceFromStore, WMJScheckURL, URLEncode, URLDecode, WMJSDateOutSideRange, WMJSDateTooEarlyString, WMJSDateTooLateString, WMJSEmptyLayerName, WMJSEmptyLayerTitle, parseISO8601DateToDate, I18n, removeMouseWheelEvent, addMouseWheelEvent, WMJSKVP, composeUrlObjectFromURL, WMJSBBOX, toArray;
 var initWMJS = function () {
   let wmjs = window.wmjs;
+  if (!wmjs) {
+   $( document ).ready(function() {
+      initWMJS();
+    });
+    return;
+  }
   isDefined = wmjs.isDefined;
   WMJSMap = wmjs.WMJSMap;
   WMJSLayer = wmjs.WMJSLayer;
@@ -25,6 +31,3 @@ var initWMJS = function () {
   WMJSBBOX = wmjs.WMJSBBOX;
   toArray = wmjs.toArray;
 };
-$(function() {
-  initWMJS();
-});

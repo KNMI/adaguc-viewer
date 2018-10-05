@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Use https://developers.google.com/closure/compiler/ to compile this code.
+# Compiler should be available at ../../closure/compiler.jar relative to this build script.
+
 rm -rf WMJS.min.js
 java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES5_STRICT --process_common_js_modules \
 --module_resolution=NODE \
@@ -8,8 +11,6 @@ java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES
 --js ../webmapjs_h/WMJSTimeSelector.js \
 --js ../webmapjs_h/WMJSTimeSlider.js \
 --js ../webmapjs_h/WMJS_GFITimeElevation.js \
---js ../webmapjs_h/WMJSImportsToGlobal.js \
---js ../webmapjs_h/WMJSDefineGlobals.js \
 --js ../webmapjs_h/WMJSCoverage.js \
 --js ../webmapjs/WMJSConstants.js \
 --js ../webmapjs/WMJSGlobals.js \
@@ -34,6 +35,8 @@ java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES
 --js ../webmapjs/WMJSCanvasBuffer.js \
 --js ../webmapjs/WMJSDialog.js \
 --js ../webmapjs/WMJSDrawMarker.js \
+--js ../webmapjs_h/WMJSDefineGlobals.js \
+--js ../webmapjs_h/WMJSImportsToGlobal.js \
 --create_source_map WMJS.min.js.map \
 --js_output_file  WMJS.min.js
 echo "//# sourceMappingURL=WMJS.min.js.map" >> WMJS.min.js

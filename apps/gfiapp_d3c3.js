@@ -258,7 +258,7 @@ var gfiapp_d3c3 = function(element, webmapjs) {
   var init = function(){
     element.html('<div id="info"></div><div id="chart"></div>');
     $("#info").html("Click on the map to create a timeseries graph.");
-    webmapjs.enableInlineGetFeatureInfo(false);
+    // webmapjs.enableInlineGetFeatureInfo(false);
   };
   
   this.enable = function(){
@@ -267,7 +267,7 @@ var gfiapp_d3c3 = function(element, webmapjs) {
   };
   this.disable = function(){
     enabled = false;
-    webmapjs.enableInlineGetFeatureInfo(true);
+    // webmapjs.enableInlineGetFeatureInfo(true);
     currentOptions.set = false;
   };
   this.resize = function(w,h){

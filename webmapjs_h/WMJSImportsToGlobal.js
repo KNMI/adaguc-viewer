@@ -7,6 +7,7 @@ import { WMJSDateOutSideRange, WMJSDateTooEarlyString, WMJSDateTooLateString, WM
 import { parseISO8601DateToDate } from  '../webmapjs/WMJSTime.js';
 import WMJSBBOX from '../webmapjs/WMJSBBOX.js';
 import I18n from  '../webmapjs/I18n/lang.en.js';
+
 window.wmjs = {
 	WMJSMap: WMJSMap,
 	isDefined: isDefined,
@@ -31,4 +32,10 @@ window.wmjs = {
         composeUrlObjectFromURL: composeUrlObjectFromURL,
         WMJSBBOX: WMJSBBOX,
         toArray: toArray
+}
+
+try{
+  initWMJS();        
+}catch(e){
+  console.error(e);
 }

@@ -375,6 +375,17 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
       
       try{
         _this.WMJSLayer.parseLayer(layerParsedCallback,forceReload,"LayerPanel::parseLayer", xml2jsonrequestURL);
+        if (forceReload === true) {
+          try{
+            console.log('clearing cache');
+            if (_this.WMJSLayer && _this.WMJSLayer.parentMaps && _this.WMJSLayer.parentMaps.length > 0){
+              _this.WMJSLayer.parentMaps[0].clearImageStore();
+                _this.WMJSLayer.parentMaps[0].loadLegendInline(true);        
+            }
+          }catch(e){
+            console.error(e);
+          }
+        }
       }catch(e){
         failed(e);
       }

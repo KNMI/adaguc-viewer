@@ -418,6 +418,7 @@ export class WMJSMap {
     this.displayLegendInMap = this.displayLegendInMap.bind(this);
     this.showBoundingBox = this.showBoundingBox.bind(this);
     this.hideBoundingBox = this.hideBoundingBox.bind(this);
+    this.clearImageStore = this.clearImageStore.bind(this);    
     this.init();
   };
 
@@ -2434,10 +2435,12 @@ export class WMJSMap {
           this.featureInfoRequestReady('Layer is not queryable.', myLayer);
         } else {
           try {
+            console.log('makehttp');
             MakeHTTPRequest(myLayer.getFeatureInfoUrl, this.featureInfoRequestReady, (data, myLayer) => {
               this.featureInfoRequestReady(data, myLayer); error(data);
-            }, myLayer, this.requestProxy);
+            }, myLayer, false, this.requestProxy);
           } catch (e) {
+            console.log(e);
             this.featureInfoRequestReady('Exception: ' + e, myLayer);
           }
         }
@@ -3519,5 +3522,10 @@ export class WMJSMap {
   hideBoundingBox () {
     this.divBoundingBox.style.display = 'none';
     this.divBoundingBox.displayed = false;
+  };
+  
+  clearImageStore () {
+    this.getLegendStore().clear();
+    this.getImageStore().clear();
   };
 };

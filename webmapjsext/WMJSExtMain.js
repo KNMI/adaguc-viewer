@@ -1,4 +1,4 @@
-
+initWMJS();
 var error = function(e) {
   console.error(e);
 }
@@ -65,6 +65,7 @@ function Console (div) {
   };
   this.setElement = function (div) {
     element = div;
+    initWMJS();
     if (isDefined(element)) {
       element.style.overflow = 'scroll';
       element.style.display = 'inline-block';

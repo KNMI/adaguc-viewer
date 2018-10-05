@@ -1,10 +1,11 @@
 import { WMJSMap } from '../webmapjs/WebMapJS.js'
-import { isDefined, getUrlVars, checkIfHashTagChanged, WMJScheckURL, URLDecode, URLEncode, addMouseWheelEvent, removeMouseWheelEvent, WMJSKVP, composeUrlObjectFromURL } from '../webmapjs/WMJSTools.js'
+import { isDefined, getUrlVars, checkIfHashTagChanged, WMJScheckURL, URLDecode, URLEncode, addMouseWheelEvent, removeMouseWheelEvent, WMJSKVP, composeUrlObjectFromURL, toArray } from '../webmapjs/WMJSTools.js'
 import WMJSLayer from '../webmapjs/WMJSLayer.js'
 import WMJSTimer from '../webmapjs/WMJSTimer.js';
 import WMJSGetServiceFromStore from '../webmapjs/WMJSGetServiceFromStore.js';
 import { WMJSDateOutSideRange, WMJSDateTooEarlyString, WMJSDateTooLateString, WMJSEmptyLayerName, WMJSEmptyLayerTitle } from '../webmapjs/WMJSConstants.js';
 import { parseISO8601DateToDate } from  '../webmapjs/WMJSTime.js';
+import WMJSBBOX from '../webmapjs/WMJSBBOX.js';
 import I18n from  '../webmapjs/I18n/lang.en.js';
 window.wmjs = {
 	WMJSMap: WMJSMap,
@@ -27,5 +28,7 @@ window.wmjs = {
         addMouseWheelEvent: addMouseWheelEvent,
         removeMouseWheelEvent: removeMouseWheelEvent,
         WMJSKVP: WMJSKVP,
-        composeUrlObjectFromURL: composeUrlObjectFromURL
+        composeUrlObjectFromURL: composeUrlObjectFromURL,
+        WMJSBBOX: WMJSBBOX,
+        toArray: toArray
 }

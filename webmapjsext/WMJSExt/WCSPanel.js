@@ -110,7 +110,7 @@ Ext.define('webmapjsext.WMJSExt.WCSPanel', {
           try{
             description = epsgDescriptionLookup[c.supportedProjections[j].srs];
           }catch(e){}
-          if(!_isDefined(description))description=c.supportedProjections[j].srs;
+          if(!isDefined(description))description=c.supportedProjections[j].srs;
           projectionStore.add({title:description,srs:c.supportedProjections[j].srs,bbox:c.supportedProjections[j].bbox});
         }
         
@@ -150,7 +150,7 @@ Ext.define('webmapjsext.WMJSExt.WCSPanel', {
           try{
             description = formatDescriptionLookup[key];
           }catch(e){}
-          if(!_isDefined(description))description=c.formats[j];
+          if(!isDefined(description))description=c.formats[j];
           formatsStore.add({title:description,format:c.formats[j]});
           if(key == "AAIGRID"){
             formatsGrid.getView().select(j);    

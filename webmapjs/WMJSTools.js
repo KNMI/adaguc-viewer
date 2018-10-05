@@ -1,8 +1,8 @@
 // ============================================================================
-// Name        : Console
+// Name        : WMJSTools
 // Author      : MaartenPlieger (plieger at knmi.nl)
-// Version     : 0.5 (September 2010)
-// Description : A simple console to which two streams can be passed: stdout and stderr
+// Version     : 3.2.0 (September 2018)
+// Description : WMJSTools provides a set of useful JS functions
 // ============================================================================
 
 /*

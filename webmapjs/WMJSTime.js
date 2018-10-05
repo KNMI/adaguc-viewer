@@ -3,7 +3,7 @@ import { isDefined } from './WMJSTools.js';
 // ============================================================================
 // Name        : ISO8601_datefunctions.js
 // Author      : MaartenPlieger (plieger at knmi.nl)
-// Version     : 0.4 (September 2010)
+// Version     : 3.2.0 (September 2018)
 // Description : Functions to calculate with ISO8601 dates in javascript
 // ============================================================================
 

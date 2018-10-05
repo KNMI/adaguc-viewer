@@ -1,7 +1,7 @@
 /*
  * Name        : WebMapJS.js
  * Author      : MaartenPlieger (plieger at knmi.nl)
- * Version     : 0.7 (September 2017)
+ * Version     : 3.2.0 (September 2018)
  * Description : This is a basic interface for portrayal of OGC WMS services
  * Copyright KNMI
  */
@@ -2069,7 +2069,6 @@ export class WMJSMap {
   };
 
   mouseWheelEvent (event) {
-    event.stopPropagation();
     preventdefaultEvent(event);
     if (this.mouseWheelBusy === 1) return;
     let delta = -event.deltaY;

@@ -52,6 +52,10 @@ mkdir  adagucwebmapjs
 echo "" > adagucwebmapjs/webmapjs.min.js
 cat ../libs/d3/d3.v3.min.js >> adagucwebmapjs/webmapjs.min.js
 cat ../libs/d3/c3.min.js >> adagucwebmapjs/webmapjs.min.js
+cat ../libs/node_modules/moment/moment.js >> adagucwebmapjs/webmapjs.min.js
+cat ../libs/node_modules/proj4/dist/proj4.js >> adagucwebmapjs/webmapjs.min.js
+cat ../libs/node_modules/jquery/dist/jquery.min.js >> adagucwebmapjs/webmapjs.min.js
+cat ../libs/node_modules/jquery-ui-dist/jquery-ui.min.js >> adagucwebmapjs/webmapjs.min.js
 cat WMJS.min.js >> adagucwebmapjs/webmapjs.min.js
 echo "" > adagucwebmapjs/webmapjs.min.css
 cat ../webmapjs/WMJSStyles.css >> adagucwebmapjs/webmapjs.min.css
@@ -59,8 +63,7 @@ cat ../webmapjs_h/WMJS_GFITimeElevation.css >> adagucwebmapjs/webmapjs.min.css
 cat ../webmapjs_h/WMJSTimeSelector.css >> adagucwebmapjs/webmapjs.min.css
 
 rm -f WMJSExt.min.js
-java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES5_STRICT \
---module_resolution=NODE \
+java -jar ../../closure/compiler.jar \
 --create_source_map WMJSExt.min.js.map \
 --js ../apps/appframework.js \
 --js ../webmapjsext/WMJSExt/LayerPropertiesPanel.js \

@@ -1,4 +1,4 @@
-var isDefined, WMJSMap, WMJSLayer, getUrlVars, checkIfHashTagChanged, WMJSTimer, WMJSGetServiceFromStore, WMJScheckURL, URLEncode, URLDecode, WMJSDateOutSideRange, WMJSDateTooEarlyString, WMJSDateTooLateString, WMJSEmptyLayerName, WMJSEmptyLayerTitle, parseISO8601DateToDate, I18n, removeMouseWheelEvent, addMouseWheelEvent;
+var isDefined, WMJSMap, WMJSLayer, getUrlVars, checkIfHashTagChanged, WMJSTimer, WMJSGetServiceFromStore, WMJScheckURL, URLEncode, URLDecode, WMJSDateOutSideRange, WMJSDateTooEarlyString, WMJSDateTooLateString, WMJSEmptyLayerName, WMJSEmptyLayerTitle, parseISO8601DateToDate, I18n, removeMouseWheelEvent, addMouseWheelEvent, WMJSKVP, composeUrlObjectFromURL;
 var initWMJS = function () {
   let wmjs = window.wmjs;
   isDefined = wmjs.isDefined;
@@ -20,6 +20,8 @@ var initWMJS = function () {
   I18n = wmjs.I18n;
   removeMouseWheelEvent = wmjs.removeMouseWheelEvent;
   addMouseWheelEvent = wmjs.addMouseWheelEvent;
+  WMJSKVP = wmjs.WMJSKVP;
+  composeUrlObjectFromURL = wmjs.composeUrlObjectFromURL;
 };
 $(function() {
   initWMJS();

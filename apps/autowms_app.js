@@ -1,5 +1,5 @@
 var autowms_app = function(element, webmapjs) {
-
+  initWMJS();
   element.addClass("autowms_app_container");
   
   let requestURL = 'http://localhost:8090//adaguc-services/autowms?';
@@ -18,7 +18,6 @@ var autowms_app = function(element, webmapjs) {
   var enabled = false;
   
   var errormessage = function(data){
-    console.log('errormessage called');
     var html = createReturnLink();
      
     element.html(html+JSON.stringify(data));
@@ -70,19 +69,15 @@ var autowms_app = function(element, webmapjs) {
   
   var makeGetCapabilitiesRequest = function(data, path) {
     element.html("... working ... ");
-    console.log("WMS!"+path, data);
     var wmsServiceURL = path;//data.adagucserver+"source="+URLEncode(path) + "&";
   
-    console.log(wmsServiceURL);
-    var service = WMJSGetServiceFromStore(wmsServiceURL);
+    var service = WMJSGetServiceFromStore(wmsServiceURL, xml2jsonrequestURL);
     var getcapabilitiesdone = function(layers){
-      console.log(layers);
       // prevPath.push(path);
       
       var html = "";
 
       html += createReturnLink(data, path);
-      console.log(service);
       
       
       html+="<span class='autowms_app_serviceabstract'><b>"+service.title.replace(new RegExp('!', 'g'),"<br/>")+"</b><hr/>"+service.abstract.replace(new RegExp('!', 'g'),"<br/>");
@@ -90,8 +85,8 @@ var autowms_app = function(element, webmapjs) {
       if(wmsServiceURL){
         html+="<hr/>WMS: <a target=\"_blank\" href=\""+wmsServiceURL+"&service=WMS&request=GetCapabilities\">"+wmsServiceURL+"</a>";
         if(wmsServiceURL.split("?").length>1){
-          let kvps = WMJSKVP(wmsServiceURL.split("?")[1]);
-          console.log(kvps);
+          let kvps = new WMJSKVP(wmsServiceURL.split("?")[1]);
+          
           let dapURL = wmsServiceURL.split("?")[0].replace("adagucserver","adagucopendap/");
           dapURL = dapURL.replace(/([^:]\/)\/+/g, "$1");
           if(kvps.source){
@@ -121,26 +116,17 @@ var autowms_app = function(element, webmapjs) {
       element.html(html);
       $(".autowms_app_layeritem").attr('onclick','').click(function(t){
         var layerObj = currentData[$(this).attr('name')];
-        console.log(wmsServiceURL, layerObj);
         window.location.hash="addlayer('"+wmsServiceURL+"','"+layerObj.name+"')";
-//               var layer = new WMJSLayer({
-//                 service:wmsServiceURL,
-//                 name:layerObj.name
-//               });
-//               layer.onReady = function(){
-//                 webmapjs.draw();
-//               };
-//               webmapjs.addLayer(layer);
       });
       $(".autowms_app_fileitem_return").attr('onclick','').click(function(t){
-        console.log('t');
+
         
         makeFileListRequest(prevPath.pop());
       });
       
       /* Bind refresh for GetCapabilities overview */
       $(".autowms_app_fileitem_refresh").attr('onclick','').click(function(t){
-        console.log('refresh fileitem');
+
         // makeFileListRequest(prevPath[prevPath.length-1]);
         var path = $(this).attr('name');
         // element.html("... refreshing "+path+" ... ");
@@ -176,16 +162,15 @@ var autowms_app = function(element, webmapjs) {
       path = "";
     }
     let customInput = $(".autowms_app_request_input").first().val();
-    console.log(customInput);
+
     if (customInput && customInput.length > 0){
       requestURL = customInput.trim().split('?')[0];
       if (!requestURL.endsWith('?')){
         requestURL += "?";
       }
-      console.log("Setting requestURL to " + requestURL);
     }
     
-    console.log("makeFileListRequest ["+path+"]", requestURL);
+    
     
     var succes = function(data){
       if (data.error){
@@ -193,16 +178,10 @@ var autowms_app = function(element, webmapjs) {
         return;
       }
       currentData= {}
-      console.log(data);
-      if (prevPath[prevPath.length-1] !== path) {
-        console.log('pushing new path');
-        prevPath.push(path);
-      }else{
-        console.log('not pushing new path');
-      }
-      console.log('path = '+path);
-      console.log('prevPath = ', prevPath);
       
+      if (prevPath[prevPath.length-1] !== path) {
+        prevPath.push(path);
+      }
       var html = createReturnLink(data, path);
       element.html("... working ... ");
       
@@ -216,10 +195,8 @@ var autowms_app = function(element, webmapjs) {
         html+=createFile(data.result[j]);
         currentData[data.result[j].name]=data.result[j];
       }
-      //console.log(currentData);
       element.html(html);
       $(".autowms_app_fileitem_return").attr('onclick','').click(function(t){
-        console.log('e');
         prevPath.pop();
         makeFileListRequest(prevPath[prevPath.length -1 ]);
       });
@@ -227,8 +204,6 @@ var autowms_app = function(element, webmapjs) {
       $(".autowms_app_fileitem_refresh").attr('onclick','').click(function(t){
         
         var path = $(this).attr('name');
-        console.log(path);
-        console.log('ref filelist', path);
         // element.html("... refreshing "+path+" ... ");
         $(".autowms_app_fileitem").remove();
         $(".autowms_app_layeritem").remove();
@@ -240,7 +215,6 @@ var autowms_app = function(element, webmapjs) {
       
       $(".autowms_app_fileitem").attr('onclick','').click(function(t){
         var fileObj = currentData[$(this).attr('name')];
-        console.log(fileObj);
         if(fileObj.leaf === false){
           makeFileListRequest(fileObj.path);
         }else{
@@ -265,7 +239,7 @@ var autowms_app = function(element, webmapjs) {
         url: url,
         success: succes,
         error:function(e){
-          console.log('Request failed without jsonp, trying jsonp');
+          console.error('Request failed without jsonp, trying jsonp');
           succes({result:[]});
           $.ajax({
             dataType: "jsonp",
@@ -275,14 +249,14 @@ var autowms_app = function(element, webmapjs) {
             url: url,
             success: succes,
             error:function(e){
-              console.log(e);
+              console.error(e);
               errormessage('Unable to do ajax call');
             }
           })
         }
       })
     }catch(e){
-      console.log(e);
+      console.error(e);
       errormessage(e);
     }
     
@@ -299,8 +273,6 @@ var autowms_app = function(element, webmapjs) {
     enabled = false;
   };
   this.resize = function(w,h){
-    console.log("w="+w);
-  
   
   };
   

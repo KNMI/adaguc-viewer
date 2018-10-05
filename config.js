@@ -302,7 +302,7 @@ var requestProxy = "/impactportal/AdagucViewer?SERVICE=PROXY&";
 */
 
 //For PHP:
-var requestProxy       = "webmapjs/php/MakeRequest.php?";
+var requestProxy       = "./webmapjs_php/MakeRequest.php?";
 var xml2jsonrequestURL = "./webmapjs_php/xml2jsonrequest.php?"
 
 getFeatureInfoApplications.push({name:'EProfile',iconCls:'button_getfeatureinfo'});
@@ -485,4 +485,3 @@ var WMJSTileRendererTileSettings = {
     }
   }
 };
-

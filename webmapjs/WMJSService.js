@@ -65,7 +65,14 @@ export const WMJSGetCapabilities = (service, forceReload, succes, fail, xml2json
 
   let _xml2jsonrequestURL = xml2jsonrequestURL;
   
-  WMJSXMLParser(url).then(succes).catch((e) => {
+  WMJSXMLParser(url).then((data) => {
+    try{
+      succes (data);
+    }catch (e){
+      console.error(e);
+    }
+    return;
+  }).catch((e) => {
     debug('Unable to use browser based XML reading, trying proxy: ', e);
     loadGetCapabilitiesViaProxy(url, succes,
       () => {

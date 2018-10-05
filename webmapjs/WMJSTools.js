@@ -638,7 +638,7 @@ function getUrlVarsFromHashTag () {
 }
 
 // Splits a URL in a location part and separate Key Value Pairs (kvp).
-var composeUrlObjectFromURL = function (url) {
+export const composeUrlObjectFromURL = (url) => {
   var vars = [];
   if (!isDefined(url)) {
     return vars;
@@ -656,7 +656,7 @@ var composeUrlObjectFromURL = function (url) {
   }
 
   for (var i = 0; i < hashes.length; i++) {
-    hash = hashes[i].split('=');
+    let hash = hashes[i].split('=');
 
     if (isDefined(hash[1])) {
       hash[1] = URLDecode(hash[1]);

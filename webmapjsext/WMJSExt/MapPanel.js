@@ -25,6 +25,7 @@
               fn:function(){
                 if(!_this.webMapJS){
                   _this.webMapJS = new WMJSMap(Ext.fly(_this.webmapjsid).dom);
+                  _this.webMapJS.setWMJSTileRendererTileSettings(WMJSTileRendererTileSettings);
                   _this.webMapJS.setBaseURL('./webmapjs/');
                   var baseLayers = [];
                   for(var j=0;j<baseLayerConfiguration.length;j++){

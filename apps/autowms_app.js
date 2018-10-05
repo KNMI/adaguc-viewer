@@ -74,7 +74,7 @@ var autowms_app = function(element, webmapjs) {
     var wmsServiceURL = path;//data.adagucserver+"source="+URLEncode(path) + "&";
   
     console.log(wmsServiceURL);
-    var service = WMJSgetServiceFromStore(wmsServiceURL);
+    var service = WMJSGetServiceFromStore(wmsServiceURL);
     var getcapabilitiesdone = function(layers){
       console.log(layers);
       // prevPath.push(path);

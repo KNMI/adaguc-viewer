@@ -6,13 +6,13 @@
   <title>Viewer</title>
 
     <!-- Style sheets -->
-  <link rel="stylesheet" href="jquery/jquery-ui.css" />
-  <link rel="stylesheet" type="text/css" href="extjs-4.2.1/resources/css/ext-all.css" />
+  <link rel="stylesheet" href="./libs/node_modules/jquery-ui-dist/jquery-ui.css" />
+  <link rel="stylesheet" type="text/css" href="libs/extjs-4.2.1/resources/css/ext-all.css" />
   <link rel="stylesheet" type="text/css" href="webmapjsext/WMJSExtStyles.css" /> 
   <link rel="stylesheet" type="text/css" href="webmapjs/WMJSStyles.css" />
-  <link rel="stylesheet" type="text/css" href="webmapjs/WMJSTimeSelector.css" />
-  <link rel="stylesheet" type="text/css" href="webmapjs/WMJS_GFITimeElevation.css" />
-  <link rel="stylesheet" type="text/css" href="d3/c3.css">
+  <link rel="stylesheet" type="text/css" href="webmapjs_h/WMJSTimeSelector.css" />
+  <link rel="stylesheet" type="text/css" href="webmapjs_h/WMJS_GFITimeElevation.css" />
+  <link rel="stylesheet" type="text/css" href="libs/d3/c3.css">
   <link rel="stylesheet" href="./apps/gfiapp_d3c3.css" />
   <link rel="stylesheet" href="./apps/autowms_app.css" />
 
@@ -20,20 +20,20 @@
   <!-- Configuration -->
   <script type="text/javascript" src="config.js"></script>
 
-  <!-- I18n -->
-  <script>
-    if ( typeof(defaultLanguage) === 'undefined' ) {
-      document.write('<script src="I18n/lang.en.js"><\/script>');
-    } else {
-      document.write('<script src="I18n/lang.' + defaultLanguage.language + '.js"><\/script>');
-    }
-  </script>
   
-  <!-- Proj4 -->
-  <script type="text/javascript" src="proj4js/lib/proj4js.js"></script>
+  
+  <script type="text/javascript" src="./libs/node_modules/moment/moment.js"></script>
+  <script type="text/javascript" src="./libs/node_modules/proj4/dist/proj4.js"></script>
+  <script type="text/javascript" src="./libs/node_modules/jquery/dist/jquery.min.js"></script>
+  <script type="text/javascript" src="./libs/node_modules/jquery-ui-dist/jquery-ui.min.js"></script>
+
+  <script type="text/javascript" src="./builds/WMJS.min.js"></script>
   
   <!-- Webmapjs, webmapjsext, ExtJS and JQuery-->
-  <script type="text/javascript" src="builds/adagucviewer.min.js"></script>
+  
+  <script type="text/javascript" src="./libs/extjs-4.2.1/ext-all.js"></script>
+
+  <script type="text/javascript" src="webmapjsext/WMJSExtMain.js"></script>
   
 </head>
 <body>

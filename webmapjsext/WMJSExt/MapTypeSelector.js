@@ -11,8 +11,8 @@ Ext.define('webmapjsext.WMJSExt.MapTypeSelector',{
   initComponent: function() {
     var _this = this;
 
-      _maptypeclicked = _this.maptypeclicked;
-      _webmapjsext = _this.webmapjsext;
+      var _maptypeclicked = _this.maptypeclicked;
+      var _webmapjsext = _this.webmapjsext;
 
         MapTypeSelectorModel = Ext.define('MapTypeSelectorModel', {
             extend: 'Ext.data.Model',

@@ -1,25 +1,39 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
+ 
+  <link rel="icon" type="image/png" href="../img/adaguc-logo-favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="../img/adaguc-logo-favicon-32x32.png" sizes="32x32">
+
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Mapviewer</title>
+  <title>ADAGUC Viewer</title>
+
+    <!-- Style sheets -->
+  <link rel="stylesheet" href="../libs/node_modules/jquery-ui-dist/jquery-ui.css" />
+  <link rel="stylesheet" type="text/css" href="../libs/extjs-4.2.1/resources/css/ext-all.css" />
+  <link rel="stylesheet" type="text/css" href="../webmapjsext/WMJSExtStyles.css" /> 
+  <link rel="stylesheet" type="text/css" href="../webmapjs/WMJSStyles.css" />
+  <link rel="stylesheet" type="text/css" href="../webmapjs_h/WMJSTimeSelector.css" />
+  <link rel="stylesheet" type="text/css" href="../webmapjs_h/WMJS_GFITimeElevation.css" />
+  <link rel="stylesheet" type="text/css" href="../libs/d3/c3.css">
+  <link rel="stylesheet" href="../apps/gfiapp_d3c3.css" />
+  <link rel="stylesheet" href="../apps/autowms_app.css" />
+
   
-    <!-- Proj4 -->
-    <script type="text/javascript" src="../proj4js/lib/proj4js.js"></script>
+  <!-- Configuration -->
+  <script type="text/javascript" src="../config.js"></script>
+  
+  <script type="text/javascript" src="../libs/node_modules/moment/moment.js"></script>
+  <script type="text/javascript" src="../libs/node_modules/proj4/dist/proj4.js"></script>
+  <script type="text/javascript" src="../libs/node_modules/jquery/dist/jquery.min.js"></script>
+  <script type="text/javascript" src="../libs/node_modules/jquery-ui-dist/jquery-ui.min.js"></script>
 
-    <!-- JQuery -->
-    <link rel="stylesheet" href="../jquery/jquery-ui.css" />
-    <script src="../jquery/jquery-1.12.4.min.js"></script>
-    <script src="../jquery/jquery-ui.min.js"></script>
-    <script src="../jquery/jquery.mousewheel.js"></script>
-    <script src="../jquery/jquery-ui-timepicker-addon.js"></script>
-    <script src="../jquery/globalize.js"></script>
-    <script src="../jquery/hammer.min.js"></script>
-    <script src="../webmapjs/WMJS_GFITimeElevation.js"></script>
-    <link rel="stylesheet" type="text/css" href="../webmapjs/WMJS_GFITimeElevation.css" />
+  <script type="text/javascript" src="../builds/WMJS.min.js"></script>
+  
+  <script type="text/javascript" src="../webmapjs_h/WMJSDefineGlobals.js"></script>
 
-    <!-- webmapjs -->
-    <?php include 'webmapjsfiles.php'?>
+    
+    
 <style>
 body { margin: 10 }
 .row, .col { overflow: hidden; position: absolute; }
@@ -30,8 +44,9 @@ body { margin: 10 }
 </style>
 
 <script type="text/javascript">
-
-  setBaseURL("../webmapjs");
+  initWMJS();
+  
+  
 
   var gfiWindow1,gfiWindow2;
   
@@ -39,7 +54,7 @@ body { margin: 10 }
     var gfiWindow =new GFITimeElevationWindow($("#"+elementID));
 
     var webMapJS = gfiWindow.getWebMapJS();
-
+    webMapJS.setBaseURL("../webmapjs");
     var layer = new WMJSLayer({
       service:'http://bhw485.knmi.nl:8080/cgi-bin/eprofile.cgi?',
       name:'beta_raw'

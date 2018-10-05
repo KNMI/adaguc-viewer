@@ -3,7 +3,7 @@
   * Author MaartenPlieger (plieger at knmi.nl)
   * Copyright KNMI
   */
-function WMJSTimer () {
+export default function WMJSTimer () {
   /**
    * Set the length of the timer, in milli seconds, after time has elapsed function is called
    * @param secstime Time in milli seconds
@@ -59,21 +59,3 @@ function WMJSTimer () {
   }
 };
 
-var WMJSDebouncer = function () {
-  var isRunning = false;
-  var milliseconds = 10;
-  var stop = false;
-  this.init = function (ms, functionhandler) {
-    stop = false;
-    milliseconds = ms;
-    if (milliseconds < 10) milliseconds = 10;
-    if (isRunning === false) {
-      self.setTimeout(function () { isRunning = false; if (stop === false) { functionhandler(); } }, milliseconds);
-      isRunning = true;
-    }
-  };
-
-  this.stop = function () {
-    stop = true;
-  };
-};

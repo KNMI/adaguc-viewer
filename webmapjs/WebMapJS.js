@@ -29,238 +29,419 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
 */
-var WebMapJSMapNo = 0;
 
-var WebMapJSMapVersion = '3.0.4';
+import WMJSImageStore from './WMJSImageStore.js';
+import { isDefined, preventdefaultEvent, URLEncode, toArray, deleteEvent, attachEvent, WMJScheckURL, MakeHTTPRequest, getMouseXCoordinate, getMouseYCoordinate, addMouseWheelEvent, removeMouseWheelEvent } from './WMJSTools.js';
+import WMJSBBOX from './WMJSBBOX.js';
+import WMJSProjection from './WMJSProjection.js';
+import WMJSListener from './WMJSListener.js';
+import WMJSTimer from './WMJSTimer.js';
+import WMJSDebouncer from './WMJSDebouncer.js';
+import WMJSCanvasBuffer from './WMJSCanvasBuffer.js';
+import WMJSAnimate from './WMJSAnimate.js';
+import WMJSTileRenderer from './WMJSTileRenderer.js';
+import WMJSDrawMarker from './WMJSDrawMarker.js';
+import I18n from './I18n/lang.en.js';
+// import proj4 from 'proj4';
+// import moment from 'moment';
+import WMJSDialog from './WMJSDialog.js';
+import { WMJSDateOutSideRange, WMJSDateTooEarlyString, WMJSDateTooLateString, WMSVersion, WMJSProj4Defs } from './WMJSConstants.js';
+// var Hammer = require(['hammerjs']);
 
-var logging = false;
-
-var base = './';
-// var xml2jsonrequestURL;
-var noimage;
-var showDialog = true;
-
-var loadingImageSrc;
-
-var WMSControlsImageSrc;
-var mapPinImageSrc;
-var scaleBarURL;
-
-var enableConsoleDebugging = false;
-var enableConsoleErrors = false;
+let enableConsoleDebugging = false;
+let enableConsoleErrors = false;
 /**
  * Set base URL of several sources used wihtin webmapjs
  */
 
-var debug = function (message) {
+let debug = (message) => {
   if (enableConsoleDebugging) { console.log(message); }
 };
-var error = function (message) {
+let error = (message) => {
   if (enableConsoleErrors) { console.log('WebMapJS warning: ', message); }
 };
 
-/**
-  * Function which checks wether URL contains a ? token. If not, it is assumed that this token was not provided by the user,
-  * manually add the token later.
-  * @param url The URL to check
-  * @return the fixed URL
-  */
-var WMJScheckURL = function (url) {
-  if (!isDefined(url)) return '?';
-  url = url.trim();
-  if (url.indexOf('?') == -1) {
-    url += '?';
+/* Global vars */
+let WebMapJSMapNo = 0;
+/* Global image stores */
+let maxAnimationSteps = 60;
+var legendImageStore = new WMJSImageStore(maxAnimationSteps * 6, 'wmjslegendbuffer');
+var getMapImageStore = new WMJSImageStore(maxAnimationSteps * 6, 'wmjsimagebuffer');
+var bgMapImageStore = new WMJSImageStore(360, 'wmjsimagebuffer', { randomizer:false });
+
+/* GetFeature info handling */
+class GetFeatureInfoObject {
+  constructor (layer, data) {
+    this.layer = layer;
+    this.data = data;
   }
-  return url;
 };
 
-/**
-  * WMJSProjection Class
-  * Keep all projection information, by a bbox and an srs value.
-  */
-function WMJSProjection () {
-  this.bbox = new WMJSBBOX();
-  this.srs = 'EPSG:4326';
-};
-
-var legendImageStore; // GLOBAL LEGEND IMAGE STORE
-var getMapImageStore; // GLOBAL IMAGE STORE
-var bgMapImageStore; // GLOBAL BACKGROUND MAP IMAGE STORE
-var maxAnimationSteps = 1000;
-legendImageStore = new WMJSImageStore(maxAnimationSteps * 5, 'wmjslegendbuffer');
-getMapImageStore = new WMJSImageStore(maxAnimationSteps * 5, 'wmjsimagebuffer');
-bgMapImageStore = new WMJSImageStore(5000, 'wmjsimagebuffer', {randomizer:false});
-var setBaseURL = function (_baseURL) {
-  base = _baseURL;
-  //base_plus_dir = base + 'adaguc/webmapjs';
-  noimage = base + '/img/blank.gif?';
-  loadingImageSrc = base + '/img/ajax-loader.gif';
-  WMSControlsImageSrc = base + '/img/mapcontrols.gif';
-  mapPinImageSrc = base + '/img/dot.gif';
-  if (!isDefined(scaleBarURL)) {
-    scaleBarURL = base + '/php/makeScaleBar.php?';
-  }
-  xml2jsonrequestURL =  base + '/php/xml2jsonrequest.php?'
-};
-
-var showDialogs = function (shouldShow) {
-  showDialog = shouldShow;
-}
 /**
 /**
   * WMJSMap class
   */
-function WMJSMap (_element, _xml2jsonrequestURL) {
-
-
-  this.setBaseURL = function (_baseURL) {
-    base = _baseURL;
-    //base_plus_dir = base + 'adaguc/webmapjs';
-    noimage = base + '/img/blank.gif?';
-    loadingImageSrc = base + '/img/ajax-loader.gif';
-    WMSControlsImageSrc = base + '/img/mapcontrols.gif';
-    mapPinImageSrc = base + '/img/dot.gif';
-    if (!isDefined(scaleBarURL)) {
-      scaleBarURL = base + '/php/makeScaleBar.php?';
-    }
-  };
-
-  this.showDialogs = function (shouldShow) {
-    showDialog = shouldShow;
-  }
-  this.setBaseURL(base);
-
-  this.setXML2JSONURL = function (_xml2jsonrequest) {
-    xml2jsonrequest = _xml2jsonrequest;
-  };
-  
-  this.setWMJSTileRendererTileSettings = function(_WMJSTileRendererTileSettings) {
-    tileRenderSettings = _WMJSTileRendererTileSettings;    
-  };
-
-  var mainElement = _element;
-  try {
-    if (isDefined(_xml2jsonrequestURL)) {
-      xml2jsonrequestURL = _xml2jsonrequestURL;
+export class WMJSMap {
+  constructor (_element, _xml2jsonrequestURL) {
+    this.WebMapJSMapVersion = '3.2.0';
+    this.base = './';
+    this.noimage = undefined;
+    this.showDialog = true;
+    this.loadingImageSrc = undefined;
+    this.WMSControlsImageSrc = undefined;
+    this.mainElement = _element;
+    this.baseDiv = undefined;
+    this.mainTimeSlider = undefined;
+    this.srs = undefined;
+    this.resizeBBOX = new WMJSBBOX();
+    this.defaultBBOX = new WMJSBBOX();
+    this.width = 2;
+    this.height = 2;
+    this.layers = [];
+    this.busy = 0;
+    this.mapdimensions = [];// Array of Dimension;
+    this.baseLayers = '';
+    this.numBaseLayers = 0;
+    this._map = this;
+    this.renderer = 'WMJSCanvasBuffer';
+    this.layersBusy = 0;
+    this.mapBusy = false;
+    this.hasGeneratedId = false;
+    this.divZoomBox = document.createElement('div');
+    this.divBoundingBox = document.createElement('div');
+    this.divDimInfo = document.createElement('div');
+    this.divMapPin = {
+      displayMapPin: true
     };
-  } catch(e){
-    xml2jsonrequestURL = base + '/php/xml2jsonrequest.php?';
-  }
-  try {
-    if (!isDefined(requestProxy)) {};
-  } catch (e) {
-    requestProxy = base + '/php/MakeRequest.php?';
-  }
-  try {
-    if (!isDefined(scaleBarURL)) {};
-  } catch (e) {
-    scaleBarURL = base + '/php/makeScaleBar.php?';
-  }
-  var baseDiv;
+    this._displayLegendInMap = true;
+    this.messageDiv = undefined;
+    this.timeoffsetContainerDiv = undefined;
+    this.timeoffsetDiv = undefined;
+    this.bbox = new WMJSBBOX(); // Boundingbox that will be used for map loading
+    this.updateBBOX = new WMJSBBOX(); // Boundingbox to move map without loading anything
+    this.loadedBBOX = new WMJSBBOX(); // Boundingbox that is used for current map
+    this.loadingBBOX = new WMJSBBOX(); // Boundingbox that is used when map is loading
+    this.drawnBBOX = new WMJSBBOX(); // Boundingbox that is used when map is drawn
+    this.updateSRS = '';
+    this.legendDivBuffer = [];
+    this.divBuffer = [];
 
-  var mainTimeSlider;
-  var srs;
+    this.mapHeader = {
+      height:0,
+      fill:{
+        color:'#EEE',
+        opacity:0.4
+      },
+      hover:{
+        color:'#017daf',
+        opacity:0.9
+      },
+      selected:{
+        color:'#017daf',
+        opacity:1.0
+      },
+      hoverSelected:{
+        color:'#017daf',
+        opacity:1.0
+      },
+      cursorSet:false,
+      prevCursor:'default',
+      hovering:false
+    };
 
-  var resizeBBOX = new WMJSBBOX();
-  // var origbbox = new WMJSBBOX();
-  var defaultBBOX = new WMJSBBOX();
-  // var zoomBBOX = new WMJSBBOX();
-  var width = 2, height = 2;
-  var layers = Array();
-  var busy = 0;
-  var mapdimensions = [];// Array of Dimension;
+    this.currentCursor = 'default';
+    this.mapIsActivated = false;
+    this.isMapHeaderEnabled = false;
+    this.showScaleBarInMap = true;
+    this.mouseHoverAnimationBox = false;
 
+    this.loadingDiv = $('<div class="WMJSDivBuffer-loading"/>', {});
+    this.initialized = 0;
+    this.newSwapBuffer = 0;
+    this.currentSwapBuffer = 1;
+    this.suspendDrawing = false;
+    this.activeLayer = undefined;
+    /* Undo: */
+    this.MaxUndos = 3;
+    this.NrOfUndos = 0;
+    this.UndoPointer = 0;
+    this.DoUndo = 0;
+    this.DoRedo = 0;
+    this.NrRedos = 0;
+    this.NrUndos = 0;
+    this.WMJSProjection_undo = new Array(this.MaxUndos);
+    this.WMJSProjection_tempundo = new Array(this.MaxUndos);
+    for (let j = 0; j < this.MaxUndos; j++) { this.WMJSProjection_undo[j] = new WMJSProjection(); this.WMJSProjection_tempundo[j] = new WMJSProjection(); }
+    this.inlineGetFeatureInfo = true;
+    this.callBack = new WMJSListener();
+    this.setBaseURL('./');
+    /* Contains the event values for when the mouse was pressed down (used for checking the shiftKey); */
+    this.gfiDialogList = [];
+    this.loadedLegendUrls = [];
+    this.currentLegendDivBuffer = 0; // 0 or 1
+    this.legendBusy = false;
+    this.setTimeOffsetValue = '';
+    this.setMessageValue = '';
+    this.canvasErrors = [];
 
-  var baseLayers = '';
-  var numBaseLayers = 0;
-  var _map = this;
-  _map.renderer = 'WMJSCanvasBuffer';
-  var layersBusy = 0;
-  var mapBusy = false;
-  var hasGeneratedId = false;
+    this.resizeWidth = -1;
+    this.resizeHeight = -1;
+    this._resizeTimerBusy = false;
+    this._resizeTimer = new WMJSTimer();
+    this.zoomBeforeLoadBBOX = undefined;
+    this.srsBeforeLoadBBOX = undefined;
+    this.drawTimer = new WMJSDebouncer();
+    this.drawTimerBusy = false;
+    this.drawTimerPending = false;
+    this.drawTimerAnimationList = undefined;
+    this.wmjsAnimate = undefined;
+    this.loadingDivTimer = new WMJSTimer();
 
-  var divZoomBox = document.createElement('div');
-  var divBoundingBox = document.createElement('div');
-  var divMapPin = document.createElement('div');
-  var divDimInfo = document.createElement('div');
+    this.mouseWheelBusy = 0;
+    this.flyZoomToBBOXTimerStart = 1;
+    this.flyZoomToBBOXTimerSteps = 6;
+    this.flyZoomToBBOXTimerLoop = undefined;
+    this.flyZoomToBBOXTimer = new WMJSDebouncer();
+    this.flyZoomToBBOXScaler = 0;
+    this.flyZoomToBBOXCurrent = new WMJSBBOX();
+    this.flyZoomToBBOXFly = new WMJSBBOX();
+    this.flyZoomToBBOXNew = new WMJSBBOX();
+    this.flyZoomToBBOXContinueNew = new WMJSBBOX();
+    this.flyZoomToBBOXTimerFuncBusy = 0;
+    this.flyZoomToBBOXTimerFuncBusyAndContinue = 0;
+    this.mouseWheelEventBBOXCurrent = new WMJSBBOX();
+    this.mouseWheelEventBBOXNew = new WMJSBBOX();
+    this.pinchStart1 = undefined;
+    this.pinchStart2 = undefined;
+    this.pinchBox = undefined;
+    this.mouseX = 0;
+    this.mouseY = 0;
+    this.mouseDownX = -10000;
+    this.mouseDownY = -10000;
+    this.mouseUpX = 10000;
+    this.mouseUpY = 10000;
+    this.mouseDragging = 0;
+    this.controlsBusy = false;
+    this.mouseDownPressed = 0;
+    this.elementPosition = undefined;
+    this.mapMode = 'pan'; /* pan,zoom,zoomout,info */
 
-  var displayLegendInMap = true;
-  var messageDiv;
-  var timeoffsetContainerDiv;
-  var timeoffsetDiv;
-  var bbox = new WMJSBBOX(); // Boundingbox that will be used for map loading
-  var updateBBOX = new WMJSBBOX(); // Boundingbox to move map without loading anything
-  var loadedBBOX = new WMJSBBOX(); // Boundingbox that is used for current map
-  var loadingBBOX = new WMJSBBOX(); // Boundingbox that is used when map is loading
-  var drawnBBOX = new WMJSBBOX(); // Boundingbox that is used when map is drawn
-  var updateSRS = '';
+    this.numGetFeatureInfoRequests = 0;
+    this.getFeatureInfoResult = [];
 
-  var legendDivBuffer = [];
+    this.numGetPointInfoRequests = 0;
+    this.getPointInfoResult = [];
 
-  _map.getLegendStore = function () {
+    this.getPointInfoBusy = false;
+    this.requestProxy = undefined; // TODO
+    this.oldMapMode = undefined;
+    this.InValidMouseAction = 0;
+    this.resizingBBOXCursor = false;
+    this.resizingBBOXEnabled = false;
+    this.mouseGeoCoordXY = undefined;
+    this.mouseUpdateCoordinates = undefined;
+    this.mapPanning = 0;
+    this.mapPanStartGeoCoords = undefined;
+    this.mapZooming = 0;
+    this.proj4 = {}; /* proj4 remembers current projection */
+    this.proj4.srs = 'empty';
+    this.proj4.projection = undefined;
+    this.longlat = 'EPSG:4326';
+    proj4.defs(WMJSProj4Defs);
+    this.knmiGeoNamesURL = undefined;
+    this.geoNamesURL = undefined;
+    this.defaultUsernameSearch = 'adaguc';
+    this.setDebugFunction = (debugFunction) => { debug = debugFunction; };
+    this.setErrorFunction = (errorFunction) => { error = errorFunction; };
+
+    /* Binds */
+    this.setBaseURL = this.setBaseURL.bind(this);
+    this.showDialogs = this.showDialogs.bind(this);
+    this.setXML2JSONURL = this.setXML2JSONURL.bind(this);
+    this.setWMJSTileRendererTileSettings = this.setWMJSTileRendererTileSettings.bind(this);
+    this.getLegendStore = this.getLegendStore.bind(this);
+    this.makeComponentId = this.makeComponentId.bind(this);
+    this.enableInlineGetFeatureInfo = this.enableInlineGetFeatureInfo.bind(this);
+    this.dialogClosed = this.dialogClosed.bind(this);
+    this.closeAllGFIDialogs = this.closeAllGFIDialogs.bind(this);
+    this.onLegendCallbackFunction = this.onLegendCallbackFunction.bind(this);
+    this.loadLegendInline = this.loadLegendInline.bind(this);
+    this.setMessage = this.setMessage.bind(this);
+    this.setTimeOffset = this.setTimeOffset.bind(this);
+    this.init = this.init.bind(this);
+    this.rebuildMapDimensions = this.rebuildMapDimensions.bind(this);
+    this.getLayerByServiceAndName = this.getLayerByServiceAndName.bind(this);
+    this.getLayers = this.getLayers.bind(this);
+    this.setLayer = this.setLayer.bind(this);
+    this.setActive = this.setActive.bind(this);
+    this.setActiveLayer = this.setActiveLayer.bind(this);
+    this.calculateNumBaseLayers = this.calculateNumBaseLayers.bind(this);
+    this.enableLayer = this.enableLayer.bind(this);
+    this.disableLayer = this.disableLayer.bind(this);
+    this.toggleLayer = this.toggleLayer.bind(this);
+    this.displayLayer = this.displayLayer.bind(this);
+    this._getLayerIndex = this._getLayerIndex.bind(this);
+    this.removeAllLayers = this.removeAllLayers.bind(this);
+    this.deleteLayer = this.deleteLayer.bind(this);
+    this.moveLayerDown = this.moveLayerDown.bind(this);
+    this.moveLayerUp = this.moveLayerUp.bind(this);
+    this.addLayer = this.addLayer.bind(this);
+    this.getActiveLayer = this.getActiveLayer.bind(this);
+    this.setProjection = this.setProjection.bind(this);
+    this.getBBOX = this.getBBOX.bind(this);
+    this.getProjection = this.getProjection.bind(this);
+    this.getSize = this.getSize.bind(this);
+    this.getWidth = this.getWidth.bind(this);
+    this.getHeight = this.getHeight.bind(this);
+    this.repositionLegendGraphic = this.repositionLegendGraphic.bind(this);
+    this.setSize = this.setSize.bind(this);
+    this._setSize = this._setSize.bind(this);
+    this.getBBOXandProjString = this.getBBOXandProjString.bind(this);
+    this.isTouchDevice = this.isTouchDevice.bind(this);
+    this.getDimensionRequestString = this.getDimensionRequestString.bind(this);
+    this.dateToISO8601 = this.dateToISO8601.bind(this);
+    this.buildWMSGetMapRequest = this.buildWMSGetMapRequest.bind(this);
+    this.abort = this.abort.bind(this);
+    this.isBusy = this.isBusy.bind(this);
+    this._makeInfoHTML = this._makeInfoHTML.bind(this);
+    this.getLegendGraphicURLForLayer = this.getLegendGraphicURLForLayer.bind(this);
+    this.showScaleBar = this.showScaleBar.bind(this);
+    this.hideScaleBar = this.hideScaleBar.bind(this);
+    this.getMaxNumberOfAnimations = this.getMaxNumberOfAnimations.bind(this);
+    this.drawLastTimes = this.drawLastTimes.bind(this);
+    this.drawAutomatic = this.drawAutomatic.bind(this);
+    this.display = this.display.bind(this);
+    this.draw = this.draw.bind(this);
+    this._draw = this._draw.bind(this);
+    this._drawAndLoad = this._drawAndLoad.bind(this);
+    this._onLayersReadyCallbackFunction = this._onLayersReadyCallbackFunction.bind(this);
+    this._onMapReadyCallbackFunction = this._onMapReadyCallbackFunction.bind(this);
+    this._onResumeSuspendCallbackFunction = this._onResumeSuspendCallbackFunction.bind(this);
+    this.getWMSRequests = this.getWMSRequests.bind(this);
+    this.prefetch = this.prefetch.bind(this);
+    this.getImageStore = this.getImageStore.bind(this);
+    this.isThisRequestLoaded = this.isThisRequestLoaded.bind(this);
+    this._pdraw = this._pdraw.bind(this);
+    this._updateBoundingBox = this._updateBoundingBox.bind(this);
+    this.flipBuffers = this.flipBuffers.bind(this);
+    this.getBackBufferCanvasContext = this.getBackBufferCanvasContext.bind(this);
+    this.getFrontBufferCanvasContext = this.getFrontBufferCanvasContext.bind(this);
+    this.redrawBuffer = this.redrawBuffer.bind(this);
+    this.addBaseLayers = this.addBaseLayers.bind(this);
+    this.setBaseLayers = this.setBaseLayers.bind(this);
+    this.getBaseLayers = this.getBaseLayers.bind(this);
+    this.getNumLayers = this.getNumLayers.bind(this);
+    this.getBaseElement = this.getBaseElement.bind(this);
+    this.flyZoomToBBOXTimerFunc = this.flyZoomToBBOXTimerFunc.bind(this);
+    this.flyZoomToBBOXStop = this.flyZoomToBBOXStop.bind(this);
+    this.flyZoomToBBOXStartZoom = this.flyZoomToBBOXStartZoom.bind(this);
+    this.mouseWheelEvent = this.mouseWheelEvent.bind(this);
+    this.pinchStart = this.pinchStart.bind(this);
+    this.pinchMove = this.pinchMove.bind(this);
+    this.pinchEnd = this.pinchEnd.bind(this);
+    this.destroy = this.destroy.bind(this);
+    this.detachEvents = this.detachEvents.bind(this);
+    this.attachEvents = this.attachEvents.bind(this);
+    this._getCorrectWMSDimName = this._getCorrectWMSDimName.bind(this);
+    this._getMapDimURL = this._getMapDimURL.bind(this);
+    this._buildLayerDims = this._buildLayerDims.bind(this);
+    this.getMapMode = this.getMapMode.bind(this);
+    this.getWMSMetaDataRequestURL = this.getWMSMetaDataRequestURL.bind(this);
+    this.getPointInfoRequestURL = this.getPointInfoRequestURL.bind(this);
+    this.getWMSGetFeatureInfoRequestURL = this.getWMSGetFeatureInfoRequestURL.bind(this);
+    this.featureInfoRequestReady = this.featureInfoRequestReady.bind(this);
+    this.newGetPointInfo = this.newGetPointInfo.bind(this);
+    this.getPointInfo = this.getPointInfo.bind(this);
+    this.newGetFeatureInfo = this.newGetFeatureInfo.bind(this);
+    this.getFeatureInfo = this.getFeatureInfo.bind(this);
+    this.getGetFeatureInfoObjectAsHTML = this.getGetFeatureInfoObjectAsHTML.bind(this);
+    this.getMapPinXY = this.getMapPinXY.bind(this);
+    this.positionMapPinByLatLon = this.positionMapPinByLatLon.bind(this);
+    this.repositionMapPin = this.repositionMapPin.bind(this);
+    this.setMapPin = this.setMapPin.bind(this);
+    this.isMapPinVisible = this.isMapPinVisible.bind(this);
+    this.showMapPin = this.showMapPin.bind(this);
+    this.hideMapPin = this.hideMapPin.bind(this);
+    this.setMapModeGetInfo = this.setMapModeGetInfo.bind(this);
+    this.setMapModeZoomBoxIn = this.setMapModeZoomBoxIn.bind(this);
+    this.setMapModeZoomOut = this.setMapModeZoomOut.bind(this);
+    this.setMapModePan = this.setMapModePan.bind(this);
+    this.setMapModePoint = this.setMapModePoint.bind(this);
+    this.setMapModeNone = this.setMapModeNone.bind(this);
+    this.getMouseCoordinatesForDocument = this.getMouseCoordinatesForDocument.bind(this);
+    this.getMouseCoordinatesForElement = this.getMouseCoordinatesForElement.bind(this);
+    this.mouseDown = this.mouseDown.bind(this);
+    this._checkInvalidMouseAction = this._checkInvalidMouseAction.bind(this);
+    this.updateMouseCursorCoordinates = this.updateMouseCursorCoordinates.bind(this);
+    this.mouseDownEvent = this.mouseDownEvent.bind(this);
+    this.mouseMoveEvent = this.mouseMoveEvent.bind(this);
+    this.mouseUpEvent = this.mouseUpEvent.bind(this);
+    this.mouseMove = this.mouseMove.bind(this);
+    this.mouseUp = this.mouseUp.bind(this);
+    this._mouseDragStart = this._mouseDragStart.bind(this);
+    this.mouseDrag = this.mouseDrag.bind(this);
+    this.mouseDragEnd = this.mouseDragEnd.bind(this);
+    this._mapPanStart = this._mapPanStart.bind(this);
+    this._mapPan = this._mapPan.bind(this);
+    this._mapPanEnd = this._mapPanEnd.bind(this);
+    this._mapZoomStart = this._mapZoomStart.bind(this);
+    this._mapZoom = this._mapZoom.bind(this);
+    this._mapZoomEnd = this._mapZoomEnd.bind(this);
+    this.setCursor = this.setCursor.bind(this);
+    this.getId = this.getId.bind(this);
+    this.zoomTo = this.zoomTo.bind(this);
+    this.pixelCoordinatesToXY = this.pixelCoordinatesToXY.bind(this);
+    this.getGeoCoordFromPixelCoord = this.getGeoCoordFromPixelCoord.bind(this);
+    this.getProj4 = this.getProj4.bind(this);
+    this.getPixelCoordFromLatLong = this.getPixelCoordFromLatLong.bind(this);
+    this.WCJSSearchRequest = this.WCJSSearchRequest.bind(this);
+    this.WCJSSearchRequestGeoNames = this.WCJSSearchRequestGeoNames.bind(this);
+    this.calculateBoundingBoxAndZoom = this.calculateBoundingBoxAndZoom.bind(this);
+    this.getLatLongFromPixelCoord = this.getLatLongFromPixelCoord.bind(this);
+    this.getPixelCoordFromGeoCoord = this.getPixelCoordFromGeoCoord.bind(this);
+    this.addListener = this.addListener.bind(this);
+    this.removeListener = this.removeListener.bind(this);
+    this.getListener = this.getListener.bind(this);
+    this.suspendEvent = this.suspendEvent.bind(this);
+    this.resumeEvent = this.resumeEvent.bind(this);
+    this.getDimensionList = this.getDimensionList.bind(this);
+    this.getDimension = this.getDimension.bind(this);
+    this.setDimension = this.setDimension.bind(this);
+    this.setLayerOpacity = this.setLayerOpacity.bind(this);
+    this.zoomToLayer = this.zoomToLayer.bind(this);
+    this.setPreviousExtent = this.setPreviousExtent.bind(this);
+    this.setNextExtent = this.setNextExtent.bind(this);
+    this.setBBOX = this.setBBOX.bind(this);
+    this.zoomOut = this.zoomOut.bind(this);
+    this.zoomIn = this.zoomIn.bind(this);
+    this.searchForLocation = this.searchForLocation.bind(this);
+    this.displayLegendInMap = this.displayLegendInMap.bind(this);
+    this.showBoundingBox = this.showBoundingBox.bind(this);
+    this.hideBoundingBox = this.hideBoundingBox.bind(this);
+    this.init();
+  };
+
+  setBaseURL (_baseURL) {
+    this.base = _baseURL;
+    this.noimage = this.base + '/img/blank.gif?';
+    this.loadingImageSrc = this.base + '/img/ajax-loader.gif';
+    this.WMSControlsImageSrc = this.base + '/img/mapcontrols.gif';
+  };
+
+  showDialogs (shouldShow) {
+    this.showDialog = shouldShow;
+  };
+
+  setXML2JSONURL (_xml2jsonrequest) {
+    this.xml2jsonrequest = _xml2jsonrequest;
+  };
+
+  setWMJSTileRendererTileSettings (_WMJSTileRendererTileSettings) {
+    this.tileRenderSettings = _WMJSTileRendererTileSettings;
+  };
+
+  getLegendStore () {
     return legendImageStore;
-  };
-
-  var divBuffer = [];
-
-  var mapHeader = {
-    height:0,
-    fill:{
-      color:'#EEE',
-      opacity:0.4
-    },
-    hover:{
-      color:'#017daf',
-      opacity:0.9
-    },
-    selected:{
-      color:'#017daf',
-      opacity:1.0
-    },
-    hoverSelected:{
-      color:'#017daf',
-      opacity:1.0
-    },
-    cursorSet:false,
-    prevCursor:'default',
-    hovering:false
-  };
-
-  var currentCursor = 'default';
-  var mapIsActivated = false;
-  var isMapHeaderEnabled = false;
-
-  var loadingDiv = $('<div class="WMJSDivBuffer-loading"/>', {});
-  var initialized = 0;
-  var newSwapBuffer = 0;
-  var currentSwapBuffer = 1;
-  var suspendDrawing = false;
-  // var suspendMapEvents = false;
-  var activeLayer;
-  // Undo:
-  var MaxUndos = 3;
-  var NrOfUndos = 0;
-  var UndoPointer = 0;
-  var DoUndo = 0;
-  var DoRedo = 0;
-  var NrRedos = 0, NrUndos = 0;
-  var WMJSProjection_undo = new Array(MaxUndos);
-  var WMJSProjection_tempundo = new Array(MaxUndos);
-  for (j = 0; j < MaxUndos; j++) { WMJSProjection_undo[j] = new WMJSProjection(); WMJSProjection_tempundo[j] = new WMJSProjection(); }
-
-  var inlineGetFeatureInfo = true;
-
-  var callBack = new WMJSListener();
-
-  var graphingData;
-
-  this.getGraphingData = function () {
-    return this.graphingData;
-  };
-
-  this.setGraphingData = function (data) {
-    this.graphingData = data;
-//    debug("gD: "+dump(data));
   };
 
   /**
@@ -268,170 +449,178 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
    * @param the desired id
    * @return the unique id
    */
-  var makeComponentId = function (id) {
-    if (!mainElement.id) {
-      mainElement.id = 'WebMapJSMapNo_' + WebMapJSMapNo;
+  makeComponentId (id) {
+    if (!this.mainElement.id) {
+      this.mainElement.id = 'WebMapJSMapNo_' + WebMapJSMapNo;
     }
-    if (hasGeneratedId === false){
-      hasGeneratedId = true;
+    if (this.hasGeneratedId === false) {
+      this.hasGeneratedId = true;
       WebMapJSMapNo++;
     }
-    return mainElement.id + '_' + id;
+    return this.mainElement.id + '_' + id;
   };
 
-  this.enableInlineGetFeatureInfo = function (trueOrFalse) {
-    inlineGetFeatureInfo = trueOrFalse;
+  enableInlineGetFeatureInfo (trueOrFalse) {
+    this.inlineGetFeatureInfo = trueOrFalse;
   };
 
-  // Contains the event values for when the mouse was pressed down (used for checking the shiftKey);
-  var mouseDownEvent;
-
-  var dialogClosed = function (dialog) {
-    for (var j = 0; j < gfiDialogList.length; j++) {
-      if (gfiDialogList[j] == dialog) {
-        gfiDialogList.splice(j, 1);
+  dialogClosed (dialog) {
+    for (let j = 0; j < this.gfiDialogList.length; j++) {
+      if (this.gfiDialogList[j] === dialog) {
+        this.gfiDialogList.splice(j, 1);
         j--;
       }
     }
   };
 
-  this.closeAllGFIDialogs = function () {
-    WMJSDialog.closeAllDialogs(gfiDialogList);
+  closeAllGFIDialogs () {
+    new WMJSDialog().closeAllDialogs(this.gfiDialogList);
   };
 
-  var gfiDialogList = [];
-
-  var onLegendCallbackFunction = function () {
+  onLegendCallbackFunction () {
     if (enableConsoleDebugging)console.log('onlegendready called');
-
-    loadLegendInline();
+    this.loadLegendInline();
   };
 
-  var loadedLegendUrls = [];
-  var currentLegendDivBuffer = 0; // 0 or 1
-  var legendBusy = false;
-
-/* Load legend inline of the map */
-  var loadLegendInline = function (somethingchanged) {
-    if (legendDivBuffer.length < 2) return;
+  /* Load legend inline of the map */
+  loadLegendInline (somethingchanged) {
+    if (this.legendDivBuffer.length < 2) return;
     try {
-      if (isDefined(somethingchanged) == false) {
+      if (isDefined(somethingchanged) === false) {
         somethingchanged = false;
       }
-      if (legendBusy == true && isDefined(onLegendCallbackFunction)) {
-        if (callBack.addToCallback('onlegendready', onLegendCallbackFunction) == true) {
+      if (this.legendBusy === true && isDefined(this.onLegendCallbackFunction)) {
+        if (this.callBack.addToCallback('onlegendready', this.onLegendCallbackFunction) === true) {
           if (enableConsoleDebugging)console.log('Suspending on onlegendready');
         }
         return;
       }
-      legendBusy = true;
-      if (displayLegendInMap == true) {
-        if (loadedLegendUrls.length != layers.length) {
+      this.legendBusy = true;
+      if (this._displayLegendInMap === true) {
+        if (this.loadedLegendUrls.length !== this.layers.length) {
           somethingchanged = true;
         } else {
-          for (var j = 0; j < layers.length; j++) {
-            var legendUrl = _map.getLegendGraphicURLForLayer(layers[j]);
+          for (let j = 0; j < this.layers.length; j++) {
+            let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
             if (isDefined(legendUrl)) {
-              if (loadedLegendUrls[j] !== legendUrl) {
-                loadedLegendUrls[j] = legendUrl;
+              if (this.loadedLegendUrls[j] !== legendUrl) {
+                this.loadedLegendUrls[j] = legendUrl;
                 somethingchanged = true;
               }
             }
           }
         }
         if (somethingchanged) {
-          loadedLegendUrls = [];
-          for (var j = 0; j < layers.length; j++) {
-            if (layers[j].enabled !== false) {
-              var legendUrl = _map.getLegendGraphicURLForLayer(layers[j]);
+          this.loadedLegendUrls = [];
+          for (let j = 0; j < this.layers.length; j++) {
+            if (this.layers[j].enabled !== false) {
+              let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
 
               if (isDefined(legendUrl)) {
-                loadedLegendUrls[j] = legendUrl;
-                var inlineLegendURL = legendUrl;
-                legendDivBuffer[currentLegendDivBuffer].setSrc(j, inlineLegendURL);
+                this.loadedLegendUrls[j] = legendUrl;
+                let inlineLegendURL = legendUrl;
+                this.legendDivBuffer[this.currentLegendDivBuffer].setSrc(j, inlineLegendURL);
               }
             }
           }
-          var legendDivBufferToLoad = currentLegendDivBuffer;
-          currentLegendDivBuffer = 1 - currentLegendDivBuffer;
+          let legendDivBufferToLoad = this.currentLegendDivBuffer;
+          this.currentLegendDivBuffer = 1 - this.currentLegendDivBuffer;
           try {
-            legendDivBuffer[legendDivBufferToLoad].load(function () {
+            this.legendDivBuffer[legendDivBufferToLoad].load(() => {
               if (enableConsoleDebugging)console.log('Legend buffer nr' + legendDivBufferToLoad);
               try {
-                var maxWidth = 0;
-                var maxHeight = 0;
-                for (var j = 0; j < legendDivBuffer[legendDivBufferToLoad].layers.length; j++) {
-                  var w = legendDivBuffer[legendDivBufferToLoad].layers[j].getElement()[0].width;
-                  var h = legendDivBuffer[legendDivBufferToLoad].layers[j].getElement()[0].height;
-                  maxWidth += w;
+                let maxHeight = 0;
+                for (let j = 0; j < this.legendDivBuffer[legendDivBufferToLoad].layers.length; j++) {
+                  let h = this.legendDivBuffer[legendDivBufferToLoad].layers[j].getElement()[0].height;
                   if (maxHeight < h)maxHeight = h;
                 }
-                legendDivBuffer[legendDivBufferToLoad].display();
-                legendDivBuffer[1 - legendDivBufferToLoad].hide();
+                this.legendDivBuffer[legendDivBufferToLoad].display();
+                this.legendDivBuffer[1 - legendDivBufferToLoad].hide();
               } catch (e) {
                 console.error(e);
               }
-              legendBusy = false;
-              callBack.triggerEvent('onlegendready');
+              this.legendBusy = false;
+              this.callBack.triggerEvent('onlegendready');
             });
           } catch (e) {
             console.error(e);
-            legendDivBuffer[0].hide();
-            legendDivBuffer[1].hide();
-            legendBusy = false;
-            callBack.triggerEvent('onlegendready');
+            this.legendDivBuffer[0].hide();
+            this.legendDivBuffer[1].hide();
+            this.legendBusy = false;
+            this.callBack.triggerEvent('onlegendready');
           }
           return;
         }
       } else {
-        legendDivBuffer[0].hide();
-        legendDivBuffer[1].hide();
+        this.legendDivBuffer[0].hide();
+        this.legendDivBuffer[1].hide();
       }
     } catch (e) {
       console.log(e);
     }
-    legendBusy = false;
-    callBack.triggerEvent('onlegendready');
+    this.legendBusy = false;
+    this.callBack.triggerEvent('onlegendready');
   };
 
-  var setTimeOffsetValue = '';
-  var setMessageValue = '';
-
-  this.setMessage = function (message) {
+  setMessage (message) {
     if (!message || message === '') {
-      setMessageValue = '';
+      this.setMessageValue = '';
     } else {
-      setMessageValue = message;
+      this.setMessageValue = message;
     }
   };
 
-  this.setTimeOffset = function (message) {
+  setTimeOffset (message) {
     if (!message || message === '') {
-      setTimeOffsetValue = '';
+      this.setTimeOffsetValue = '';
     } else {
-      setTimeOffsetValue = message;
+      this.setTimeOffsetValue = message;
     }
   };
-  
-  this.canvasErrors = [];
-  // Is called when the WebMapJS object is created
-  function constructor () {
-    try { tileRenderSettings = WMJSTileRendererTileSettings; } catch(e) {}
-    // console.log('creating new WMJSMAP');
-    if(!mainElement.style.height){
-      mainElement.style.height = '1px';
+
+  /* Is called when the WebMapJS object is created */
+  init () {
+    try{
+      if (geoNamesURL) {
+        this.geoNamesURL = geoNamesURL;
+      }
+    }catch(e){
     }
-    if(!mainElement.style.width){
-      mainElement.style.width = '1px';
+    try{
+      if (defaultUsernameSearch) {
+        this.defaultUsernameSearch = defaultUsernameSearch;
+      }
+    }catch(e){
     }
-    this.baseDivId = makeComponentId('baseDiv');
-    jQuery('<div/>', {
+
+    try{
+      if (xml2jsonrequestURL) {
+        this.setXML2JSONURL(xml2jsonrequestURL);
+      }
+    }catch(e){
+    }
+    
+    try{
+      if (WMJSTileRendererTileSettings) {
+        this.setWMJSTileRendererTileSettings(WMJSTileRendererTileSettings);
+      }
+    }catch(e){
+    }
+    
+    if (!this.mainElement.style.height) {
+      this.mainElement.style.height = '1px';
+    }
+    if (!this.mainElement.style.width) {
+      this.mainElement.style.width = '1px';
+    }
+    this.baseDivId = this.makeComponentId('baseDiv');
+    $('<div/>', {
       id:this.baseDivId,
-      css:{
+      css: {
         position:'relative',
         overflow:'hidden',
-        width:mainElement.clientWidth,
-        height:mainElement.clientHeight,
+        width: this.mainElement.clientWidth,
+        height: this.mainElement.clientHeight,
         border:'0px  solid black',
         margin:0,
         padding:0,
@@ -439,173 +628,157 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
         left:'0px',
         top:'0px'
       }
-    }).appendTo(mainElement);
-    baseDiv = $('#' + this.baseDivId);
+    }).appendTo(this.mainElement);
+    this.baseDiv = $('#' + this.baseDivId);
 
-    baseDiv.css('cursor', 'default');
+    this.baseDiv.css('cursor', 'default');
 
-    mainElement.style.margin = '0px';
-    mainElement.style.padding = '0px';
-    mainElement.style.border = 'none';// "1px solid gray";
-    mainElement.style.lineHeight = '0px';
-    mainElement.style.display = 'inline-block';
+    this.mainElement.style.margin = '0px';
+    this.mainElement.style.padding = '0px';
+    this.mainElement.style.border = 'none';// "1px solid gray";
+    this.mainElement.style.lineHeight = '0px';
+    this.mainElement.style.display = 'inline-block';
 
     // Attach zoombox
-    divZoomBox.style.position = 'absolute';
-    divZoomBox.style.display = 'none';
-    divZoomBox.style.border = '2px dashed #000000';
-    divZoomBox.style.margin = '0px';
-    divZoomBox.style.padding = '0px';
-    divZoomBox.style.lineHeight = '0';
-    divZoomBox.style.background = '#AFFFFF';
-    divZoomBox.style.opacity = '0.3';               // Gecko
-    divZoomBox.style.filter = 'alpha(opacity=30)';  // Windows
-    divZoomBox.style.left = '0px';
-    divZoomBox.style.top = '0px';
-    divZoomBox.style.width = '100px';
-    divZoomBox.style.height = '100px';
-    divZoomBox.style.zIndex = 1000;
-    divZoomBox.oncontextmenu = function () { return false; };
-    baseDiv.append(divZoomBox);
+    this.divZoomBox.style.position = 'absolute';
+    this.divZoomBox.style.display = 'none';
+    this.divZoomBox.style.border = '2px dashed #000000';
+    this.divZoomBox.style.margin = '0px';
+    this.divZoomBox.style.padding = '0px';
+    this.divZoomBox.style.lineHeight = '0';
+    this.divZoomBox.style.background = '#AFFFFF';
+    this.divZoomBox.style.opacity = '0.3'; // Gecko
+    this.divZoomBox.style.filter = 'alpha(opacity=30)'; // Windows
+    this.divZoomBox.style.left = '0px';
+    this.divZoomBox.style.top = '0px';
+    this.divZoomBox.style.width = '100px';
+    this.divZoomBox.style.height = '100px';
+    this.divZoomBox.style.zIndex = 1000;
+    this.divZoomBox.oncontextmenu = () => { return false; };
+    this.baseDiv.append(this.divZoomBox);
 
     // Attach bbox box
-    divBoundingBox.style.position = 'absolute';
-    divBoundingBox.style.display = 'none';
-    divBoundingBox.style.border = '3px solid #6060FF';
-    divBoundingBox.style.margin = '0px';
-    divBoundingBox.style.padding = '0px';
-    divBoundingBox.style.lineHeight = '0';
-    divBoundingBox.style.left = '0px';
-    divBoundingBox.style.top = '0px';
-    divBoundingBox.style.width = '100px';
-    divBoundingBox.style.height = '100px';
-    divBoundingBox.style.zIndex = 1000;
-    divBoundingBox.oncontextmenu = function () { return false; };
-    baseDiv.append(divBoundingBox);
+    this.divBoundingBox.style.position = 'absolute';
+    this.divBoundingBox.style.display = 'none';
+    this.divBoundingBox.style.border = '3px solid #6060FF';
+    this.divBoundingBox.style.margin = '0px';
+    this.divBoundingBox.style.padding = '0px';
+    this.divBoundingBox.style.lineHeight = '0';
+    this.divBoundingBox.style.left = '0px';
+    this.divBoundingBox.style.top = '0px';
+    this.divBoundingBox.style.width = '100px';
+    this.divBoundingBox.style.height = '100px';
+    this.divBoundingBox.style.zIndex = 1000;
+    this.divBoundingBox.oncontextmenu = () => { return false; };
+    this.baseDiv.append(this.divBoundingBox);
 
-   // return;
-    // Attach divMapPin
-    divMapPin.style.position = 'absolute';
-    divMapPin.style.display = 'none';
-    divMapPin.style.border = 'none';
-    divMapPin.style.margin = '0px';
-    divMapPin.style.padding = '0px';
-    divMapPin.style.lineHeight = '0';
-    divMapPin.style.background = 'none';
-    divMapPin.style.opacity = '1.0';
-    divMapPin.style.filter = 'alpha(opacity=100)';
-    divMapPin.style.left = '0px';
-    divMapPin.style.top = '0px';
-    divMapPin.style.width = '100px';
-    divMapPin.style.height = '100px';
-    divMapPin.style.zIndex = 1000;
-    divMapPin.oncontextmenu = function () { return false; };
-    divMapPin.innerHTML = '<img src=\'' + mapPinImageSrc + '\'>';
-    divMapPin.style.display = '';
+    /* Attach divDimInfo */
+    this.divDimInfo.style.position = 'absolute';
+    this.divDimInfo.style.zIndex = 1000;
+    this.divDimInfo.style.width = 'auto';
+    this.divDimInfo.style.height = 'auto';
+    this.divDimInfo.style.background = 'none';
 
-    baseDiv.append(divMapPin);
-    // Attach divDimInfo
-    divDimInfo.style.position = 'absolute';
-    // divDimInfo.style.lineHeight = '14px';
-    divDimInfo.style.zIndex = 1000;
-    divDimInfo.style.width = 'auto';
-    divDimInfo.style.height = 'auto';
-    divDimInfo.style.background = 'none';
-    // divDimInfo.style.marginLeft='0px';
+    this.divDimInfo.oncontextmenu = () => { return false; };
+    this.divDimInfo.innerHTML = '';
+    this.baseDiv.append(this.divDimInfo);
 
-    divDimInfo.oncontextmenu = function () { return false; };
-    divDimInfo.innerHTML = '';
-    baseDiv.append(divDimInfo);
+    /* Attach loading image */
 
-    // Attach loading image
-
-    baseDiv.append(loadingDiv);
-
+    this.baseDiv.append(this.loadingDiv);
 
     /* ONLY VISIBLE IF USERNAME FOR GEONAMES API IS SET */
     if (typeof (defaultUsernameSearch) !== 'undefined') {
       /* Creating the div for the input */
-      jQuery('<div/>', {
-        id: makeComponentId('searchboxdiv'),
-        mousedown:function (event) { event.stopPropagation(); }
-      })
-      .addClass('webmapjs_searchboxdiv')
-      .html('<input class=\'webmapjs_locationfield\' type=\'text\' name=\'searchtextfield\'' +
+      $('<div/>', {
+        id: this.makeComponentId('searchboxdiv'),
+        mousedown:(event) => { event.stopPropagation(); }
+      }).addClass('webmapjs_searchboxdiv').html('<input class=\'webmapjs_locationfield\' type=\'text\' name=\'searchtextfield\'' +
         ' id=\'searchtextfield\' placeholder=' + I18n.place_search_term.text + ' />', {
-          mousedown:function (event) { event.stopPropagation(); preventdefault_event(event); } })
-      .appendTo(baseDiv);
+        mousedown:(event) => { event.stopPropagation(); preventdefaultEvent(event); } })
+        .appendTo(this.baseDiv);
 
-      jQuery('<button/>', {
-        id: makeComponentId('searchboxbutton'),
-        mousedown:function (event) { event.stopPropagation(); },
-        click:function () {
-          var value = $('#searchtextfield').val();//attr('value');
-          _map.searchForLocation(value);
-        } })
-      .addClass('webmapjs_locationbutton')
-      .appendTo(baseDiv);
+      $('<button/>', {
+        id: this.makeComponentId('searchboxbutton'),
+        mousedown:(event) => { event.stopPropagation(); },
+        click:() => {
+          let value = $('#searchtextfield').val();
+          this.searchForLocation(value);
+        } }).addClass('webmapjs_locationbutton').appendTo(this.baseDiv);
 
       /* On Enter */
-      $('#searchtextfield').keypress(function (e) {
-        if (e.which == 13) {
-          var value = $('#searchtextfield').val();//('value');
-          _map.searchForLocation(value);
+      $('#searchtextfield').keypress((e) => {
+        if (e.which === 13) {
+          let value = $('#searchtextfield').val();
+          this.searchForLocation(value);
           return false;
         }
       });
     }
+    /* Attach events */
+    this.attachEvents();
 
-    // wegbbaseDiv.style.backgroundColor= '#FFF';
-
-    // Attach events
-    attachEvents();
-
-    bbox.left = -180;
-    bbox.bottom = -90;
-    bbox.right = 180;
-    bbox.top = 90;
-    srs = 'EPSG:4326';
-    _map.setSize(mainElement.clientWidth, mainElement.clientHeight);
+    this.bbox.left = -180;
+    this.bbox.bottom = -90;
+    this.bbox.right = 180;
+    this.bbox.top = 90;
+    this.srs = 'EPSG:4326';
+    this.setSize(this.mainElement.clientWidth, this.mainElement.clientHeight);
     // IMAGE buffers
-    for (var j = 0; j < 2; j++) {
-      let d = new WMJSCanvasBuffer(callBack, 'imagebuffer', getMapImageStore, _map.getWidth(), _map.getHeight());
+    for (let j = 0; j < 2; j++) {
+      let d = new WMJSCanvasBuffer(this.callBack, 'imagebuffer', getMapImageStore, this.getWidth(), this.getHeight());
       getMapImageStore.addLoadEventCallback(d.imageLoadComplete);
-      baseDiv.append(d.getBuffer());
-      divBuffer.push(d);
+      this.baseDiv.append(d.getBuffer());
+      this.divBuffer.push(d);
     }
 
     // Legend buffers
 
-    for (var j = 0; j < 2; j++) {
-      let d = new WMJSCanvasBuffer(callBack, 'legendbuffer', legendImageStore,  _map.getWidth(), _map.getHeight());
+    for (let j = 0; j < 2; j++) {
+      let d = new WMJSCanvasBuffer(this.callBack, 'legendbuffer', legendImageStore, this.getWidth(), this.getHeight());
       legendImageStore.addLoadEventCallback(d.imageLoadComplete);
-      baseDiv.append(d.getBuffer());
-      legendDivBuffer.push(d);
+      this.baseDiv.append(d.getBuffer());
+      this.legendDivBuffer.push(d);
     }
 
-    callBack.addToCallback('display', _map.display, true);
-    callBack.addToCallback('draw', function () {console.log('draw event triggered externally, skipping'); }, true);
-    // callBack.addToCallback("drawbuffers",_map.flipBuffers,true);
+    this.callBack.addToCallback('display', this.display, true);
+    this.callBack.addToCallback('draw', () => {
+      console.log('draw event triggered externally, skipping');
+    }, true);
+    // callBack.addToCallback("drawbuffers",this.flipBuffers,true);
 
-    wmjsAnimate = new WMJSAnimate(_map);
+    this.wmjsAnimate = new WMJSAnimate(this);
 
-    bgMapImageStore.addLoadEventCallback(function(img){_map.draw('bgMapImageStore loaded');});
-    let adagucBeforeDraw = function (ctx) {
-       if (baseLayers) {
-        for (var l = 0; l < baseLayers.length; l++) {
-          if (baseLayers[l].enabled) {
-            if (baseLayers[l].keepOnTop === false) {
-              if (baseLayers[l].type && baseLayers[l].type !== 'twms') continue;
-              WMJSTileRenderer(bbox, updateBBOX, srs, width, height, ctx, bgMapImageStore, tileRenderSettings, baseLayers[l].name);
+    bgMapImageStore.addLoadEventCallback(() => {
+      this.draw('bgMapImageStore loaded');
+    });
+    let adagucBeforeDraw = (ctx) => {
+      if (this.baseLayers) {
+        for (let l = 0; l < this.baseLayers.length; l++) {
+          if (this.baseLayers[l].enabled) {
+            if (this.baseLayers[l].keepOnTop === false) {
+              if (this.baseLayers[l].type && this.baseLayers[l].type !== 'twms') continue;
+              if (!this.tileRenderSettings) {console.log('tileRenderSettings not set');continue;}
+              (new WMJSTileRenderer(
+                this.bbox,
+                this.updateBBOX,
+                this.srs,
+                this.width,
+                this.height,
+                ctx,
+                bgMapImageStore,
+                this.tileRenderSettings,
+                this.baseLayers[l].name
+              )).render();
             }
           }
         }
       }
     };
 
-    _map.addListener('beforecanvasstartdraw', adagucBeforeDraw, true);
+    this.addListener('beforecanvasstartdraw', adagucBeforeDraw, true);
 
-    let drawTextBG = function (ctx, txt, x, y, fontSize) {
+    let drawTextBG = (ctx, txt, x, y, fontSize) => {
       ctx.textBaseline = 'top';
       ctx.fillStyle = '#FFF';
       ctx.globalAlpha = 0.75;
@@ -616,44 +789,49 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       ctx.fillText(txt, x, y + 2);
     };
 
-    let adagucBeforeCanvasDisplay = function (ctx) {
-      // Map header
-      if(isMapHeaderEnabled){
+    let adagucBeforeCanvasDisplay = (ctx) => {
+      /* Map Pin */
+      if (this.divMapPin.displayMapPin) {
+        WMJSDrawMarker(ctx, this.divMapPin.x, this.divMapPin.y, '#9090FF', '#000');
+      }
+      
+      /* Map header */
+      if (this.isMapHeaderEnabled) {
         ctx.beginPath();
-        ctx.rect(0, 0, width, mapHeader.height);
-        if (mapIsActivated === false) {
-          ctx.globalAlpha = mapHeader.hovering ? mapHeader.hover.opacity : mapHeader.fill.opacity;
-          ctx.fillStyle = mapHeader.hovering ? mapHeader.hover.color : mapHeader.fill.color;
+        ctx.rect(0, 0, this.width, this.mapHeader.height);
+        if (this.mapIsActivated === false) {
+          ctx.globalAlpha = this.mapHeader.hovering ? this.mapHeader.hover.opacity : this.mapHeader.fill.opacity;
+          ctx.fillStyle = this.mapHeader.hovering ? this.mapHeader.hover.color : this.mapHeader.fill.color;
         } else {
-          ctx.globalAlpha = mapHeader.hovering ? mapHeader.hoverSelected.opacity : mapHeader.selected.opacity;
-          ctx.fillStyle = mapHeader.hovering ? mapHeader.hoverSelected.color : mapHeader.selected.color;
+          ctx.globalAlpha = this.mapHeader.hovering ? this.mapHeader.hoverSelected.opacity : this.mapHeader.selected.opacity;
+          ctx.fillStyle = this.mapHeader.hovering ? this.mapHeader.hoverSelected.color : this.mapHeader.selected.color;
         }
         ctx.fill();
         ctx.globalAlpha = 1;
       }
       
-      for (i = 0; i < layers.length; i++) { 
-        var request = '';
-        for (var j = 0; j < layers[i].dimensions.length; j++) {
-          request += '&' + getCorrectWMSDimName(layers[i].dimensions[j].name);
-          request += '=' + URLEncode(layers[i].dimensions[j].currentValue);
-          if        (layers[i].dimensions[j].currentValue == WMJSDateOutSideRange) {
-            _map.canvasErrors.push({linkedInfo:{layer:layers[i], message: 'Time outside range'}});
-          } else if (layers[i].dimensions[j].currentValue == WMJSDateTooEarlyString) {
-            _map.canvasErrors.push({linkedInfo:{layer:layers[i], message: 'Time too early'}});
-          } else if (layers[i].dimensions[j].currentValue == WMJSDateTooLateString) {
-            _map.canvasErrors.push({linkedInfo:{layer:layers[i], message: 'Time too late'}});
+      /* Gather errors */  
+      for (let i = 0; i < this.layers.length; i++) {
+        // let request = '';
+        for (let j = 0; j < this.layers[i].dimensions.length; j++) {
+          // request += '&' + this._getCorrectWMSDimName(this.layers[i].dimensions[j].name);
+          // request += '=' + URLEncode(this.layers[i].dimensions[j].currentValue);
+          if (this.layers[i].dimensions[j].currentValue === WMJSDateOutSideRange) {
+            this.canvasErrors.push({ linkedInfo: { layer:this.layers[i], message: 'Time outside range' } });
+          } else if (this.layers[i].dimensions[j].currentValue === WMJSDateTooEarlyString) {
+            this.canvasErrors.push({ linkedInfo:{ layer:this.layers[i], message: 'Time too early' } });
+          } else if (this.layers[i].dimensions[j].currentValue === WMJSDateTooLateString) {
+            this.canvasErrors.push({ linkedInfo:{ layer:this.layers[i], message: 'Time too late' } });
           }
         }
       }
-        
       
       /* Display errors found during drawing canvas */
-      if(_map.canvasErrors && _map.canvasErrors.length > 0){
-        let mw=width / 2;
-        let mh = 6 + _map.canvasErrors.length* 15;
-        let mx = width - mw;
-        let my = isMapHeaderEnabled ?  mapHeader.height : 0;
+      if (this.canvasErrors && this.canvasErrors.length > 0) {
+        let mw = this.width / 2;
+        let mh = 6 + this.canvasErrors.length * 15;
+        let mx = this.width - mw;
+        let my = this.isMapHeaderEnabled ? this.mapHeader.height : 0;
         ctx.beginPath();
         ctx.rect(mx, my, mx + mw, my + mh);
         ctx.fillStyle = 'white';
@@ -661,43 +839,40 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
         ctx.fill();
         ctx.globalAlpha = 1;
         ctx.fillStyle = 'black';
-        ctx.font = "10pt Helvetica";
-        
-        for(let j=0;j< _map.canvasErrors.length; j++){
-          //console.log(_map.canvasErrors[j]);
-          
-          if ( _map.canvasErrors[j].linkedInfo){
-            let message = _map.canvasErrors[j].linkedInfo.message ? ', ' + _map.canvasErrors[j].linkedInfo.message : '';
-            // console.log(_map.canvasErrors[j].linkedInfo.title);
-            ctx.fillText("Layer with title " + _map.canvasErrors[j].linkedInfo.layer.title +" failed to load" + message,mx+5 ,my+11 + j* 15); 
+        ctx.font = '10pt Helvetica';
+
+        for (let j = 0; j < this.canvasErrors.length; j++) {
+          if (this.canvasErrors[j].linkedInfo) {
+            let message = this.canvasErrors[j].linkedInfo.message ? ', ' + this.canvasErrors[j].linkedInfo.message : '';
+            ctx.fillText('Layer with title ' + this.canvasErrors[j].linkedInfo.layer.title + ' failed to load' + message, mx + 5, my + 11 + j * 15);
           } else {
-            ctx.fillText("Layer failed to load.",mx+5 ,my+11 + j* 15);
+            ctx.fillText('Layer failed to load.', mx + 5, my + 11 + j * 15);
           }
         }
-        _map.canvasErrors = [];
+        this.canvasErrors = [];
       }
 
       // Time offset message
-      if (setTimeOffsetValue !== '') {
+      if (this.setTimeOffsetValue !== '') {
         ctx.font = '20px Helvetica';
-        drawTextBG(ctx, setTimeOffsetValue, (width / 2) - 70, height - 26, 20);
+        drawTextBG(ctx, this.setTimeOffsetValue, (this.width / 2) - 70, this.height - 26, 20);
       }
 
       // Set message value
-      if (setMessageValue !== '') {
+      if (this.setMessageValue !== '') {
         ctx.font = '15px Helvetica';
-        drawTextBG(ctx, setMessageValue, (width / 2) - 70, 2, 15);
+        drawTextBG(ctx, this.setMessageValue, (this.width / 2) - 70, 2, 15);
       }
 
       // ScaleBar
-      if (showScaleBarInMap === true) {
-        let getScaleBarProperties = function () {
+      if (this.showScaleBarInMap === true) {
+        let getScaleBarProperties = () => {
           let desiredWidth = 25;
           let realWidth = 0;
           let numMapUnits = 1.0 / 10000000.0;
 
-          let boxWidth = updateBBOX.right - updateBBOX.left;
-          let pixelsPerUnit = width / boxWidth;
+          let boxWidth = this.updateBBOX.right - this.updateBBOX.left;
+          let pixelsPerUnit = this.width / boxWidth;
           if (pixelsPerUnit <= 0) {
             return;
           }
@@ -728,7 +903,6 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
           let roundedMapUnits = numMapUnits;
 
-          
           let d = Math.pow(10, Math.round(Math.log10(numMapUnits) + 0.5) - 1);
 
           roundedMapUnits = Math.round(roundedMapUnits / d);
@@ -743,7 +917,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
         let scaleBarProps = getScaleBarProperties();
         if (scaleBarProps) {
           let offsetX = 7.5;
-          let offsetY = height - 25.5;
+          let offsetY = this.height - 25.5;
           let scaleBarHeight = 23;
           ctx.beginPath();
           ctx.lineWidth = 2.5;
@@ -771,15 +945,15 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
           ctx.lineTo(offsetX + scaleBarProps.width * 2 + 1, scaleBarHeight - 2 - 7 + offsetY);
 
           let units = '';
-          if (srs === 'EPSG:3411') units = 'meter';
-          if (srs === 'EPSG:3412') units = 'meter';
-          if (srs === 'EPSG:3575') units = 'meter';
-          if (srs === 'EPSG:4326') units = 'degrees';
-          if (srs === 'EPSG:28992') units = 'meter';
-          if (srs === 'EPSG:32661') units = 'meter';
-          if (srs === 'EPSG:3857') units = 'meter';
-          if (srs === 'EPSG:900913') units = 'meter';
-          if (srs === 'EPSG:102100') units = 'meter';
+          if (this.srs === 'EPSG:3411') units = 'meter';
+          if (this.srs === 'EPSG:3412') units = 'meter';
+          if (this.srs === 'EPSG:3575') units = 'meter';
+          if (this.srs === 'EPSG:4326') units = 'degrees';
+          if (this.srs === 'EPSG:28992') units = 'meter';
+          if (this.srs === 'EPSG:32661') units = 'meter';
+          if (this.srs === 'EPSG:3857') units = 'meter';
+          if (this.srs === 'EPSG:900913') units = 'meter';
+          if (this.srs === 'EPSG:102100') units = 'meter';
 
           if (units === 'meter') {
             if (scaleBarProps.mapunits > 1000) {
@@ -802,333 +976,226 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       // Mouse projected coords
       ctx.font = '10px Helvetica';
       ctx.textBaseline = 'middle';
-      if (isDefined(mouseGeoCoordXY)) {
-        let roundingFactor = 1.0 / Math.pow(10, parseInt(Math.log((bbox.right - bbox.left) / width) / Math.log(10)) - 2);
+      if (isDefined(this.mouseGeoCoordXY)) {
+        let roundingFactor = 1.0 / Math.pow(10, parseInt(Math.log((this.bbox.right - this.bbox.left) / this.width) / Math.log(10)) - 2);
         if (roundingFactor < 1)roundingFactor = 1;
         ctx.fillStyle = '#000000';
-        let xText = Math.round(mouseGeoCoordXY.x * roundingFactor) / roundingFactor;
-        let yText = Math.round(mouseGeoCoordXY.y * roundingFactor) / roundingFactor;
+        let xText = Math.round(this.mouseGeoCoordXY.x * roundingFactor) / roundingFactor;
+        let yText = Math.round(this.mouseGeoCoordXY.y * roundingFactor) / roundingFactor;
         let units = '';
-        if (srs === 'EPSG:3857') {
+        if (this.srs === 'EPSG:3857') {
           units = 'meter';
         }
-        ctx.fillText('CoordYX: (' + yText + ', ' + xText + ') ' + units, 5, height - 50);
+        ctx.fillText('CoordYX: (' + yText + ', ' + xText + ') ' + units, 5, this.height - 50);
       }
       // Mouse latlon coords
-      if (isDefined(mouseUpdateCoordinates)) {
-
-        var llCoord = _map.getLatLongFromPixelCoord(mouseUpdateCoordinates);
+      if (isDefined(this.mouseUpdateCoordinates)) {
+        let llCoord = this.getLatLongFromPixelCoord(this.mouseUpdateCoordinates);
 
         if (isDefined(llCoord)) {
           let roundingFactor = 100;
           ctx.fillStyle = '#000000';
           let xText = Math.round(llCoord.x * roundingFactor) / roundingFactor;
           let yText = Math.round(llCoord.y * roundingFactor) / roundingFactor;
-          ctx.fillText('Lat/Lon: (' + yText.toFixed(2) + ', ' + xText.toFixed(2) + ') ' + ' degrees', 5, height - 38);
-          // ctx.fillText('Lon/Lat: (' + xText.toFixed(2) + ', ' + yText.toFixed(2) + ') ' + ' degrees', 5, height - 26);
+          ctx.fillText('Lat/Lon: (' + yText.toFixed(2) + ', ' + xText.toFixed(2) + ') ' + ' degrees', 5, this.height - 38);
         }
       }
       ctx.fillStyle = '#000000';
-      ctx.fillText('Map projection: ' + srs, 5, height - 26);
-      
+      ctx.fillText('Map projection: ' + this.srs, 5, this.height - 26);
+
       ctx.font = '7px Helvetica';
-      ctx.fillText('ADAGUC webmapjs ' + WebMapJSMapVersion, width - 85, height - 5);
-      
-      
+      ctx.fillText('ADAGUC webmapjs ' + this.WebMapJSMapVersion, this.width - 85, this.height - 5);
     };
-
-
-    _map.addListener('beforecanvasdisplay', adagucBeforeCanvasDisplay, true);
-    
-    
-    _map.addListener('canvasonerror', function(e){_map.canvasErrors = e;}, true);
-    initialized = 1;
+    this.addListener('beforecanvasdisplay', adagucBeforeCanvasDisplay, true);
+    this.addListener('canvasonerror', (e) => { this.canvasErrors = e; }, true);
+    this._updateBoundingBox(this.bbox);
+    this.initialized = 1;
   };
 
-  // Set the properties of an image in a divbuffer
-  function setElProps (el) {
-    el.style.left = '0px';
-    el.style.top = '0px';
-    el.loadEventDone = false;
-    // el.width=undefined;
-    // el.height=undefined;
-    el.failed = false;
-    // el.style.position='absolute';
-    // el.style.border='none';
-    // el.onselectstart = function(){return false;};
-    // el.ondrag = function(){return false;};
-    function onload (e) {
-      e.currentTarget.removeEventListener('load', onload, false);
-      _loadEvent(el);
-    }
-    function onchange (e) {
-      var target = (e || event).srcElement;
-      if (!target) return;
-      if (/^(complete|loaded)$/i.test(target.readyState)) {
-        target.detachEvent('onreadystatechange', onchange);
-        _loadEvent(el);
-      }
-    }
-    el.addEventListener ? el.addEventListener('load', onload, false) : el.attachEvent('onreadystatechange', onchange);
-    el.onerror = function () {
-      if (el.src) {
-        if (el.src != noimage) {
-          error(el.src);
-          el.failed = true;
-          if (el.loadEvent)el.loadEvent(el);
-        }
-      }
-    };
-    function _loadEvent (el) {
-      if (el.loadEventDone == true) return;
-      el.loadEventDone = true;
-      if (el.loadEvent)el.loadEvent(el);
-    }
-  }
-
-  /* //Returns all layernames for the getcapabilities in json format
-  this.getAllLayerNamesFromGetCapabilities = function(getcapabilitiesjson){
-    var layerNames = new Array();
-    var jsondata=getcapabilitiesjson;
-    if(jsondata==0){
-      return;
-    }
-    try{
-    var RootLayer = jsondata.WMT_MS_Capabilities.Capability.Layer;
-    }catch(e){
-      return;
-    }
-    var JSONLayers = toArray(RootLayer.Layer);
-    function recursivelyFindLayer(JSONLayers){
-      for(var j=0;j<JSONLayers.length;j++){
-        if(JSONLayers[j].Layer)recursivelyFindLayer(toArray(JSONLayers[j].Layer));else {
-          if(JSONLayers[j].Name){
-            layerNames.push(JSONLayers[j].Name.value);
-          }
-        }
-      }
-    }
-    recursivelyFindLayer(JSONLayers);
-    return layerNames;
-
-  }
-  //For a certain WMS URL, the callback will be called with parameter all layernames
-  this.getAllLayerNamesForService = function(service,callback){
-    var _intcallback = function(jsondata){
-      var layernames = _map.getAllLayerNamesFromGetCapabilities(jsondata);
-      callback(layernames);
-    }
-    _map.getCapabilitiesJSON(service,_intcallback);
-  }
-
-  */
-  // For a certain WMS URL, the callback will be called with parameter the getcapabilities in json format
-  this.getCapabilitiesJSON = function (service, callback) {
-    var fail = function (message) {
-      error(message);
-      callback(message);
-    };
-
-    WMJSGetCapabilities(service, true, callback, fail);
-  };
-
-//     var dimensionValueCache = Array();//Cache for all current values of dimensions.
-
-  this.rebuildMapDimensions = function () {
-    for (var j = 0; j < mapdimensions.length; j++) {
-      mapdimensions[j].used = false;
+  rebuildMapDimensions () {
+    for (let j = 0; j < this.mapdimensions.length; j++) {
+      this.mapdimensions[j].used = false;
     }
 
-    for (i = 0; i < layers.length; i++) {
-      for (var j = 0; j < layers[i].dimensions.length; j++) {
-        var dim = layers[i].dimensions[j];
+    for (let i = 0; i < this.layers.length; i++) {
+      for (let j = 0; j < this.layers[i].dimensions.length; j++) {
+        let dim = this.layers[i].dimensions[j];
 
-        var mapdim = _map.getDimension(dim.name);
+        let mapdim = this.getDimension(dim.name);
         if (isDefined(mapdim)) {
           mapdim.used = true;
         } else {
-          var newdim = dim.clone();
+          let newdim = dim.clone();
           newdim.used = true;
-          mapdimensions.push(newdim);
+          this.mapdimensions.push(newdim);
         }
       }
     }
 
-    for (var j = 0; j < mapdimensions.length; j++) {
-      if (mapdimensions[j].used == false) {
-        mapdimensions.splice(j, 1);
+    for (let j = 0; j < this.mapdimensions.length; j++) {
+      if (this.mapdimensions[j].used === false) {
+        this.mapdimensions.splice(j, 1);
         j--;
       }
     }
-    callBack.triggerEvent('onmapdimupdate');
+    this.callBack.triggerEvent('onmapdimupdate');
   };
 
-  this.getLayerByServiceAndName = function (layerService, layerName) {
-    for (var j = 0; j < layers.length; j++) {
-      var layer = layers[layers.length - j - 1];
-      if (layer.name == layerName) {
-        if (layer.service == layerService) {
+  getLayerByServiceAndName (layerService, layerName) {
+    for (let j = 0; j < this.layers.length; j++) {
+      let layer = this.layers[this.layers.length - j - 1];
+      if (layer.name === layerName) {
+        if (layer.service === layerService) {
           return layer;
         }
       }
     }
   };
 
-  this.getLayers = function () {
-    // Provide layers in reverse order
-    var returnlayers = new Array();
-    for (var j = 0; j < layers.length; j++) {
-      var layer = layers[layers.length - j - 1];
+  getLayers () {
+    /* Provide layers in reverse order */
+    let returnlayers = [];
+    for (let j = 0; j < this.layers.length; j++) {
+      let layer = this.layers[this.layers.length - j - 1];
       returnlayers.push(layer);
     }
     return returnlayers;
   };
 
-  this.setLayer = function (layer, getcapdoc) {
-    // mapdimensions = new Array(
-    return _map.addLayer(layer, getcapdoc, layer);
+  setLayer (layer, getcapdoc) {
+    return this.addLayer(layer, getcapdoc, layer);
   };
 
   /* Indicate weather this map component is active or not */
-  this.setActive = function (active) {
-    mapIsActivated = active;
-    isMapHeaderEnabled = true;
+  setActive (active) {
+    this.mapIsActivated = active;
+    this.isMapHeaderEnabled = true;
   };
 
-  
-
-  this.setActiveLayer = function (layer) {
-    activeLayer = layer;
-    loadLegendInline();
-    callBack.triggerEvent('onchangeactivelayer');
+  setActiveLayer (layer) {
+    this.activeLayer = layer;
+    this.loadLegendInline();
+    this.callBack.triggerEvent('onchangeactivelayer');
   };
 
   // Calculates how many baselayers there are.
   // Useful when changing properties for a divbuffer index (for example setLayerOpacity)
-  this.calculateNumBaseLayers = function () {
-    numBaseLayers = 0;
-    if (baseLayers) {
-      for (var l = 0; l < baseLayers.length; l++) {
-        if (baseLayers[l].enabled) {
-          if (baseLayers[l].keepOnTop == false) {
-            numBaseLayers++;
+  calculateNumBaseLayers () {
+    this.numBaseLayers = 0;
+    if (this.baseLayers) {
+      for (let l = 0; l < this.baseLayers.length; l++) {
+        if (this.baseLayers[l].enabled) {
+          if (this.baseLayers[l].keepOnTop === false) {
+            this.numBaseLayers++;
           }
         }
       }
     }
   };
 
-  this.enableLayer = function (layer) {
+  enableLayer (layer) {
     layer.enabled = true;
-    _map.calculateNumBaseLayers();
-    _map.rebuildMapDimensions();
-    loadLegendInline(true);
+    this.calculateNumBaseLayers();
+    this.rebuildMapDimensions();
+    this.loadLegendInline(true);
   };
-  this.disableLayer = function (layer) {
+  disableLayer (layer) {
     layer.enabled = false;
-    _map.calculateNumBaseLayers();
-    _map.rebuildMapDimensions();
-    loadLegendInline(true);
+    this.calculateNumBaseLayers();
+    this.rebuildMapDimensions();
+    this.loadLegendInline(true);
   };
-  this.toggleLayer = function (layer) {
-    if (layer.enabled == true) {
+  toggleLayer (layer) {
+    if (layer.enabled === true) {
       layer.enabled = false;
     } else layer.enabled = true;
-    _map.calculateNumBaseLayers();
-    _map.rebuildMapDimensions();
-    loadLegendInline(true);
+    this.calculateNumBaseLayers();
+    this.rebuildMapDimensions();
+    this.loadLegendInline(true);
   };
 
-  this.displayLayer = function (layer, enabled) {
+  displayLayer (layer, enabled) {
     layer.enabled = enabled;
-    _map.calculateNumBaseLayers();
-    _map.rebuildMapDimensions();
-    loadLegendInline(true);
+    this.calculateNumBaseLayers();
+    this.rebuildMapDimensions();
+    this.loadLegendInline(true);
   };
 
-  function findLayer (layer) {
+  _getLayerIndex (layer) {
     if (!layer) return;
-    for (var j = 0; j < layers.length; j++) {
-      if (layers[j].id == layer.id) {
-        return layer;
-      }
-    }
-  }
-
-  function getLayerIndex (layer) {
-    if (!layer) return;
-    for (var j = 0; j < layers.length; j++) {
-      if (layers[j] == layer) {
+    for (let j = 0; j < this.layers.length; j++) {
+      if (this.layers[j] === layer) {
         return j;
       }
     }
     return -1;
-  }
-
-  this.removeAllLayers = function () {
-    for (var i = 0; i < layers.length; ++i) {
-      layers[i].setAutoUpdate(false);
-    }
-    layers = [];
-    mapdimensions = [];
-    callBack.triggerEvent('onlayeradd');
   };
 
-  this.deleteLayer = function (layerToDelete) {
-    if (layers.length <= 0) return;
+  removeAllLayers () {
+    for (let i = 0; i < this.layers.length; ++i) {
+      this.layers[i].setAutoUpdate(false);
+    }
+    this.layers = [];
+    this.mapdimensions = [];
+    this.callBack.triggerEvent('onlayeradd');
+  };
+
+  deleteLayer (layerToDelete) {
+    if (this.layers.length <= 0) return;
     layerToDelete.setAutoUpdate(false);
-    var layerIndex = getLayerIndex(layerToDelete);
+    let layerIndex = this._getLayerIndex(layerToDelete);
     if (layerIndex >= 0) {
       // move everything up with id's higher than this layer
-      for (var j = layerIndex; j < layers.length - 1; j++) {
-        layers[j] = layers[j + 1];
+      for (let j = layerIndex; j < this.layers.length - 1; j++) {
+        this.layers[j] = this.layers[j + 1];
       }
-      layers.length--;
+      this.layers.length--;
 
-      activeLayer = undefined;
-      if (layerIndex >= 0 && layerIndex < layers.length) {
-        _map.rebuildMapDimensions();
-        _map.setActiveLayer(layers[layerIndex]);
+      this.activeLayer = undefined;
+      if (layerIndex >= 0 && layerIndex < this.layers.length) {
+        this.rebuildMapDimensions();
+        this.setActiveLayer(this.layers[layerIndex]);
       } else {
-        if (layers.length > 0) {
-          _map.rebuildMapDimensions();
-          _map.setActiveLayer(layers[layers.length - 1]);
+        if (this.layers.length > 0) {
+          this.rebuildMapDimensions();
+          this.setActiveLayer(this.layers[this.layers.length - 1]);
         }
       }
     }
-    callBack.triggerEvent('onlayerchange');
-    _map.rebuildMapDimensions();
+    this.callBack.triggerEvent('onlayerchange');
+    this.rebuildMapDimensions();
   };
-  this.moveLayerDown = function (layerToMove) {
-    var layerIndex = getLayerIndex(layerToMove);
+
+  moveLayerDown (layerToMove) {
+    let layerIndex = this._getLayerIndex(layerToMove);
     if (layerIndex > 0) {
-      var layerToMoveDown = layers[layerIndex - 1];
-      var layer = layers[layerIndex];
+      let layerToMoveDown = this.layers[layerIndex - 1];
+      let layer = this.layers[layerIndex];
       if (layerToMoveDown && layer) {
-        layers[layerIndex] = layerToMoveDown;
-        layers[layerIndex - 1] = layer;
+        this.layers[layerIndex] = layerToMoveDown;
+        this.layers[layerIndex - 1] = layer;
       }
     } else {
       try {
-        error("moveLayerDown: layer '" + layerToMove.name + "' not found.");
+        error('moveLayerDown: layer \'' + layerToMove.name + '\' not found.');
       } catch (e) {
         error('moveLayerDown: layer invalid.');
       }
     }
   };
 
-  this.moveLayerUp = function (layerToMove) {
-    var layerIndex = getLayerIndex(layerToMove);
-    if (layerIndex < layers.length - 1) {
-      var layerToMoveUp = layers[layerIndex + 1];
-      var layer = layers[layerIndex];
+  moveLayerUp (layerToMove) {
+    let layerIndex = this._getLayerIndex(layerToMove);
+    if (layerIndex < this.layers.length - 1) {
+      let layerToMoveUp = this.layers[layerIndex + 1];
+      let layer = this.layers[layerIndex];
       if (layerToMoveUp && layer) {
-        layers[layerIndex] = layerToMoveUp;
-        layers[layerIndex + 1] = layer;
+        this.layers[layerIndex] = layerToMoveUp;
+        this.layers[layerIndex + 1] = layer;
       }
     } else {
       try {
-        error("moveLayerUp: layer '" + layerToMove.name + "' not found.");
+        error('moveLayerUp: layer \'' + layerToMove.name + '\' not found.');
       } catch (e) {
         error('moveLayerUp: layer invalid.');
       }
@@ -1140,34 +1207,34 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
    * @param getcapdoc
    * @param layerToReplace
    */
-  this.addLayer = function (layer) {
+  addLayer (layer) {
     if (!isDefined(layer)) {
       return;
     }
-    if (!layer.parentMaps.includes(_map)) {
-      layer.parentMaps.push(_map);
+    if (!layer.parentMaps.includes(this)) {
+      layer.parentMaps.push(this);
     }
-    layers.push(layer);
-    var done = function (layer) {
-      for (var j = 0; j < layer.dimensions.length; j++) {
-        var mapDim = _map.getDimension(layer.dimensions[j].name);
+    this.layers.push(layer);
+    let done = (layer) => {
+      for (let j = 0; j < layer.dimensions.length; j++) {
+        let mapDim = this.getDimension(layer.dimensions[j].name);
         if (isDefined(mapDim)) {
           if (isDefined(mapDim.currentValue)) {
-            if (layer.dimensions[j].linked == true) {
+            if (layer.dimensions[j].linked === true) {
               layer.dimensions[j].setClosestValue(mapDim.currentValue);
             }
           }
         }
       }
 
-      _map.rebuildMapDimensions();
-      callBack.triggerEvent('onlayeradd');
+      this.rebuildMapDimensions();
+      this.callBack.triggerEvent('onlayeradd');
     };
     layer.parseLayer(done, undefined, 'WMJSLayer::addLayer');
   };
 
-  this.getActiveLayer = function () {
-    return activeLayer;
+  getActiveLayer () {
+    return this.activeLayer;
   };
 
   /**
@@ -1175,115 +1242,100 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     * Set the projection of the current webmap object
     *_srs also accepts a projectionProperty object
     */
-  this.setProjection = function (_srs, _bbox) {
-    _map.hideMapPin();
+  setProjection (_srs, _bbox) {
+    this.hideMapPin();
     if (!_srs)_srs = 'EPSG:4326';
     if (typeof (_srs) === 'object') {
       _bbox = _srs.bbox;
       _srs = _srs.srs;
     }
     if (!_srs)_srs = 'EPSG:4326';
-    srs = _srs;
-    updateSRS = srs;
+    this.srs = _srs;
+    this.updateSRS = this.srs;
 
-    if (_map.proj4.srs != srs || !isDefined(this.proj4.projection)) {
-      if (srs === 'GFI:TIME_ELEVATION'){
-        _map.proj4.projection = new Proj4js.Proj('EPSG:4326');
-      }else{
-        _map.proj4.projection = new Proj4js.Proj(srs);
+    if (this.proj4.srs !== this.srs || !isDefined(this.proj4.projection)) {
+      if (this.srs === 'GFI:TIME_ELEVATION') {
+        this.proj4.projection = ('EPSG:4326');
+      } else {
+        this.proj4.projection = (this.srs);
       }
-      _map.proj4.srs = srs;
+      this.proj4.srs = this.srs;
     }
-    // alert(srs+""+_bbox);
-    _map.setBBOX(_bbox);
-    defaultBBOX.setBBOX(_bbox);
-    _map.updateMouseCursorCoordinates();
-
-    callBack.triggerEvent('onsetprojection', [srs, bbox]);
+    this.setBBOX(_bbox);
+    this.defaultBBOX.setBBOX(_bbox);
+    this.updateMouseCursorCoordinates();
+    this.callBack.triggerEvent('onsetprojection', [this.srs, this.bbox]);
   };
 
-  this.getBBOX = function () {
-    return updateBBOX;
+  getBBOX () {
+    return this.updateBBOX;
   };
 
-  this.getProjection = function (srsName) {
-    // if(!srsName){
-    return { srs:srs, bbox:bbox };
-    // }
-
-    // TODO
+  getProjection (srsName) {
+    return { srs: this.srs, bbox: this.bbox };
   };
 
-  this.getSize = function () {
-    return { width:width, height:height };
+  getSize () {
+    return { width: this.width, height: this.height };
   };
 
-  this.getWidth = function () {
-    return width;
+  getWidth () {
+    return this.width;
   };
 
-  this.getHeight = function () {
-    return height;
+  getHeight () {
+    return this.height;
   };
 
-  this.repositionLegendGraphic = function (force) {
-    if (displayLegendInMap) {
-      loadLegendInline(force);
+  repositionLegendGraphic (force) {
+    if (this._displayLegendInMap) {
+      this.loadLegendInline(force);
     } else {
-      legendDivBuffer[0].hide();
-      legendDivBuffer[1].hide();
+      this.legendDivBuffer[0].hide();
+      this.legendDivBuffer[1].hide();
     }
   };
 
-  this.resizeWidth=-1;
-  this.resizeHeight=-1;
-  var resizeTimerBusy = false;
-  var resizeTimer = new WMJSTimer();
-
-  this.setSize = function (w, h, nodraw) {
+  setSize (w, h, nodraw) {
     if (enableConsoleDebugging)console.log('setSize', w, h);
-    if (parseInt(w) < 4 || parseInt(h) < 4 ) {
-//       console.log('Skipping setSize', w, h);
+    if (parseInt(w) < 4 || parseInt(h) < 4) {
       return;
     }
-    // return;
-    // this._setSize(w - 50, h);
     this.resizeWidth = parseInt(w);
     this.resizeHeight = parseInt(h);
     /**
-    Enable following line to enable smooth scaling during resize transitions. Is heavier for browser.
+      Enable following line to enable smooth scaling during resize transitions. Is heavier for browser:
+      this._setSize((this.resizeWidth) | 0, (this.resizeHeight) | 0);
     */
-    // _map._setSize((_map.resizeWidth) | 0, (_map.resizeHeight) | 0);
 
     if (nodraw === true) {
-      _map._setSize(_map.resizeWidth, _map.resizeHeight);
+      this._setSize(this.resizeWidth, this.resizeHeight);
       return;
     }
-    if (resizeTimerBusy === false) {
-      resizeTimerBusy = true;
-      _map._setSize(_map.resizeWidth, _map.resizeHeight);
+    if (this._resizeTimerBusy === false) {
+      this._resizeTimerBusy = true;
+      this._setSize(this.resizeWidth, this.resizeHeight);
       return;
     }
-    resizeTimer.init(200, function () {
-       resizeTimerBusy = false;
-      _map._setSize(_map.resizeWidth, _map.resizeHeight);
-      _map.draw('resizeTimer');
+    this._resizeTimer.init(200, () => {
+      this._resizeTimerBusy = false;
+      this._setSize(this.resizeWidth, this.resizeHeight);
+      this.draw('resizeTimer');
     });
   };
 
-  this._setSize = function (w, h) {
-
+  _setSize (w, h) {
     if (!w || !h) return;
-    if (parseInt(w) < 4 || parseInt(h) < 4 ) {
+    if (parseInt(w) < 4 || parseInt(h) < 4) {
       return;
     }
 
     if (enableConsoleDebugging)console.log('setSize(' + w + ',' + h + ')');
-    var projinfo = this.getProjection();
-    width = parseInt(w);
-    height = parseInt(h);
-    if (width < 4 || isNaN(width))width = 4;
-    if (height < 4 || isNaN(height))height = 4;
+    let projinfo = this.getProjection();
+    this.width = parseInt(w);
+    this.height = parseInt(h);
+    if (this.width < 4 || isNaN(this.width)) this.width = 4;
+    if (this.height < 4 || isNaN(this.height)) this.height = 4;
     if (!projinfo.srs || !projinfo.bbox) {
       error('this.setSize: Setting default projection (EPSG:4326 with (-180,-90,180,90)');
       projinfo.srs = 'EPSG:4326';
@@ -1291,83 +1343,80 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       projinfo.bbox.bottom = -90;
       projinfo.bbox.right = 180;
       projinfo.bbox.top = 90;
-      _map.setProjection(projinfo.srs, projinfo.bbox);
+      this.setProjection(projinfo.srs, projinfo.bbox);
     }
-//       baseDiv.style.width=width+'px';
-//       baseDiv.style.height=height+'px';
-    baseDiv.css({ width:width, height:height });
-
-
-    mainElement.style.width = width + 'px';
-    mainElement.style.height = height + 'px';
-    _map.setBBOX(resizeBBOX);
-
-    _map.repositionMapPin();
-    _map.showBoundingBox();
-    if (divBuffer.length > 1) {
-      divBuffer[0].resize(_map.getWidth(), _map.getHeight());
-      divBuffer[1].resize(_map.getWidth(), _map.getHeight());
+    this.baseDiv.css({ width:this.width, height:this.height });
+    this.mainElement.style.width = this.width + 'px';
+    this.mainElement.style.height = this.height + 'px';
+    this.setBBOX(this.resizeBBOX);
+    this.repositionMapPin();
+    this.showBoundingBox();
+    if (this.divBuffer.length > 1) {
+      this.divBuffer[0].resize(this.getWidth(), this.getHeight());
+      this.divBuffer[1].resize(this.getWidth(), this.getHeight());
     }
 
-    if (legendDivBuffer.length > 1) {
-      legendDivBuffer[0].resize(_map.getWidth(), _map.getHeight());
-      legendDivBuffer[1].resize(_map.getWidth(), _map.getHeight());
+    if (this.legendDivBuffer.length > 1) {
+      this.legendDivBuffer[0].resize(this.getWidth(), this.getHeight());
+      this.legendDivBuffer[1].resize(this.getWidth(), this.getHeight());
     }
-    _map.repositionLegendGraphic(true);
+    this.repositionLegendGraphic(true);
 
-    if (divBuffer[currentSwapBuffer]) {
-      divBuffer[currentSwapBuffer].display();
+    if (this.divBuffer[this.currentSwapBuffer]) {
+      this.divBuffer[this.currentSwapBuffer].display();
     }
 
-    // Fire the onresize event, to notify listeners that something happened.
-    callBack.triggerEvent('onresize', [width, height]);
+    /* Fire the onresize event, to notify listeners that something happened. */
+    this.callBack.triggerEvent('onresize', [this.width, this.height]);
   };
 
-  this.getBBOXandProjString = function (layer) {
-    var request = '';
-    if (layer.version == WMSVersion.version100 || layer.version == WMSVersion.version111) {
-      request += 'SRS=' + URLEncode(srs) + '&';
-      request += 'BBOX=' + bbox.left + ',' + bbox.bottom + ',' + bbox.right + ',' + bbox.top + '&';
+  getBBOXandProjString (layer) {
+    let request = '';
+    if (layer.version === WMSVersion.version100 || layer.version === WMSVersion.version111) {
+      request += 'SRS=' + URLEncode(this.srs) + '&';
+      request += 'BBOX=' + this.bbox.left + ',' + this.bbox.bottom + ',' + this.bbox.right + ',' + this.bbox.top + '&';
     }
-    if (layer.version == WMSVersion.version130) {
-      request += 'CRS=' + URLEncode(srs) + '&';
+    if (layer.version === WMSVersion.version130) {
+      request += 'CRS=' + URLEncode(this.srs) + '&';
 
-      if (srs == 'EPSG:4326' && layer.wms130bboxcompatibilitymode == false) {
-        request += 'BBOX=' + bbox.bottom + ',' + bbox.left + ',' + bbox.top + ',' + bbox.right + '&';
+      if (this.srs === 'EPSG:4326' && layer.wms130bboxcompatibilitymode === false) {
+        request += 'BBOX=' + this.bbox.bottom + ',' + this.bbox.left + ',' + this.bbox.top + ',' + this.bbox.right + '&';
       } else {
-        request += 'BBOX=' + bbox.left + ',' + bbox.bottom + ',' + bbox.right + ',' + bbox.top + '&';
+        request += 'BBOX=' + this.bbox.left + ',' + this.bbox.bottom + ',' + this.bbox.right + ',' + this.bbox.top + '&';
       }
     }
     return request;
   };
 
-  this.isTouchDevice = function () {
-    let _webMapJSSettings = null;
-    try{
-      _webMapJSSettings = webMapJSSettings;
-    }catch(e){
-    }
-    if (_webMapJSSettings !== null && _webMapJSSettings.enableTouchDevice === true) {
-      return typeof window.ontouchstart !== 'undefined';
-    }
-    return false;
+  isTouchDevice () {
+    return false; // TODO touch is not working properly on Max
+    // let _webMapJSSettings = null;
+    // try {
+    //   _webMapJSSettings = webMapJSSettings; // eslint-disable-line no-undef
+    // } catch (e) {
+    // }
+    // if (_webMapJSSettings !== null && _webMapJSSettings.enableTouchDevice === true) {
+    //   return typeof window.ontouchstart !== 'undefined';
+    // }
+    // return false;
   };
 
-  this.getDimensionRequestString = function (layer) {
-    return getMapDimURL(layer);
+  getDimensionRequestString (layer) {
+    return this._getMapDimURL(layer);
   };
 
-  this.dateToISO8601 = function (date) {
-    function prf (input, width) {
+  dateToISO8601 (date) {
+    let prf = (input, width) => {
       // print decimal with fixed length (preceding zero's)
-      var string = input + '';
-      var len = width - string.length;
-      var j, zeros = '';
+      let string = input + '';
+      let len = width - string.length;
+      let j;
+      let zeros = '';
       for (j = 0; j < len; j++)zeros += '0' + zeros;
       string = zeros + string;
       return string;
-    }
-    var iso = prf(date.getUTCFullYear(), 4) +
+    };
+    let iso = prf(date.getUTCFullYear(), 4) +
         '-' + prf(date.getUTCMonth() + 1, 2) +
             '-' + prf(date.getUTCDate(), 2) +
                 'T' + prf(date.getUTCHours(), 2) +
@@ -1377,39 +1426,39 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
   };
 
   // Build a valid WMS request for a certain layer
-  this.buildWMSGetMapRequest = function (layer) {
+  buildWMSGetMapRequest (layer) {
     if (!isDefined(layer.name)) return;
     if (!layer.format) { layer.format = 'image/png'; error('layer format missing!'); }
     if (layer.name.length < 1) return;
 
     // GetFeatureInfo timeseries in the mapview
-    if (srs == 'GFI:TIME_ELEVATION') {
-      var x = 707;
-      var y = 557;
-      var _bbox = '29109.947643979103,6500000,1190890.052356021,7200000';
-      var _srs = 'EPSG:3857';
+    if (this.srs === 'GFI:TIME_ELEVATION') {
+      let x = 707;
+      let y = 557;
+      let _bbox = '29109.947643979103,6500000,1190890.052356021,7200000';
+      let _srs = 'EPSG:3857';
 
-      var request = layer.getmapURL;
+      let request = layer.getmapURL;
       request += '&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=' + layer.version;
 
       request += '&LAYERS=' + URLEncode(layer.name);
 
-      var baseLayers = layer.name.split(',');
+      let baseLayers = layer.name.split(',');
       request += '&QUERY_LAYERS=' + URLEncode(baseLayers[baseLayers.length - 1]);
       request += '&BBOX=' + _bbox;
-      if (layer.version == WMSVersion.version100 || layer.version == WMSVersion.version111) {
+      if (layer.version === WMSVersion.version100 || layer.version === WMSVersion.version111) {
         request += '&SRS=' + URLEncode(_srs) + '&';
       }
-      if (layer.version == WMSVersion.version130) {
+      if (layer.version === WMSVersion.version130) {
         request += '&CRS=' + URLEncode(_srs) + '&';
       }
-      request += 'WIDTH=' + width;
-      request += '&HEIGHT=' + height;
-      if (layer.version == WMSVersion.version100 || layer.version == WMSVersion.version111) {
+      request += 'WIDTH=' + this.width;
+      request += '&HEIGHT=' + this.height;
+      if (layer.version === WMSVersion.version100 || layer.version === WMSVersion.version111) {
         request += '&X=' + x;
         request += '&Y=' + y;
       }
-      if (layer.version == WMSVersion.version130) {
+      if (layer.version === WMSVersion.version130) {
         request += '&I=' + x;
         request += '&J=' + y;
       }
@@ -1417,24 +1466,24 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       request += '&INFO_FORMAT=image/png';
       request += '&STYLES=';
 
-      var startDate = _map.dateToISO8601(new Date(bbox.left));
-      var stopDate = _map.dateToISO8601(new Date(bbox.right));
+      let startDate = this.dateToISO8601(new Date(this.bbox.left));
+      let stopDate = this.dateToISO8601(new Date(this.bbox.right));
 
       request += '&time=' + startDate + '/' + stopDate;
-      request += '&elevation=' + bbox.bottom + '/' + bbox.top;
+      request += '&elevation=' + this.bbox.bottom + '/' + this.bbox.top;
 
       return request;
     }
 
-    var request = layer.getmapURL;
+    let request = layer.getmapURL;
     request += '&SERVICE=WMS&';
     request += 'VERSION=' + layer.version + '&';
     request += 'REQUEST=GetMap&';
     request += 'LAYERS=' + URLEncode(layer.name) + '&';
-    request += 'WIDTH=' + width + '&';
-    request += 'HEIGHT=' + (height) + '&';
+    request += 'WIDTH=' + this.width + '&';
+    request += 'HEIGHT=' + (this.height) + '&';
 
-    request += _map.getBBOXandProjString(layer);
+    request += this.getBBOXandProjString(layer);
     request += 'STYLES=' + URLEncode(layer.currentStyle) + '&';
     request += 'FORMAT=' + layer.format + '&';
     if (layer.transparent === true) {
@@ -1442,125 +1491,109 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     } else {
       request += 'TRANSPARENT=FALSE&';
     }
-     // request+="EXCEPTIONS=INIMAGE&";
     // Handle dimensions
     try {
-      request += getMapDimURL(layer);
+      request += this._getMapDimURL(layer);
     } catch (e) {
       return undefined;
     }
-    /*
-    if(layerDimensionsObject){
-      for(var j=0;j<layerDimensionsObject.length;j++){
-        if(layerDimensionsObject[j].valid!=false){
-          request+='&'+getCorrectWMSDimName(layerDimensionsObject[j].name);
-          request+='='+layerDimensionsObject[j].currentValue;
-        }else return undefined;
-      }
-    } */
     // Handle WMS extensions
     request += layer.wmsextensions.url;
-
     return request;
-  }
-
-//     var drawBusy=0;
-  this.abort = function () {
-    callBack.triggerEvent('onmapready');
-    mapBusy = false;
-    callBack.triggerEvent('onloadingcomplete');
   };
 
-  this.isBusy = function () {
-    if (suspendDrawing == true || mapBusy || layersBusy == 1) {
+  abort () {
+    this.callBack.triggerEvent('onmapready');
+    this.mapBusy = false;
+    this.callBack.triggerEvent('onloadingcomplete');
+  };
+
+  isBusy () {
+    if (this.suspendDrawing === true || this.mapBusy || this.layersBusy === 1) {
       return true;
     }
-    if (divBuffer[0].ready == false || divBuffer[1].ready == false) return true;
+    if (this.divBuffer[0].ready === false || this.divBuffer[1].ready === false) return true;
     return false;
   };
 
-  var makeInfoHTML = function () {
+  _makeInfoHTML () {
     try {
       // Create the layerinformation table
-      var infoHTML = '<table class="myTable">';
-      var infoHTMLHasValidContent = false;
+      let infoHTML = '<table class="myTable">';
+      let infoHTMLHasValidContent = false;
       // Make first a header with 'Layer' and the dimensions
       infoHTML += '<tr><th>Layer</th>';
-      if (mapdimensions) {
-        for (var d = 0; d < mapdimensions.length; d++) {
-          infoHTML += '<th>' + mapdimensions[d].name + '</th>';
+      if (this.mapdimensions) {
+        for (let d = 0; d < this.mapdimensions.length; d++) {
+          infoHTML += '<th>' + this.mapdimensions[d].name + '</th>';
         }
       }
       infoHTML += '</tr>';
       infoHTML += '<tr><td>Map</tdh>';
-      if (mapdimensions) {
-        for (var d = 0; d < mapdimensions.length; d++) {
-          infoHTML += '<td>' + mapdimensions[d].currentValue + '</td>';
+      if (this.mapdimensions) {
+        for (let d = 0; d < this.mapdimensions.length; d++) {
+          infoHTML += '<td>' + this.mapdimensions[d].currentValue + '</td>';
         }
       }
       infoHTML += '</tr>';
-      var l = 0;
-      for (l = 0; l < _map.getNumLayers(); l++) {
-        var j = (_map.getNumLayers() - 1) - l;
-        if (layers[j].service && layers[j].enabled) {
-          var layerDimensionsObject = layers[j].dimensions;// getLayerDimensions(layers[j]);
-              // Add information to infoHTML
+      let l = 0;
+      for (l = 0; l < this.getNumLayers(); l++) {
+        let j = (this.getNumLayers() - 1) - l;
+        if (this.layers[j].service && this.layers[j].enabled) {
+          let layerDimensionsObject = this.layers[j].dimensions;
           if (layerDimensionsObject) {
-            var layerTitle = '';
-                // if(activeLayer==layers[j])layerTitle="->";else layerTitle="  ";
-            layerTitle += layers[j].title;
+            let layerTitle = '';
+            layerTitle += this.layers[j].title;
             infoHTML += '<tr><td>' + layerTitle + '</td>';
-            for (var mapdim = 0; mapdim < mapdimensions.length; mapdim++) {
-              var foundDim = false;
-              for (var layerdim = 0; layerdim < layerDimensionsObject.length; layerdim++) {
-                if (layerDimensionsObject[layerdim].name.toUpperCase() == mapdimensions[mapdim].name.toUpperCase()) {
+            for (let mapdim = 0; mapdim < this.mapdimensions.length; mapdim++) {
+              let foundDim = false;
+              for (let layerdim = 0; layerdim < layerDimensionsObject.length; layerdim++) {
+                if (layerDimensionsObject[layerdim].name.toUpperCase() === this.mapdimensions[mapdim].name.toUpperCase()) {
                   infoHTML += '<td>' + layerDimensionsObject[layerdim].currentValue + '</td>';
                   foundDim = true;
                   infoHTMLHasValidContent = true;
                   break;
                 }
               }
-              if (foundDim == false)infoHTML += '<td>-</td>';
+              if (foundDim === false)infoHTML += '<td>-</td>';
             }
             infoHTML += '</tr>';
           }
         }
       }
       infoHTML += '</table>';
-      if (infoHTMLHasValidContent == true) {
-        divDimInfo.style.display = '';
-        divDimInfo.innerHTML = infoHTML;
-        var cx = 8;
-        var cy = 8;
-        divDimInfo.style.width = (Math.min((width - parseInt(divDimInfo.style.marginLeft) - 210), 350)) + 'px';
-        divDimInfo.style.left = cx + 'px';
-        divDimInfo.style.top = cy + 'px';
+      if (infoHTMLHasValidContent === true) {
+        this.divDimInfo.style.display = '';
+        this.divDimInfo.innerHTML = infoHTML;
+        let cx = 8;
+        let cy = 8;
+        this.divDimInfo.style.width = (Math.min((this.width - parseInt(this.divDimInfo.style.marginLeft) - 210), 350)) + 'px';
+        this.divDimInfo.style.left = cx + 'px';
+        this.divDimInfo.style.top = cy + 'px';
       } else {
-        divDimInfo.style.display = 'none';
+        this.divDimInfo.style.display = 'none';
       }
     } catch (e) {
       error('Exception' + e);
     }
   };
 
-  this.getLegendGraphicURLForLayer = function (layer) {
+  getLegendGraphicURLForLayer (layer) {
     if (layer) {
-      var legendURL = layer.legendGraphic;
+      let legendURL = layer.legendGraphic;
       if (!legendURL) return undefined;
       // For THREDDS WMS we need to add layers=
       legendURL += '&layers=' + URLEncode(layer.name) + '&';
       try {
-        if (layer.legendIsDimensionDependant == true) {
-          legendURL += _map.getDimensionRequestString(layer) + '&';
+        if (layer.legendIsDimensionDependant === true) {
+          legendURL += this.getDimensionRequestString(layer) + '&';
         }
         legendURL += '&transparent=true&width=90&height=250&';
       } catch (e) {
         return undefined;
       }
 
-      // legendURL+="STYLE="+URLEncode(layer.currentStyle)+"&";
-
-            // Handle WMS extensions
+      // Handle WMS extensions
       legendURL += layer.wmsextensions.url;
 
       return legendURL;
@@ -1568,67 +1601,64 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     return undefined;
   };
 
-  var showScaleBarInMap = true;
-  this.showScaleBar = function () {
-    showScaleBarInMap = true;
+  showScaleBar () {
+    this.showScaleBarInMap = true;
     console.log('todo showScaleBar');
   };
-  this.hideScaleBar = function () {
-    showScaleBarInMap = false;
+
+  hideScaleBar () {
+    this.showScaleBarInMap = false;
     console.log('todo hideScaleBar');
   };
 
-
-  this.getMaxNumberOfAnimations = function () {
+  getMaxNumberOfAnimations () {
     return maxAnimationSteps;
   };
 
-  var zoomBeforeLoadBBOX;
-  var srsBeforeLoadBBOX;
   // Animate between last point and point up to `n` time-units ago of the active layer
   // E.g. Draw the last three hours of a layer
-  this.drawLastTimes = function (hoursAgo, timeUnit) {
+  drawLastTimes (hoursAgo, timeUnit) {
     if (!timeUnit) {
       timeUnit = 'hours';
     }
-    if (layers.length === 0) return;
-    var layer = this.getActiveLayer();
+    if (this.layers.length === 0) return;
+    let layer = this.getActiveLayer();
     if (!layer) {
       return;
     }
-    var timeDimension = layer.getDimension('time');
+    let timeDimension = layer.getDimension('time');
     if (!timeDimension) {
       return;
     }
-    var lastIndex = timeDimension.size() - 1;
-    var drawDates = [];
-    var lastTime = moment.utc(timeDimension.getValueForIndex(lastIndex));
-    var begin = lastTime.subtract(hoursAgo, timeUnit);
+    let lastIndex = timeDimension.size() - 1;
+    let drawDates = [];
+    let lastTime = moment.utc(timeDimension.getValueForIndex(lastIndex));
+    let begin = lastTime.subtract(hoursAgo, timeUnit);
     while (lastIndex >= 0) {
       lastTime = timeDimension.getValueForIndex(lastIndex--);
       if (!lastTime || lastTime === WMJSDateTooEarlyString || begin.isAfter(moment.utc(lastTime))) break;
       drawDates.unshift({ name: 'time', value: lastTime });
     }
     this.draw(drawDates);
-  }
-  // Animate between start and end dates with the smallest available resolution
-  this.drawAutomatic = function (start, end) {
-    if (layers.length === 0) {
+  };
+  /* Animate between start and end dates with the smallest available resolution */
+  drawAutomatic (start, end) {
+    if (this.layers.length === 0) {
       return;
     }
-    var currentTime = start.format('YYYY-MM-DDTHH:mm:ss');
-    var drawDates = [];
-    var iter = 0;
+    let currentTime = start.format('YYYY-MM-DDTHH:mm:ss');
+    let drawDates = [];
+    let iter = 0;
     // Fetch all dates within the time interval with a dynamic frequency
     while (moment(currentTime) < end && iter < 1000) {
       iter++;
-      var smallestTime = null;
-      for (var i = layers.length - 1; i >= 0; i--) {
-        var timeDim = layers[i].getDimension('time');
+      let smallestTime = null;
+      for (let i = this.layers.length - 1; i >= 0; i--) {
+        let timeDim = this.layers[i].getDimension('time');
         if (!timeDim) {
           continue;
         }
-        var layerTime = timeDim.getNextClosestValue(currentTime);
+        let layerTime = timeDim.getNextClosestValue(currentTime);
         if (!layerTime || layerTime === 'date too early') {
           continue;
         }
@@ -1640,7 +1670,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       if (smallestTime === null) {
         break;
       }
-      var smallestTimeObj = { name: 'time', value: smallestTime };
+      let smallestTimeObj = { name: 'time', value: smallestTime };
       drawDates.push(smallestTimeObj);
       currentTime = smallestTime;
     }
@@ -1648,146 +1678,107 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     // If there are times in the interval, animate them all,
     // Otherwise, fall back to "dumb" animation and draw the last 100 dates from the first layer
     if (drawDates.length > 0) {
-      const splicedDate = drawDates.pop();
       this.draw(drawDates);
     } else {
-      var firstTimeDim = layers[0].getDimension('time');
+      let firstTimeDim = this.layers[0].getDimension('time');
       if (!firstTimeDim) {
         return;
       }
-      var numTimeSteps = firstTimeDim.size();
+      let numTimeSteps = firstTimeDim.size();
 
-      var numStepsBack = Math.min(firstTimeDim.size(), 100);
+      let numStepsBack = Math.min(firstTimeDim.size(), 100);
 
-      var dates = [];
-      for (var j = numTimeSteps - numStepsBack; j < numTimeSteps; ++j) {
+      let dates = [];
+      for (let j = numTimeSteps - numStepsBack; j < numTimeSteps; ++j) {
         dates.push({ name:firstTimeDim.name, value:firstTimeDim.getValueForIndex(j) });
       }
       this.draw(dates);
     }
   };
 
-  var drawTimer = new WMJSDebouncer();
-  var drawTimerBusy = false;
-  var drawTimerPending = false;
-  var drawTimerAnimationList;
-
-  this.display = function () {
-    divBuffer[currentSwapBuffer].display(updateBBOX, loadedBBOX);
-    // divBuffer[currentSwapBuffer].display();
-    if (enableConsoleDebugging)console.log('drawnBBOX.setBBOX(bbox)');
-    drawnBBOX.setBBOX(bbox);
+  display () {
+    this.divBuffer[this.currentSwapBuffer].display(this.updateBBOX, this.loadedBBOX);
+    if (enableConsoleDebugging) console.log('drawnBBOX.setBBOX(bbox)');
+    this.drawnBBOX.setBBOX(this.bbox);
   };
 
-  this.draw = function (animationList) {
-
-    if (_map.isAnimating ) {
+  draw (animationList) {
+    if (this.isAnimating) {
       if (enableConsoleDebugging)console.log('ANIMATING: Skipping draw:' + animationList);
       return;
     }
-//     drawTimerAnimationList = animationList;
-//     if (drawTimerBusy === true) {
-//       if (drawTimerPending === true) return;
-//       drawTimerPending = true;
-//       drawTimer.init(10, () => {
-//         drawTimerBusy = false;
-//         drawTimerPending = false;
-//         _map._draw(drawTimerAnimationList);
-//       });
-//       return;
-//     }
-//     drawTimerBusy = true;
-    _map._draw(animationList);
+    // window.requestAnimationFrame(() => { this._draw(animationList); });
+    this._draw(animationList);
   };
   /**
    * API Function called to draw the layers, fires getmap request and shows the layers on the screen
    */
-  this._draw = function (animationList) {
-
+  _draw (animationList) {
     if (enableConsoleDebugging)console.log('draw:' + animationList);
-
-
     if (enableConsoleDebugging)console.log('drawnBBOX.setBBOX(bbox)');
-    drawnBBOX.setBBOX(bbox);
-    _drawAndLoad(animationList);
+    this.drawnBBOX.setBBOX(this.bbox);
+    this._drawAndLoad(animationList);
   };
 
-  var _drawAndLoad = function (animationList) {
-    if(width < 4 || height < 4 ) {
-      // console.log('map too small, skipping');
+  _drawAndLoad (animationList) {
+    if (this.width < 4 || this.height < 4) {
       return;
     }
 
-    callBack.triggerEvent('beforedraw');
+    this.callBack.triggerEvent('beforedraw');
 
-    // debug("WebMapJS::draw():"+animationList);
-    // alert(animationList);
-    if (_map.isAnimating === false) {
+    if (this.isAnimating === false) {
       if (animationList !== undefined) {
         if (typeof (animationList) === 'object') {
           if (animationList.length > 0) {
             if (animationList.length > maxAnimationSteps) {
-              alert('Too many animations given, max is ' + maxAnimationSteps);
-              _map.draw('self');
+              error('Too many animations given, max is ' + maxAnimationSteps);
+              this.draw('self');
               return;
             }
-            _map.isAnimating = true;
-            callBack.triggerEvent('onstartanimation', _map);
-            _map.currentAnimationStep = 0;
-            _map.animationList = [];
-            _map.mouseHoverAnimationBox = false;
-            for (var j = 0; j < animationList.length; j++) {
-              var animationListObject = { name:animationList[j].name, value:animationList[j].value };
-              _map.setDimension(animationList[j].name, animationList[j].value, false);
-              animationListObject.requests = _map.getWMSRequests();
-              _map.animationList.push(animationListObject);
+            this.isAnimating = true;
+            this.callBack.triggerEvent('onstartanimation', this);
+            this.currentAnimationStep = 0;
+            this.animationList = [];
+            this.mouseHoverAnimationBox = false;
+            for (let j = 0; j < animationList.length; j++) {
+              let animationListObject = { name:animationList[j].name, value:animationList[j].value };
+              this.setDimension(animationList[j].name, animationList[j].value, false);
+              animationListObject.requests = this.getWMSRequests();
+              this.animationList.push(animationListObject);
             }
-            _map.setDimension(_map.animationList[_map.currentAnimationStep].name, _map.animationList[_map.currentAnimationStep].value, false);
-            wmjsAnimate.checkAnimation();
+            this.setDimension(this.animationList[this.currentAnimationStep].name, this.animationList[this.currentAnimationStep].value, false);
+            this.wmjsAnimate.checkAnimation();
           }
         }
       }
     }
-    if(width < 4 || height < 4 ) {
+    if (this.width < 4 || this.height < 4) {
       console.log('map too small, skipping');
       return;
     }
-
-/*    if (_map.isAnimating == true) {
-      for (var j = 0; j < _map.animationList.length; j++) {
-        _map.setDimension(_map.animationList[j].name, _map.animationList[j].value);
-        _map.animationList[j].requests = _map.getWMSRequests();
-        _map.animationList[j].imagesInPrefetch = undefined;// _map.prefetch(_map.animationList[j].requests,false);;
-      }
-      _map.setDimension(_map.animationList[_map.currentAnimationStep].name, _map.animationList[_map.currentAnimationStep].value);
-
-      if (isDefined(mainTimeSlider)) {
-        mainTimeSlider.el.hide();
-      }
-    }*/
-
-    _map._pdraw();
+    this._pdraw();
   };
 
-  var onLayersReadyCallbackFunction = function () {
-    _map.draw('onlayersready callback');
+  _onLayersReadyCallbackFunction () {
+    this.draw('onlayersready callback');
   };
 
-  var onMapReadyCallbackFunction = function () {
+  _onMapReadyCallbackFunction () {
     debug('--> onmapready event called');
-    _map.draw('onmapready callback');
+    this.draw('onmapready callback');
   };
 
-  var onResumeSuspendCallbackFunction = function () {
-    _map.draw('onresumesuspend callback');
+  _onResumeSuspendCallbackFunction () {
+    this.draw('onresumesuspend callback');
   };
 
-  this.getWMSRequests = function () {
-    var requests = [];
-    var n = _map.getNumLayers();
-    for (j = 0; j < n; j++) {
-      if (layers[j].service && layers[j].enabled) {
-        var request = _map.buildWMSGetMapRequest(layers[j]);
+  getWMSRequests () {
+    let requests = [];
+    let n = this.getNumLayers();
+    for (let j = 0; j < n; j++) {
+      if (this.layers[j].service && this.layers[j].enabled) {
+        let request = this.buildWMSGetMapRequest(this.layers[j]);
         if (request) {
           requests.push(request);
         }
@@ -1802,11 +1793,11 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
    * @param requests An array of requests to prefetch
    * @return The list of images in prefetch
    */
-  this.prefetch = function (requests) {
-    var prefetching = [];
-    for (j = 0; j < requests.length; j++) {
-      var image = getMapImageStore.getImage(requests[j]);
-      if (image.isLoaded() == false && image.isLoading() == false) {
+  prefetch (requests) {
+    let prefetching = [];
+    for (let j = 0; j < requests.length; j++) {
+      let image = getMapImageStore.getImage(requests[j]);
+      if (image.isLoaded() === false && image.isLoading() === false) {
         prefetching.push(image);
         image.load();
       }
@@ -1814,96 +1805,75 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     return prefetching;
   };
 
-  this.getImageStore = function () {
+  getImageStore () {
     return getMapImageStore;
   };
 
-  // Returns 0: not loaded, 1 loading, 2 loaded
-  this.isThisRequestLoaded = function (request) {
-    var image = getMapImageStore.getImageForSrc(request);
-    if (image == undefined) return 0;
+  /* Returns 0: not loaded, 1 loading, 2 loaded */
+  isThisRequestLoaded (request) {
+    let image = getMapImageStore.getImageForSrc(request);
+    if (image === undefined) return 0;
     if (image.isLoaded()) return 2;
     if (image.isLoading()) return 1;
   };
 
-  this.mouseHoverAnimationBox = false;
+  _pdraw () {
+    if (this.initialized === 0) return;
 
-  this._pdraw = function () {
-    if (initialized == 0) return;
-
-    if (suspendDrawing == true) {
-      if (callBack.addToCallback('onresumesuspend', onResumeSuspendCallbackFunction) == true) {
+    if (this.suspendDrawing === true) {
+      if (this.callBack.addToCallback('onresumesuspend', this._onResumeSuspendCallbackFunction) === true) {
         debug('Suspending on onresumesuspend');
       }
-      drawBusy = 0;
+      this.drawBusy = 0;
       return;
     }
-//       if(drawBusy==1){
-//         debug("Suspending on ondrawready");
-//         callBack.addToCallback("ondrawready",_map.draw);
-//         //drawBusy=0;
-//         return;
-//       }
 
-
-//       drawBusy=1;
-
-    function loadLayers () {
+    let loadLayers = () => {
       if (enableConsoleDebugging)console.log('loadLayers');
-      var request;
+      let request;
 
-      var currentLayerIndex = 0;
-      numBaseLayers = 0;
-      if (baseLayers) {
-        for (var l = 0; l < baseLayers.length; l++) {
-          if (baseLayers[l].enabled) {
-            if (baseLayers[l].keepOnTop === false) {
-              if (baseLayers[l].type && baseLayers[l].type === 'twms') continue;
-              numBaseLayers++;
-              request = _map.buildWMSGetMapRequest(baseLayers[l]);
+      let currentLayerIndex = 0;
+      this.numBaseLayers = 0;
+      if (this.baseLayers) {
+        for (let l = 0; l < this.baseLayers.length; l++) {
+          if (this.baseLayers[l].enabled) {
+            if (this.baseLayers[l].keepOnTop === false) {
+              if (this.baseLayers[l].type && this.baseLayers[l].type === 'twms') continue;
+              this.numBaseLayers++;
+              request = this.buildWMSGetMapRequest(this.baseLayers[l]);
 
               if (request) {
-                divBuffer[newSwapBuffer].setSrc(currentLayerIndex, request, _map.getWidth(), _map.getHeight(), {layer:baseLayers[l]});
-                divBuffer[newSwapBuffer].setOpacity(currentLayerIndex, baseLayers[l].opacity);
-                 // _map.setBufferImageSrc(newSwapBuffer,currentLayerIndex,request);
-               // _map.setBufferImageOpacity(newSwapBuffer,currentLayerIndex,baseLayers[l].opacity);
-
+                this.divBuffer[this.newSwapBuffer].setSrc(currentLayerIndex, request, this.getWidth(), this.getHeight(), { layer: this.baseLayers[l] });
+                this.divBuffer[this.newSwapBuffer].setOpacity(currentLayerIndex, this.baseLayers[l].opacity);
                 currentLayerIndex++;
               }
             }
           }
         }
       }
-      var j = 0;
-
-      // Loop through all layers
-      for (j = 0; j < _map.getNumLayers(); j++) {
-        if (layers[j].service && layers[j].enabled) {
-          // Get the dimension object for this layer
-          var layerDimensionsObject = layers[j].dimensions;// getLayerDimensions(layers[j]);
-          request = _map.buildWMSGetMapRequest(layers[j], layerDimensionsObject);
+      /* Loop through all layers */
+      for (let j = 0; j < this.getNumLayers(); j++) {
+        if (this.layers[j].service && this.layers[j].enabled) {
+          /* Get the dimension object for this layer */
+          let layerDimensionsObject = this.layers[j].dimensions;// getLayerDimensions(layers[j]);
+          request = this.buildWMSGetMapRequest(this.layers[j], layerDimensionsObject);
           if (request) {
-            // _map.setBufferImageSrc(newSwapBuffer,currentLayerIndex,request);
-            // _map.setBufferImageOpacity(newSwapBuffer,currentLayerIndex,layers[j].opacity);
-            divBuffer[newSwapBuffer].setSrc(currentLayerIndex, request, _map.getWidth(), _map.getHeight(), {layer:layers[j]});
-            divBuffer[newSwapBuffer].setOpacity(currentLayerIndex, layers[j].opacity);
-            layers[j].image = divBuffer[newSwapBuffer].layers[currentLayerIndex];
+            this.divBuffer[this.newSwapBuffer].setSrc(currentLayerIndex, request, this.getWidth(), this.getHeight(), { layer: this.layers[j] });
+            this.divBuffer[this.newSwapBuffer].setOpacity(currentLayerIndex, this.layers[j].opacity);
+            this.layers[j].image = this.divBuffer[this.newSwapBuffer].layers[currentLayerIndex];
             currentLayerIndex++;
           }
         }
       }
 
-      // debug*
-      if (baseLayers) {
-        for (var l = 0; l < baseLayers.length; l++) {
-          if (baseLayers[l].enabled) {
-            if (baseLayers[l].keepOnTop == true) {
-              request = _map.buildWMSGetMapRequest(baseLayers[l]);
+      if (this.baseLayers) {
+        for (let l = 0; l < this.baseLayers.length; l++) {
+          if (this.baseLayers[l].enabled) {
+            if (this.baseLayers[l].keepOnTop === true) {
+              request = this.buildWMSGetMapRequest(this.baseLayers[l]);
               if (request) {
-                // _map.setBufferImageSrc(newSwapBuffer,currentLayerIndex,request);
-                // _map.setBufferImageOpacity(newSwapBuffer,currentLayerIndex,baseLayers[l].opacity);
-                divBuffer[newSwapBuffer].setSrc(currentLayerIndex, request, _map.getWidth(), _map.getHeight(), {layer:baseLayers[l]});
-                divBuffer[newSwapBuffer].setOpacity(currentLayerIndex, baseLayers[l].opacity);
+                this.divBuffer[this.newSwapBuffer].setSrc(currentLayerIndex, request, this.getWidth(), this.getHeight(), { layer:this.baseLayers[l] });
+                this.divBuffer[this.newSwapBuffer].setOpacity(currentLayerIndex, this.baseLayers[l].opacity);
                 currentLayerIndex++;
               }
             }
@@ -1911,559 +1881,451 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
         }
       }
 
-      _map.flipBuffers();
-      // Make info HTML
+      this.flipBuffers();
+      /* Make info HTML */
       // makeInfoHTML();
     };
 
-    // if layers are not ready yet, wait for them
-    if (layersBusy == 1) {
-      if (callBack.addToCallback('onlayersready', onLayersReadyCallbackFunction) == true) {
+    /* if layers are not ready yet, wait for them */
+    if (this.layersBusy === 1) {
+      if (this.callBack.addToCallback('onlayersready', this._onLayersReadyCallbackFunction) === true) {
         debug('Suspending on onlayersready');
       }
-//         drawBusy=0;
       return;
     }
-    if (mapBusy) {
-      if (callBack.addToCallback('onmapready', onMapReadyCallbackFunction) == true) {
+    if (this.mapBusy) {
+      if (this.callBack.addToCallback('onmapready', this._onMapReadyCallbackFunction) === true) {
         debug('Suspending on onmapready');
       }
-//         drawBusy=0;
       return;
     }
 
     loadLayers();
-//       drawBusy=0;
-    callBack.triggerEvent('ondrawready', _map);
-    loadLegendInline();
+    this.callBack.triggerEvent('ondrawready', this.map);
+    this.loadLegendInline();
   };
 
-  var wmjsAnimate;
-
-  var updateBoundingBox = function (_mapbbox) {
-    if (divBuffer.length == 0) return;
-    var mapbbox = bbox; if (isDefined(_mapbbox))mapbbox = _mapbbox;
-    updateBBOX.copy(mapbbox);
-    divBuffer[currentSwapBuffer].setBBOX(updateBBOX, loadedBBOX);
-    divBuffer[currentSwapBuffer].mapbbox = updateBBOX;
-    _map.showBoundingBox(divBoundingBox.bbox, updateBBOX);
-    callBack.triggerEvent('onupdatebbox', updateBBOX);
-    _map.repositionMapPin(_mapbbox);
+  _updateBoundingBox (_mapbbox) {
+    if (this.divBuffer.length === 0) return;
+    let mapbbox = this.bbox; if (isDefined(_mapbbox))mapbbox = _mapbbox;
+    this.updateBBOX.copy(mapbbox);
+    this.divBuffer[this.currentSwapBuffer].setBBOX(this.updateBBOX, this.loadedBBOX);
+    this.divBuffer[this.currentSwapBuffer].mapbbox = this.updateBBOX;
+    this.showBoundingBox(this.divBoundingBox.bbox, this.updateBBOX);
+    this.callBack.triggerEvent('onupdatebbox', this.updateBBOX);
+    this.repositionMapPin(_mapbbox);
   };
 
-
-  var loadingDivTimer = new WMJSTimer();
-
-  _map.flipBuffers = function () {
+  flipBuffers () {
     if (enableConsoleDebugging)console.log('flipBuffers');
-    var prev = currentSwapBuffer;
-    var current = newSwapBuffer;
+    let prev = this.currentSwapBuffer;
+    let current = this.newSwapBuffer;
+    this.callBack.triggerEvent('onmapstartloading');
+    this.mapBusy = true;
+    this.loadingDivTimer.init(500, () => { this.loadingDiv.show(); });
+    this.loadingBBOX.setBBOX(this.bbox);
 
-//       divBuffer[prev].bbox = bbox.clone();
-//       divBuffer[prev].display(updateBBOX);
-
-    // divBuffer[newSwapBuffer].mapbbox=bbox;
-    callBack.triggerEvent('onmapstartloading');
-    mapBusy = true;
-    loadingDivTimer.init(500, function () { loadingDiv.show(); });
-    loadingBBOX.setBBOX(bbox);
-
-    if(!divBuffer[current])return;
-    divBuffer[current].load(
-      function () {
+    if (!this.divBuffer[current]) return;
+    this.divBuffer[current].load(
+      () => {
         if (enableConsoleDebugging)console.log('flipBuffers loadcomplete');
         try {
-          divBuffer[prev].srs = srs;
-          divBuffer[current].bbox = bbox.clone();
-          divBuffer[current].srs = srs;
+          this.divBuffer[prev].srs = this.srs;
+          this.divBuffer[current].bbox = this.bbox.clone();
+          this.divBuffer[current].srs = this.srs;
           if (enableConsoleDebugging)console.log('loadedBBOX.setBBOX(bbox)');
-          loadedBBOX.setBBOX(loadingBBOX);
+          this.loadedBBOX.setBBOX(this.loadingBBOX);
           if (enableConsoleDebugging)console.log('-----------------------');
 
-          divBuffer[current].display(updateBBOX, loadedBBOX);
+          this.divBuffer[current].display(this.updateBBOX, this.loadedBBOX);
 
-          divMapPin.oldx = divMapPin.exactX;
-          divMapPin.oldy = divMapPin.exactY;
-          divBuffer[prev].hide();
-          currentSwapBuffer = current;
-          newSwapBuffer = prev;
-
+          this.divMapPin.oldx = this.divMapPin.exactX;
+          this.divMapPin.oldy = this.divMapPin.exactY;
+          this.divBuffer[prev].hide();
+          this.currentSwapBuffer = current;
+          this.newSwapBuffer = prev;
         } catch (e) {
           console.log(e);
         }
-        mapBusy = false;
+        this.mapBusy = false;
 
-        callBack.triggerEvent('onmaploadingcomplete', _map);
-        callBack.triggerEvent('onloadingcomplete', _map);
-        callBack.triggerEvent('onmapready', _map);
-        loadingDiv.hide();
-        loadingDivTimer.stop();
+        this.callBack.triggerEvent('onmaploadingcomplete', this);
+        this.callBack.triggerEvent('onloadingcomplete', this);
+        this.callBack.triggerEvent('onmapready', this);
+        this.loadingDiv.hide();
+        this.loadingDivTimer.stop();
       }
     );
   };
 
-  _map.getBackBufferCanvasContext = function () {
-    return divBuffer[newSwapBuffer].getCanvasContext();
-  };
-  _map.getFrontBufferCanvasContext = function () {
-    return divBuffer[currentSwapBuffer].getCanvasContext();
+  getBackBufferCanvasContext () {
+    return this.divBuffer[this.newSwapBuffer].getCanvasContext();
   };
 
-  _map.redrawBuffer = function () {
-    divBuffer[currentSwapBuffer].display();
+  getFrontBufferCanvasContext () {
+    return this.divBuffer[this.currentSwapBuffer].getCanvasContext();
+  };
+
+  redrawBuffer () {
+    this.divBuffer[this.currentSwapBuffer].display();
     if (enableConsoleDebugging)console.log('drawnBBOX.setBBOX(bbox)');
-    drawnBBOX.setBBOX(bbox);
+    this.drawnBBOX.setBBOX(this.bbox);
   };
 
-  this.addBaseLayers = function (layer) {
+  addBaseLayers (layer) {
     if (layer) {
-      numBaseLayers = 0;
+      this.numBaseLayers = 0;
       layer = toArray(layer);
-      baseLayers.push(layer);
-      for (j = 0; j < baseLayers.length; j++) {
-        if (baseLayers.keepOnTop == true) {
-          numBaseLayers++;
+      this.baseLayers.push(layer);
+      for (let j = 0; j < this.baseLayers.length; j++) {
+        if (this.baseLayers.keepOnTop === true) {
+          this.numBaseLayers++;
         }
-
-        // baseLayers[j].id=(-2)-j;;
       }
-      callBack.triggerEvent('onlayeradd');
-    } else baseLayers = undefined;
+      this.callBack.triggerEvent('onlayeradd');
+    } else this.baseLayers = undefined;
   };
 
-  this.setBaseLayers = function (layer) {
+  setBaseLayers (layer) {
     // TODO use calculate baselayer instead...
     if (layer) {
-      numBaseLayers = 0;
+      this.numBaseLayers = 0;
       // layer=toArray(layer);
-      baseLayers = layer;
-      for (j = 0; j < baseLayers.length; j++) {
-        if (baseLayers.keepOnTop == true) {
-          numBaseLayers++;
+      this.baseLayers = layer;
+      for (let j = 0; j < this.baseLayers.length; j++) {
+        if (this.baseLayers.keepOnTop === true) {
+          this.numBaseLayers++;
         }
-        // baseLayers[j].id=(-2)-j;;
       }
-      callBack.triggerEvent('onlayerchange');
-    } else baseLayers = undefined;
+      this.callBack.triggerEvent('onlayerchange');
+    } else this.baseLayers = undefined;
   };
 
-  this.getBaseLayers = function () {
-    return baseLayers;
+  getBaseLayers () {
+    return this.baseLayers;
   };
 
-  this.getNumLayers = function () {
-    return layers.length;
+  getNumLayers () {
+    return this.layers.length;
   };
 
-  this.getBaseElement = function () {
-    return baseDiv;
+  getBaseElement () {
+    return this.baseDiv;
   };
 
-  var mouseWheelBusy = 0;
+  flyZoomToBBOXTimerFunc () {
+    this.flyZoomToBBOXScaler = (this.flyZoomToBBOXTimerLoop / this.flyZoomToBBOXTimerSteps);
+    let z1 = 1 - this.flyZoomToBBOXScaler;
+    this.flyZoomToBBOXFly.left = this.flyZoomToBBOXCurrent.left * z1 + this.flyZoomToBBOXNew.left * this.flyZoomToBBOXScaler;
+    this.flyZoomToBBOXFly.bottom = this.flyZoomToBBOXCurrent.bottom * z1 + this.flyZoomToBBOXNew.bottom * this.flyZoomToBBOXScaler;
+    this.flyZoomToBBOXFly.right = this.flyZoomToBBOXCurrent.right * z1 + this.flyZoomToBBOXNew.right * this.flyZoomToBBOXScaler;
+    this.flyZoomToBBOXFly.top = this.flyZoomToBBOXCurrent.top * z1 + this.flyZoomToBBOXNew.top * this.flyZoomToBBOXScaler;
+    this._updateBoundingBox(this.flyZoomToBBOXFly);
 
-  var flyZoomToBBOXTimerStart = 1;
-  var flyZoomToBBOXTimerSteps = 1;
-  var flyZoomToBBOXTimerLoop;
-  var flyZoomToBBOXTimer = new WMJSDebouncer();
-  var flyZoomToBBOXScaler = 0;
-  var flyZoomToBBOXCurrent = new WMJSBBOX();
-  var flyZoomToBBOXFly = new WMJSBBOX();
-  var flyZoomToBBOXNew = new WMJSBBOX();
-  var flyZoomToBBOXContinueNew = new WMJSBBOX();
-  var flyZoomToBBOXTimerFuncBusy = 0;
-  var flyZoomToBBOXTimerFuncBusyAndContinue = 0;
-  var flyZoomToBBOXTimerFunc = function () {
-    flyZoomToBBOXScaler = (flyZoomToBBOXTimerLoop / flyZoomToBBOXTimerSteps);
-    let z1 = 1 - flyZoomToBBOXScaler;
-    flyZoomToBBOXFly.left = flyZoomToBBOXCurrent.left * z1 + flyZoomToBBOXNew.left * flyZoomToBBOXScaler;
-    flyZoomToBBOXFly.bottom = flyZoomToBBOXCurrent.bottom * z1 + flyZoomToBBOXNew.bottom * flyZoomToBBOXScaler;
-    flyZoomToBBOXFly.right = flyZoomToBBOXCurrent.right * z1 + flyZoomToBBOXNew.right * flyZoomToBBOXScaler;
-    flyZoomToBBOXFly.top = flyZoomToBBOXCurrent.top * z1 + flyZoomToBBOXNew.top * flyZoomToBBOXScaler;
-    updateBoundingBox(flyZoomToBBOXFly);
+    this.flyZoomToBBOXTimerLoop += 1;
 
-    flyZoomToBBOXTimerLoop += 1;
-
-    if (flyZoomToBBOXTimerLoop > flyZoomToBBOXTimerSteps) {
-      flyZoomToBBOXTimerLoop = flyZoomToBBOXTimerStart;
-      _map.setBBOX(flyZoomToBBOXFly);
-      _map.display();
-      if (flyZoomToBBOXTimerFuncBusyAndContinue === 0) {
-        flyZoomToBBOXTimerFuncBusyAndContinue = 0;
-        flyZoomToBBOXTimerFuncBusy = 0;
-        _map.draw('flyZoomToBBOXTimerFunc');
+    if (this.flyZoomToBBOXTimerLoop > this.flyZoomToBBOXTimerSteps) {
+      this.flyZoomToBBOXTimerLoop = this.flyZoomToBBOXTimerStart;
+      this.setBBOX(this.flyZoomToBBOXFly);
+      this.display();
+      if (this.flyZoomToBBOXTimerFuncBusyAndContinue === 0) {
+        this.flyZoomToBBOXTimerFuncBusyAndContinue = 0;
+        this.flyZoomToBBOXTimerFuncBusy = 0;
+        this.draw('flyZoomToBBOXTimerFunc');
       } else {
-        flyZoomToBBOXTimerFuncBusyAndContinue = 0;
-        flyZoomToBBOXTimerFuncBusy = 0;
-        flyZoomToBBOXStartZoom(updateBBOX, flyZoomToBBOXContinueNew);
+        this.flyZoomToBBOXTimerFuncBusyAndContinue = 0;
+        this.flyZoomToBBOXTimerFuncBusy = 0;
+        this.flyZoomToBBOXStartZoom(this.updateBBOX, this.flyZoomToBBOXContinueNew);
       }
       return;
     }
-    flyZoomToBBOXTimer.init(10, flyZoomToBBOXTimerFunc);
-  };
+    window.requestAnimationFrame(() => { this.flyZoomToBBOXTimerFunc(); });
+    // this.flyZoomToBBOXTimer.init(10, this.flyZoomToBBOXTimerFunc);
+  }
 
-  var flyZoomToBBOXStop = function (currentbox, newbox) {
-    if (flyZoomToBBOXTimerFuncBusy) {
-      _map.setBBOX(flyZoomToBBOXFly);
+  flyZoomToBBOXStop (currentbox, newbox) {
+    if (this.flyZoomToBBOXTimerFuncBusy) {
+      this.setBBOX(this.flyZoomToBBOXFly);
     }
-    flyZoomToBBOXTimerFuncBusyAndContinue = 0;
-    flyZoomToBBOXTimerFuncBusy = 0;
-    flyZoomToBBOXTimer.stop();
+    this.flyZoomToBBOXTimerFuncBusyAndContinue = 0;
+    this.flyZoomToBBOXTimerFuncBusy = 0;
+    this.flyZoomToBBOXTimer.stop();
+  }
 
-  };
-  var flyZoomToBBOXStartZoom = function (currentbox, newbox) {
-    if (flyZoomToBBOXTimerFuncBusy === 1) {
-      flyZoomToBBOXContinueNew.copy(newbox);
-      flyZoomToBBOXTimerFuncBusyAndContinue = 1;
+  flyZoomToBBOXStartZoom (currentbox, newbox) {
+    if (this.flyZoomToBBOXTimerFuncBusy === 1) {
+      this.flyZoomToBBOXContinueNew.copy(newbox);
+      this.flyZoomToBBOXTimerFuncBusyAndContinue = 1;
       return;
     }
-    flyZoomToBBOXCurrent.copy(currentbox);
-    flyZoomToBBOXNew.copy(newbox);
-    flyZoomToBBOXTimerLoop = flyZoomToBBOXTimerStart;
-    flyZoomToBBOXTimerFuncBusyAndContinue = 0;
-    if (flyZoomToBBOXTimerFuncBusy === 0) {
-      flyZoomToBBOXTimerFuncBusy = 1;
-      flyZoomToBBOXTimerFunc();
+    this.flyZoomToBBOXCurrent.copy(currentbox);
+    this.flyZoomToBBOXNew.copy(newbox);
+    this.flyZoomToBBOXTimerLoop = this.flyZoomToBBOXTimerStart;
+    this.flyZoomToBBOXTimerFuncBusyAndContinue = 0;
+    if (this.flyZoomToBBOXTimerFuncBusy === 0) {
+      this.flyZoomToBBOXTimerFuncBusy = 1;
+      this.flyZoomToBBOXTimerFunc();
     }
   };
 
-  // this.mouseWheel = function(delta){
-  let mouseWheelEventBBOXCurrent = new WMJSBBOX();
-  let mouseWheelEventBBOXNew = new WMJSBBOX();
-
-
-  this.mouseWheelEvent = function (event, delta, deltaX, deltaY) {
+  mouseWheelEvent (event) {
     event.stopPropagation();
-    preventdefault_event(event);
-    
-    // if(drawBusy==1)return;
-    if (mouseWheelBusy == 1) return;
-    mouseWheelBusy = 1;
-    // controlsBusy = true;
+    preventdefaultEvent(event);
+    if (this.mouseWheelBusy === 1) return;
+    let delta = -event.deltaY;
+    this.mouseWheelBusy = 1;
+    let w = (this.updateBBOX.right - this.updateBBOX.left);
+    let h = (this.updateBBOX.bottom - this.updateBBOX.top);
+    let geoMouseXY = this.getGeoCoordFromPixelCoord({ x:this.mouseX, y:this.mouseY }, this.drawnBBOX);
+    let nx = (geoMouseXY.x - this.updateBBOX.left) / w;// Normalized to 0-1
+    let ny = (geoMouseXY.y - this.updateBBOX.top) / h;
 
-    // if(delta>0){
-     //   _map.setMapPin(mouseX,mouseY);
-   // _map.showMapPin();
-
-    var w = (updateBBOX.right - updateBBOX.left);
-    var h = (updateBBOX.bottom - updateBBOX.top);
-
-    var geoMouseXY = _map.getGeoCoordFromPixelCoord({ x:mouseX, y:mouseY }, drawnBBOX);
-
-
-
-
-    var nx = (geoMouseXY.x - updateBBOX.left) / w;// Normalized to 0-1
-    var ny = (geoMouseXY.y - updateBBOX.top) / h;
-
-    var zoomW;
-    var zoomH;
+    let zoomW;
+    let zoomH;
     if (delta < 0) {
-      zoomW = w * -0.15;
-      zoomH = h * -0.15;
+      zoomW = w * -0.25;
+      zoomH = h * -0.25;
     } else {
-      zoomW = w * 0.1;// delta;
-      zoomH = h * 0.1;//* delta;
+      zoomW = w * 0.20;
+      zoomH = h * 0.20;
     }
-    var newLeft = updateBBOX.left + zoomW;
-    var newTop = updateBBOX.top + zoomH;
-    var newRight = updateBBOX.right - zoomW;
-    var newBottom = updateBBOX.bottom - zoomH;
+    let newLeft = this.updateBBOX.left + zoomW;
+    let newTop = this.updateBBOX.top + zoomH;
+    let newRight = this.updateBBOX.right - zoomW;
+    let newBottom = this.updateBBOX.bottom - zoomH;
 
-    var newW = newRight - newLeft;
-    var newH = newBottom - newTop;
+    let newW = newRight - newLeft;
+    let newH = newBottom - newTop;
 
-    var newX = nx * newW + newLeft;
-    var newY = ny * newH + newTop;
+    let newX = nx * newW + newLeft;
+    let newY = ny * newH + newTop;
 
-    var panX = (newX - geoMouseXY.x);
+    let panX = (newX - geoMouseXY.x);
 
-    var panY = (newY - geoMouseXY.y);
-        // debug("OldXY:"+(geoMouseXY.x+","+geoMouseXY.y)+" newXY:"+(newX+","+newY));
+    let panY = (newY - geoMouseXY.y);
     newLeft -= panX;
     newRight -= panX;
     newTop -= panY;
     newBottom -= panY;
-
-      /* var mx=(mouseX-width/2)/width;
-      var my=(mouseY-height/2)/height;
-      var sx=a*mx*2;
-      var sy=-a*my*2; */
-
-    mouseWheelEventBBOXCurrent.copy(updateBBOX);
-
-    mouseWheelEventBBOXNew.left = newLeft;
-    mouseWheelEventBBOXNew.bottom = newBottom;
-    mouseWheelEventBBOXNew.right = newRight;
-    mouseWheelEventBBOXNew.top = newTop;
-
-
-    mouseWheelBusy =0;
-    flyZoomToBBOXStartZoom(mouseWheelEventBBOXCurrent, mouseWheelEventBBOXNew);
-
-    return;
+    this.mouseWheelEventBBOXCurrent.copy(this.updateBBOX);
+    this.mouseWheelEventBBOXNew.left = newLeft;
+    this.mouseWheelEventBBOXNew.bottom = newBottom;
+    this.mouseWheelEventBBOXNew.right = newRight;
+    this.mouseWheelEventBBOXNew.top = newTop;
+    this.mouseWheelBusy = 0;
+    this.flyZoomToBBOXStartZoom(this.mouseWheelEventBBOXCurrent, this.mouseWheelEventBBOXNew);
   };
 
-  var pinchStart1, pinchStart2;
-  var pinchBox;
-  this.pinchStart = function (x, y, e) {
-    pinchStart1 = { x:e.pointers[0].clientX, y:e.pointers[0].clientY };
-    pinchStart2 = { x:e.pointers[1].clientX, y:e.pointers[1].clientY };
-    pinchBox = bbox.clone();
-    controlsBusy = true;
-    mouseDownPressed = 0;
-    mouseDragging = 1;
-    mouseWheelBusy = 1;
+  pinchStart (x, y, e) {
+    this.pinchStart1 = { x:e.pointers[0].clientX, y:e.pointers[0].clientY };
+    this.pinchStart2 = { x:e.pointers[1].clientX, y:e.pointers[1].clientY };
+    this.pinchBox = this.bbox.clone();
+    this.controlsBusy = true;
+    this.mouseDownPressed = 0;
+    this.mouseDragging = 1;
+    this.mouseWheelBusy = 1;
   };
-  this.pinchMove = function (x, y, e) {
-    mouseDownPressed = 0;
-    pinchMove1 = { x:e.pointers[0].clientX, y:e.pointers[0].clientY };
-    pinchMove2 = { x:e.pointers[1].clientX, y:e.pointers[1].clientY };
-    var dX1 = (pinchMove2.x - pinchMove1.x);
-    var dX2 = (pinchStart2.x - pinchStart1.x);
-    var dY1 = (pinchMove2.y - pinchMove1.y);
-    var dY2 = (pinchStart2.y - pinchStart1.y);
 
-    if (dX2 == 0)dX2 = 1;
-    if (dY2 == 0)dY2 = 1;
+  pinchMove (x, y, e) {
+    this.mouseDownPressed = 0;
+    this.pinchMove1 = { x:e.pointers[0].clientX, y:e.pointers[0].clientY };
+    this.pinchMove2 = { x:e.pointers[1].clientX, y:e.pointers[1].clientY };
+    let dX1 = (this.pinchMove2.x - this.pinchMove1.x);
+    let dX2 = (this.pinchStart2.x - this.pinchStart1.x);
+    let dY1 = (this.pinchMove2.y - this.pinchMove1.y);
+    let dY2 = (this.pinchStart2.y - this.pinchStart1.y);
+
+    if (dX2 === 0)dX2 = 1;
+    if (dY2 === 0)dY2 = 1;
 
     if (dX1 * dX1 > dY1 * dY1) {
-      var sx = dX1 / dX2;
-      var newxr = ((width - pinchMove1.x) / sx) + pinchStart1.x;
-      var newxl = pinchStart1.x - (pinchMove1.x / sx);
-      bbox.right = (newxr / width) * (pinchBox.right - pinchBox.left) + pinchBox.left;
-      bbox.left = (newxl / width) * (pinchBox.right - pinchBox.left) + pinchBox.left;
-      var aspect = (pinchBox.right - pinchBox.left) / (pinchBox.top - pinchBox.bottom);
-      var centerH = (bbox.top + bbox.bottom) / 2;
-      var extentH = ((bbox.left - bbox.right) / 2) / aspect;
-      bbox.bottom = centerH + extentH;
-      bbox.top = centerH - extentH;
+      let sx = dX1 / dX2;
+      let newxr = ((this.width - this.pinchMove1.x) / sx) + this.pinchStart1.x;
+      let newxl = this.pinchStart1.x - (this.pinchMove1.x / sx);
+      this.bbox.right = (newxr / this.width) * (this.pinchBox.right - this.pinchBox.left) + this.pinchBox.left;
+      this.bbox.left = (newxl / this.width) * (this.pinchBox.right - this.pinchBox.left) + this.pinchBox.left;
+      let aspect = (this.pinchBox.right - this.pinchBox.left) / (this.pinchBox.top - this.pinchBox.bottom);
+      let centerH = (this.bbox.top + this.bbox.bottom) / 2;
+      let extentH = ((this.bbox.left - this.bbox.right) / 2) / aspect;
+      this.bbox.bottom = centerH + extentH;
+      this.bbox.top = centerH - extentH;
     } else {
-      var sy = dY1 / dY2;
-      var newyb = ((height - pinchMove1.y) / sy) + pinchStart1.y;
-      var newyt = pinchStart1.y - (pinchMove1.y / sy);
-      bbox.bottom = (newyb / height) * (pinchBox.bottom - pinchBox.top) + pinchBox.top;
-      bbox.top = (newyt / height) * (pinchBox.bottom - pinchBox.top) + pinchBox.top;
-      var aspect = (pinchBox.right - pinchBox.left) / (pinchBox.top - pinchBox.bottom);
-      var centerW = (bbox.right + bbox.left) / 2;
-      var extentW = ((bbox.bottom - bbox.top) / 2) * aspect;
-      bbox.left = centerW + extentW;
-      bbox.right = centerW - extentW;
+      let sy = dY1 / dY2;
+      let newyb = ((this.height - this.pinchMove1.y) / sy) + this.pinchStart1.y;
+      let newyt = this.pinchStart1.y - (this.pinchMove1.y / sy);
+      this.bbox.bottom = (newyb / this.height) * (this.pinchBox.bottom - this.pinchBox.top) + this.pinchBox.top;
+      this.bbox.top = (newyt / this.height) * (this.this.pinchBox.bottom - this.pinchBox.top) + this.pinchBox.top;
+      let aspect = (this.pinchBox.right - this.pinchBox.left) / (this.pinchBox.top - this.pinchBox.bottom);
+      let centerW = (this.bbox.right + this.bbox.left) / 2;
+      let extentW = ((this.bbox.bottom - this.bbox.top) / 2) * aspect;
+      this.bbox.left = centerW + extentW;
+      this.bbox.right = centerW - extentW;
     }
-    updateBoundingBox(bbox);
-  };
-  this.pinchEnd = function (x, y, e) {
-    controlsBusy = false;
-    mouseDownPressed = 0;
-    mouseDragging = 0;
-    mouseWheelBusy = 0;
-    _map.zoomTo(bbox);
-    _map.draw('pinchEnd');
+    this._updateBoundingBox(this.bbox);
   };
 
-  _map.destroy = function () {
-    _map.stopAnimating();
-    for (var i = layers.length - 1; i >= 0; i--) {
-      layers[i].setAutoUpdate(false);
-    }
-    detachEvents();
+  pinchEnd (x, y, e) {
+    this.controlsBusy = false;
+    this.mouseDownPressed = 0;
+    this.mouseDragging = 0;
+    this.mouseWheelBusy = 0;
+    this.zoomTo(this.bbox);
+    this.draw('pinchEnd');
   };
 
-  function detachEvents () {
+  destroy () {
+    this.stopAnimating();
+    for (let i = this.layers.length - 1; i >= 0; i--) {
+      this.layers[i].setAutoUpdate(false);
+    }
+    this.detachEvents();
+  };
+
+  detachEvents () {
     console.log('Detaching...');
-    baseDiv.off('mousedown');
-    baseDiv.off('mousewheel');
-    del_event(document, 'mouseup', _map.mouseUpEvent);
-    del_event(document, 'mousemove', _map.mouseMoveEvent);
-  }
-
-  function attachEvents () {
-    baseDiv.mousedown(_map.mouseDownEvent);
-    baseDiv.mousewheel(_map.mouseWheelEvent);
-    attach_event(document, 'mouseup', _map.mouseUpEvent);
-    attach_event(document, 'mousemove', _map.mouseMoveEvent);
-    if (_map.isTouchDevice()) {
-      _map.enableInlineGetFeatureInfo(false);
-      var mc = new Hammer.Manager(document.body);
-      mc.add(new Hammer.Pan());
-      mc.add(new Hammer.Pinch());
-      mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
-      mc.add(new Hammer.Swipe()).recognizeWith(mc.get('pan'));
-      mc.on('panstart', function (ev) { ev.preventDefault(); _map.mouseDown(ev.center.x, ev.center.y, ev); });
-      mc.on('panmove', function (ev) { ev.preventDefault(); _map.mouseMove(ev.center.x, ev.center.y, ev); });
-      mc.on('panend', function (ev) { ev.preventDefault(); _map.mouseUp(ev.center.x, ev.center.y, ev); });
-      mc.on('pinchstart', function (ev) { ev.preventDefault(); _map.pinchStart(ev.center.x, ev.center.y, ev); });
-      mc.on('pinchmove', function (ev) { ev.preventDefault(); _map.pinchMove(ev.center.x, ev.center.y, ev); });
-      mc.on('pinchend', function (ev) { ev.preventDefault(); _map.pinchEnd(ev.center.x, ev.center.y, ev); });
+    this.baseDiv.off('mousedown');
+    // this.baseDiv.off('mousewheel');
+    removeMouseWheelEvent($(this.baseDiv).get(0), this.mouseWheelEvent);
+    deleteEvent(document, 'mouseup', this.mouseUpEvent);
+    deleteEvent(document, 'mousemove', this.mouseMoveEvent);
+  };
+  
+  attachEvents () {
+    this.baseDiv.on('mousedown', this.mouseDownEvent);
+    // this.baseDiv.on('mousewheel', this.mouseWheelEvent);
+    addMouseWheelEvent($(this.baseDiv).get(0), this.mouseWheelEvent);
+    attachEvent(document, 'mouseup', this.mouseUpEvent);
+    attachEvent(document, 'mousemove', this.mouseMoveEvent);
+    if (this.isTouchDevice()) {
+      this.enableInlineGetFeatureInfo(false);
+      // let mc = new Hammer.Manager(document.body);
+      // mc.add(new Hammer.Pan());
+      // mc.add(new Hammer.Pinch());
+      // mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+      // mc.add(new Hammer.Swipe()).recognizeWith(mc.get('pan'));
+      mc.on('panstart', (ev) => { ev.preventDefault(); this.mouseDown(ev.center.x, ev.center.y, ev); });
+      mc.on('panmove', (ev) => { ev.preventDefault(); this.mouseMove(ev.center.x, ev.center.y, ev); });
+      mc.on('panend', (ev) => { ev.preventDefault(); this.mouseUp(ev.center.x, ev.center.y, ev); });
+      mc.on('pinchstart', (ev) => { ev.preventDefault(); this.pinchStart(ev.center.x, ev.center.y, ev); });
+      mc.on('pinchmove', (ev) => { ev.preventDefault(); this.pinchMove(ev.center.x, ev.center.y, ev); });
+      mc.on('pinchend', (ev) => { ev.preventDefault(); this.pinchEnd(ev.center.x, ev.center.y, ev); });
     }
 
-    _map.setMapModePan();
+    this.setMapModePan();
   };
 
-  // Adds DIM_ for certain dims
-  var getCorrectWMSDimName = function (origDimName) {
-      // Adds DIM_ for dimensions other than height or time
-    // origDimName=origDimName.toUpperCase();
-    if (origDimName.toUpperCase() == 'TIME') return origDimName;
-    if (origDimName.toUpperCase() == 'ELEVATION') return origDimName;
+  /* Adds DIM_ for certain dims */
+  _getCorrectWMSDimName (origDimName) {
+    /* Adds DIM_ for dimensions other than height or time */
+    if (origDimName.toUpperCase() === 'TIME') return origDimName;
+    if (origDimName.toUpperCase() === 'ELEVATION') return origDimName;
     return 'DIM_' + origDimName;
   };
 
-  // Returns all dimensions with its current values as URL
-  var getMapDimURL = function (layer) {
-    var request = '';
-    for (var j = 0; j < layer.dimensions.length; j++) {
+  /* Returns all dimensions with its current values as URL */
+  _getMapDimURL (layer) {
+    let request = '';
+    for (let j = 0; j < layer.dimensions.length; j++) {
       let currentValue = layer.dimensions[j].getValue();
-      request += '&' + getCorrectWMSDimName(layer.dimensions[j].name);
+      request += '&' + this._getCorrectWMSDimName(layer.dimensions[j].name);
       request += '=' + URLEncode(currentValue);
-      if (currentValue == WMJSDateOutSideRange ||
-        currentValue == WMJSDateTooEarlyString ||
-        currentValue == WMJSDateTooLateString) {
+      if (currentValue === WMJSDateOutSideRange ||
+        currentValue === WMJSDateTooEarlyString ||
+        currentValue === WMJSDateTooLateString) {
         throw (WMJSDateOutSideRange);
       }
     }
     return request;
   };
 
-  // Returns all dimensions with its current values as object
-  var buildLayerDims = function () {
-    // return;
-    if (_map.buildLayerDimsBusy == true) {
-      alert('b');
+  /* Returns all dimensions with its current values as object */
+  _buildLayerDims () {
+    if (this.buildLayerDimsBusy === true) {
       return;
     }
-    for (var k = 0; k < mapdimensions.length; k++) {
-      var mapDim = mapdimensions[k];
-      for (var j = 0; j < layers.length; j++) {
-        for (var i = 0; i < layers[j].dimensions.length; i++) {
-          var layerDim = layers[j].dimensions[i];
-          if (layerDim.linked == true) {
-            if (layerDim.name == mapDim.name) {
-              // if(layerDim.units=="ISO8601"&&mapDim.units=="ISO8601"){
-
-              if (mapDim.currentValue == 'current' ||
-                mapDim.currentValue == 'default' ||
-                mapDim.currentValue == '' ||
-                mapDim.currentValue == 'earliest' ||
-                mapDim.currentValue == 'middle' ||
-                mapDim.currentValue == 'latest'
+    for (let k = 0; k < this.mapdimensions.length; k++) {
+      let mapDim = this.mapdimensions[k];
+      for (let j = 0; j < this.layers.length; j++) {
+        for (let i = 0; i < this.layers[j].dimensions.length; i++) {
+          let layerDim = this.layers[j].dimensions[i];
+          if (layerDim.linked === true) {
+            if (layerDim.name === mapDim.name) {
+              if (mapDim.currentValue === 'current' ||
+                mapDim.currentValue === 'default' ||
+                mapDim.currentValue === '' ||
+                mapDim.currentValue === 'earliest' ||
+                mapDim.currentValue === 'middle' ||
+                mapDim.currentValue === 'latest'
               ) {
                 mapDim.currentValue = layerDim.getClosestValue(mapDim.currentValue);
-                // if(mapDim.currentValue == WMJSDateTooEarlyString)alert("BUG!");
               }
-
-              // alert(mapDim.currentValue);
-              _map.buildLayerDimsBusy = true;
+              this.buildLayerDimsBusy = true;
               layerDim.setClosestValue(mapDim.currentValue);
-              _map.buildLayerDimsBusy = false;
-              
-              /* }else{
-                if(layerDim.units == mapDim.units){
-                  var index = -1;
-                  var value = WMJSDateOutSideRange;
-                  try{
-                    index = layerDim.getIndexForValue(mapDim.currentValue);
-                    value = layerDim.getValueForIndex(index);
-                  }catch(e){
-                  }
-                  layerDim.currentValue = value;
-                }
-              } */
+              this.buildLayerDimsBusy = false;
             }
           }
         }
       }
     }
-
-    return;
   };
 
-  var mouseX = 0;
-  var mouseY = 0;
-  var mouseDownX = -10000;
-  var mouseDownY = -10000;
-  var mouseUpX = 10000;
-  var mouseUpY = 10000;
-  var mouseDragging = 0;
-  var controlsBusy = false;
-  var mouseDownPressed = 0;
-  var elementPosition;
-  var mapMode = 'pan';// pan,zoom,zoomout,info
-  this.getMapMode = function () {
-    return mapMode;
+  getMapMode () {
+    return this.mapMode;
   };
+
   /* GetMetaData handling */
-  this.getWMSMetaDataRequestURL = function (layer) {
-    var request = layer.service;
+  getWMSMetaDataRequestURL (layer) {
+    let request = layer.service;
     request += '&SERVICE=WMS&REQUEST=GetMetaData&VERSION=' + layer.version;
     request += '&LAYER=' + URLEncode(layer.name);
     request += '&FORMAT=text/html';
     try {
-      request += '&' + getMapDimURL(layer);
+      request += '&' + this._getMapDimURL(layer);
     } catch (e) {
       return undefined;
     }
-    debug("<a target=\'_blank\' href='" + request + "'>" + request + '</a>', false);
+    debug('<a target="_blank" href="' + request + '">' + request + '</a>', false);
     return request;
   };
 
-  /* GetFeature info handling */
-  var numGetFeatureInfoRequests = 0;
-  var getFeatureInfoResult = Array();
-  var GetFeatureInfoObject = function (layer, data) {
-    this.layer = layer;
-    this.data = data;
-  };
-
-  /* GetPointInfo handling */
-  var numGetPointInfoRequests = 0;
-  var getPointInfoResult = Array();
-  var GetPointInfoObject = function (layer, data) {
-    this.layer = layer;
-    this.data = data;
-  };
-
-  var getPointInfoRequestURL = function (layer, x, y, service, style) {
-    var request = service;
-
+  getPointInfoRequestURL (layer, x, y, service, style) {
+    let request = service;
     request += '&GRAPHSTYLE=' + style;
-
-    request += '&' + _map.getBBOXandProjString(layer);
-
+    request += '&' + this.getBBOXandProjString(layer);
     request += '&LAYERS=' + URLEncode(layer.name);
-
-    request += 'WIDTH=' + width;
-    request += '&HEIGHT=' + height;
+    request += 'WIDTH=' + this.width;
+    request += '&HEIGHT=' + this.height;
     request += '&X=' + x;
     request += '&Y=' + y;
     request += '&FORMAT=image/png';
     request += '&INFO_FORMAT=text/html';
     request += '&STYLES=';
     try {
-      request += '&' + getMapDimURL(layer);
+      request += '&' + this._getMapDimURL(layer);
     } catch (e) {
       return undefined;
     }
-    debug("<a target=\'_blank\' href='" + request + "'>" + request + '</a>', false);
+    debug('<a target="_blank" href="' + request + '">' + request + '</a>', false);
     return request;
   };
 
   // Makes a valid getfeatureinfoURL for each layer
-  this.getWMSGetFeatureInfoRequestURL = function (layer, x, y, format = 'text/html') {
-    var request = WMJScheckURL(layer.service);
+  getWMSGetFeatureInfoRequestURL (layer, x, y, format = 'text/html') {
+    let request = WMJScheckURL(layer.service);
     request += '&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=' + layer.version;
 
     request += '&LAYERS=' + URLEncode(layer.name);
 
-    var baseLayers = layer.name.split(',');
+    let baseLayers = layer.name.split(',');
     request += '&QUERY_LAYERS=' + URLEncode(baseLayers[baseLayers.length - 1]);
-    request += '&' + _map.getBBOXandProjString(layer);
-    request += 'WIDTH=' + width;
-    request += '&HEIGHT=' + height;
-    if (layer.version == WMSVersion.version100 || layer.version == WMSVersion.version111) {
+    request += '&' + this.getBBOXandProjString(layer);
+    request += 'WIDTH=' + this.width;
+    request += '&HEIGHT=' + this.height;
+    if (layer.version === WMSVersion.version100 || layer.version === WMSVersion.version111) {
       request += '&X=' + x;
       request += '&Y=' + y;
     }
-    if (layer.version == WMSVersion.version130) {
+    if (layer.version === WMSVersion.version130) {
       request += '&I=' + x;
       request += '&J=' + y;
     }
@@ -2471,154 +2333,130 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     request += '&INFO_FORMAT=' + format;
     request += '&STYLES=';
     try {
-      request += '&' + getMapDimURL(layer);
+      request += '&' + this._getMapDimURL(layer);
     } catch (e) {
       return undefined;
     }
-    debug("<a target=\'_blank\' href='" + request + "'>" + request + '</a>', false);
+    debug('<a target="_blank" href="' + request + '">' + request + '</a>', false);
     return request;
   };
 
-  // Called when a HTTP request is finished
-  var FeatureInfoRequestReady = function (data, layer) {
-    numGetFeatureInfoRequests--;
-    var result;
+  /* Called when a HTTP request is finished */
+  featureInfoRequestReady (data, layer) {
+    this.numGetFeatureInfoRequests--;
+    let result;
     if (layer) {
-      if (layer.queryable == true) {
+      if (layer.queryable === true) {
         result = new GetFeatureInfoObject(layer, data);
       } else {
         result = new GetFeatureInfoObject(layer, 'not queryable');
       }
     } else result = new GetFeatureInfoObject(layer, 'Query failed...');
-    getFeatureInfoResult.push(result);
-    if (numGetFeatureInfoRequests <= 0) {
-      numGetFeatureInfoRequests = 0;
-      callBack.triggerEvent('ongetfeatureinfoready', getFeatureInfoResult);
+    this.getFeatureInfoResult.push(result);
+    if (this.numGetFeatureInfoRequests <= 0) {
+      this.numGetFeatureInfoRequests = 0;
+      this.callBack.triggerEvent('ongetfeatureinfoready', this.getFeatureInfoResult);
     }
   };
 
-  // Called when a HTTP request is finished
-  /* var PointInfoRequestReady = function(data,layer){
-    debug("PointInfoRequestReady "+layer.name+">>>"+numGetPointInfoRequests);
-    numGetPointInfoRequests--;
-    var result;
-    if(layer){
-      result = new GetPointInfoObject(layer, data);
-    }else result = new GetPointInfoObject(layer,"Query failed...");
-
-    //result = {layer:layer,message:"Query failed"}
-    getPointInfoResult.push(result);
-    if(numGetPointInfoRequests<=0){
-      numGetPointInfoRequests=0;
-      callBack.triggerEvent("ongetpointinfoready",getPointInfoResult);
-    }
-  } */
-
-  var newGetPointInfo = function () {
+  newGetPointInfo () {
     debug('resuming on ongetpointinfoready');
-
-    _map.getPointInfo(mouseDownX, mouseDownY);
+    this.getPointInfo(this.mouseDownX, this.mouseDownY);
   };
 
-  var getPointInfoBusy = false;
-  this.getPointInfo = function (x, y) {
-    if (getPointInfoBusy) {
+  getPointInfo (x, y) {
+    if (this.getPointInfoBusy) {
       debug('suspending on ongetpointinfoready');
-      _map.addListener('ongetpointinfoready', newGetPointInfo, false);
+      this.addListener('ongetpointinfoready', this.newGetPointInfo, false);
       return;
     }
-    getPointInfoBusy = true;
-    callBack.triggerEvent('beforegetpointinfo', {x: x, y: y});
+    this.getPointInfoBusy = true;
+    this.callBack.triggerEvent('beforegetpointinfo', { x: x, y: y });
 
-    var gr = _map.getGraphingData();
+    let gr = this.getGraphingData();
 
-    if (gr == undefined) {
+    if (gr === undefined) {
       error('getPointInfo getGraphingData is undefined');
-      getPointInfoBusy = false;
+      this.getPointInfoBusy = false;
       return;
     }
     debug('getPointInfo(' + x + ',' + y + ')' + ' ' + gr.layer.name);
-    var url = getPointInfoRequestURL(gr.layer, x, y, gr.service, gr.style);
+    let url = this.getPointInfoRequestURL(gr.layer, x, y, gr.service, gr.style);
     debug('GetPointInfo: ' + url);
 
-    var graphingImage = new Image();
-    graphingImage.loadEvent = function () {
-      getPointInfoBusy = false;
-      var getPointInfoResult = {};
+    let graphingImage = new Image();
+    graphingImage.loadEvent = () => {
+      this.getPointInfoBusy = false;
+      let getPointInfoResult = {};
       getPointInfoResult.url = url;
       getPointInfoResult.layer = gr.layer;
       getPointInfoResult.img = graphingImage;
 
-      callBack.triggerEvent('ongetpointinfoready', getPointInfoResult);
+      this.callBack.triggerEvent('ongetpointinfoready', getPointInfoResult);
     };
-    setElProps(graphingImage);
     graphingImage.src = url;
   };
 
-  var newGetFeatureInfo = function () {
+  newGetFeatureInfo () {
     debug('resuming on ongetfeatureinfoready');
-    callBack.triggerEvent('beforegetfeatureinfo');
-    _map.getFeatureInfo(mouseDownX, mouseDownY);
+    this.callBack.triggerEvent('beforegetfeatureinfo');
+    this.getFeatureInfo(this.mouseDownX, this.mouseDownY);
   };
 
-  this.getFeatureInfo = function (x, y) {
-    if (numGetFeatureInfoRequests > 0) {
+  getFeatureInfo (x, y) {
+    if (this.numGetFeatureInfoRequests > 0) {
       debug('suspending on ongetfeatureinfoready');
-      _map.addListener('ongetfeatureinfoready', newGetFeatureInfo, false);
+      this.addListener('ongetfeatureinfoready', this.newGetFeatureInfo, false);
       return;
     }
     debug('GetFeatureInfo:');
-    // callBack.triggerEvent("ongetfeatureinfoready",['Querying server... ']);
-    getFeatureInfoResult = Array();
-    numGetFeatureInfoRequests = 0;
-    for (var j = 0; j < layers.length; j++) {
-      var layer = layers[layers.length - j - 1];
+    this.getFeatureInfoResult = [];
+    this.numGetFeatureInfoRequests = 0;
+    for (let j = 0; j < this.layers.length; j++) {
+      let layer = this.layers[this.layers.length - j - 1];
       layer.getFeatureInfoUrl = '';
-      if (layer.service && layer.enabled && layer.queryable == true) {
-        layer.getFeatureInfoUrl = _map.getWMSGetFeatureInfoRequestURL(layer, x, y);
+      if (layer.service && layer.enabled && layer.queryable === true) {
+        layer.getFeatureInfoUrl = this.getWMSGetFeatureInfoRequestURL(layer, x, y);
         if (!isDefined(layer.getFeatureInfoUrl)) {
           layer.getFeatureInfoUrl = '';
         } else {
-          numGetFeatureInfoRequests++;
+          this.numGetFeatureInfoRequests++;
         }
       }
     }
-    if (numGetFeatureInfoRequests == 0) {
-      callBack.triggerEvent('ongetfeatureinfoready', ['No layers to query']);
+    if (this.numGetFeatureInfoRequests === 0) {
+      this.callBack.triggerEvent('ongetfeatureinfoready', ['No layers to query']);
     }
-    for (var j = 0; j < layers.length; j++) {
-      var myLayer = layers[layers.length - j - 1];
+    for (let j = 0; j < this.layers.length; j++) {
+      let myLayer = this.layers[this.layers.length - j - 1];
 
-      if (myLayer.getFeatureInfoUrl != '') {
-        if (myLayer.queryable == false) {
-          FeatureInfoRequestReady('Layer is not queryable.', myLayer);
+      if (myLayer.getFeatureInfoUrl !== '') {
+        if (myLayer.queryable === false) {
+          this.featureInfoRequestReady('Layer is not queryable.', myLayer);
         } else {
           try {
-            MakeHTTPRequest(myLayer.getFeatureInfoUrl, FeatureInfoRequestReady,
-            function (data, myLayer) { FeatureInfoRequestReady(data, myLayer); error(data); }, myLayer);
+            MakeHTTPRequest(myLayer.getFeatureInfoUrl, this.featureInfoRequestReady, (data, myLayer) => {
+              this.featureInfoRequestReady(data, myLayer); error(data);
+            }, myLayer, this.requestProxy);
           } catch (e) {
-            FeatureInfoRequestReady('Exception: ' + e, myLayer);
+            this.featureInfoRequestReady('Exception: ' + e, myLayer);
           }
         }
       }
     }
   };
 
-  this.getGetFeatureInfoObjectAsHTML = function (data) {
-    var html = '';
-
+  getGetFeatureInfoObjectAsHTML (data) {
+    let html = '';
     try {
       html += '<div class="getfeatureinfo">';
-      for (var j = 0; j < layers.length; j++) {
-        for (var i = 0; i < data.length; i++) {
-          if (data[i].layer == layers[j]) {
-          //  html+="<div style='border-bottom:2px solid white;background-color:lightblue;padding:3px;line-height:20px;'>";
+      for (let j = 0; j < this.layers.length; j++) {
+        for (let i = 0; i < data.length; i++) {
+          if (data[i].layer === this.layers[j]) {
             html += '<div class="getfeatureinfolayer">';
             html += "<b><a target='_blank' href='" + data[i].layer.getFeatureInfoUrl + "'>" + data[i].layer.title + '</a></b><br/>';
-
             html += data[i].data;
             html += '</div>';
-         //   html+="</div>";
           }
         }
       }
@@ -2629,147 +2467,145 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
 
   /* End of GetFeature info handling */
 
-  this.getMapPinXY = function () {
-    return [divMapPin.exactX, divMapPin.exactY];
+  getMapPinXY () {
+    return [this.divMapPin.exactX, this.divMapPin.exactY];
   };
 
-  this.positionMapPinByLatLon = function (coord) {
+  positionMapPinByLatLon (coord) {
     debug('positionMapPinByLatLon at ' + coord.x + ',' + coord.y);
-    var newpos = _map.getPixelCoordFromLatLong(coord);
-    _map.setMapPin(newpos.x, newpos.y);
-    _map.showMapPin();
+    let newpos = this.getPixelCoordFromLatLong(coord);
+    this.setMapPin(newpos.x, newpos.y);
+    this.showMapPin();
   };
 
-  this.repositionMapPin = function (_bbox) {
-    var b = bbox;
-    if(isDefined(_bbox))b = _bbox;
-    var newpos = _map.getPixelCoordFromGeoCoord({ x:divMapPin.geoPosX, y:divMapPin.geoPosY },b);
-    _map.setMapPin(newpos.x, newpos.y, b);
-    // debug(newpos.x+)
+  repositionMapPin (_bbox) {
+    let b = this.bbox;
+    if (isDefined(_bbox)) b = _bbox;
+    let newpos = this.getPixelCoordFromGeoCoord({ x:this.divMapPin.geoPosX, y:this.divMapPin.geoPosY }, b);
+    this.setMapPin(newpos.x, newpos.y, b);
   };
 
-  this.setMapPin = function (_x, _y, _bbox) {
-    var x = _x;
-    var y = _y;
-
+  setMapPin (_x, _y, _bbox) {
+    let x = _x;
+    let y = _y;
     if (typeof (_x) === 'object') {
       x = _x.x;
       y = _x.y;
     }
     if (!x || !y) return;
-
-    /*debug("setMapPin ("+x+";"+y+")");*/
-    divMapPin.x = parseInt(x);
-    divMapPin.y = parseInt(y);
-
-    divMapPin.exactX = parseFloat(x);
-    divMapPin.exactY = parseFloat(y);
-/*    debug('Input coords: ' + _x + ', ' + _y);
-    debug('Exact coords: ' + divMapPin.exactX + ', ' + divMapPin.exactY);*/
-    var geopos = _map.getGeoCoordFromPixelCoord({ x:divMapPin.exactX, y:divMapPin.exactY }, _bbox);
-    divMapPin.geoPosX = geopos.x;
-    divMapPin.geoPosY = geopos.y;
-    divMapPin.style.left = divMapPin.x - 5 + 'px';
-    divMapPin.style.top = divMapPin.y - 7 + 'px';
+    this.divMapPin.x = parseInt(x);
+    this.divMapPin.y = parseInt(y);
+    this.divMapPin.exactX = parseFloat(x);
+    this.divMapPin.exactY = parseFloat(y);
+    let geopos = this.getGeoCoordFromPixelCoord({ x:this.divMapPin.exactX, y:this.divMapPin.exactY }, _bbox);
+    this.divMapPin.geoPosX = geopos.x;
+    this.divMapPin.geoPosY = geopos.y;
   };
 
-  this.isMapPinVisible = function () {
-    if (divMapPin.style.display == 'none') return false;
-    return true;
+  isMapPinVisible () {
+    return this.divMapPin.displayMapPin;
   };
 
-  this.showMapPin = function () {
-    divMapPin.innerHTML = '<img src=\'' + mapPinImageSrc + '\'>';
-    divMapPin.style.display = '';
+  showMapPin () {
+    this.divMapPin.displayMapPin = true;
+    this.draw();
   };
 
-  this.hideMapPin = function () {
-    divMapPin.style.display = 'none';
+  hideMapPin () {
+    this.divMapPin.displayMapPin = false;
+    this.draw();
   };
 
-  this.setMapModeGetInfo = function () {
-    mapMode = 'info';
-    baseDiv.css('cursor', 'default');
+  setMapModeGetInfo () {
+    this.mapMode = 'info';
+    this.baseDiv.css('cursor', 'default');
   };
 
-  this.setMapModeZoomBoxIn = function (e) {
-    mapMode = 'zoom';
-    baseDiv.css('cursor', 'default');
+  setMapModeZoomBoxIn (e) {
+    this.mapMode = 'zoom';
+    this.baseDiv.css('cursor', 'default');
   };
 
-  this.setMapModeZoomOut = function (e) {
-    mapMode = 'zoomout';
-    baseDiv.css('cursor', 'default');
+  setMapModeZoomOut (e) {
+    this.mapMode = 'zoomout';
+    this.baseDiv.css('cursor', 'default');
   };
 
-  this.setMapModePan = function (e) {
-    mapMode = 'pan';
-    baseDiv.css('cursor', 'default');
+  setMapModePan (e) {
+    this.mapMode = 'pan';
+    this.baseDiv.css('cursor', 'default');
   };
 
-  this.setMapModePoint = function (e, graphWin) {
-    mapMode = 'point';
-    baseDiv.css('cursor', 'url(webmapjs/img/aero_pen.cur), default');
+  setMapModePoint (e, graphWin) {
+    this.mapMode = 'point';
+    this.baseDiv.css('cursor', 'url(webmapjs/img/aero_pen.cur), default');
   };
 
-  var oldMapMode;
-  this.setMapModeNone = function (e) {
-    mapMode = 'none';
-    baseDiv.css('cursor', 'default');
+  setMapModeNone (e) {
+    this.mapMode = 'none';
+    this.baseDiv.css('cursor', 'default');
   };
 
-  this.getMouseCoordinatesForDocument = function (e) {
+  getMouseCoordinatesForDocument (e) {
     if (isDefined(e.changedTouches)) {
       return { x:parseInt(e.changedTouches[0].screenX), y:parseInt(e.changedTouches[0].screenY) };
     }
-    var parentOffset = $(mainElement).parent().offset();
-    var pageX = e.pageX;
-    var pageY = e.pageY;
-    if (pageX == undefined) { pageX = getClick_X(e); }
-    if (pageY == undefined) { pageY = getClick_Y(e); }
-    var relX = pageX - parentOffset.left;
-    var relY = pageY - parentOffset.top;
+    let parentOffset = $(this.mainElement).parent().offset();
+    let pageX = e.pageX;
+    let pageY = e.pageY;
+    if (pageX === undefined) { pageX = getMouseXCoordinate(e); }
+    if (pageY === undefined) { pageY = getMouseYCoordinate(e); }
+    let relX = pageX - parentOffset.left;
+    let relY = pageY - parentOffset.top;
     return { x:relX, y:relY };
   };
 
-  this.getMouseCoordinatesForElement = function (e) {
+  getMouseCoordinatesForElement (e) {
     if (isDefined(e.changedTouches)) {
       return { x:parseInt(e.changedTouches[0].screenX), y:parseInt(e.changedTouches[0].screenY) };
     }
-    var parentOffset = $(mainElement).parent().offset();
-    var pageX = e.pageX;
-    var pageY = e.pageY;
-    if (pageX == undefined) { pageX = getClick_X(e); }
-    if (pageY == undefined) { pageY = getClick_Y(e); }
-    var relX = pageX - parentOffset.left;
-    var relY = pageY - parentOffset.top;
+    let parentOffset = $(this.mainElement).parent().offset();
+    let pageX = e.pageX;
+    let pageY = e.pageY;
+    if (pageX === undefined) { pageX = getMouseXCoordinate(e); }
+    if (pageY === undefined) { pageY = getMouseYCoordinate(e); }
+    let relX = pageX - parentOffset.left;
+    let relY = pageY - parentOffset.top;
     return { x:relX, y:relY };
   };
 
-  this.mouseDown = function (mouseCoordX, mouseCoordY, event) {
-
-    var shiftKey = false;
+  mouseDown (mouseCoordX, mouseCoordY, event) {
+    let shiftKey = false;
     if (event) {
-      if (event.shiftKey == true) {
+      if (event.shiftKey === true) {
         shiftKey = true;
       }
     }
-    
-    function detectLeftButton(evt) {
+
+    let detectLeftButton = (evt) => {
       evt = evt || window.event;
-      if ("buttons" in evt) {
-          return evt.buttons == 1;
+      if ('buttons' in evt) {
+        return evt.buttons === 1;
       }
-      var button = evt.which || evt.button;
-      return button == 1;
+      let button = evt.which || evt.button;
+      return button === 1;
     };
 
-    mouseDownX = mouseCoordX;
-    mouseDownY = mouseCoordY;
-    mouseDownPressed = 1;
-    if (mouseDragging === 0) {
-      if (checkInvalidMouseAction(mouseDownX, mouseDownY) === 0) {
-        let triggerResults = callBack.triggerEvent('beforemousedown', { mouseX:mouseCoordX, mouseY:mouseCoordY, mouseDown:true, event:event, leftButton: detectLeftButton(event), shiftKey: shiftKey });
+    this.mouseDownX = mouseCoordX;
+    this.mouseDownY = mouseCoordY;
+    this.mouseDownPressed = 1;
+    if (this.mouseDragging === 0) {
+      if (this._checkInvalidMouseAction(this.mouseDownX, this.mouseDownY) === 0) {
+        let triggerResults = this.callBack.triggerEvent(
+          'beforemousedown',
+          { mouseX:mouseCoordX,
+            mouseY:mouseCoordY,
+            mouseDown:true,
+            event:event,
+            leftButton: detectLeftButton(event),
+            shiftKey: shiftKey
+          }
+        );
         for (let j = 0; j < triggerResults.length; j++) {
           if (triggerResults[j] === false) {
             return;
@@ -2777,448 +2613,421 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
         }
       }
     }
-    controlsBusy = true;
+    this.controlsBusy = true;
     if (!shiftKey) {
-      if (oldMapMode != undefined) {
-        mapMode = oldMapMode;
-        oldMapMode = undefined;
+      if (this.oldMapMode !== undefined) {
+        this.mapMode = this.oldMapMode;
+        this.oldMapMode = undefined;
       }
     } else {
-      if (oldMapMode == undefined)oldMapMode = mapMode;
-      mapMode = 'zoom';
+      if (this.oldMapMode === undefined) this.oldMapMode = this.mapMode;
+      this.mapMode = 'zoom';
     }
-    callBack.triggerEvent('mousedown', { map:_map, x:mouseDownX, y:mouseDownY });
+    this.callBack.triggerEvent('mousedown', { map:this, x:this.mouseDownX, y:this.mouseDownY });
 
-    if (mapMode == 'info') {
+    if (this.mapMode === 'info') {
       debug('GetFeatureInfo');
-      _map.setMapPin(mouseDownX, mouseDownY);
-      _map.showMapPin();
+      this.setMapPin(this.mouseDownX, this.mouseDownY);
+      this.showMapPin();
 
-      callBack.triggerEvent('beforegetfeatureinfo', { map:_map, x:mouseDownX, y:mouseDownY });
-      _map.getFeatureInfo(mouseDownX, mouseDownY);
-    } else if (mapMode == 'point') {
-      _map.setMapPin(mouseDownX, mouseDownY);
-      _map.showMapPin();
-      _map.getPointInfo(mouseDownX, mouseDownY);
+      this.callBack.triggerEvent('beforegetfeatureinfo', { map:this, x:this.mouseDownX, y:this.mouseDownY });
+      this.getFeatureInfo(this.mouseDownX, this.mouseDownY);
+    } else if (this.mapMode === 'point') {
+      this.setMapPin(this.mouseDownX, this.mouseDownY);
+      this.showMapPin();
+      this.getPointInfo(this.mouseDownX, this.mouseDownY);
     }
   };
 
-  var InValidMouseAction = 0;
-  var checkInvalidMouseAction = function (MX, MY) {
-    if (MY < 0 | MX < 0 | MX > width | MY > height) { InValidMouseAction = 1; return -1; }
+  _checkInvalidMouseAction (MX, MY) {
+    if (MY < 0 | MX < 0 | MX > this.width | MY > this.height) { this.InValidMouseAction = 1; return -1; }
     return 0;
   };
 
-  var resizingBBOXCursor = false;
-  var resizingBBOXEnabled = false;
-
-  var mouseGeoCoordXY;
-  var mouseUpdateCoordinates;
-
-  this.updateMouseCursorCoordinates = function (coordinates) {
-    mouseUpdateCoordinates = coordinates;
-    mouseGeoCoordXY = _map.getGeoCoordFromPixelCoord(coordinates);
-    _map.display('updateMouseCursorCoordinates');
+  updateMouseCursorCoordinates (coordinates) {
+    this.mouseUpdateCoordinates = coordinates;
+    this.mouseGeoCoordXY = this.getGeoCoordFromPixelCoord(coordinates);
+    this.display('updateMouseCursorCoordinates');
   };
 
-  this.mouseDownEvent = function (e) {
-    preventdefault_event(e);
-    var mouseCoords = _map.getMouseCoordinatesForDocument(e);
-    if (mapHeader.cursorSet && mouseCoords.y < mapHeader.height) {
+  mouseDownEvent (e) {
+    preventdefaultEvent(e);
+    let mouseCoords = this.getMouseCoordinatesForDocument(e);
+    if (this.mapHeader.cursorSet && mouseCoords.y < this.mapHeader.height) {
       return;
     }
-    _map.mouseDown(mouseCoords.x, mouseCoords.y, e);
+    this.mouseDown(mouseCoords.x, mouseCoords.y, e);
   };
-  this.mouseMoveEvent = function (e) {
-    preventdefault_event(e);
-    var mouseCoords = _map.getMouseCoordinatesForDocument(e);
-    if (mouseDownPressed === 0 && mouseCoords.y >= 0 && mouseCoords.y < mapHeader.height && mouseCoords.x >= 0 && mouseCoords.x <= width) {
-      if (mapHeader.cursorSet === false) {
-        mapHeader.cursorSet = true;
-        mapHeader.prevCursor = currentCursor;
-        mapHeader.hovering = true;
-        _map.setCursor('pointer');
-        _map.draw('mouseMoveEvent');
+
+  mouseMoveEvent (e) {
+    preventdefaultEvent(e);
+    let mouseCoords = this.getMouseCoordinatesForDocument(e);
+    if (this.mouseDownPressed === 0 && mouseCoords.y >= 0 && mouseCoords.y < this.mapHeader.height && mouseCoords.x >= 0 && mouseCoords.x <= this.width) {
+      if (this.mapHeader.cursorSet === false) {
+        this.mapHeader.cursorSet = true;
+        this.mapHeader.prevCursor = this.currentCursor;
+        this.mapHeader.hovering = true;
+        this.setCursor('pointer');
+        this.draw('mouseMoveEvent');
       }
     } else {
-      if (mapHeader.cursorSet === true) {
-        mapHeader.cursorSet = false;
-        mapHeader.hovering = false;
-        _map.setCursor(mapHeader.prevCursor);
-        _map.draw('mouseMoveEvent');
+      if (this.mapHeader.cursorSet === true) {
+        this.mapHeader.cursorSet = false;
+        this.mapHeader.hovering = false;
+        this.setCursor(this.mapHeader.prevCursor);
+        this.draw('mouseMoveEvent');
       }
     }
-
-    _map.mouseMove(mouseCoords.x, mouseCoords.y, e);
-  };
-  this.mouseUpEvent = function (e) {
-    preventdefault_event(e);
-    var mouseCoords = _map.getMouseCoordinatesForDocument(e);
-    _map.mouseUp(mouseCoords.x, mouseCoords.y, e);
+    this.mouseMove(mouseCoords.x, mouseCoords.y, e);
   };
 
-  this.mouseMove = function (mouseCoordX, mouseCoordY) {
-    mouseX = mouseCoordX;
-    mouseY = mouseCoordY;
-    if (mouseDragging === 0 ){
-      let triggerResults = callBack.triggerEvent('beforemousemove', { mouseX:mouseX, mouseY:mouseY, mouseDown:mouseDownPressed === 1 ? true:false });
+  mouseUpEvent (e) {
+    preventdefaultEvent(e);
+    let mouseCoords = this.getMouseCoordinatesForDocument(e);
+    this.mouseUp(mouseCoords.x, mouseCoords.y, e);
+  };
+
+  mouseMove (mouseCoordX, mouseCoordY) {
+    this.mouseX = mouseCoordX;
+    this.mouseY = mouseCoordY;
+    if (this.mouseDragging === 0) {
+      let triggerResults = this.callBack.triggerEvent(
+        'beforemousemove', {
+          mouseX:this.mouseX,
+          mouseY:this.mouseY,
+          mouseDown:this.mouseDownPressed === 1
+        }
+      );
       for (let j = 0; j < triggerResults.length; j++) {
         if (triggerResults[j] === false) {
           return;
         }
       }
     }
-    if (divBoundingBox.displayed == true && mapPanning == 0) {
-      var tlpx = _map.getPixelCoordFromGeoCoord({ x:divBoundingBox.bbox.left, y:divBoundingBox.bbox.top });
-      var brpx = _map.getPixelCoordFromGeoCoord({ x:divBoundingBox.bbox.right, y:divBoundingBox.bbox.bottom });
+    if (this.divBoundingBox.displayed === true && this.mapPanning === 0) {
+      let tlpx = this.getPixelCoordFromGeoCoord({ x:this.divBoundingBox.bbox.left, y:this.divBoundingBox.bbox.top });
+      let brpx = this.getPixelCoordFromGeoCoord({ x:this.divBoundingBox.bbox.right, y:this.divBoundingBox.bbox.bottom });
 
-      var foundBBOXRib = false;
+      let foundBBOXRib = false;
 
-      if (mouseDownPressed == 0) {
-        if (resizingBBOXEnabled === false)resizingBBOXCursor = baseDiv.css('cursor');
+      if (this.mouseDownPressed === 0) {
+        if (this.resizingBBOXEnabled === false) this.resizingBBOXCursor = this.baseDiv.css('cursor');
         // Find left rib
-        if (Math.abs(mouseX - tlpx.x) < 6 && mouseY > tlpx.y && mouseY < brpx.y) {
-          foundBBOXRib = true; baseDiv.css('cursor', 'col-resize'); resizingBBOXEnabled = 'left';
+        if (Math.abs(this.mouseX - tlpx.x) < 6 && this.mouseY > tlpx.y && this.mouseY < brpx.y) {
+          foundBBOXRib = true; this.baseDiv.css('cursor', 'col-resize'); this.resizingBBOXEnabled = 'left';
         }
         // Find top rib
-        if (Math.abs(mouseY - tlpx.y) < 6 && mouseX > tlpx.x && mouseX < brpx.x) {
-          foundBBOXRib = true; baseDiv.css('cursor', 'row-resize'); resizingBBOXEnabled = 'top';
+        if (Math.abs(this.mouseY - tlpx.y) < 6 && this.mouseX > tlpx.x && this.mouseX < brpx.x) {
+          foundBBOXRib = true; this.baseDiv.css('cursor', 'row-resize'); this.resizingBBOXEnabled = 'top';
         }
         // Find right rib
-        if (Math.abs(mouseX - brpx.x) < 6 && mouseY > tlpx.y && mouseY < brpx.y) {
-          foundBBOXRib = true; baseDiv.css('cursor', 'col-resize'); resizingBBOXEnabled = 'right';
+        if (Math.abs(this.mouseX - brpx.x) < 6 && this.mouseY > tlpx.y && this.mouseY < brpx.y) {
+          foundBBOXRib = true; this.baseDiv.css('cursor', 'col-resize'); this.resizingBBOXEnabled = 'right';
         }
         // Find bottom rib
-        if (Math.abs(mouseY - brpx.y) < 6 && mouseX > tlpx.x && mouseX < brpx.x) {
-          foundBBOXRib = true; baseDiv.css('cursor', 'row-resize'); resizingBBOXEnabled = 'bottom';
+        if (Math.abs(this.mouseY - brpx.y) < 6 && this.mouseX > tlpx.x && this.mouseX < brpx.x) {
+          foundBBOXRib = true; this.baseDiv.css('cursor', 'row-resize'); this.resizingBBOXEnabled = 'bottom';
         }
         // Find topleft corner
-        if (Math.abs(mouseX - tlpx.x) < 6 && Math.abs(mouseY - tlpx.y) < 6) {
-          foundBBOXRib = true; baseDiv.css('cursor', 'nw-resize'); resizingBBOXEnabled = 'topleft';
+        if (Math.abs(this.mouseX - tlpx.x) < 6 && Math.abs(this.mouseY - tlpx.y) < 6) {
+          foundBBOXRib = true; this.baseDiv.css('cursor', 'nw-resize'); this.resizingBBOXEnabled = 'topleft';
         }
         // Find topright corner
-        if (Math.abs(mouseX - brpx.x) < 6 && Math.abs(mouseY - tlpx.y) < 6) {
-          foundBBOXRib = true; baseDiv.css('cursor', 'ne-resize'); resizingBBOXEnabled = 'topright';
+        if (Math.abs(this.mouseX - brpx.x) < 6 && Math.abs(this.mouseY - tlpx.y) < 6) {
+          foundBBOXRib = true; this.baseDiv.css('cursor', 'ne-resize'); this.resizingBBOXEnabled = 'topright';
         }
         // Find bottomleft corner
-        if (Math.abs(mouseX - tlpx.x) < 6 && Math.abs(mouseY - brpx.y) < 6) {
-          foundBBOXRib = true; baseDiv.css('cursor', 'sw-resize'); resizingBBOXEnabled = 'bottomleft';
+        if (Math.abs(this.mouseX - tlpx.x) < 6 && Math.abs(this.mouseY - brpx.y) < 6) {
+          foundBBOXRib = true; this.baseDiv.css('cursor', 'sw-resize'); this.resizingBBOXEnabled = 'bottomleft';
         }
         // Find bottomright corner
-        if (Math.abs(mouseX - brpx.x) < 6 && Math.abs(mouseY - brpx.y) < 6) {
-          foundBBOXRib = true; baseDiv.css('cursor', 'se-resize'); resizingBBOXEnabled = 'bottomright';
+        if (Math.abs(this.mouseX - brpx.x) < 6 && Math.abs(this.mouseY - brpx.y) < 6) {
+          foundBBOXRib = true; this.baseDiv.css('cursor', 'se-resize'); this.resizingBBOXEnabled = 'bottomright';
         }
       }
 
-      if (foundBBOXRib == true || (resizingBBOXEnabled !== false && mouseDownPressed == 1)) {
-        if (mouseDownPressed == 1) {
-          if (resizingBBOXEnabled == 'left')tlpx.x = mouseX;
-          if (resizingBBOXEnabled == 'top')tlpx.y = mouseY;
-          if (resizingBBOXEnabled == 'right')brpx.x = mouseX;
-          if (resizingBBOXEnabled == 'bottom')brpx.y = mouseY;
-          if (resizingBBOXEnabled == 'topleft') { tlpx.x = mouseX; tlpx.y = mouseY; }
-          if (resizingBBOXEnabled == 'topright') { brpx.x = mouseX; tlpx.y = mouseY; }
-          if (resizingBBOXEnabled == 'bottomleft') { tlpx.x = mouseX; brpx.y = mouseY; }
-          if (resizingBBOXEnabled == 'bottomright') { brpx.x = mouseX; brpx.y = mouseY; }
+      if (foundBBOXRib === true || (this.resizingBBOXEnabled !== false && this.mouseDownPressed === 1)) {
+        if (this.mouseDownPressed === 1) {
+          if (this.resizingBBOXEnabled === 'left')tlpx.x = this.mouseX;
+          if (this.resizingBBOXEnabled === 'top')tlpx.y = this.mouseY;
+          if (this.resizingBBOXEnabled === 'right')brpx.x = this.mouseX;
+          if (this.resizingBBOXEnabled === 'bottom')brpx.y = this.mouseY;
+          if (this.resizingBBOXEnabled === 'topleft') { tlpx.x = this.mouseX; tlpx.y = this.mouseY; }
+          if (this.resizingBBOXEnabled === 'topright') { brpx.x = this.mouseX; tlpx.y = this.mouseY; }
+          if (this.resizingBBOXEnabled === 'bottomleft') { tlpx.x = this.mouseX; brpx.y = this.mouseY; }
+          if (this.resizingBBOXEnabled === 'bottomright') { brpx.x = this.mouseX; brpx.y = this.mouseY; }
 
-          tlpx = _map.getGeoCoordFromPixelCoord(tlpx);
-          brpx = _map.getGeoCoordFromPixelCoord(brpx);
-          divBoundingBox.bbox.left = tlpx.x;
-          divBoundingBox.bbox.top = tlpx.y;
-          divBoundingBox.bbox.right = brpx.x;
-          divBoundingBox.bbox.bottom = brpx.y;
-          _map.showBoundingBox(divBoundingBox.bbox);
+          tlpx = this.getGeoCoordFromPixelCoord(tlpx);
+          brpx = this.getGeoCoordFromPixelCoord(brpx);
+          this.divBoundingBox.bbox.left = tlpx.x;
+          this.divBoundingBox.bbox.top = tlpx.y;
+          this.divBoundingBox.bbox.right = brpx.x;
+          this.divBoundingBox.bbox.bottom = brpx.y;
+          this.showBoundingBox(this.divBoundingBox.bbox);
 
-          var data = { map:_map, bbox:divBoundingBox.bbox };
-          callBack.triggerEvent('bboxchanged', data);
+          let data = { map: this, bbox: this.divBoundingBox.bbox };
+          this.callBack.triggerEvent('bboxchanged', data);
         }
         return;
       } else {
-        resizingBBOXEnabled = false;
-        baseDiv.css('cursor', resizingBBOXCursor);
+        this.resizingBBOXEnabled = false;
+        this.baseDiv.css('cursor', this.resizingBBOXCursor);
       }
     }
 
-    //  alert(mouseX);
-    if (checkInvalidMouseAction(mouseX, mouseY) == -1) {
+    if (this._checkInvalidMouseAction(this.mouseX, this.mouseY) === -1) {
       try {
-        callBack.triggerEvent('onmousemove', [undefined, undefined]);
-        _map.updateMouseCursorCoordinates(undefined);
+        this.callBack.triggerEvent('onmousemove', [undefined, undefined]);
+        this.updateMouseCursorCoordinates(undefined);
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
-      // _map.resumeDrawing();
-      mouseUpX = mouseX;
-      mouseUpY = mouseY;
-//         if(drawBusy==1)return;
-      if (mapPanning == 0) return;
-      if (mouseDownPressed == 1) if (mapMode == 'zoomout')_map.zoomOut();
-      mouseDownPressed = 0;
-      if (mouseDragging == 1) {
-        mouseDragEnd(mouseUpX, mouseUpY);
+      this.mouseUpX = this.mouseX;
+      this.mouseUpY = this.mouseY;
+      if (this.mapPanning === 0) return;
+      if (this.mouseDownPressed === 1) if (this.mapMode === 'zoomout') this.zoomOut();
+      this.mouseDownPressed = 0;
+      if (this.mouseDragging === 1) {
+        this.mouseDragEnd(this.mouseUpX, this.mouseUpY);
       }
       return;
     }
 
-    if (mouseDownPressed == 1) {
-      if (!(Math.abs(mouseDownX - mouseX) < 3 && Math.abs(mouseDownY - mouseY) < 3)) {
-        mouseDrag(mouseX, mouseY);
+    if (this.mouseDownPressed === 1) {
+      if (!(Math.abs(this.mouseDownX - this.mouseX) < 3 && Math.abs(this.mouseDownY - this.mouseY) < 3)) {
+        this.mouseDrag(this.mouseX, this.mouseY);
       }
     }
-    callBack.triggerEvent('onmousemove', [mouseX, mouseY]);
-    _map.updateMouseCursorCoordinates({ x:mouseX, y:mouseY });
+    this.callBack.triggerEvent('onmousemove', [this.mouseX, this.mouseY]);
+    this.updateMouseCursorCoordinates({ x: this.mouseX, y:this.mouseY });
   };
 
-  this.mouseUp = function (mouseCoordX, mouseCoordY, e) {
-    controlsBusy = false;
-    mouseUpX = mouseCoordX;
-    mouseUpY = mouseCoordY;
-    if (mouseDragging === 0) {
-      if (checkInvalidMouseAction(mouseUpX, mouseUpY) === 0) {
-        let triggerResults = callBack.triggerEvent('beforemouseup', { mouseX:mouseCoordX, mouseY:mouseCoordY, mouseDown:false, event:e });
+  mouseUp (mouseCoordX, mouseCoordY, e) {
+    this.controlsBusy = false;
+    this.mouseUpX = mouseCoordX;
+    this.mouseUpY = mouseCoordY;
+    if (this.mouseDragging === 0) {
+      if (this._checkInvalidMouseAction(this.mouseUpX, this.mouseUpY) === 0) {
+        let triggerResults = this.callBack.triggerEvent('beforemouseup', { mouseX:mouseCoordX, mouseY:mouseCoordY, mouseDown:false, event:e });
         for (let j = 0; j < triggerResults.length; j++) {
           if (triggerResults[j] === false) {
-            mouseDownPressed = 0;
+            this.mouseDownPressed = 0;
             return;
           }
         }
       }
     }
-
-    if (mouseDownPressed == 1) {
-      if (mapMode == 'zoomout') { _map.zoomOut(); }
-      if (mouseDragging == 0) {
-        // if(mapMode=='pan')
-        {
-          if (Math.abs(mouseDownX - mouseUpX) < 3 && Math.abs(mouseDownY - mouseUpY) < 3) {
-            if (isDefined(e)) {
-              callBack.triggerEvent('mouseclicked', { map:_map, x:mouseUpX, y:mouseUpY, shiftKeyPressed: (e.shiftKey == true) });
+    if (this.mouseDownPressed === 1) {
+      if (this.mapMode === 'zoomout') { this.zoomOut(); }
+      if (this.mouseDragging === 0) {
+        if (Math.abs(this.mouseDownX - this.mouseUpX) < 3 && Math.abs(this.mouseDownY - this.mouseUpY) < 3) {
+          if (isDefined(e)) {
+            this.callBack.triggerEvent('mouseclicked', { map:this, x:this.mouseUpX, y:this.mouseUpY, shiftKeyPressed: (e.shiftKey === true) });
+          }
+          if (this.inlineGetFeatureInfo === true) {
+            let dialog;
+            if (this.gfiDialogList.length === 0) {
+              dialog = new WMJSDialog().createDialog({ show: this.showDialog, x:this.mouseUpX, y:this.mouseUpY, autoDestroy:false }, this.baseDiv, this, this.loadingImageSrc);
+              this.gfiDialogList.push(dialog);
+            } else {
+              dialog = this.gfiDialogList[0];
             }
-            if (inlineGetFeatureInfo == true) {
-            // if(false){
-              // _map.closeAllDialogs(gfiDialogList)
-              var dialog;
-
-              if (gfiDialogList.length == 0) {
-                dialog = WMJSDialog.createDialog({ show: showDialog, x:mouseUpX, y:mouseUpY, autoDestroy:false }, baseDiv, _map);
-                gfiDialogList.push(dialog);
+            if (dialog.hasBeenDragged === false) {
+              if (dialog.moveToMouseCursor === true) {
+                dialog.setXY(this.mouseUpX, this.mouseUpY);
               } else {
-                dialog = gfiDialogList[0];
+                dialog.setXY(5, 45);
               }
-              if (dialog.hasBeenDragged == false) {
-                if (dialog.moveToMouseCursor == true) {
-                  dialog.setXY(mouseUpX, mouseUpY);
-                } else {
-                  dialog.setXY(5, 45);
-                }
-              }
-
-              dialog.on('hide', function (event, ui) {
-                dialog.hasBeenDragged = false;
-              });
-              dialog.setLoading();
-              dialog.show();
-              var ongetfeatureinfoready = function (data) {
-                // alert(_map.getGetFeatureInfoObjectAsHTML(data));
-                dialog.setHTML(_map.getGetFeatureInfoObjectAsHTML(data));
-              };
-
-              _map.addListener('ongetfeatureinfoready', ongetfeatureinfoready, true);
-              _map.setMapPin(mouseDownX, mouseDownY);
-              _map.showMapPin();
-              callBack.triggerEvent('beforegetfeatureinfo');
-              _map.getFeatureInfo(mouseDownX, mouseDownY);
-            }else{
-              _map.setMapPin(mouseDownX, mouseDownY);
-              _map.showMapPin();
             }
+
+            dialog.on('hide', (event, ui) => {
+              dialog.hasBeenDragged = false;
+            });
+            dialog.setLoading();
+            dialog.show();
+            let ongetfeatureinfoready = (data) => {
+              dialog.setHTML(this.getGetFeatureInfoObjectAsHTML(data));
+            };
+
+            this.addListener('ongetfeatureinfoready', ongetfeatureinfoready, true);
+            this.setMapPin(this.mouseDownX, this.mouseDownY);
+            this.showMapPin();
+            this.callBack.triggerEvent('beforegetfeatureinfo');
+            this.getFeatureInfo(this.mouseDownX, this.mouseDownY);
+          } else {
+            this.setMapPin(this.mouseDownX, this.mouseDownY);
+            this.showMapPin();
           }
         }
       }
-      callBack.triggerEvent('mouseup', { map:_map, x:mouseUpX, y:mouseUpY });
+      this.callBack.triggerEvent('mouseup', { map: this, x: this.mouseUpX, y: this.mouseUpY });
     }
-
-    mouseDownPressed = 0;
-    if (mouseDragging == 1) {
-      mouseDragEnd(mouseUpX, mouseUpY);
+    this.mouseDownPressed = 0;
+    if (this.mouseDragging === 1) {
+      this.mouseDragEnd(this.mouseUpX, this.mouseUpY);
     }
   };
 
-  // Derived mouse functions
-  var mouseDragStart = function (x, y) {
-    if (mapMode == 'pan')mapPanStart(x, y);
-    if (mapMode == 'zoom')mapZoomStart(x, y);
+  /* Derived mouse methods */
+  _mouseDragStart (x, y) {
+    if (this.mapMode === 'pan') this._mapPanStart(x, y);
+    if (this.mapMode === 'zoom') this._mapZoomStart(x, y);
   };
 
-  var mouseDrag = function (x, y) {
-    if (mouseDragging == 0) { mouseDragStart(x, y); mouseDragging = 1; }
-    if (mapMode == 'pan')mapPan(x, y);
-    if (mapMode == 'zoom')mapZoom(x, y);
+  mouseDrag (x, y) {
+    if (this.mouseDragging === 0) { this._mouseDragStart(x, y); this.mouseDragging = 1; }
+    if (this.mapMode === 'pan') this._mapPan(x, y);
+    if (this.mapMode === 'zoom') this._mapZoom(x, y);
   };
 
-  var mouseDragEnd = function (x, y) {
-    if (mouseDragging == 0) return; mouseDragging = 0;
-    if (mapMode == 'pan')mapPanEnd(x, y);
-    if (mapMode == 'zoom')mapZoomEnd(x, y);
-    callBack.triggerEvent('mapdragend', { map:_map, x:mouseUpX, y:mouseUpY });
+  mouseDragEnd (x, y) {
+    if (this.mouseDragging === 0) return;
+    this.mouseDragging = 0;
+    if (this.mapMode === 'pan') this._mapPanEnd(x, y);
+    if (this.mapMode === 'zoom') this._mapZoomEnd(x, y);
+    this.callBack.triggerEvent('mapdragend', { map:this, x:this.mouseUpX, y:this.mouseUpY });
   };
 
-  // Map zoom and pan functions
-  var mapPanning = 0;
-  var mapPanStartGeoCoords;
-  var mapPanStart = function (_x, _y) {
-    flyZoomToBBOXStop();
-    // if(drawBusy==1||mapBusy)return;
-    baseDiv.css('cursor', 'move');
-    var x = parseInt(_x); var y = parseInt(_y);
+  /* Map zoom and pan methodss */
+  _mapPanStart (_x, _y) {
+    this.flyZoomToBBOXStop();
+    this.baseDiv.css('cursor', 'move');
+    let x = parseInt(_x); let y = parseInt(_y);
 
-    divMapPin.oldx = divMapPin.exactX;
-    divMapPin.oldy = divMapPin.exactY;
-    for (var j = 0; j < gfiDialogList.length; j++) {
-      gfiDialogList[j].origX = gfiDialogList[j].x;
-      gfiDialogList[j].origY = gfiDialogList[j].y;
+    this.divMapPin.oldx = this.divMapPin.exactX;
+    this.divMapPin.oldy = this.divMapPin.exactY;
+    for (let j = 0; j < this.gfiDialogList.length; j++) {
+      this.gfiDialogList[j].origX = this.gfiDialogList[j].x;
+      this.gfiDialogList[j].origY = this.gfiDialogList[j].y;
     }
-    mapPanning = 1;
+    this.mapPanning = 1;
     if (enableConsoleDebugging)console.log('updateBBOX.setBBOX(drawnBBOX)');
-    updateBBOX.setBBOX(drawnBBOX);
-    mapPanStartGeoCoords = _map.getGeoCoordFromPixelCoord({ x:x, y:y }, bbox);
+    this.updateBBOX.setBBOX(this.drawnBBOX);
+    this.mapPanStartGeoCoords = this.getGeoCoordFromPixelCoord({ x:x, y:y }, this.bbox);
   };
 
-  var mapPan = function (_x, _y) {
-    if (mapPanning == 0) return;
-    var x = parseInt(_x); var y = parseInt(_y);
+  _mapPan (_x, _y) {
+    if (this.mapPanning === 0) return;
+    let x = parseInt(_x); let y = parseInt(_y);
 
-    if (mouseX < 0 || mouseY < 0 || mouseX > parseInt(mainElement.clientWidth) || mouseY > parseInt(mainElement.clientHeight)) {
-      mapPanEnd(x, y);
+    if (this.mouseX < 0 || this.mouseY < 0 || this.mouseX > parseInt(this.mainElement.clientWidth) || this.mouseY > parseInt(this.mainElement.clientHeight)) {
+      this.mapPanEnd(x, y);
       return;
     }
-    var mapPanGeoCoords = _map.getGeoCoordFromPixelCoord({ x:x, y:y }, updateBBOX);
-    var diff_x = mapPanGeoCoords.x - mapPanStartGeoCoords.x;
-    var diff_y = mapPanGeoCoords.y - mapPanStartGeoCoords.y;
-    updateBBOX.left = updateBBOX.left - diff_x;
-    updateBBOX.bottom = updateBBOX.bottom - diff_y;
-    updateBBOX.right = updateBBOX.right - diff_x;
-    updateBBOX.top = updateBBOX.top - diff_y;
-    updateBoundingBox(updateBBOX);
+    let mapPanGeoCoords = this.getGeoCoordFromPixelCoord({ x:x, y:y }, this.updateBBOX);
+    let diffX = mapPanGeoCoords.x - this.mapPanStartGeoCoords.x;
+    let diffY = mapPanGeoCoords.y - this.mapPanStartGeoCoords.y;
+    this.updateBBOX.left = this.updateBBOX.left - diffX;
+    this.updateBBOX.bottom = this.updateBBOX.bottom - diffY;
+    this.updateBBOX.right = this.updateBBOX.right - diffX;
+    this.updateBBOX.top = this.updateBBOX.top - diffY;
+    this._updateBoundingBox(this.updateBBOX);
   };
 
-  var mapPanEnd = function (_x, _y) {
-    baseDiv.css('cursor', 'default');
-    var x = parseInt(_x);
-    var y = parseInt(_y);
-    if (mapPanning == 0) return;
-    mapPanning = 0;
+  _mapPanEnd (_x, _y) {
+    this.baseDiv.css('cursor', 'default');
+    let x = parseInt(_x);
+    let y = parseInt(_y);
+    if (this.mapPanning === 0) return;
+    this.mapPanning = 0;
 
-    var mapPanGeoCoords = _map.getGeoCoordFromPixelCoord({ x:x, y:y }, drawnBBOX);
-    var diff_x = mapPanGeoCoords.x - mapPanStartGeoCoords.x;
-    var diff_y = mapPanGeoCoords.y - mapPanStartGeoCoords.y;
-    updateBBOX.left = drawnBBOX.left - diff_x;
-    updateBBOX.bottom = drawnBBOX.bottom - diff_y;
-    updateBBOX.right = drawnBBOX.right - diff_x;
-    updateBBOX.top = drawnBBOX.top - diff_y;
-    updateBoundingBox(updateBBOX);
-    _map.zoomTo(updateBBOX);
-    _map.draw('mapPanEnd');
-//     for (var j = 0; j < gfiDialogList.length; j++) {
-//       if (gfiDialogList[j].hasBeenDragged == false) {
-//         if (gfiDialogList[j].moveToMouseCursor == true) {
-//           gfiDialogList[j].setXY(gfiDialogList[j].origX + x, gfiDialogList[j].origY + y);
-//           gfiDialogList[j].origX = gfiDialogList[j].origX + x;
-//           gfiDialogList[j].origY = gfiDialogList[j].origY + y;
-//         }
-//       }
-//     }
+    let mapPanGeoCoords = this.getGeoCoordFromPixelCoord({ x:x, y:y }, this.drawnBBOX);
+    let diffX = mapPanGeoCoords.x - this.mapPanStartGeoCoords.x;
+    let diffY = mapPanGeoCoords.y - this.mapPanStartGeoCoords.y;
+    this.updateBBOX.left = this.drawnBBOX.left - diffX;
+    this.updateBBOX.bottom = this.drawnBBOX.bottom - diffY;
+    this.updateBBOX.right = this.drawnBBOX.right - diffX;
+    this.updateBBOX.top = this.drawnBBOX.top - diffY;
+    this._updateBoundingBox(this.updateBBOX);
+    this.zoomTo(this.updateBBOX);
+    this.draw('mapPanEnd');
   };
 
-  var mapZooming = 0;
-  var mapZoomStart = function (x, y) {
-    baseDiv.css('cursor', 'crosshair');
-    mapZooming = 1;
+  _mapZoomStart (x, y) {
+    this.baseDiv.css('cursor', 'crosshair');
+    this.mapZooming = 1;
   };
-  var mapZoom = function (x, y) {
-    if (mapZooming == 0) return;
-    x = mouseX - mouseDownX;
-    y = mouseY - mouseDownY;
+  _mapZoom (x, y) {
+    if (this.mapZooming === 0) return;
+    x = this.mouseX - this.mouseDownX;
+    y = this.mouseY - this.mouseDownY;
     if (x < 0 && y < 0) {
-      baseDiv.css('cursor', 'not-allowed');
+      this.baseDiv.css('cursor', 'not-allowed');
     } else {
-      baseDiv.css('cursor', 'crosshair');
+      this.baseDiv.css('cursor', 'crosshair');
     }
-    var w = x; h = y;
-    divZoomBox.style.display = '';
+    let w = x;
+    let h = y;
+    this.divZoomBox.style.display = '';
     if (w < 0) {
       w = -w;
-      divZoomBox.style.left = (mouseX) + 'px';
-    } else divZoomBox.style.left = (mouseDownX) + 'px';
+      this.divZoomBox.style.left = (this.mouseX) + 'px';
+    } else this.divZoomBox.style.left = (this.mouseDownX) + 'px';
     if (h < 0) {
       h = -h;
-      divZoomBox.style.top = (mouseY) + 'px';
-    } else divZoomBox.style.top = (mouseDownY) + 'px';
-    divZoomBox.style.width = w + 'px';
-    divZoomBox.style.height = h + 'px';
+      this.divZoomBox.style.top = (this.mouseY) + 'px';
+    } else this.divZoomBox.style.top = (this.mouseDownY) + 'px';
+    this.divZoomBox.style.width = w + 'px';
+    this.divZoomBox.style.height = h + 'px';
   };
 
-  var mapZoomEnd = function (x, y) {
-    x = mouseUpX - mouseDownX;
-    y = mouseUpY - mouseDownY;
-          // debug("mapZoomEnd mouseDownEvent = "+mouseDownX+" , "+mouseDownY+"\t"+"xy = "+x+" , "+y);
-    baseDiv.css('cursor', 'default');
-    if (mapZooming == 0) return;
-    mapZooming = 0;
-    // debug("mapZoomEnd");
-    divZoomBox.style.display = 'none';
+  _mapZoomEnd (x, y) {
+    x = this.mouseUpX - this.mouseDownX;
+    y = this.mouseUpY - this.mouseDownY;
+    this.baseDiv.css('cursor', 'default');
+    if (this.mapZooming === 0) return;
+    this.mapZooming = 0;
+    this.divZoomBox.style.display = 'none';
     if (x < 0 && y < 0) return;
-    var zoomBBOXPixels = new WMJSBBOX();
+    let zoomBBOXPixels = new WMJSBBOX();
 
     if (x < 0) {
-      zoomBBOXPixels.left = mouseDownX + x;
-      zoomBBOXPixels.right = mouseDownX;
+      zoomBBOXPixels.left = this.mouseDownX + x;
+      zoomBBOXPixels.right = this.mouseDownX;
     } else {
-      zoomBBOXPixels.left = mouseDownX;
-      zoomBBOXPixels.right = mouseDownX + x;
+      zoomBBOXPixels.left = this.mouseDownX;
+      zoomBBOXPixels.right = this.mouseDownX + x;
     }
     if (y < 0) {
-      zoomBBOXPixels.top = mouseDownY + y;
-      zoomBBOXPixels.bottom = mouseDownY;
+      zoomBBOXPixels.top = this.mouseDownY + y;
+      zoomBBOXPixels.bottom = this.mouseDownY;
     } else {
-      zoomBBOXPixels.top = mouseDownY;
-      zoomBBOXPixels.bottom = mouseDownY + y;
+      zoomBBOXPixels.top = this.mouseDownY;
+      zoomBBOXPixels.bottom = this.mouseDownY + y;
     }
-
-    // debug("zoomBBOXPixels 1:"+zoomBBOXPixels.toString());
-    var p1 = _map.pixelCoordinatesToXY({ x:zoomBBOXPixels.left, y:zoomBBOXPixels.bottom });
-    var p2 = _map.pixelCoordinatesToXY({ x:zoomBBOXPixels.right, y:zoomBBOXPixels.top });
+    let p1 = this.pixelCoordinatesToXY({ x:zoomBBOXPixels.left, y:zoomBBOXPixels.bottom });
+    let p2 = this.pixelCoordinatesToXY({ x:zoomBBOXPixels.right, y:zoomBBOXPixels.top });
 
     zoomBBOXPixels.left = p1.x;
     zoomBBOXPixels.bottom = p1.y;
     zoomBBOXPixels.right = p2.x;
     zoomBBOXPixels.top = p2.y;
-     // debug("zoomBBOXPixels 2:"+zoomBBOXPixels.toString());
-    _map.zoomTo(zoomBBOXPixels);
-    _map.draw('mapZoomEnd');
+    this.zoomTo(zoomBBOXPixels);
+    this.draw('mapZoomEnd');
   };
 
-  this.setCursor = function (cursor) {
+  setCursor (cursor) {
     if (cursor) {
-      currentCursor = cursor;
+      this.currentCursor = cursor;
     } else {
-      currentCursor = 'default';
+      this.currentCursor = 'default';
     }
-    baseDiv.css('cursor', currentCursor);
+    this.baseDiv.css('cursor', this.currentCursor);
   };
-  
-  this.getId = function () {
-    return makeComponentId('webmapjsinstance');
-  }
 
-  this.zoomTo = function (_newbbox) {
+  getId () {
+    return this.makeComponentId('webmapjsinstance');
+  };
+
+  zoomTo (_newbbox) {
     if (enableConsoleDebugging)console.log('zoomTo');
-    var setOrigBox = false;
+    let setOrigBox = false;
 
-    var newbbox = new WMJSBBOX(_newbbox);
+    let newbbox = new WMJSBBOX(_newbbox);
     // Maintain aspect ratio
+    let ratio = 1;
     try {
-      var ratio = (resizeBBOX.left - resizeBBOX.right) / (resizeBBOX.bottom - resizeBBOX.top);
+      ratio = (this.resizeBBOX.left - this.resizeBBOX.right) / (this.resizeBBOX.bottom - this.resizeBBOX.top);
     } catch (e) {
       setOrigBox = true;
     }
@@ -3226,133 +3035,108 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     if (isNaN(ratio)) {
       setOrigBox = true;
     }
-    if (setOrigBox == true) {
+    if (setOrigBox === true) {
       error('Invalid bbox: setting ratio to 1');
       ratio = 1;
     }
     if (ratio < 0)ratio = -ratio;
 
-    var screenRatio = width / height;
+    let screenRatio = this.width / this.height;
 
     // Is W > H?
     if (ratio > screenRatio) {
       // W is more than H, so calc H
-      var centerH = (newbbox.top + newbbox.bottom) / 2;
-      var extentH = ((newbbox.left - newbbox.right) / 2) / ratio;
+      let centerH = (newbbox.top + newbbox.bottom) / 2;
+      let extentH = ((newbbox.left - newbbox.right) / 2) / ratio;
       newbbox.bottom = centerH + extentH;
       newbbox.top = centerH - extentH;
     } else {
       // H is more than W, so calc W
-      var centerW = (newbbox.right + newbbox.left) / 2;
-      var extentW = ((newbbox.bottom - newbbox.top) / 2) * ratio;
+      let centerW = (newbbox.right + newbbox.left) / 2;
+      let extentW = ((newbbox.bottom - newbbox.top) / 2) * ratio;
       newbbox.left = centerW + extentW;
       newbbox.right = centerW - extentW;
     }
 
-    _map.setBBOX(newbbox);
-    updateBoundingBox(bbox);
-    // resizeBBOX.clone(zoomBBOX);
-    drawnBBOX.setBBOX(bbox);
+    this.setBBOX(newbbox);
+    this._updateBoundingBox(this.bbox);
+    this.drawnBBOX.setBBOX(this.bbox);
 
-    var resetMapPinAndDialogs = function () {
-      var newpos = _map.getPixelCoordFromGeoCoord({ x:divMapPin.geoPosX, y:divMapPin.geoPosY });
-      for (var j = 0; j < gfiDialogList.length; j++) {
-        var newpos = _map.getPixelCoordFromGeoCoord({ x:gfiDialogList[j].geoPosX, y:gfiDialogList[j].geoPosY });
-        if (gfiDialogList[j].hasBeenDragged == false) {
-          if (gfiDialogList[j].moveToMouseCursor == true) {
-            gfiDialogList[j].setXY(gfiDialogList[j].origX + x, gfiDialogList[j].origY + y);
+    let resetMapPinAndDialogs = () => {
+      // let newpos = this.getPixelCoordFromGeoCoord({ x:divMapPin.geoPosX, y:divMapPin.geoPosY });
+      for (let j = 0; j < this.gfiDialogList.length; j++) {
+        let newpos = this.getPixelCoordFromGeoCoord({ x:this.gfiDialogList[j].geoPosX, y:this.gfiDialogList[j].geoPosY });
+        if (this.gfiDialogList[j].hasBeenDragged === false) {
+          if (this.gfiDialogList[j].moveToMouseCursor === true) {
+            this.gfiDialogList[j].setXY(this.gfiDialogList[j].origX + newpos.x, this.gfiDialogList[j].origY + newpos.y);
           }
         }
       }
     };
     resetMapPinAndDialogs();
-
-    // _map.draw("zoomTo");
-    // _map.addListener('onloadingcomplete',resetMapPinAndDialogs,false);
   };
 
-  this.pixelCoordinatesToXY = function (coordinates) {
-    return _map.getGeoCoordFromPixelCoord(coordinates);
-    /*
-    var px = coordinates.x;
-    var py = coordinates.y
-    var X =0,Y=0;
-    var elPos = findElementPos(mainElement);
-    X=(px/elPos[2])*(bbox.right-bbox.left)+bbox.left;
-    //In case of latlon
-    Y=(py/elPos[3])*(bbox.bottom-bbox.top)+bbox.top;
-    return {x:X,y:Y}; */
+  pixelCoordinatesToXY (coordinates) {
+    return this.getGeoCoordFromPixelCoord(coordinates);
   };
 
-  this.getGeoCoordFromPixelCoord = function (coordinates, _bbox) {
-    var mybbox = bbox;
+  getGeoCoordFromPixelCoord (coordinates, _bbox) {
+    let mybbox = this.bbox;
     if (_bbox)mybbox = _bbox;
     if (!isDefined(coordinates)) return undefined;
     try {
-      var lon = (coordinates.x / width) * (mybbox.right - mybbox.left) + mybbox.left;
-      var lat = (coordinates.y / height) * (mybbox.bottom - mybbox.top) + mybbox.top;
+      let lon = (coordinates.x / this.width) * (mybbox.right - mybbox.left) + mybbox.left;
+      let lat = (coordinates.y / this.height) * (mybbox.bottom - mybbox.top) + mybbox.top;
+      return { x:lon, y:lat };
     } catch (e) {
       return undefined;
     }
-    return { x:lon, y:lat };
   };
 
-  // proj4 remembers current projection
-  this.proj4 = new Object();
-  this.proj4.srs = 'empty';
-  this.proj4.projection = undefined;
-  var longlat = new Proj4js.Proj('EPSG:4326');
-  
-  this.getProj4 = function() {
-    if (!srs || srs === 'GFI:TIME_ELEVATION') {
+  getProj4 () {
+    if (!this.srs || this.srs === 'GFI:TIME_ELEVATION') {
       return null;
     }
-    if (_map.proj4.srs != srs || !isDefined(this.proj4.projection)) {
-      _map.proj4.projection = new Proj4js.Proj(srs);
-      _map.proj4.srs = srs;
+    if (this.proj4.srs !== this.srs || !isDefined(this.proj4.projection)) {
+      this.proj4.projection = (this.srs);
+      this.proj4.srs = this.srs;
     }
-    return {lonlat: longlat, proj4: _map.proj4.projection, Proj4js: Proj4js}
-  }
-  
- 
-  this.getPixelCoordFromLatLong = function (coordinates) {
-    if (!srs || srs === 'GFI:TIME_ELEVATION') {
-      return coordinates;
-    }
-    var p = new Proj4js.Point();  
-    
-
-    try {
-      p.x = parseFloat(coordinates.x);
-      p.y = parseFloat(coordinates.y);
-      if (_map.proj4.srs != srs || !isDefined(this.proj4.projection)) {
-        _map.proj4.projection = new Proj4js.Proj(srs);
-        _map.proj4.srs = srs;
-      }
-      // alert(longlat);
-
-      // debug("proj4:"+this.proj4.srs+ " "+ this.proj4);
-      Proj4js.transform(longlat, _map.proj4.projection, p);
-    } catch (e) {
-      alert(debug('error in getPixelCoordFromLatLong ' + e));
-      return undefined;
-    }
-    var newpos = _map.getPixelCoordFromGeoCoord(p);
-
-    return newpos;
+    return { lonlat: this.longlat, crs: this.proj4.projection, proj4: proj4 };
   };
 
-  this.WCJSSearchRequest = function (searchDefinition) {
+  getPixelCoordFromLatLong (coordinates) {
+    if (!this.srs || this.srs === 'GFI:TIME_ELEVATION') {
+      return coordinates;
+    }
+    let result;
+    try {
+      let p = {};
+      p.x = parseFloat(coordinates.x);
+      p.y = parseFloat(coordinates.y);
+      if (this.proj4.srs !== this.srs || !isDefined(this.proj4.projection)) {
+        this.proj4.projection = (this.srs);
+        this.proj4.srs = this.srs;
+      }
+      result = proj4(this.longlat, this.proj4.projection, [p.x, p.y]);
+    } catch (e) {
+      error('error in getPixelCoordFromLatLong ' + e);
+      return undefined;
+    }
+    return this.getPixelCoordFromGeoCoord({ x: result[0], y: result[1] });
+  };
+
+  WCJSSearchRequest (searchDefinition) {
     console.log(searchDefinition);
     /* ------------ */
     /*  Validation  */
     /* ------------ */
     /* Is it a coordinate search? No Ajax calls needed. */
     if (searchDefinition.trim().match(/^(-?(?:[1-8]?\d(?:\.\d+)?|90(?:\.0+)?),-?(?:180(?:\.0+)?|(?:(?:1[0-7]\d)|(?:[1-9]?\d))(?:\.\d+)?))$/)) {
-      splitted = searchDefinition.split(',');
-      lat = splitted[0];
-      lng = splitted[1];
-      _map.calculateBoundingBoxAndZoom(lat, lng);
+      let splitted = searchDefinition.split(',');
+      let lat = splitted[0];
+      let lng = splitted[1];
+      console.log('LATLON');
+      this.calculateBoundingBoxAndZoom(lat, lng);
       return;
     }
 
@@ -3369,7 +3153,7 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       return;
     }
 
-    searchDef = searchDefinition.trim().match(/^[a-zA-Z0-9 ]*$/);
+    let searchDef = searchDefinition.trim().match(/^[a-zA-Z0-9 ]*$/);
 
     /* Only Alphanumeric characters are allowed */
     if (!searchDef) {
@@ -3382,22 +3166,39 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
      * First attempt if getting the lat/lng from GeoNames.org.
      * If not succesful, try our own SQLite3 DB.
      */
-    var urlKNMIGeoNames;
+    let urlKNMIGeoNames;
     if (typeof (knmiGeoNamesURL) !== 'undefined') {
-      urlKNMIGeoNames = knmiGeoNamesURL.replace('{searchTerm}', searchDef);
-    }else{
+      urlKNMIGeoNames = this.knmiGeoNamesURL.replace('{searchTerm}', searchDef);
+    } else {
       /* If only geonames is configured, try this instead */
-      var urlApiGeonames = geoNamesURL.replace('{searchTerm}', searchDef)
-       .replace('{username}', defaultUsernameSearch);
-       console.log('urlApiGeonames', urlApiGeonames);
-      _map.WCJSSearchRequestGeoNames(urlApiGeonames);
+      let urlApiGeonames = this.geoNamesURL.replace('{searchTerm}', searchDef).replace('{username}', this.defaultUsernameSearch);
+      this.WCJSSearchRequestGeoNames(urlApiGeonames);
       return;
     }
 
     /* Debugging text */
     debug(I18n.debug_searching_location.text);
-    debug("<a target=\'_blank\' href='" + urlKNMIGeoNames + "'>" + urlKNMIGeoNames + '</a>', false);
+    debug('<a target="_blank" href="' + urlKNMIGeoNames + '">' + urlKNMIGeoNames + '</a>', false);
 
+    let errormessage = (jqXHR, textStatus, errorThrown) => {
+      error(I18n.geonames_api_call_failed.text);
+    };
+
+    let succes = (obj) => {
+      /* If there is no result from the API, search the SQLite DB */
+      if ($(obj).length === 0) {
+        let urlApiGeonames = this.geoNamesURL.replace('{searchTerm}', searchDef)
+          .replace('{username}', this.defaultUsernameSearch);
+        console.log('urlApiGeonames', urlApiGeonames);
+        this.WCJSSearchRequestGeoNames(urlApiGeonames);
+        return;
+      }
+      console.log('ok');
+      let lat = parseFloat($(obj)[0].lat);
+      let lng = parseFloat($(obj)[0].lon);
+
+      this.calculateBoundingBoxAndZoom(lat, lng);
+    };
     $.ajax({
       dataType: 'jsonp',
       contentType: 'application/jsonp',
@@ -3408,50 +3209,26 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
       success: succes,
       error:errormessage
     });
-
-    function errormessage (jqXHR, textStatus, errorThrown) {
-      error(I18n.geonames_api_call_failed.text);
-    }
-
-    function succes (obj) {
-      /* If there is no result from the API, search the SQLite DB */
-      if ($(obj).length === 0) {
-        var urlApiGeonames = geoNamesURL.replace('{searchTerm}', searchDef)
-          .replace('{username}', defaultUsernameSearch);
-        console.log('urlApiGeonames', urlApiGeonames);
-        _map.WCJSSearchRequestGeoNames(urlApiGeonames);
-        return;
-      }
-
-      var lat = parseFloat($(obj)[0].lat);
-      var lng = parseFloat($(obj)[0].lon);
-
-      _map.calculateBoundingBoxAndZoom(lat, lng);
-    }
   };
 
-  this.WCJSSearchRequestGeoNames = function (url) {
+  WCJSSearchRequestGeoNames (url) {
     debug(I18n.debug_searching_sqlite_location.text);
-    debug("<a target=\'_blank\' href='" + url + "'>" + url + '</a>', false);
-
-    function errormessage (jqXHR, textStatus, errorThrown) {
+    debug('<a target="_blank" href="' + url + '">' + url + '</a>', false);
+    let errormessage = (jqXHR, textStatus, errorThrown) => {
       error(I18n.geonames_sqlite_call_failed.text);
-    }
-
-    function succes (obj) {
+    };
+    let succes = (obj) => {
+      console.log('ok', obj);
       /* If there is no result */
       if ($(obj).find('totalResultsCount').text() === '0') {
         error(I18n.no_results_search.text);
         /* Reset value */
         return;
       }
-
-      var lat = parseFloat($(obj).find('geoname').find('lat').text());
-      var lng = parseFloat($(obj).find('geoname').find('lng').text());
-
-      _map.calculateBoundingBoxAndZoom(lat, lng);
-    }
-
+      let lat = parseFloat($(obj).find('geoname').find('lat').text());
+      let lng = parseFloat($(obj).find('geoname').find('lng').text());
+      this.calculateBoundingBoxAndZoom(lat, lng);
+    };
     $.ajax({
       dataType: 'xml',
       type: 'GET',
@@ -3461,16 +3238,19 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     });
   };
 
-  this.calculateBoundingBoxAndZoom = function (lat, lng) {
-    var lengthToBBOX = 500000;
-    if (_map.proj4.projection.srsCode === 'EPSG:4326' ||
-      _map.proj4.projection.srsCode === 'EPSG:50001') {
+  calculateBoundingBoxAndZoom (lat, lng) {
+    let lengthToBBOX = 500000;
+    if (this.srs === 'EPSG:4326' ||
+      this.srs === 'EPSG:50001') {
       lengthToBBOX = 5;
     }
-    var latlng = _map.getPixelCoordFromLatLong({ x:lng, y:lat });
-    var geolatlng = _map.getGeoCoordFromPixelCoord(latlng);
+    console.log(lat, lng);
+    let latlng = this.getPixelCoordFromLatLong({ x:lng, y:lat });
+    console.log(latlng);
+    let geolatlng = this.getGeoCoordFromPixelCoord(latlng);
+    console.log(geolatlng);
 
-    var searchZoomBBOX = new WMJSBBOX();
+    let searchZoomBBOX = new WMJSBBOX();
 
     /* Making the boundingbox. */
     searchZoomBBOX.left = geolatlng.x - lengthToBBOX;
@@ -3478,134 +3258,116 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     searchZoomBBOX.right = geolatlng.x + lengthToBBOX;
     searchZoomBBOX.top = geolatlng.y + lengthToBBOX;
 
-    _map.zoomTo(searchZoomBBOX);
-    _map.positionMapPinByLatLon({ x:lng, y:lat });
-    _map.draw('zoomIn');
+    this.zoomTo(searchZoomBBOX);
+    this.positionMapPinByLatLon({ x:lng, y:lat });
+    this.draw('zoomIn');
   };
 
-  this.getLatLongFromPixelCoord = function (coordinates) {
-    if (!srs || srs === 'GFI:TIME_ELEVATION') {
+  getLatLongFromPixelCoord (coordinates) {
+    if (!this.srs || this.srs === 'GFI:TIME_ELEVATION') {
       return coordinates;
     }
-    var p = new Proj4js.Point();
     try {
-      p.x = (coordinates.x / width) * (bbox.right - bbox.left) + bbox.left;
-      p.y = (coordinates.y / height) * (bbox.bottom - bbox.top) + bbox.top;
-      if (this.proj4.srs != srs) {
-        this.proj4.projection = new Proj4js.Proj(srs);
-        this.proj4.srs = srs;
+      let p = {};
+      p.x = (coordinates.x / this.width) * (this.bbox.right - this.bbox.left) + this.bbox.left;
+      p.y = (coordinates.y / this.height) * (this.bbox.bottom - this.bbox.top) + this.bbox.top;
+      if (this.proj4.srs !== this.srs) {
+        this.proj4.projection = (this.srs);
+        this.proj4.srs = this.srs;
       }
-      Proj4js.transform(this.proj4.projection, longlat, p);
+      let result = proj4(this.proj4.projection, this.longlat, [p.x, p.y]);
+      return { x:result[0], y:result[1] };
     } catch (e) {
       return undefined;
     }
-    return { x:p.x, y:p.y };
   };
 
-  this.getPixelCoordFromGeoCoord = function (coordinates, _bbox, _width, _height) {
-    var w = width;
-    var h = height;
-    var b = updateBBOX;
+  getPixelCoordFromGeoCoord (coordinates, _bbox, _width, _height) {
+    let w = this.width;
+    let h = this.height;
+    let b = this.updateBBOX;
     if (isDefined(_width))w = _width;
     if (isDefined(_height))h = _height;
     if (isDefined(_bbox))b = _bbox;
 
-    var x = (w * (coordinates.x - b.left)) / (b.right - b.left);
-    var y = (h * (coordinates.y - b.top)) / (b.bottom - b.top);
+    let x = (w * (coordinates.x - b.left)) / (b.right - b.left);
+    let y = (h * (coordinates.y - b.top)) / (b.bottom - b.top);
     // Was parseInt, but we require sub-pixel precision
     return { x:parseFloat(x), y:parseFloat(y) };
   };
 
   // listeners:
-  this.addListener = function (name, f, keep) {
-    return callBack.addToCallback(name, f, keep);
+  addListener (name, f, keep) {
+    return this.callBack.addToCallback(name, f, keep);
   };
 
-  this.removeListener = function (name, f) {
-    return callBack.removeEvents(name, f);
+  removeListener (name, f) {
+    return this.callBack.removeEvents(name, f);
   };
 
-  this.getListener = function (name) {
-    return callBack;
+  getListener (name) {
+    return this.callBack;
   };
 
-  this.suspendEvent = function (name) {
-    callBack.suspendEvent(name);
+  suspendEvent (name) {
+    this.callBack.suspendEvent(name);
   };
 
-  this.resumeEvent = function (name) {
-    callBack.resumeEvent(name);
-  };
-  // Dimension handling
-  this.getDimensionList = function () {
-    return mapdimensions;
+  resumeEvent (name) {
+    this.callBack.resumeEvent(name);
   };
 
-  this.getDimension = function (name) {
-    for (var i = 0; i < mapdimensions.length; i++) {
-      if (mapdimensions[i].name == name) {
-        return mapdimensions[i];
+  getDimensionList () {
+    return this.mapdimensions;
+  };
+
+  getDimension (name) {
+    for (let i = 0; i < this.mapdimensions.length; i++) {
+      if (this.mapdimensions[i].name === name) {
+        return this.mapdimensions[i];
       }
     }
     return undefined;
   };
 
-  this.setDimension = function (name, value, triggerEvent) {
-    debug("WebMapJS::setDimension('"+name+"','"+value+"')");
+  setDimension (name, value, triggerEvent) {
+    debug('WebMapJS::setDimension(' + name + ',' + value + ')');
     if (!isDefined(name) || !isDefined(value)) {
       error('Unable to set dimension with undefined value or name');
       return;
     }
-    var dim = _map.getDimension(name);;
-    
-    if (isDefined(dim) == false) {
+    let dim = this.getDimension(name);
+
+    if (isDefined(dim) === false) {
       dim = { name:name, currentValue:value };
-      mapdimensions.push(dim);
+      this.mapdimensions.push(dim);
     }
 
-    
-    if (isDefined(mainTimeSlider)) {
-      // debug("WebMapJS::setDimension::2('"+name+"','"+value+"')");
-      mainTimeSlider.setValue(name, value);
+    if (isDefined(this.mainTimeSlider)) {
+      this.mainTimeSlider.setValue(name, value);
     }
 
-    if (dim.currentValue != value) {
-      // console.log("WebMapJS::setDimension "+name+"="+value);
-      var cv = dim.currentValue;
+    if (dim.currentValue !== value) {
       dim.currentValue = value;
-      buildLayerDims();
-
-      // if(cv!=value){
-
-      if ( triggerEvent !== false) {
+      this._buildLayerDims();
+      if (triggerEvent !== false) {
         triggerEvent = true;
       }
       if (triggerEvent === true) {
-        callBack.triggerEvent('ondimchange', name);
+        this.callBack.triggerEvent('ondimchange', name);
       }
-
     }
-   
   };
 
-//     //Resume/suspend map drawing
-//     this.suspendDrawing = function(){
-//       suspendDrawing = true;
-//     };
-//     this.resumeDrawing = function(){
-//       suspendDrawing = false;
-//       callBack.triggerEvent("onresumesuspend");
-//     };
-//
-  // Layer handling
-  this.setLayerOpacity = function (_layer, _opacity) {
+  /* Layer handling */
+  setLayerOpacity (_layer, _opacity) {
     if (!_layer) return;
     _layer.opacity = _opacity;
-    var currentLayerIndex = numBaseLayers;
-    for (j = 0; j < _map.getNumLayers(); j++) {
-      if (layers[j].service && layers[j].enabled) {
-        if (_layer == layers[j]) {
-          _map.setBufferImageOpacity(newSwapBuffer, currentLayerIndex, _opacity);
+    let currentLayerIndex = this.numBaseLayers;
+    for (let j = 0; j < this.getNumLayers(); j++) {
+      if (this.layers[j].service && this.layers[j].enabled) {
+        if (_layer === this.layers[j]) {
+          this.setBufferImageOpacity(this.newSwapBuffer, currentLayerIndex, _opacity);
           return;
         }
         currentLayerIndex++;
@@ -3613,205 +3375,150 @@ function WMJSMap (_element, _xml2jsonrequestURL) {
     }
   };
 
-  this.zoomToLayer = function (_layer) {
+  zoomToLayer (_layer) {
     // Tries to zoom to the layers boundingbox corresponding to the current map projection
     // If something fails, the defaultBBOX is used instead.
-    var layer = _layer;
+    let layer = _layer;
     if (!layer) {
-      layer = activeLayer;
+      layer = this.activeLayer;
     }
     if (!layer) {
-      _map.zoomTo(defaultBBOX);
-      _map.draw('zoomTolayer');
+      this.zoomTo(this.defaultBBOX);
+      this.draw('zoomTolayer');
       return;
     }
-    for (var j = 0; j < layer.projectionProperties.length; j++) {
-      if (layer.projectionProperties[j].srs == srs) {
-        var w = layer.projectionProperties[j].bbox.right - layer.projectionProperties[j].bbox.left;
-        var h = layer.projectionProperties[j].bbox.top - layer.projectionProperties[j].bbox.bottom;
-        var newBBOX = layer.projectionProperties[j].bbox.clone();
+    for (let j = 0; j < layer.projectionProperties.length; j++) {
+      if (layer.projectionProperties[j].srs === this.srs) {
+        let w = layer.projectionProperties[j].bbox.right - layer.projectionProperties[j].bbox.left;
+        let h = layer.projectionProperties[j].bbox.top - layer.projectionProperties[j].bbox.bottom;
+        let newBBOX = layer.projectionProperties[j].bbox.clone();
         newBBOX.left -= w / 100;
         newBBOX.right += w / 100;
         newBBOX.bottom -= h / 100;
         newBBOX.top += h / 100;
 
-        _map.zoomTo(newBBOX);
-        _map.draw('zoomTolayer');
+        this.zoomTo(newBBOX);
+        this.draw('zoomTolayer');
         return;
       }
     }
-    error('Unable to find the correct bbox with current map projection ' + srs + ' for layer ' + layer.title + '. Using default bbox instead.');
-    _map.zoomTo(defaultBBOX);
-    _map.draw('zoomTolayer');
+    error('Unable to find the correct bbox with current map projection ' + this.srs + ' for layer ' + layer.title + '. Using default bbox instead.');
+    this.zoomTo(this.defaultBBOX);
+    this.draw('zoomTolayer');
   };
 
-  this.setPreviousExtent = function () {
-    DoUndo = 1;
-    UndoPointer++;
-    if (UndoPointer >= NrOfUndos)UndoPointer = NrOfUndos - 1;
-    _map.setProjection(WMJSProjection_undo[UndoPointer].srs, WMJSProjection_undo[UndoPointer].bbox);
-    _map.draw('setPreviousExtent');
+  setPreviousExtent () {
+    this.DoUndo = 1;
+    this.UndoPointer++;
+    if (this.UndoPointer >= this.NrOfUndos) this.UndoPointer = this.NrOfUndos - 1;
+    this.setProjection(this.WMJSProjection_undo[this.UndoPointer].srs, this.WMJSProjection_undo[this.UndoPointer].bbox);
+    this.draw('setPreviousExtent');
   };
 
-  this.setNextExtent = function () {
-    DoRedo = 1;
-    UndoPointer--; if (UndoPointer < 0)UndoPointer = 0;
-    _map.setProjection(WMJSProjection_undo[UndoPointer].srs, WMJSProjection_undo[UndoPointer].bbox);
-    _map.draw('setNextExtent');
+  setNextExtent () {
+    this.DoRedo = 1;
+    this.UndoPointer--; if (this.UndoPointer < 0) this.UndoPointer = 0;
+    this.setProjection(this.WMJSProjection_undo[this.UndoPointer].srs, this.WMJSProjection_undo[this.UndoPointer].bbox);
+    this.draw('setNextExtent');
   };
 
-  this.setBBOX = function (left, bottom, right, top) {
+  setBBOX (left, bottom, right, top) {
     if (enableConsoleDebugging)console.log('setBBOX');
+    this.bbox.setBBOX(left, bottom, right, top);
+    this.resizeBBOX.setBBOX(this.bbox);
 
-
-    bbox.setBBOX(left, bottom, right, top);
-    resizeBBOX.setBBOX(bbox);
-
-    if (srs !== 'GFI:TIME_ELEVATION') {
-      var divRatio = (width / height);
-      var bboxRatio = (bbox.right - bbox.left) / (bbox.top - bbox.bottom);
+    if (this.srs !== 'GFI:TIME_ELEVATION') {
+      let divRatio = (this.width / this.height);
+      let bboxRatio = (this.bbox.right - this.bbox.left) / (this.bbox.top - this.bbox.bottom);
       if (bboxRatio > divRatio) {
-        var centerH = (bbox.top + bbox.bottom) / 2;
-        var extentH = ((bbox.left - bbox.right) / 2) / divRatio;
-        bbox.bottom = centerH + extentH;
-        bbox.top = centerH - extentH;
-        // error("bbox:"+bbox.left+","+bbox.bottom+","+bbox.right+","+bbox.top+" divratio: "+divRatio+" width,height: "+width+" , "+height);
+        let centerH = (this.bbox.top + this.bbox.bottom) / 2;
+        let extentH = ((this.bbox.left - this.bbox.right) / 2) / divRatio;
+        this.bbox.bottom = centerH + extentH;
+        this.bbox.top = centerH - extentH;
       } else {
-        // H is more than W, so calc W
-        var centerW = (bbox.right + bbox.left) / 2;
-        var extentW = ((bbox.bottom - bbox.top) / 2) * divRatio;
-        bbox.left = centerW + extentW;
-        bbox.right = centerW - extentW;
-      }
-    }
-//       //Cells must always be square
-//       if(srs!="GFI:TIME_ELEVATION"){
-//         var setOrigBox = false;
-//         var newbbox = new WMJSBBOX(bbox);
-//         var ratio = 1;
-//         try{
-//           ratio = (newbbox.left-newbbox.right)/(newbbox.bottom-newbbox.top);
-//         }catch(e){
-//           setOrigBox=true;
-//         }
-//         //Check whether we have had valid bbox values
-//         if(isNaN(ratio)){
-//           setOrigBox=true;
-//         }
-//         if(setOrigBox==true){
-//           ratio=1;
-//         }
-//         if(ratio<0)ratio=-ratio;
-//
-//         var screenRatio=width/height;
-//         //Is W > H?
-//         if(ratio>screenRatio){
-//           //W is more than H, so calc H
-//           var centerH = (newbbox.top+newbbox.bottom)/2;
-//           var extentH = ((newbbox.left-newbbox.right)/2)/ratio;
-//           newbbox.bottom = centerH+extentH*screenRatio;
-//           newbbox.top = centerH-extentH*screenRatio;
-//         }else{
-//           //H is more than W, so calc W
-//           var centerW = (newbbox.right+newbbox.left)/2;
-//           var extentW = ((newbbox.bottom-newbbox.top)/2)*ratio;
-//           newbbox.left = centerW+extentW;
-//           newbbox.right = centerW-extentW;
-//         }
-//         bbox.setBBOX(newbbox);
-//       }
+        /* H is more than W, so calc W */
+        let centerW = (this.bbox.right + this.bbox.left) / 2;
+        let extentW = ((this.bbox.bottom - this.bbox.top) / 2) * divRatio;
+        this.bbox.left = centerW + extentW;
 
-    updateBBOX.setBBOX(bbox);
-    drawnBBOX.setBBOX(bbox);
-     // Undo part
-    if (DoRedo == 0 && DoUndo == 0) {
-      if (UndoPointer != 0) {
-        for (j = 0; j <= UndoPointer; j++)WMJSProjection_tempundo[j] = WMJSProjection_undo[j];
-        for (j = 0; j <= UndoPointer; j++)WMJSProjection_undo[j] = WMJSProjection_tempundo[UndoPointer - j];
-        UndoPointer = 0;
+        this.bbox.right = centerW - extentW;
       }
-      for (j = MaxUndos - 1; j > 0; j--) {
-        WMJSProjection_undo[j].bbox.setBBOX(WMJSProjection_undo[j - 1].bbox);
-        WMJSProjection_undo[j].srs = WMJSProjection_undo[j - 1].srs;
-      }
-      WMJSProjection_undo[0].bbox.setBBOX(bbox);
-      WMJSProjection_undo[0].srs = srs;
-      NrOfUndos++;
-      if (NrOfUndos > MaxUndos)NrOfUndos = MaxUndos;
     }
-    DoRedo = 0;
-    DoUndo = 0;
-    // console.log('triggerEvent::afterbboxupdate', bbox);
-    if (bbox.equals(left, bottom, right, top) === true) {
+    this.updateBBOX.setBBOX(this.bbox);
+    this.drawnBBOX.setBBOX(this.bbox);
+    /* Undo part */
+    if (this.DoRedo === 0 && this.DoUndo === 0) {
+      if (this.UndoPointer !== 0) {
+        for (let j = 0; j <= this.UndoPointer; j++) this.WMJSProjection_tempundo[j] = this.WMJSProjection_undo[j];
+        for (let j = 0; j <= this.UndoPointer; j++) this.WMJSProjection_undo[j] = this.WMJSProjection_tempundo[this.UndoPointer - j];
+        this.UndoPointer = 0;
+      }
+      for (let j = this.MaxUndos - 1; j > 0; j--) {
+        this.WMJSProjection_undo[j].bbox.setBBOX(this.WMJSProjection_undo[j - 1].bbox);
+        this.WMJSProjection_undo[j].srs = this.WMJSProjection_undo[j - 1].srs;
+      }
+      this.WMJSProjection_undo[0].bbox.setBBOX(this.bbox);
+      this.WMJSProjection_undo[0].srs = this.srs;
+      this.NrOfUndos++;
+      if (this.NrOfUndos > this.MaxUndos) this.NrOfUndos = this.MaxUndos;
+    }
+    this.DoRedo = 0;
+    this.DoUndo = 0;
+    if (this.bbox.equals(left, bottom, right, top) === true) {
       return false;
     }
-    callBack.triggerEvent('aftersetbbox', _map);
+    this.callBack.triggerEvent('aftersetbbox', this);
     return true;
   };
 
-  this.zoomOut = function () {
-    var a = (resizeBBOX.right - resizeBBOX.left) / 6;
-    // error(a);
-    this.zoomTo(new WMJSBBOX(resizeBBOX.left - a, resizeBBOX.bottom - a, resizeBBOX.right + a, resizeBBOX.top + a));
-    _map.draw('zoomOut');
+  zoomOut () {
+    let a = (this.resizeBBOX.right - this.resizeBBOX.left) / 6;
+    this.zoomTo(new WMJSBBOX(this.resizeBBOX.left - a, this.resizeBBOX.bottom - a, this.resizeBBOX.right + a, this.resizeBBOX.top + a));
+    this.draw('zoomOut');
   };
 
-  this.zoomIn = function (ratio) {
-    var a = (resizeBBOX.left - resizeBBOX.right) / 8;
-    // error(a);
-    if (isDefined(ratio) == false) {
+  zoomIn (ratio) {
+    let a = (this.resizeBBOX.left - this.resizeBBOX.right) / 8;
+    if (isDefined(ratio) === false) {
       ratio = 1;
     } else {
-      if (ratio == 0) return;
+      if (ratio === 0) return;
     }
     a = a * ratio;
-    this.zoomTo(new WMJSBBOX(resizeBBOX.left - a, resizeBBOX.bottom - a, resizeBBOX.right + a, resizeBBOX.top + a));
-    _map.draw('zoomIn');
+    this.zoomTo(new WMJSBBOX(this.resizeBBOX.left - a, this.resizeBBOX.bottom - a, this.resizeBBOX.right + a, this.resizeBBOX.top + a));
+    this.draw('zoomIn');
   };
 
-  this.searchForLocation = function (searchParam) {
-    _map.WCJSSearchRequest(searchParam);
+  searchForLocation (searchParam) {
+    this.WCJSSearchRequest(searchParam);
   };
 
-
-  this.displayLegendInMap = function (_displayLegendInMap) {
-    displayLegendInMap = _displayLegendInMap;
-    _map.repositionLegendGraphic();
+  displayLegendInMap (_displayLegendInMap) {
+    this._displayLegendInMap = _displayLegendInMap;
+    this.repositionLegendGraphic();
   };
 
-  this.showBoundingBox = function (_bbox, _mapbbox) {
+  showBoundingBox (_bbox, _mapbbox) {
     if (isDefined(_bbox)) {
-      divBoundingBox.bbox = _bbox;
-      divBoundingBox.style.display = '';
-      divBoundingBox.displayed = true;
+      this.divBoundingBox.bbox = _bbox;
+      this.divBoundingBox.style.display = '';
+      this.divBoundingBox.displayed = true;
     }
-    if (divBoundingBox.displayed !== true) return;
+    if (this.divBoundingBox.displayed !== true) return;
 
-    var b = bbox;
+    let b = this.bbox;
     if (isDefined(_mapbbox))b = _mapbbox;
-    var coord1 = this.getPixelCoordFromGeoCoord({ x:divBoundingBox.bbox.left, y:divBoundingBox.bbox.top }, b);
-    var coord2 = this.getPixelCoordFromGeoCoord({ x:divBoundingBox.bbox.right, y:divBoundingBox.bbox.bottom }, b);
+    let coord1 = this.getPixelCoordFromGeoCoord({ x:this.divBoundingBox.bbox.left, y:this.divBoundingBox.bbox.top }, b);
+    let coord2 = this.getPixelCoordFromGeoCoord({ x:this.divBoundingBox.bbox.right, y:this.divBoundingBox.bbox.bottom }, b);
 
-    divBoundingBox.style.left = (coord1.x - 1) + 'px';
-    divBoundingBox.style.top = (coord1.y - 2) + 'px';
-    divBoundingBox.style.width = (coord2.x - coord1.x) + 'px';
-    divBoundingBox.style.height = (coord2.y - coord1.y - 1) + 'px';
+    this.divBoundingBox.style.left = (coord1.x - 1) + 'px';
+    this.divBoundingBox.style.top = (coord1.y - 2) + 'px';
+    this.divBoundingBox.style.width = (coord2.x - coord1.x) + 'px';
+    this.divBoundingBox.style.height = (coord2.y - coord1.y - 1) + 'px';
   };
 
-  this.hideBoundingBox = function () {
-    divBoundingBox.style.display = 'none';
-    divBoundingBox.displayed = false;
+  hideBoundingBox () {
+    this.divBoundingBox.style.display = 'none';
+    this.divBoundingBox.displayed = false;
   };
-
-  this.setDebugFunction = function (debugFunction) { debug = debugFunction; };
-  this.setErrorFunction = function (errorFunction) { error = errorFunction; };
-  // Make sure the constructor is called upon creation of the object
-  constructor();
-  updateBoundingBox(bbox);
-
-  // _map.setDisplayModeGFI();
-
-  //_map._setSize(1000,500);
-
 };
-

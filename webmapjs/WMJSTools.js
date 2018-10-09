@@ -695,6 +695,7 @@ export const composeUrlObjectFromURL = (url) => {
 // Check for hash tag changes.
 var currentLocationHash = '';
 var hashTagCheckerInUse = false;
+var hashTagTimerIsRunning = false;
 var _checkIfHashTagChanged = function (callback) {
   var identifier = window.location.hash; // gets everything after the hashtag i.e. #home
   if (currentLocationHash != identifier && identifier.length > 0) {
@@ -715,7 +716,13 @@ var _checkIfHashTagChanged = function (callback) {
       callback(hashLocation, urlVars);
     }
   }
-  setTimeout(function () { _checkIfHashTagChanged(callback); }, 100);
+  
+  if (hashTagTimerIsRunning === true)return;
+  hashTagTimerIsRunning = true;
+  setTimeout(function () { 
+    hashTagTimerIsRunning = false;
+    _checkIfHashTagChanged(callback); 
+  }, 500);
 };
 
 export const checkIfHashTagChanged = (callback) => {

@@ -83,7 +83,7 @@ class GetFeatureInfoObject {
   */
 export class WMJSMap {
   constructor (_element, _xml2jsonrequestURL) {
-    this.WebMapJSMapVersion = '3.2.0';
+    this.WebMapJSMapVersion = '3.2.1';
     this.base = './';
     this.noimage = undefined;
     this.showDialog = true;
@@ -123,7 +123,7 @@ export class WMJSMap {
     this.loadingBBOX = new WMJSBBOX(); // Boundingbox that is used when map is loading
     this.drawnBBOX = new WMJSBBOX(); // Boundingbox that is used when map is drawn
     this.updateSRS = '';
-    this.legendDivBuffer = [];
+
     this.divBuffer = [];
 
     this.mapHeader = {
@@ -177,8 +177,6 @@ export class WMJSMap {
     this.setBaseURL('./');
     /* Contains the event values for when the mouse was pressed down (used for checking the shiftKey); */
     this.gfiDialogList = [];
-    this.loadedLegendUrls = [];
-    this.currentLegendDivBuffer = 0; // 0 or 1
     this.legendBusy = false;
     this.setTimeOffsetValue = '';
     this.setMessageValue = '';
@@ -199,7 +197,7 @@ export class WMJSMap {
 
     this.mouseWheelBusy = 0;
     this.flyZoomToBBOXTimerStart = 1;
-    this.flyZoomToBBOXTimerSteps = 6;
+    this.flyZoomToBBOXTimerSteps = 5;
     this.flyZoomToBBOXTimerLoop = undefined;
     this.flyZoomToBBOXTimer = new WMJSDebouncer();
     this.flyZoomToBBOXScaler = 0;
@@ -317,6 +315,7 @@ export class WMJSMap {
     this._onLayersReadyCallbackFunction = this._onLayersReadyCallbackFunction.bind(this);
     this._onMapReadyCallbackFunction = this._onMapReadyCallbackFunction.bind(this);
     this._onResumeSuspendCallbackFunction = this._onResumeSuspendCallbackFunction.bind(this);
+    this._animFrameRedraw  =  this._animFrameRedraw .bind(this);
     this.getWMSRequests = this.getWMSRequests.bind(this);
     this.prefetch = this.prefetch.bind(this);
     this.getImageStore = this.getImageStore.bind(this);
@@ -485,82 +484,54 @@ export class WMJSMap {
 
   /* Load legend inline of the map */
   loadLegendInline (somethingchanged) {
-    if (this.legendDivBuffer.length < 2) return;
-    try {
-      if (isDefined(somethingchanged) === false) {
-        somethingchanged = false;
-      }
-      if (this.legendBusy === true && isDefined(this.onLegendCallbackFunction)) {
-        if (this.callBack.addToCallback('onlegendready', this.onLegendCallbackFunction) === true) {
-          if (enableConsoleDebugging)console.log('Suspending on onlegendready');
-        }
-        return;
-      }
-      this.legendBusy = true;
-      if (this._displayLegendInMap === true) {
-        if (this.loadedLegendUrls.length !== this.layers.length) {
-          somethingchanged = true;
-        } else {
-          for (let j = 0; j < this.layers.length; j++) {
-            let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
-            if (isDefined(legendUrl)) {
-              if (this.loadedLegendUrls[j] !== legendUrl) {
-                this.loadedLegendUrls[j] = legendUrl;
-                somethingchanged = true;
-              }
-            }
-          }
-        }
-        if (somethingchanged) {
-          this.loadedLegendUrls = [];
-          for (let j = 0; j < this.layers.length; j++) {
-            if (this.layers[j].enabled !== false) {
-              let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
-
-              if (isDefined(legendUrl)) {
-                this.loadedLegendUrls[j] = legendUrl;
-                let inlineLegendURL = legendUrl;
-                this.legendDivBuffer[this.currentLegendDivBuffer].setSrc(j, inlineLegendURL);
-              }
-            }
-          }
-          let legendDivBufferToLoad = this.currentLegendDivBuffer;
-          this.currentLegendDivBuffer = 1 - this.currentLegendDivBuffer;
-          try {
-            this.legendDivBuffer[legendDivBufferToLoad].load(() => {
-              if (enableConsoleDebugging)console.log('Legend buffer nr' + legendDivBufferToLoad);
-              try {
-                let maxHeight = 0;
-                for (let j = 0; j < this.legendDivBuffer[legendDivBufferToLoad].layers.length; j++) {
-                  let h = this.legendDivBuffer[legendDivBufferToLoad].layers[j].getElement()[0].height;
-                  if (maxHeight < h)maxHeight = h;
-                }
-                this.legendDivBuffer[legendDivBufferToLoad].display();
-                this.legendDivBuffer[1 - legendDivBufferToLoad].hide();
-              } catch (e) {
-                console.error(e);
-              }
-              this.legendBusy = false;
-              this.callBack.triggerEvent('onlegendready');
-            });
-          } catch (e) {
-            console.error(e);
-            this.legendDivBuffer[0].hide();
-            this.legendDivBuffer[1].hide();
-            this.legendBusy = false;
-            this.callBack.triggerEvent('onlegendready');
-          }
-          return;
-        }
-      } else {
-        this.legendDivBuffer[0].hide();
-        this.legendDivBuffer[1].hide();
-      }
-    } catch (e) {
-      console.log(e);
-    }
-    this.legendBusy = false;
-    this.callBack.triggerEvent('onlegendready');
+    return;
+//     try {
+//       if (isDefined(somethingchanged) === false) {
+//         somethingchanged = false;
+//       }
+//       if (this.legendBusy === true && isDefined(this.onLegendCallbackFunction)) {
+//         if (this.callBack.addToCallback('onlegendready', this.onLegendCallbackFunction) === true) {
+//           if (enableConsoleDebugging)console.log('Suspending on onlegendready');
+//         }
+//         return;
+//       }
+//       this.legendBusy = true;
+//       if (this.loadedLegendUrls.length !== this.layers.length) {
+//         somethingchanged = true;
+//       } else {
+//         for (let j = 0; j < this.layers.length; j++) {
+//           let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
+//           if (isDefined(legendUrl)) {
+//             if (this.loadedLegendUrls[j] !== legendUrl) {
+//               this.loadedLegendUrls[j] = legendUrl;
+//               somethingchanged = true;
+//             }
+//           }
+//         }
+//       }
+//       if (somethingchanged) {
+//         this.loadedLegendUrls = [];
+//         for (let j = 0; j < this.layers.length; j++) {
+//           if (this.layers[j].enabled !== false) {
+//             let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
+// 
+//             if (isDefined(legendUrl)) {
+//               this.loadedLegendUrls[j] = legendUrl;
+//             }
+//           }
+//         }
+//         
+//         if (somethingchanged){
+//           console.log( this.loadedLegendUrls);
+//         }
+//         return;
+//       }
+//      
+//     } catch (e) {
+//       console.log(e);
+//     }
+//     this.legendBusy = false;
+//     this.callBack.triggerEvent('onlegendready');
   };
 
   setMessage (message) {
@@ -733,22 +704,17 @@ export class WMJSMap {
       this.divBuffer.push(d);
     }
 
-    // Legend buffers
-
-    for (let j = 0; j < 2; j++) {
-      let d = new WMJSCanvasBuffer(this.callBack, 'legendbuffer', legendImageStore, this.getWidth(), this.getHeight());
-      legendImageStore.addLoadEventCallback(d.imageLoadComplete);
-      this.baseDiv.append(d.getBuffer());
-      this.legendDivBuffer.push(d);
-    }
-
+    legendImageStore.addLoadEventCallback(() => {
+      this.draw('legendImageStore loaded');
+    });
+    
     this.callBack.addToCallback('display', this.display, true);
     this.callBack.addToCallback('draw', () => {
       console.log('draw event triggered externally, skipping');
     }, true);
     // callBack.addToCallback("drawbuffers",this.flipBuffers,true);
 
-    this.wmjsAnimate = new WMJSAnimate(this);
+    
 
     bgMapImageStore.addLoadEventCallback(() => {
       this.draw('bgMapImageStore loaded');
@@ -760,7 +726,7 @@ export class WMJSMap {
             if (this.baseLayers[l].keepOnTop === false) {
               if (this.baseLayers[l].type && this.baseLayers[l].type !== 'twms') continue;
               if (!this.tileRenderSettings) {console.log('tileRenderSettings not set');continue;}
-              (new WMJSTileRenderer(
+              this.wmjsTileRenderer.render(
                 this.bbox,
                 this.updateBBOX,
                 this.srs,
@@ -770,7 +736,7 @@ export class WMJSMap {
                 bgMapImageStore,
                 this.tileRenderSettings,
                 this.baseLayers[l].name
-              )).render();
+              );
             }
           }
         }
@@ -794,6 +760,38 @@ export class WMJSMap {
       /* Map Pin */
       if (this.divMapPin.displayMapPin) {
         WMJSDrawMarker(ctx, this.divMapPin.x, this.divMapPin.y, '#9090FF', '#000');
+      }
+      
+      /* Draw legends */
+      let legendPosX = 0;
+      for (let j = 0; j < this.layers.length; j++) {
+        if (this.layers[j].enabled !== false) {
+          let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
+          if (isDefined(legendUrl)) {
+           
+            let image = legendImageStore.getImage(legendUrl);
+            if (image.isLoaded() === false && image.isLoading() === false) {
+              image.load();
+            } else {
+              let el = image.getElement()[0];
+              let legendW = parseInt(el.width) + 4;
+              let legendH = parseInt(el.height) + 4;
+              legendPosX += (legendW + 4);
+              let legendX = this.width - legendPosX + 2;
+              let legendY = this.height - (legendH) - 2;
+              ctx.beginPath();
+              ctx.fillStyle = '#FFFFFF';
+              ctx.lineWidth = 0.3;
+              ctx.globalAlpha = 0.5;
+              ctx.strokeStyle = '#000000';
+              ctx.rect(parseInt(legendX) + 0.5, parseInt(legendY) + 0.5, legendW, legendH);
+              ctx.fill();
+              ctx.stroke();
+              ctx.globalAlpha = 1.0;
+              ctx.drawImage(el, legendX, legendY);
+            }
+          }
+        }
       }
       
       /* Map header */
@@ -1007,9 +1005,16 @@ export class WMJSMap {
       ctx.font = '7px Helvetica';
       ctx.fillText('ADAGUC webmapjs ' + this.WebMapJSMapVersion, this.width - 85, this.height - 5);
     };
-    this.addListener('beforecanvasdisplay', adagucBeforeCanvasDisplay, true);
+    this.addListener('beforecanvasdisplay', (ctx) => {
+      adagucBeforeCanvasDisplay (ctx);
+//       window.requestAnimationFrame(() => {
+//         this.draw();
+//       });
+    }, true);
     this.addListener('canvasonerror', (e) => { this.canvasErrors = e; }, true);
     this._updateBoundingBox(this.bbox);
+    this.wmjsAnimate = new WMJSAnimate(this);
+    this.wmjsTileRenderer = new WMJSTileRenderer();
     this.initialized = 1;
   };
 
@@ -1292,8 +1297,7 @@ export class WMJSMap {
     if (this._displayLegendInMap) {
       this.loadLegendInline(force);
     } else {
-      this.legendDivBuffer[0].hide();
-      this.legendDivBuffer[1].hide();
+      this.draw();
     }
   };
 
@@ -1357,10 +1361,7 @@ export class WMJSMap {
       this.divBuffer[1].resize(this.getWidth(), this.getHeight());
     }
 
-    if (this.legendDivBuffer.length > 1) {
-      this.legendDivBuffer[0].resize(this.getWidth(), this.getHeight());
-      this.legendDivBuffer[1].resize(this.getWidth(), this.getHeight());
-    }
+
     this.repositionLegendGraphic(true);
 
     if (this.divBuffer[this.currentSwapBuffer]) {
@@ -1703,13 +1704,26 @@ export class WMJSMap {
     this.drawnBBOX.setBBOX(this.bbox);
   };
 
+  _animFrameRedraw () { 
+    this._draw(this._animationList); 
+    this.drawPending = false;
+    if (this.needsRedraw) {
+      this.needsRedraw = false;
+      this.draw(this._animationList); 
+    }
+  }
   draw (animationList) {
+    this._animationList = animationList;
     if (this.isAnimating) {
       if (enableConsoleDebugging)console.log('ANIMATING: Skipping draw:' + animationList);
       return;
     }
-    // window.requestAnimationFrame(() => { this._draw(animationList); });
-    this._draw(animationList);
+    if (this.drawPending){
+      this.needsRedraw = true;
+      return;
+    }
+    this.drawPending = true;
+    window.requestAnimationFrame(this._animFrameRedraw);
   };
   /**
    * API Function called to draw the layers, fires getmap request and shows the layers on the screen
@@ -2040,8 +2054,8 @@ export class WMJSMap {
       }
       return;
     }
-    window.requestAnimationFrame(() => { this.flyZoomToBBOXTimerFunc(); });
-    // this.flyZoomToBBOXTimer.init(10, this.flyZoomToBBOXTimerFunc);
+    // window.requestAnimationFrame(() => { this.flyZoomToBBOXTimerFunc(); });
+    this.flyZoomToBBOXTimer.init(10, this.flyZoomToBBOXTimerFunc);
   }
 
   flyZoomToBBOXStop (currentbox, newbox) {

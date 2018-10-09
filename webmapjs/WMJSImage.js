@@ -2,6 +2,8 @@
 
 import { isDefined } from './WMJSTools.js';
 
+var numImagesLoading = 0;
+
 /*
  * WMJSImage
   * image.this.srcToLoad the source to load
@@ -30,6 +32,8 @@ export default class WMJSImage {
     this.clear = this.clear.bind(this);
     this.getSrc = this.getSrc.bind(this);
     this.hasError = this.hasError.bind(this);
+    this.stopLoading = this.stopLoading.bind(this);    
+    this._load = this._load.bind(this);
     this.load = this.load.bind(this);
     this.loadEvent = this.loadEvent.bind(this);
     this.setOpacity = this.setOpacity.bind(this);
@@ -44,6 +48,12 @@ export default class WMJSImage {
     this._type = __type;
     this.loadEventCallback = callback;
     this.el = $(document.createElement('img'));
+    this.el.on('load', () => {
+      this.loadEvent(this, false);
+    });
+    this.el.on('error', (e) => {
+      this.loadEvent(this, true);
+    });
     this.el.onselectstart = () => { return false; };
     this.el.ondrag = () => { return false; };
   }
@@ -53,6 +63,7 @@ export default class WMJSImage {
     this._isLoading = false;
     this._hasError = false;
     this._opacity = 1;
+    this._stopLoading = false;
   }
 
   isLoaded () {
@@ -89,8 +100,13 @@ export default class WMJSImage {
 
   clear () {
     this.init();
+    this._stopLoading = true;
   }
 
+  stopLoading () {
+    this._stopLoading = true;
+  }
+  
   getSrc () {
     return this.srcToLoad;
   };
@@ -104,8 +120,11 @@ export default class WMJSImage {
    * Load image *
    */
   load () {
-    // console.log("WMJSImage:load "+this.srcToLoad);
-
+    this._stopLoading = false;
+    this._load();
+  }
+  
+  _load () {
     this._hasError = false;
     if (this._isLoaded === true) {
       this.loadEvent(this, false);
@@ -128,21 +147,35 @@ export default class WMJSImage {
       this.loadEvent(this, false);
       return;
     }
-
-    this.el.on('load', () => {
-      this.loadEvent(this, false);
-    });
-    this.el.on('error', (e) => {
-      this.loadEvent(this, true);
-    });
+    
+    if (this.timerIsRunning === true)return;
+    if (numImagesLoading >= 4) {
+      if (this._stopLoading === false) {
+        this.timerIsRunning = true;
+        setTimeout(() => {
+          this.timerIsRunning = false;
+          this._load();
+        }, 10);
+      } else {
+        /* Cancel loading */
+        this.init();
+      }
+      return;
+    }
+    numImagesLoading ++;
+    // console.log("WMJSImage:load "+this.srcToLoad);
+   
     if (this.randomize) {
-      this.el.attr('src', this.srcToLoad + '&' + Math.random());
+      this.getElement()[0].src = this.srcToLoad + '&' + Math.random();
+      // this.el.attr('src', this.srcToLoad + '&' + Math.random());
     } else {
-      this.el.attr('src', this.srcToLoad);
+      this.getElement()[0].src = this.srcToLoad;
+      // this.el.attr('src', this.srcToLoad);
     }
   };
 
   loadEvent (image, hasError) {
+    numImagesLoading--;
     this._hasError = hasError;
     this._isLoading = false;
     this._isLoaded = true;

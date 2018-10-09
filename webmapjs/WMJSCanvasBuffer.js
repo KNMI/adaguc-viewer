@@ -7,10 +7,10 @@ export default class WMJSCanvasBuffer {
     this._ctx = this.canvas[0].getContext('2d');
     this._ctx.canvas.width = w;
     this._ctx.canvas.height = h;
-    // this._ctx.webkitImageSmoothingEnabled = true;
-    // this._ctx.imageSmoothingQuality = 'high';
-    // this._ctx.msImageSmoothingEnabled = true;
-    // this._ctx.imageSmoothingEnabled = true;
+//     this._ctx.webkitImageSmoothingEnabled = true;
+//     this._ctx.imageSmoothingQuality = 'high';
+//     this._ctx.msImageSmoothingEnabled = true;
+//     this._ctx.imageSmoothingEnabled = true;
 
     this._imageStore = _imageStore;
     this.ready = true;
@@ -84,7 +84,7 @@ export default class WMJSCanvasBuffer {
   display (newbbox, loadedbbox) {
     let errorList = [];
     if ((newbbox && !loadedbbox)) {
-      console.log('skipping WMJSCanvasBuffer:display because newbbox is undefined');
+      console.error('skipping WMJSCanvasBuffer:display because newbbox is undefined');
       return;
     }
 

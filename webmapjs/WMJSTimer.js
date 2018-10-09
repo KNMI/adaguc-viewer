@@ -12,9 +12,12 @@ export default function WMJSTimer () {
   this.init = function (secstime, functionhandler) {
     secs = parseInt((secstime / 10) + 0.5);
     if (secs < 1)secs = 1;
+    secs = 1 ;
     initsecs = secs;
     timehandler = functionhandler;
     StopTheClock();
+    
+    delay = secstime / 1;
     if (secs > 0)StartTheTimer();
   };
 
@@ -23,6 +26,7 @@ export default function WMJSTimer () {
    */
   this.reset = function () {
     secs = initsecs;
+    secs = 1;
   };
 
   /**
@@ -54,7 +58,7 @@ export default function WMJSTimer () {
     } else {
       secs = secs - 1;
       timerRunning = true;
-      timerID = self.setTimeout(function () { StartTheTimer(); }, delay);
+      timerID = setTimeout(StartTheTimer, delay);
     }
   }
 };

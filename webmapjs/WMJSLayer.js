@@ -200,7 +200,7 @@ export default class WMJSLayer {
     if (name === 'reference_time') {
       let timeDim = this.getDimension('time');
       if (timeDim) {
-        timeDim.setStartTime(value);
+        timeDim.__setStartTime(value);
         if (this.parentMaps && this.parentMaps.length > 0) {
           this.parentMaps[0].getListener().triggerEvent('ondimchange', 'time');
         }

@@ -12,6 +12,7 @@ export default class WMJSImageStore {
     this.imageLoadEventCallback = this.imageLoadEventCallback.bind(this);
     this.getImageForSrc = this.getImageForSrc.bind(this);
     this.clear = this.clear.bind(this);
+    this.stopLoading = this.stopLoading.bind(this);
     this.addLoadEventCallback = this.addLoadEventCallback.bind(this);
     this.getNumImagesLoading = this.getNumImagesLoading.bind(this);
     this.getImage = this.getImage.bind(this);
@@ -56,6 +57,14 @@ export default class WMJSImageStore {
       }
     }
   };
+  
+  stopLoading () {
+    for (let property in this.imagesbysrc) {
+      if (this.imagesbysrc.hasOwnProperty(property)) {
+        this.imagesbysrc[property].stopLoading();
+      }
+    }
+  }
 
   addLoadEventCallback (callback) {
     this._loadEventCallbackList.push(callback);
@@ -98,7 +107,7 @@ export default class WMJSImageStore {
       let minImageLife = this._imageLifeCounter;
       Object.keys(this.imagesbysrc).forEach((property) => {
         let img = this.imagesbysrc[property];
-        if (img.isLoading() === false && img.isLoaded() === true) {
+        if (img.isLoading() === false) {// && img.isLoaded() === true) {
           if (minImageLife >= img.imageLife) {
             minImageLife = img.imageLife;
             imageId = property;

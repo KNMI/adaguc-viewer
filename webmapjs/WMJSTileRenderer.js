@@ -1,5 +1,9 @@
 export default class WMJSTileRenderer {
-  constructor (currentBBOX, newBBOX, srs, width, height, ctx, bgMapImageStore, tileOptions, layerName) {
+  constructor () {
+  }
+  render (currentBBOX, newBBOX, srs, width, height, ctx, bgMapImageStore, tileOptions, layerName) {
+    let renderedURLs = {};
+    bgMapImageStore.stopLoading();
     if (!layerName) {
       console.error('layerName not defined');
       return;
@@ -81,7 +85,7 @@ export default class WMJSTileRenderer {
         return { x:parseFloat(x), y:parseFloat(y) };
       };
 
-      let drawTile = function (ctx, level, x, y) {
+      let drawTile = function (ctx, level, x, y, loadImage = true) {
         let bounds = getTileBounds(level, x, y);
         let bl = getPixelCoordFromGeoCoord({ x: bounds.left, y: bounds.bottom }, newBBOX, width, height);
         let tr = getPixelCoordFromGeoCoord({ x: bounds.right, y: bounds.top }, newBBOX, width, height);
@@ -97,17 +101,46 @@ export default class WMJSTileRenderer {
         if (tileServerType === 'arcgisonline' || tileServerType === 'wmst') {
           imageURL = home + level + '/' + y + '/' + (x);
         }
-        let image = bgMapImageStore.getImage(imageURL);
-        if (image.isLoaded() === false && image.hasError() === false && image.isLoading() === false) {
-          image.load();
+        
+        if (renderedURLs[imageURL]){
+          return;
         }
-
-        if (image.isLoaded()) {
-          try {
+        renderedURLs[imageURL] = true;
+        let image = bgMapImageStore.getImage(imageURL);
+        // let image = bgMapImageStore.getImageForSrc(imageURL);
+        
+        if (loadImage == false){
+          /* Here we display lower resolution images, if not available switch to an even higher resolution */
+          if (image.isLoaded()) {
+            try {
+              ctx.drawImage(image.getElement()[0], parseInt(bl.x), parseInt(bl.y), parseInt(tr.x - bl.x) + 1, parseInt(tr.y - bl.y) + 1);
+            } catch (e) {
+            }
+          } else {
+            /* If desired image is not yet loaded, try to load a higher resolution variant instead */
+            if (level > 1) {
+              drawTile(ctx, level - 1, parseInt(x / 2), parseInt(y / 2), false);
+            }
+          }
+        } else { 
+          /* Not all images need to load, as we can switch to lower resolutions for the time being */
+          if (loadImage) {
+            if (image.isLoaded() === false && image.hasError() === false && image.isLoading() === false) {
+              image.load();
+            }
+          }
+          /* Here we display the images we like to have at the desired resolution */
+          if (image.isLoaded()) {
             ctx.drawImage(image.getElement()[0], parseInt(bl.x), parseInt(bl.y), parseInt(tr.x - bl.x) + 1, parseInt(tr.y - bl.y) + 1);
-          } catch (e) {
+          } else {
+            /* If desired image is not yet loaded, try to load a higher resolution variant instead */
+            if (level > 1) {
+              drawTile(ctx, level - 1, parseInt(x / 2), parseInt(y / 2), false);
+            }
           }
         }
+
+
       };
       if (srs === 'EPSG:4326' || srs === 'EPSG:4258') {
         numTilesAtLevelX *= 2;
@@ -125,7 +158,5 @@ export default class WMJSTileRenderer {
       }
     };
     drawBGTiles(level);
-  }
-  render () {
   }
 };

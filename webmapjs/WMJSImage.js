@@ -1,4 +1,4 @@
-
+import { $ } from './WMJSExternalDependencies.js';
 
 import { isDefined } from './WMJSTools.js';
 
@@ -32,7 +32,7 @@ export default class WMJSImage {
     this.clear = this.clear.bind(this);
     this.getSrc = this.getSrc.bind(this);
     this.hasError = this.hasError.bind(this);
-    this.stopLoading = this.stopLoading.bind(this);    
+    this.stopLoading = this.stopLoading.bind(this);
     this._load = this._load.bind(this);
     this.load = this.load.bind(this);
     this.loadEvent = this.loadEvent.bind(this);
@@ -106,7 +106,7 @@ export default class WMJSImage {
   stopLoading () {
     this._stopLoading = true;
   }
-  
+
   getSrc () {
     return this.srcToLoad;
   };
@@ -123,7 +123,7 @@ export default class WMJSImage {
     this._stopLoading = false;
     this._load();
   }
-  
+
   _load () {
     this._hasError = false;
     if (this._isLoaded === true) {
@@ -147,7 +147,7 @@ export default class WMJSImage {
       this.loadEvent(this, false);
       return;
     }
-    
+
     if (this.timerIsRunning === true)return;
     if (numImagesLoading >= 4) {
       if (this._stopLoading === false) {
@@ -164,7 +164,7 @@ export default class WMJSImage {
     }
     numImagesLoading ++;
     // console.log("WMJSImage:load "+this.srcToLoad);
-   
+
     if (this.randomize) {
       this.getElement()[0].src = this.srcToLoad + '&' + Math.random();
       // this.el.attr('src', this.srcToLoad + '&' + Math.random());

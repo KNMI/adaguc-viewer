@@ -40,7 +40,6 @@ export default class WMJSLayer {
     this.currentStyle = '';
     this.id = -1;
     this.opacity = 1.0; // Ranges from 0.0-1.0
-    this.image = undefined;
     this.getCapabilitiesDoc = undefined;
     this.serviceTitle = 'not defined';
     this.parentMaps = [];
@@ -106,6 +105,7 @@ export default class WMJSLayer {
       if (options.transparent === false) { this.transparent = false; }
       if (isDefined(options.onReady)) { this.onReady = options.onReady; this.parseLayer(undefined, undefined, 'WMJSLayer::configOptions'); }
       if (isDefined(options.type)) { this.type = options.type; }
+      if (options.parentMaps) { console.log(options.parentMaps); this.parentMaps = options.parentMaps; }
     }
   }
   // Extensions compatible with ncWMS WMS extensions on http://www.resc.rdg.ac.uk/trac/ncWMS/wiki/WmsExtensions
@@ -155,9 +155,10 @@ export default class WMJSLayer {
 
   setOpacity (opacityValue) {
     this.opacity = opacityValue;
-
-    if (this.image) {
-      this.image.setOpacity(this.opacity);
+    if (this.parentMaps.length === 0) {
+      console.error('Layer has no parent maps');
+    }
+    for (let j = 0; j < this.parentMaps.length; j++) {
       this.parentMaps[0].redrawBuffer();
     }
   }
@@ -314,7 +315,7 @@ export default class WMJSLayer {
           }
         }
       } else {
-        debug('WMJSLayer::configureDimensions Layer has no parentmaps');
+        debug('WMJSLayer::configureDimensions Layer has no parentMaps');
       }
       if (currentLayer.dimensions.filter((d) => d.name === dim.name).length === 1) {
         const oldDim = currentLayer.dimensions.filter((d) => d.name === dim.name)[0];
@@ -665,9 +666,9 @@ export default class WMJSLayer {
     let requestfail = (data) => {
       fail(_this, data);
     };
-    
+
     let _xml2jsonrequest = xml2jsonrequest;
-    if (!xml2jsonrequest){ 
+    if (!xml2jsonrequest) {
       _xml2jsonrequest = _this.parentMaps && _this.parentMaps.length > 0 ? _this.parentMaps[0].xml2jsonrequest : undefined
     }
     _this.WMJSService = WMJSGetServiceFromStore(this.service, _xml2jsonrequest);
@@ -675,7 +676,7 @@ export default class WMJSLayer {
   };
 
   cloneLayer () {
-    let layer = new WMJSLayer();
+    let layer = {} ;//new WMJSLayer(this); TODO WILL CAUSE LOOP?
     for (let i in this) {
       layer[i] = this[i];
     }

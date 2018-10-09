@@ -2,8 +2,8 @@ import I18n from './I18n/lang.en.js';
 import { WMSVersion, error, debug } from './WMJSConstants.js';
 import { URLEncode, isDefined, toArray, isNull } from './WMJSTools.js';
 import WMJSXMLParser from './WMJSXMLParser.js';
-import { functionCallbackList } from './WMJSGlobals.js';
 
+import { $ } from './WMJSExternalDependencies.js';
 
 let config = {
   xml2jsonrequestURL: 'Check WMJSService line 8'
@@ -64,14 +64,13 @@ export const WMJSGetCapabilities = (service, forceReload, succes, fail, xml2json
   let url = service + '&service=WMS&request=GetCapabilities';
 
   let _xml2jsonrequestURL = xml2jsonrequestURL;
-  
+
   WMJSXMLParser(url).then((data) => {
-    try{
-      succes (data);
-    }catch (e){
+    try {
+      succes(data);
+    } catch (e) {
       console.error(e);
     }
-    return;
   }).catch((e) => {
     debug('Unable to use browser based XML reading, trying proxy: ', e);
     loadGetCapabilitiesViaProxy(url, succes,
@@ -113,6 +112,7 @@ export class WMJSService {
     this.getLayerNames = this.getLayerNames.bind(this);
     this.getLayerObjectsFlat = this.getLayerObjectsFlat.bind(this);
     this.xml2jsonrequestURL = options.xml2jsonrequestURL ? options.xml2jsonrequestURL : config.xml2jsonrequestURL;
+    this.functionCallbackList = [];
   }
 
   checkVersion111 (jsonData) {
@@ -128,7 +128,7 @@ export class WMJSService {
       if (!jsonData.WMT_MS_Capabilities.Capability.Layer) { throw (I18n.no_wms_layer_element_found.text); }
     }
   };
-  
+
   setXML2JSONProxy (xml2jsonrequestURL) {
     this.xml2jsonrequestURL = xml2jsonrequestURL;
   }
@@ -206,25 +206,23 @@ export class WMJSService {
     * @param failcallback Function called upon failure, cannot be left blank
     */
   getCapabilities (succescallback, failcallback, forceReload, xml2jsonrequestURL = this.xml2jsonrequestURL) {
-   
-
     if (this.busy) {
       let cf = { callback:succescallback, fail:failcallback };
-      functionCallbackList.push(cf);
+      this.functionCallbackList.push(cf);
       return;
     }
-    
+
     this._flatLayerObject = undefined;
-    
+
     if (!this.getcapabilitiesDoc || forceReload === true) {
       this.busy = true;
       let fail = (jsonData) => {
         this.busy = false;
-        for (let j = 0; j < functionCallbackList.length; j++) {
-          functionCallbackList[j].fail(jsonData);
-          functionCallbackList[j].fail = function () {};
+        for (let j = 0; j < this.functionCallbackList.length; j++) {
+          this.functionCallbackList[j].fail(jsonData);
+          this.functionCallbackList[j].fail = function () {};
         }
-        functionCallbackList.length = 0;
+        this.functionCallbackList.length = 0;
       };
       let succes = (jsonData) => {
         this.busy = false;
@@ -267,15 +265,16 @@ export class WMJSService {
           this.onlineresource = I18n.not_available_message.text;
         }
 
-        for (let j = 0; j < functionCallbackList.length; j++) {
-          functionCallbackList[j].callback(jsonData);
-          functionCallbackList[j].callback = () => {};
+        for (let j = 0; j < this.functionCallbackList.length; j++) {
+          this.functionCallbackList[j].callback(jsonData);
+          this.functionCallbackList[j].callback = () => {};
         }
-        functionCallbackList.length = 0;
+        this.functionCallbackList.length = 0;
+        this.functionCallbackList = [];
         this.busy = false;
       };
       let cf = { callback:succescallback, fail:failcallback };
-      functionCallbackList.push(cf);
+      this.functionCallbackList.push(cf);
 
       WMJSGetCapabilities(this.service, false, succes, fail, xml2jsonrequestURL);
     } else {

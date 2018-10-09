@@ -34,16 +34,20 @@ import { isDefined } from './WMJSTools.js';
 /***************************************************/
 /* Object to store a time duration / time interval */
 /***************************************************/
-function DateInterval (year, month, day, hour, minute, second) {
-  this.year = parseInt(year);
-  this.month = parseInt(month);
-  this.day = parseInt(day);
-  this.hour = parseInt(hour);
-  this.minute = parseInt(minute);
-  this.second = parseInt(second);
-  this.isRegularInterval = false;
-  if (this.month === 0 && this.year === 0) this.isRegularInterval = true;
-  this.getTime = function () {
+export class DateInterval {
+  constructor (year, month, day, hour, minute, second) {
+    this.year = parseInt(year);
+    this.month = parseInt(month);
+    this.day = parseInt(day);
+    this.hour = parseInt(hour);
+    this.minute = parseInt(minute);
+    this.second = parseInt(second);
+    this.isRegularInterval = false;
+    if (this.month === 0 && this.year === 0) this.isRegularInterval = true;
+    this.getTime = this.getTime.bind(this);
+    this.toISO8601 = this.toISO8601.bind(this);
+  }
+  getTime () {
     let timeres = 0;
     /* Months and years are unequally distributed in time
        So get time is not possible */
@@ -56,7 +60,7 @@ function DateInterval (year, month, day, hour, minute, second) {
     timeres *= 1000;
     return timeres;
   };
-  this.toISO8601 = function () {
+  toISO8601 () {
     let isoTime = 'P';
     if (this.year !== 0)isoTime += this.year + 'Y';
     if (this.month !== 0)isoTime += this.month + 'M';
@@ -353,7 +357,7 @@ export class ParseISOTimeRangeDuration {
   }
 };
 
-function getCurrentDateIso8601 () {
+export const getCurrentDateIso8601 = () => {
   let d = new Date();
   return parseISO8601DateToDate(d.toISOString().substring(0, 19) + 'Z');
 };

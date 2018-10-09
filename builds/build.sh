@@ -12,6 +12,7 @@ java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES
 --js ../webmapjs_h/WMJSTimeSlider.js \
 --js ../webmapjs_h/WMJS_GFITimeElevation.js \
 --js ../webmapjs_h/WMJSCoverage.js \
+--js ../webmapjs/WMJSExternalDependencies.js \
 --js ../webmapjs/WMJSConstants.js \
 --js ../webmapjs/WMJSGlobals.js \
 --js ../webmapjs/WMJSGetServiceFromStore.js \
@@ -24,7 +25,7 @@ java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES
 --js ../webmapjs/WMJSTime.js \
 --js ../webmapjs/WMJSTileRenderer.js \
 --js ../webmapjs/WMJSImageStore.js \
---js ../webmapjs/WebMapJS.js \
+--js ../webmapjs/WMJSMap.js \
 --js ../webmapjs/WMJSProjection.js \
 --js ../webmapjs/WMJSBBOX.js \
 --js ../webmapjs/WMJSDimension.js \

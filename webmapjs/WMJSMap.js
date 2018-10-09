@@ -1,5 +1,5 @@
 /*
- * Name        : WebMapJS.js
+ * Name        : WMJSMap.js
  * Author      : MaartenPlieger (plieger at knmi.nl)
  * Version     : 3.2.0 (September 2018)
  * Description : This is a basic interface for portrayal of OGC WMS services
@@ -31,7 +31,8 @@
 */
 
 import WMJSImageStore from './WMJSImageStore.js';
-import { isDefined, preventdefaultEvent, URLEncode, toArray, deleteEvent, attachEvent, WMJScheckURL, MakeHTTPRequest, getMouseXCoordinate, getMouseYCoordinate, addMouseWheelEvent, removeMouseWheelEvent } from './WMJSTools.js';
+import { isDefined, preventdefaultEvent, URLEncode, toArray, deleteEvent, attachEvent, WMJScheckURL,
+  MakeHTTPRequest, getMouseXCoordinate, getMouseYCoordinate, addMouseWheelEvent, removeMouseWheelEvent } from './WMJSTools.js';
 import WMJSBBOX from './WMJSBBOX.js';
 import WMJSProjection from './WMJSProjection.js';
 import WMJSListener from './WMJSListener.js';
@@ -42,8 +43,8 @@ import WMJSAnimate from './WMJSAnimate.js';
 import WMJSTileRenderer from './WMJSTileRenderer.js';
 import WMJSDrawMarker from './WMJSDrawMarker.js';
 import I18n from './I18n/lang.en.js';
-// import proj4 from 'proj4';
-// import moment from 'moment';
+import { $, proj4, moment } from './WMJSExternalDependencies.js';
+
 import WMJSDialog from './WMJSDialog.js';
 import { WMJSDateOutSideRange, WMJSDateTooEarlyString, WMJSDateTooLateString, WMSVersion, WMJSProj4Defs } from './WMJSConstants.js';
 // var Hammer = require(['hammerjs']);
@@ -81,7 +82,7 @@ class GetFeatureInfoObject {
 /**
   * WMJSMap class
   */
-export class WMJSMap {
+export default class WMJSMap {
   constructor (_element, _xml2jsonrequestURL) {
     this.WebMapJSMapVersion = '3.2.1';
     this.base = './';
@@ -417,7 +418,7 @@ export class WMJSMap {
     this.displayLegendInMap = this.displayLegendInMap.bind(this);
     this.showBoundingBox = this.showBoundingBox.bind(this);
     this.hideBoundingBox = this.hideBoundingBox.bind(this);
-    this.clearImageStore = this.clearImageStore.bind(this);    
+    this.clearImageStore = this.clearImageStore.bind(this);
     this.init();
   };
 
@@ -514,19 +515,19 @@ export class WMJSMap {
 //         for (let j = 0; j < this.layers.length; j++) {
 //           if (this.layers[j].enabled !== false) {
 //             let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
-// 
+//
 //             if (isDefined(legendUrl)) {
 //               this.loadedLegendUrls[j] = legendUrl;
 //             }
 //           }
 //         }
-//         
+//
 //         if (somethingchanged){
 //           console.log( this.loadedLegendUrls);
 //         }
 //         return;
 //       }
-//      
+//
 //     } catch (e) {
 //       console.log(e);
 //     }
@@ -571,14 +572,14 @@ export class WMJSMap {
       }
     }catch(e){
     }
-    
+
     try{
       if (WMJSTileRendererTileSettings) {
         this.setWMJSTileRendererTileSettings(WMJSTileRendererTileSettings);
       }
     }catch(e){
     }
-    
+
     if (!this.mainElement.style.height) {
       this.mainElement.style.height = '1px';
     }
@@ -707,14 +708,14 @@ export class WMJSMap {
     legendImageStore.addLoadEventCallback(() => {
       this.draw('legendImageStore loaded');
     });
-    
+
     this.callBack.addToCallback('display', this.display, true);
     this.callBack.addToCallback('draw', () => {
       console.log('draw event triggered externally, skipping');
     }, true);
     // callBack.addToCallback("drawbuffers",this.flipBuffers,true);
 
-    
+
 
     bgMapImageStore.addLoadEventCallback(() => {
       this.draw('bgMapImageStore loaded');
@@ -761,14 +762,14 @@ export class WMJSMap {
       if (this.divMapPin.displayMapPin) {
         WMJSDrawMarker(ctx, this.divMapPin.x, this.divMapPin.y, '#9090FF', '#000');
       }
-      
+
       /* Draw legends */
       let legendPosX = 0;
       for (let j = 0; j < this.layers.length; j++) {
         if (this.layers[j].enabled !== false) {
           let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
           if (isDefined(legendUrl)) {
-           
+
             let image = legendImageStore.getImage(legendUrl);
             if (image.isLoaded() === false && image.isLoading() === false) {
               image.load();
@@ -793,7 +794,7 @@ export class WMJSMap {
           }
         }
       }
-      
+
       /* Map header */
       if (this.isMapHeaderEnabled) {
         ctx.beginPath();
@@ -808,8 +809,8 @@ export class WMJSMap {
         ctx.fill();
         ctx.globalAlpha = 1;
       }
-      
-      /* Gather errors */  
+
+      /* Gather errors */
       for (let i = 0; i < this.layers.length; i++) {
         // let request = '';
         for (let j = 0; j < this.layers[i].dimensions.length; j++) {
@@ -824,7 +825,7 @@ export class WMJSMap {
           }
         }
       }
-      
+
       /* Display errors found during drawing canvas */
       if (this.canvasErrors && this.canvasErrors.length > 0) {
         let mw = this.width / 2;
@@ -1069,6 +1070,7 @@ export class WMJSMap {
   };
 
   setLayer (layer, getcapdoc) {
+    console.log('setlayer');
     return this.addLayer(layer, getcapdoc, layer);
   };
 
@@ -1704,12 +1706,12 @@ export class WMJSMap {
     this.drawnBBOX.setBBOX(this.bbox);
   };
 
-  _animFrameRedraw () { 
-    this._draw(this._animationList); 
+  _animFrameRedraw () {
+    this._draw(this._animationList);
     this.drawPending = false;
     if (this.needsRedraw) {
       this.needsRedraw = false;
-      this.draw(this._animationList); 
+      this.draw(this._animationList);
     }
   }
   draw (animationList) {
@@ -2203,7 +2205,7 @@ export class WMJSMap {
     deleteEvent(document, 'mouseup', this.mouseUpEvent);
     deleteEvent(document, 'mousemove', this.mouseMoveEvent);
   };
-  
+
   attachEvents () {
     this.baseDiv.on('mousedown', this.mouseDownEvent);
     // this.baseDiv.on('mousewheel', this.mouseWheelEvent);
@@ -3537,7 +3539,7 @@ export class WMJSMap {
     this.divBoundingBox.style.display = 'none';
     this.divBoundingBox.displayed = false;
   };
-  
+
   clearImageStore () {
     this.getLegendStore().clear();
     this.getImageStore().clear();

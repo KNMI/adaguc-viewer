@@ -5,7 +5,6 @@ const WMJSXMLParser = (url) => {
       mode: 'cors'
     }).then((response) => {
       let contentType = response.headers.get('content-type');
-      
       if (contentType && contentType.includes('application/xml')) {
         return response.text();
       }

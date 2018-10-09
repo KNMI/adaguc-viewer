@@ -1,5 +1,6 @@
 import { error } from './WMJSConstants.js';
 import WMJSTimer from './WMJSTimer.js';
+import { $ } from './WMJSExternalDependencies.js';
 export default class WMJSAnimate {
   constructor (_map) {
     _map.animationDelay = 100;
@@ -75,7 +76,7 @@ export default class WMJSAnimate {
       this._map.isAnimatingLoopRunning = false;
       return;
     }
-    
+
 
     let animationDelay = this._map.animationDelay;
     if (this._map.currentAnimationStep === 0) {
@@ -87,7 +88,7 @@ export default class WMJSAnimate {
     this._map.animationTimer.init(animationDelay, this._animateLoop);
     this.checkAnimation();
 
-    
+
     if (this._map.mouseHoverAnimationBox === false) {
       this._animate();
 
@@ -109,7 +110,7 @@ export default class WMJSAnimate {
         let image = this._map.getImageStore().getImageForSrc(url);
         if (image && image.isLoaded()) {
           numReady++;
-        } 
+        }
       }
       if (numReady === this._map.animationList[nextStep].requests.length) {
         continueAnimation = true;

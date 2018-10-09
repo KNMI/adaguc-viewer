@@ -1,5 +1,5 @@
 import { isDefined, preventdefaultEvent, MakeHTTPRequest } from './WMJSTools.js';
-
+import { $ } from './WMJSExternalDependencies.js';
 export default class WMJSDialog {
   closeAllDialogs (gfiDialogList) {
     for (var j = 0; j < gfiDialogList.length; j++) {

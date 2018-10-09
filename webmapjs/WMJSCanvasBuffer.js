@@ -1,17 +1,18 @@
 import WMJSImage from './WMJSImage.js';
 import { error, debug } from './WMJSConstants.js';
 import { isDefined } from './WMJSTools.js';
+import { $ } from './WMJSExternalDependencies.js';
 export default class WMJSCanvasBuffer {
   constructor (webmapJSCallback, _type, _imageStore, w, h) {
     this.canvas = $('<canvas/>', { 'class':'WMJSCanvasBuffer' }).width(w).height(h);
     this._ctx = this.canvas[0].getContext('2d');
     this._ctx.canvas.width = w;
     this._ctx.canvas.height = h;
-//     this._ctx.webkitImageSmoothingEnabled = true;
-//     this._ctx.imageSmoothingQuality = 'high';
-//     this._ctx.msImageSmoothingEnabled = true;
-//     this._ctx.imageSmoothingEnabled = true;
-
+    // TODO: Check if this really gives sharper instead of blurier images...
+    // this._ctx.webkitImageSmoothingEnabled = true;
+    // this._ctx.imageSmoothingQuality igh';
+    // this._ctx.msImageSmoothingEnabled = true;
+    // this._ctx.imageSmoothingEnabled = tr
     this._imageStore = _imageStore;
     this.ready = true;
     this.hidden = true;

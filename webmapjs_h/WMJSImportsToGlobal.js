@@ -1,4 +1,4 @@
-import { WMJSMap } from '../webmapjs/WebMapJS.js'
+import WMJSMap from '../webmapjs/WMJSMap.js'
 import { isDefined, getUrlVars, checkIfHashTagChanged, WMJScheckURL, URLDecode, URLEncode, addMouseWheelEvent, removeMouseWheelEvent, WMJSKVP, composeUrlObjectFromURL, toArray } from '../webmapjs/WMJSTools.js'
 import WMJSLayer from '../webmapjs/WMJSLayer.js'
 import WMJSTimer from '../webmapjs/WMJSTimer.js';

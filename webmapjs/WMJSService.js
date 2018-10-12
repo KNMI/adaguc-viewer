@@ -52,7 +52,7 @@ export const WMJSGetCapabilities = (service, forceReload, succes, fail, xml2json
   }
   
   /* Allow relative URL's */
-  if (service.startsWith('/')){
+  if (service.startsWith('/') && !service.startsWith('//')){
     let splittedHREF = window.location.href.split('/').filter(e => e.length > 0);
     let hostName = splittedHREF[0] + '//' + splittedHREF[1] + '/';
     service = hostName + service;

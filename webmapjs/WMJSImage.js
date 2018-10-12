@@ -138,7 +138,7 @@ export default class WMJSImage {
     }
     
     /* Allow relative URL's */
-    if (this.srcToLoad.startsWith('/')){
+    if (this.srcToLoad.startsWith('/') && !this.srcToLoad.startsWith('//')){
       let splittedHREF = window.location.href.split('/').filter(e => e.length > 0);
       let hostName = splittedHREF[0] + '//' + splittedHREF[1] + '/';
       this.srcToLoad = hostName + this.srcToLoad;

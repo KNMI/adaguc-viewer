@@ -136,6 +136,13 @@ export default class WMJSImage {
       this.loadEvent(this, true);
       return;
     }
+    
+    /* Allow relative URL's */
+    if (this.srcToLoad.startsWith('/')){
+      let splittedHREF = window.location.href.split('/').filter(e => e.length > 0);
+      let hostName = splittedHREF[0] + '//' + splittedHREF[1] + '/';
+      this.srcToLoad = hostName + this.srcToLoad;
+    }
 
     if (this.srcToLoad.startsWith('http') === false && this.srcToLoad.startsWith('//') === false) {
       console.error('Source does not start with http');

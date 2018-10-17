@@ -1987,6 +1987,7 @@ export default class WMJSMap {
     this.divBuffer[this.currentSwapBuffer].display();
     if (enableConsoleDebugging)console.log('drawnBBOX.setBBOX(bbox)');
     this.drawnBBOX.setBBOX(this.bbox);
+    this.draw();
   };
 
   addBaseLayers (layer) {

@@ -1,8 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>GFI App</title>
   <style>
     body{
       background: #a5ebff;
@@ -15,32 +13,42 @@
       border:1px solid black;
     }
   </style>
-  <link rel="stylesheet" type="text/css" href="../d3/c3.css">
-  <!-- Proj4 -->
-  <script type="text/javascript" src="../proj4js/lib/proj4js.js"></script>
-
-  <!-- JQuery -->
-  <link rel="stylesheet" href="../jquery/jquery-ui.css" />
-  <script src="../d3/d3.v3.min.js" charset="utf-8"></script>
   
-  <script src="../jquery/jquery-1.12.4.min.js"></script>
-  <script src="../jquery/jquery-ui.min.js"></script>
-  <script src="../jquery/jquery.mousewheel.js"></script>
-  <script src="../jquery/jquery-ui-timepicker-addon.js"></script>
+  <link rel="icon" type="image/png" href="../img/adaguc-logo-favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="../img/adaguc-logo-favicon-32x32.png" sizes="32x32">
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>ADAGUC Viewer</title>
+
+    <!-- Style sheets -->
+  <link rel="stylesheet" href="../libs/node_modules/jquery-ui-dist/jquery-ui.css" />
+  <link rel="stylesheet" type="text/css" href="../libs/extjs-4.2.1/resources/css/ext-all.css" />
+  <link rel="stylesheet" type="text/css" href="../webmapjsext/WMJSExtStyles.css" /> 
+  <link rel="stylesheet" type="text/css" href="../webmapjs/WMJSStyles.css" />
+  <link rel="stylesheet" type="text/css" href="../webmapjs_h/WMJSTimeSelector.css" />
+  <link rel="stylesheet" type="text/css" href="../webmapjs_h/WMJS_GFITimeElevation.css" />
+  <link rel="stylesheet" type="text/css" href="../libs/d3/c3.css">
+  <link rel="stylesheet" href="../apps/gfiapp_d3c3.css" />
+  <link rel="stylesheet" href="../apps/autowms_app.css" />
+
+  
+  <!-- Configuration -->
+  <script type="text/javascript" src="../config.js"></script>
+  
+  <script type="text/javascript" src="../libs/node_modules/moment/moment.js"></script>
+  <script type="text/javascript" src="../libs/node_modules/proj4/dist/proj4.js"></script>
+  <script type="text/javascript" src="../libs/node_modules/jquery/dist/jquery.min.js"></script>
+  <script type="text/javascript" src="../libs/node_modules/jquery-ui-dist/jquery-ui.min.js"></script>
+
+  <script type="text/javascript" src="../builds/WMJS.min.js"></script>
+  
+  <script type="text/javascript" src="../webmapjs_h/WMJSDefineGlobals.js"></script>
   
 
-
   
-  <script src="../d3/c3.min.js"></script>
-  
-  <script type="text/javascript" src="../webmapjs/WMJSTools.js"></script>
-  <script type="text/javascript" src="gfiapp_d3c3.js"></script>
-
   <script type="text/javascript">
-
-  
     $(window).on("message", function(e) {
-     $("#chart").html("<img src=\"../webmapjs/img/ajax-loader.gif\" alt=\"Loading...\"/>");
+     $("#chart").html("<img src=\"../img/ajax-loader.gif\" alt=\"Loading...\"/>");
       var data = e.originalEvent.data;  // Should work.
       if(!isDefined(data.layers)){
         $("#info").html("No valid data received:<br/>"+data);
@@ -71,7 +79,7 @@
         //GFIURL+="figheight=200";
         //html+='<img src="'+GFIURL+'"/><br/>';
         $("#chart").append("<div class='chartstyle' id='chart"+j+"'></div>")
-        $("#chart"+j).html("<img src=\"../webmapjs/img/ajax-loader.gif\" alt=\"Loading...\"/>");
+        $("#chart"+j).html("<img src=\"../img/ajax-loader.gif\" alt=\"Loading...\"/>");
         loadDataForURL(GFIURL,'chart'+j);
       }
       $("#info").html(html);

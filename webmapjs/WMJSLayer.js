@@ -154,12 +154,12 @@ export default class WMJSLayer {
   }
 
   setOpacity (opacityValue) {
-    this.opacity = opacityValue;
+    this.opacity = parseFloat(opacityValue);
     if (this.parentMaps.length === 0) {
       console.error('Layer has no parent maps');
     }
     for (let j = 0; j < this.parentMaps.length; j++) {
-      this.parentMaps[0].redrawBuffer();
+      this.parentMaps[j].redrawBuffer();
     }
   }
 

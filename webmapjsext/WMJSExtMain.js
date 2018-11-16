@@ -1,4 +1,11 @@
-var versionInfo = 'ADAGUC viewer version 3.0.4.';
+initWMJS();
+var error = function(e) {
+  console.error(e);
+}
+var debug = function(e) {
+  console.log(e);
+}
+var versionInfo = 'ADAGUC viewer version 3.2.0.';
 var mainWebmapJS;
 
 function decimalFormatter(input,width){
@@ -10,6 +17,81 @@ function decimalFormatter(input,width){
   string=zeros+string;
   return string;
 }
+
+function Console (div) {
+  var element = div;
+
+  var consoleData = '';
+  var consoleBufSize = 8912 * 2;// 64096;
+
+  this.println = function (text, encode) {
+    if (encode == false) {
+      consoleData += "<p class='stdoutmessage'>" + text + '</p>';
+    } else {
+      consoleData += "<p class='stdoutmessage'>" + encodeMyHtml(text) + '</p>';
+    }
+    if (isDefined(element)) {
+      element.innerHTML = consoleData;
+      element.scrollTop = element.scrollHeight;
+    }
+    if (consoleData.length > consoleBufSize)consoleData = consoleData.substring(consoleData.length - consoleBufSize * (3 / 4));
+  };
+  this.errprintln = function (text, encode) {
+    if (encode == false) {
+      consoleData += "<p class='stderrmessage'>" + text + '</p>';
+    } else {
+      consoleData += "<p class='stderrmessage'>" + encodeMyHtml(text) + '</p>';
+    }
+
+    if (isDefined(element)) {
+      element.innerHTML = consoleData;
+      element.scrollTop = element.scrollHeight;
+    }
+  };
+  this.cls = function () {
+    consoleData = '';
+    if (isDefined(element)) {
+      element.innerHTML = consoleData;
+    }
+  };
+  this.setSize = function (w, h) {
+    if (isDefined(element)) {
+      element.scrollTop = element.scrollHeight;
+      element.style.width = w + 'px';
+      element.style.height = h + 'px';
+      element.width = w + 'px';
+      element.height = h + 'px';
+    }
+  };
+  this.setElement = function (div) {
+    element = div;
+    initWMJS();
+    if (isDefined(element)) {
+      element.style.overflow = 'scroll';
+      element.style.display = 'inline-block';
+      element.style.position = 'absolute';
+      element.style.width = '100%';
+      element.style.height = '100%';
+      element.style.font = 'normal 12px courier';
+      element.noWrap = true;
+      element.style.whiteSpace = 'nowrap';
+      element.innerHTML = consoleData;
+      element.scrollTop = element.scrollHeight;
+    }
+  };
+
+  this.setElement(div);
+
+  function encodeMyHtml (html) {
+    var encodedHtml = html + '';
+    encodedHtml = encodedHtml.replace(/&/g, '&amp;');
+    encodedHtml = encodedHtml.replace(/</g, '&lt;');
+    encodedHtml = encodedHtml.replace(/>/g, '&gt;');
+    encodedHtml = encodedHtml.replace(/\"/g, '&quot;');
+    encodedHtml = encodedHtml.replace(/\n/g, '<br>');
+    return encodedHtml;
+  }
+};
 
 var myUTCDateParser = function(dateString,strict){
   var date = parseISO8601DateToDate(dateString+"T00:00:00Z");
@@ -239,17 +321,6 @@ var timeselectorPanel = Ext.create("Ext.panel.Panel",{
 
 //Ext OnReady
 Ext.onReady(function(){
-  base = './webmapjs';
-
-  
-  // var scaleBarURL        = "http://webgis.nmdc.eu/viewer2.0/webmapjs/php/makeScaleBar.php?";
-// var requestProxy       = "webmapjs/php/MakeRequest.php?";
-// var xml2jsonrequestURL = "webmapjs/php/xml2jsonrequest.php?"
-
-  //FOR JSP:
-  /*xml2jsonrequestURL = "/impactportal/AdagucViewer?SERVICE=XML2JSON&";
-  requestProxy = "/impactportal/AdagucViewer?SERVICE=PROXY&";*/
-  //scaleBarURL = "http://webgis.nmdc.eu/viewer2.0/webmapjs/php/makeScaleBar.php?";
     
   Ext.tip.QuickTipManager.init();
   
@@ -437,8 +508,8 @@ Ext.onReady(function(){
   
   var debugWindow;
   var myConsole = new Console();
-  debug = myConsole.println;
-  error= myConsole.errprintln;
+  // debug = myConsole.println;
+  // error= myConsole.errprintln;
   
   var debugPanel = Ext.create('Ext.panel.Panel',{
     html:'<div id="debuginfodiv"></div>',
@@ -474,13 +545,13 @@ Ext.onReady(function(){
     text: I18n.create_link.text,iconCls:'button_makeLink',handler:function(){showPermaLinkWindow(maptypeclicked);}
     },/*{
       text:'Timeseries mode',iconCls:'button_getfeatureinfo',handler:function(){eastPanelGFI.show();}
-    },*/{
+    },{
       text: I18n.show_debug_information.text,
       iconCls:'button_console_icon',
       handler:function(){
         showDebugWindow();
       }
-    },{
+    },*/{
       text: I18n.add_custom_wms_service.text,
       iconCls:'button_layerlist_layernew',
       handler:function(){

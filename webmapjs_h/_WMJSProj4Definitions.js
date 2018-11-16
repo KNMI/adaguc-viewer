@@ -1,0 +1,13 @@
+var epsgDescriptionLookup = [];
+epsgDescriptionLookup['EPSG:3411'] = 'NSIDC Sea Ice Polar Stereographic North';
+epsgDescriptionLookup['EPSG:3412'] = 'NSIDC Sea Ice Polar Stereographic South';
+epsgDescriptionLookup['EPSG:3575'] = 'Lambert azimuthal equal-area projection Europe';
+epsgDescriptionLookup['EPSG:3785'] = 'Mercator (deprecated)';
+epsgDescriptionLookup['EPSG:3857'] = 'Mercator';
+epsgDescriptionLookup['EPSG:4258'] = 'ETRS89';
+epsgDescriptionLookup['EPSG:4326'] = 'World Lat lon WGS84';
+epsgDescriptionLookup['CRS:84'] = 'World Lat lon WGS84';
+epsgDescriptionLookup['EPSG:25831'] = 'ETRS89 / UTM zone 31N';
+epsgDescriptionLookup['EPSG:25832'] = 'ETRS89 / UTM zone 32N';
+epsgDescriptionLookup['EPSG:28992'] = 'Dutch Amersfoort / RD New';
+epsgDescriptionLookup['EPSG:32661'] = 'Polar Stereographic WGS 84 / UPS North';

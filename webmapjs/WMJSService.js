@@ -1,111 +1,91 @@
-/** Differences between WMS 1.1.1 and 1.3.0:
- *
- * http://dmorissette.blogspot.nl/2012/12/dont-upgrade-to-wms-130-unless-you.html
- *
- */
+import I18n from './I18n/lang.en.js';
+import { WMSVersion, error, debug } from './WMJSConstants.js';
+import { URLEncode, isDefined, toArray, isNull } from './WMJSTools.js';
+import WMJSXMLParser from './WMJSXMLParser.js';
 
-var WMSVersion = {
-  version100: '1.0.0',
-  version111: '1.1.1',
-  version130: '1.3.0'
+import { $ } from './WMJSExternalDependencies.js';
+
+let config = {
+  xml2jsonrequestURL: 'Check WMJSService line 8'
 };
 
-if (!String.prototype.startsWith) {
-  String.prototype.startsWith = function(searchString, position) {
-    position = position || 0;
-    return this.indexOf(searchString, position) === position;
-  };
-}
-
-
 let loadGetCapabilitiesViaProxy = (url, succes, fail, xml2jsonrequestURL) => {
- // console.log('loadGetCapabilitiesViaProxy', url);
-  var getcapreq = xml2jsonrequestURL + 'request=';
+  let getcapreq = xml2jsonrequestURL + 'request=';
 
-  var errormessage = function (message) {
+  let errormessage = (message) => {
     fail(I18n.unable_to_do_getcapabilities.text + ':\n' + getcapreq + '\n' + I18n.result.text + ':\n' + message);
   };
 
-  debug("<a target=\'_blank\' href='" + url + "'>" + url + '</a>', false);
+  debug("<a target='_blank' href='" + url + "'>" + url + '</a>', false);
   getcapreq += URLEncode(url);
-  console.log('loadGetCapabilitiesViaProxy wrapped', getcapreq);
-  debug(getcapreq);
-  debug(URLEncode(url));
-  debug(url);
-  // Error message in case the request goes wrong
+  /* Error message in case the request goes wrong */
   try {
     $.ajax({
       url: getcapreq,
       crossDomain:true,
-      dataType:"jsonp"
-    }).done(function(d) {
-      console.log('loadGetCapabilitiesViaProxy succesfully finished');
+      dataType:'jsonp'
+    }).done((d) => {
+      debug('loadGetCapabilitiesViaProxy succesfully finished');
       succes(d);
-    }).fail(function() {
-      errormessage({ "error":"Request failed for " + getcapreq });
+    }).fail(() => {
+      errormessage({ 'error':'Request failed for ' + getcapreq });
     });
   } catch (e) {
-    console.log('catch: ', e);
-    errormessage({ "error":"Request failed for " + getcapreq });
+    error(e);
+    errormessage({ 'error': 'Request failed for ' + getcapreq });
   }
-
 };
-
-
 // import WMJSXMLParser from './WMJSXMLParser.js';
 /**
   * Global getcapabilities function
   */
-var WMJSGetCapabilities = function (service, forceReload, succes, fail) {
-  // Make the regetCapabilitiesJSONquest
-  // console.log(service);
-  if (isDefined(service) == false) {
-    console.log('Service not defined');
+export const WMJSGetCapabilities = (service, forceReload, succes, fail, xml2jsonrequestURL = this.xml2jsonrequestURL) => {
+  /* Make the regetCapabilitiesJSONquest */
+  if (!isDefined(service)) {
     fail(I18n.no_service_defined.text);
     return;
   }
-  if (service.length == 0) {
-    console.log('Service is empty');
+  if (service.length === 0) {
+    error('Service is empty');
     fail(I18n.service_url_empty.text);
     return;
   }
-  if  (!service.startsWith('http://') && !service.startsWith('https:') && !service.startsWith('//')) {
-    console.log('Service does not start with HTTPS');
+  
+  /* Allow relative URL's */
+  if (service.startsWith('/') && !service.startsWith('//')){
+    let splittedHREF = window.location.href.split('/').filter(e => e.length > 0);
+    let hostName = splittedHREF[0] + '//' + splittedHREF[1] + '/';
+    service = hostName + service;
+  }
+  
+  if (!service.startsWith('http://') && !service.startsWith('https:') && !service.startsWith('//')) {
+    error('Service does not start with HTTPS');
     fail(I18n.service_url_empty.text);
     return;
   }
 
-  if (service.indexOf('?') == -1) {
+  if (service.indexOf('?') === -1) {
     service += '?';
   }
   debug('GetCapabilities:');
 
-  var url = service + '&service=WMS&request=GetCapabilities';
+  let url = service + '&service=WMS&request=GetCapabilities';
 
-  let parser = new WMJSXMLParser();
-  parser.fetchXMLAndParseToJSON(url, succes, (e) => {
-    console.log('Unable to use browser based XML reading, trying proxy: ', e);
-    loadGetCapabilitiesViaProxy(url, succes, () => {fail("Request failed for " + url );}, xml2jsonrequestURL);
-  });
+  let _xml2jsonrequestURL = xml2jsonrequestURL;
 
-  
-  
-};
-
-/**
-  * Global service store for re-use of services
-  */
-var WMJSServiceStore = new Array();
-
-var WMJSgetServiceFromStore = function (serviceName) {
-  for (var j = 0; j < WMJSServiceStore.length; j++) {
-    if (WMJSServiceStore[j].service == serviceName) {
-      return WMJSServiceStore[j];
+  WMJSXMLParser(url).then((data) => {
+    try {
+      succes(data);
+    } catch (e) {
+      console.error(e);
     }
-  }
-  var service = new WMJSService({ service:serviceName });
-  WMJSServiceStore.push(service);
-  return service;
+  }).catch((e) => {
+    debug('Unable to use browser based XML reading, trying proxy: ', e);
+    loadGetCapabilitiesViaProxy(url, succes,
+      () => {
+        fail('Request failed for ' + url);
+      }, _xml2jsonrequestURL);
+  });
 };
 
 /**
@@ -116,28 +96,40 @@ var WMJSgetServiceFromStore = function (serviceName) {
   *   title (optional)
   */
 
-function WMJSService (options) {
-  this.service = undefined;
-  this.title = undefined;
-  this.onlineresource = undefined;
-  this.abstract = undefined;
-  this.version = WMSVersion.version111;
-  this.getcapabilitiesDoc = undefined;
-  this.busy = false;
-  var flatLayerObject;
-  var _this = this;
-
-  if (options) {
-    this.service = options.service;
-    this.title = options.title;
+export class WMJSService {
+  constructor (options) {
+    this.service = undefined;
+    this.title = undefined;
+    this.onlineresource = undefined;
+    this.abstract = undefined;
+    this.version = WMSVersion.version111;
+    this.getcapabilitiesDoc = undefined;
+    this.busy = false;
+    this._flatLayerObject = undefined;
+    if (options) {
+      this.service = options.service;
+      this.title = options.title;
+    }
+    this.checkVersion111 = this.checkVersion111.bind(this);
+    this.checkVersion130 = this.checkVersion130.bind(this);
+    this.getCapabilityElement = this.getCapabilityElement.bind(this);
+    this.checkVersion = this.checkVersion.bind(this);
+    this.getCapabilities = this.getCapabilities.bind(this);
+    this.checkException = this.checkException.bind(this);
+    this.getNodes = this.getNodes.bind(this);
+    this.getLayerNames = this.getLayerNames.bind(this);
+    this.getLayerObjectsFlat = this.getLayerObjectsFlat.bind(this);
+    this.xml2jsonrequestURL = options.xml2jsonrequestURL ? options.xml2jsonrequestURL : config.xml2jsonrequestURL;
+    this.functionCallbackList = [];
   }
 
-  var checkVersion111 = function (jsonData) {
+  checkVersion111 (jsonData) {
     try {
-      var rootLayer = jsonData.WMT_MS_Capabilities.Capability.Layer;
+      let rootLayer = jsonData.WMT_MS_Capabilities.Capability.Layer;
+      if (!rootLayer) throw new Error('No 111 layer');
     } catch (e) {
-      var message = _this.checkException(jsonData);
-      if (message != undefined) {
+      let message = this.checkException(jsonData);
+      if (message !== undefined) {
         throw (message);
       }
       if (!jsonData.WMT_MS_Capabilities.Capability) { throw (I18n.no_wms_capability_element_found.text); }
@@ -145,12 +137,17 @@ function WMJSService (options) {
     }
   };
 
-  var checkVersion130 = function (jsonData) {
+  setXML2JSONProxy (xml2jsonrequestURL) {
+    this.xml2jsonrequestURL = xml2jsonrequestURL;
+  }
+
+  checkVersion130 (jsonData) {
     try {
-      var rootLayer = jsonData.WMS_Capabilities.Capability.Layer;
+      let rootLayer = jsonData.WMS_Capabilities.Capability.Layer;
+      if (!rootLayer) throw new Error('No 130 layer');
     } catch (e) {
-      var message = _this.checkException(jsonData);
-      if (message != undefined) {
+      let message = this.checkException(jsonData);
+      if (message !== undefined) {
         throw (message);
       }
       if (!jsonData.WMS_Capabilities.Capability) { throw (I18n.no_wms_capability_element_found.text); }
@@ -158,8 +155,8 @@ function WMJSService (options) {
     }
   };
 
-  this.getCapabilityElement = function (jsonData) {
-    var capabilityObject;
+  getCapabilityElement (jsonData) {
+    let capabilityObject;
     try {
       capabilityObject = jsonData.WMT_MS_Capabilities.Capability;
     } catch (e) {
@@ -175,45 +172,40 @@ function WMJSService (options) {
     return capabilityObject;
   };
 
-  this.checkVersion = function (jsonData) {
-
-    var errormessage = '';
-    var version = null;
+  checkVersion (jsonData) {
+    let version = null;
     try {
-      if (WMSVersion.version100 == jsonData.WMT_MS_Capabilities.attr.version)version = WMSVersion.version100;
-      if (WMSVersion.version111 == jsonData.WMT_MS_Capabilities.attr.version)version = WMSVersion.version111;
-      if (WMSVersion.version130 == jsonData.WMT_MS_Capabilities.attr.version)version = WMSVersion.version130;
+      if (WMSVersion.version100 === jsonData.WMT_MS_Capabilities.attr.version)version = WMSVersion.version100;
+      if (WMSVersion.version111 === jsonData.WMT_MS_Capabilities.attr.version)version = WMSVersion.version111;
+      if (WMSVersion.version130 === jsonData.WMT_MS_Capabilities.attr.version)version = WMSVersion.version130;
     } catch (e) {
       try {
-        if (WMSVersion.version100 == jsonData.WMS_Capabilities.attr.version)version = WMSVersion.version100;
-        if (WMSVersion.version111 == jsonData.WMS_Capabilities.attr.version)version = WMSVersion.version111;
-        if (WMSVersion.version130 == jsonData.WMS_Capabilities.attr.version)version = WMSVersion.version130;
+        if (WMSVersion.version100 === jsonData.WMS_Capabilities.attr.version)version = WMSVersion.version100;
+        if (WMSVersion.version111 === jsonData.WMS_Capabilities.attr.version)version = WMSVersion.version111;
+        if (WMSVersion.version130 === jsonData.WMS_Capabilities.attr.version)version = WMSVersion.version130;
       } catch (e) {
-        console.log('165');
-        var message = _this.checkException(jsonData);
+        let message = this.checkException(jsonData);
         if (message) {
-          console.log(message);
           throw (new Error(message));
         } else {
           throw (new Error('Unable to determine WMS version'));
         }
       }
     }
-    if(version === null){
+    if (version === null) {
       throw (new Error('Unable to determine WMS version'));
     }
-    if (version == WMSVersion.version111) {
-      checkVersion111(jsonData);
+    if (version === WMSVersion.version111) {
+      this.checkVersion111(jsonData);
       return version;
     }
-    if (version == WMSVersion.version130) {
-      checkVersion130(jsonData);
+    if (version === WMSVersion.version130) {
+      this.checkVersion130(jsonData);
       return version;
     }
     return WMSVersion.version111;
   };
 
-  var functionCallbackList = [];
   /**
     * Does getcapabilities for a service.
     * When multple getCapabilities for the same service are made,
@@ -221,92 +213,89 @@ function WMJSService (options) {
     * @param succescallback Function called upon succes, cannot be left blank
     * @param failcallback Function called upon failure, cannot be left blank
     */
-  this.getCapabilities = function (succescallback, failcallback, forceReload) {
-    flatLayerObject = undefined;
-    var _this = this;
+  getCapabilities (succescallback, failcallback, forceReload, xml2jsonrequestURL = this.xml2jsonrequestURL) {
     if (this.busy) {
-      var cf = { callback:succescallback, fail:failcallback };
-      functionCallbackList.push(cf);
+      let cf = { callback:succescallback, fail:failcallback };
+      this.functionCallbackList.push(cf);
       return;
     }
-    if (!_this.getcapabilitiesDoc || forceReload == true) {
-      _this.busy = true;
-      var fail = function (jsonData) {
-        console.log('Failed');
-        _this.busy = false;
-        for (var j = 0; j < functionCallbackList.length; j++) {
-          functionCallbackList[j].fail(jsonData);
-          functionCallbackList[j].fail = function () {};
+
+    this._flatLayerObject = undefined;
+
+    if (!this.getcapabilitiesDoc || forceReload === true) {
+      this.busy = true;
+      let fail = (jsonData) => {
+        this.busy = false;
+        for (let j = 0; j < this.functionCallbackList.length; j++) {
+          this.functionCallbackList[j].fail(jsonData);
+          this.functionCallbackList[j].fail = function () {};
         }
-        functionCallbackList = [];
+        this.functionCallbackList.length = 0;
       };
-      var succes = function (jsonData) {
-        _this.busy = false;
-        _this.getcapabilitiesDoc = jsonData;
+      let succes = (jsonData) => {
+        this.busy = false;
+        this.getcapabilitiesDoc = jsonData;
 
         try {
-          _this.version = _this.checkVersion(jsonData);
+          this.version = this.checkVersion(jsonData);
         } catch (e) {
-          console.log('version error', e);
           fail(e.message);
           return;
         }
 
-        var WMS_Capabilities = jsonData.WMS_Capabilities;
-        if (!WMS_Capabilities) {
-          WMS_Capabilities = jsonData.WMT_MS_Capabilities;
+        let WMSCapabilities = jsonData.WMS_Capabilities;
+        if (!WMSCapabilities) {
+          WMSCapabilities = jsonData.WMT_MS_Capabilities;
         }
-
-        // console.log(WMS_Capabilities);
 
         // Get Abstract
         try {
-          _this.abstract = WMS_Capabilities.Service.Abstract.value;
+          this.abstract = WMSCapabilities.Service.Abstract.value;
         } catch (e) {
           this.abstract = I18n.not_available_message.text;
         }
 
         // Get Title
         try {
-          _this.title = WMS_Capabilities.Service.Title.value;
+          this.title = WMSCapabilities.Service.Title.value;
         } catch (e) {
           this.title = I18n.not_available_message.text;
         }
 
         // Get OnlineResource
         try {
-          if (WMS_Capabilities.Service.OnlineResource.value) {
-            _this.onlineresource = WMS_Capabilities.Service.OnlineResource.value;
+          if (WMSCapabilities.Service.OnlineResource.value) {
+            this.onlineresource = WMSCapabilities.Service.OnlineResource.value;
           } else {
-            _this.onlineresource = WMS_Capabilities.Service.OnlineResource.attr['xlink:href'];
+            this.onlineresource = WMSCapabilities.Service.OnlineResource.attr['xlink:href'];
           }
         } catch (e) {
-          _this.onlineresource = I18n.not_available_message.text;
+          this.onlineresource = I18n.not_available_message.text;
         }
 
-        for (var j = 0; j < functionCallbackList.length; j++) {
-          functionCallbackList[j].callback(jsonData);
-          functionCallbackList[j].callback = function () {};
+        for (let j = 0; j < this.functionCallbackList.length; j++) {
+          this.functionCallbackList[j].callback(jsonData);
+          this.functionCallbackList[j].callback = () => {};
         }
-        functionCallbackList = [];
-        _this.busy = false;
+        this.functionCallbackList.length = 0;
+        this.functionCallbackList = [];
+        this.busy = false;
       };
-      var cf = { callback:succescallback, fail:failcallback };
-      functionCallbackList.push(cf);
+      let cf = { callback:succescallback, fail:failcallback };
+      this.functionCallbackList.push(cf);
 
-      WMJSGetCapabilities(this.service, false, succes, fail);
+      WMJSGetCapabilities(this.service, false, succes, fail, xml2jsonrequestURL);
     } else {
       succescallback(this.getcapabilitiesDoc);
     }
   };
 
-  this.checkException = function (jsonData) {
-    console.log('271');
-    try{
+  checkException (jsonData) {
+    try {
       if (jsonData.ServiceExceptionReport) {
-        var code = 'Undefined';
-        var value = code;
-        var se = jsonData.ServiceExceptionReport.ServiceException;
+        let code = 'Undefined';
+        let value = code;
+        let se = jsonData.ServiceExceptionReport.ServiceException;
         if (se) {
           try {
             if (se.attr.code)code = se.attr.code;
@@ -318,13 +307,13 @@ function WMJSService (options) {
         }
         return (I18n.wms_service_exception_code.text + code);
       }
-    }catch(e){}
+    } catch (e) {}
     return undefined;
   };
 
-  function sortByKey (array, key) {
-    return array.sort(function (a, b) {
-      var x = a[key]; var y = b[key];
+  _sortByKey (array, key) {
+    return array.sort((a, b) => {
+      let x = a[key]; let y = b[key];
       return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     });
   };
@@ -332,8 +321,8 @@ function WMJSService (options) {
     * Calls succes with a hierarchical node structure
     * Calls failure with a string when someting goes wrong
     */
-  this.getNodes = function (succes, failure, forceReload) {
-    /* if(forceReload != true){
+  getNodes (succes, failure, forceReload, xml2jsonrequestURL = config.xml2jsonrequestURL) {
+    /* if(forceReload !== true){
       if(isDefined(this.getcapabilitiesDoc)){
         if(isDefined(this.nodeCache)){
           succes(this.nodeCache);
@@ -344,33 +333,35 @@ function WMJSService (options) {
     } */
 
     this.nodeCache = undefined;
-    if (!failure) { failure = function (msg) { error(msg); }; }
+    if (!failure) { failure = (msg) => { error(msg); }; }
 
-    var parse = function (jsonData) {
-      var nodeStructure = new Object();
-      var rootLayer = _this.getCapabilityElement(jsonData).Layer;
+    let parse = (jsonData) => {
+      var nodeStructure = {
+        leaf: false,
+        expanded: true,
+        children: []
+      };
+      let rootLayer = this.getCapabilityElement(jsonData).Layer;
 
       try {
-        _this.version = _this.checkVersion(jsonData);
+        this.version = this.checkVersion(jsonData);
       } catch (e) {
         failure(e);
         return;
       }
 
-      var WMSLayers = toArray(rootLayer.Layer);
+      let WMSLayers = toArray(rootLayer.Layer);
       try {
         nodeStructure.text = rootLayer.Title.value;
       } catch (e) {
         nodeStructure.text = I18n.unnamed_service.text;
       }
-      nodeStructure.leaf = false;
-      nodeStructure.expanded = true;
-      function recursivelyFindLayer (WMSLayers, rootNode, path) {
-        for (var j = 0; j < WMSLayers.length; j++) {
-          var isleaf = false;
+      let recursivelyFindLayer = (WMSLayers, rootNode, path) => {
+        for (let j = 0; j < WMSLayers.length; j++) {
+          let isleaf = false;
           if (WMSLayers[j].Name)isleaf = true;
           try { if (WMSLayers[j].Layer)isleaf = false; } catch (e) {}
-          var nodeObject;
+          let nodeObject = {};
 
           if (WMSLayers[j].Name) {
             nodeObject = { name:WMSLayers[j].Name.value, text:WMSLayers[j].Title.value, leaf:isleaf, path:path };
@@ -382,7 +373,6 @@ function WMJSService (options) {
 
             nodeObject = { text:WMSLayers[j].Title.value, leaf:isleaf };
           }
-          // nodeObject = {text:'text',leaf:false};
           rootNode.push(nodeObject);
           if (WMSLayers[j].Layer) {
             nodeObject.children = [];
@@ -390,33 +380,31 @@ function WMJSService (options) {
           }
         }
         // Sort nodes alphabetically.
-        sortByKey(rootNode, 'text');
+        this._sortByKey(rootNode, 'text');
       };
-      nodeStructure.children = new Array();
       recursivelyFindLayer(WMSLayers, nodeStructure.children, '');
-      // _this.nodeCache = nodeStructure;
       succes(nodeStructure);
     };
 
-    var callback = function (jsonData) {
+    let callback = (jsonData) => {
       parse(jsonData);
     };
 
-    var fail = function (data) {
+    let fail = (data) => {
       failure(data);
     };
-    this.getCapabilities(callback, fail, forceReload);
+    this.getCapabilities(callback, fail, forceReload, xml2jsonrequestURL);
   };
 
   /** Calls succes with an array of all layernames
    * Calls failure when something goes wrong
    */
-  this.getLayerNames = function (succes, failure, forceReload) {
-    var callback = function (data) {
-      var layerNames = [];
-      var getNames = function (layers) {
+  getLayerNames (succes, failure, forceReload, xml2jsonrequestURL = this.xml2jsonrequestURL) {
+    let callback = (data) => {
+      let layerNames = [];
+      let getNames = (layers) => {
         // alert(layers.children);
-        for (var j = 0; j < layers.length; j++) {
+        for (let j = 0; j < layers.length; j++) {
           if (layers[j].name) {
             layerNames.push(layers[j].name);
           }
@@ -428,24 +416,25 @@ function WMJSService (options) {
       getNames(data.children);
       succes(layerNames);
     };
-    this.getNodes(callback, failure, forceReload);
+    this.getNodes(callback, failure, forceReload, xml2jsonrequestURL);
   };
 
   /** Calls succes with an array of all layerobjects
    * Calls failure when something goes wrong
    */
-  this.getLayerObjectsFlat = function (succes, failure, forceReload) {
-    if (isDefined(flatLayerObject)) {
-      succes(flatLayerObject);
+  getLayerObjectsFlat (succes, failure, forceReload, xml2jsonrequestURL = this.xml2jsonrequestURL) {
+    if (isDefined(this._flatLayerObject)) {
+      succes(this._flatLayerObject);
+      return;
     }
 
-    var callback = function (data) {
-      var flatLayerObject = [];
-      var getNames = function (layers) {
+    let callback = (data) => {
+      this._flatLayerObject = [];
+      let getNames = (layers) => {
         // alert(layers.children);
-        for (var j = 0; j < layers.length; j++) {
+        for (let j = 0; j < layers.length; j++) {
           if (layers[j].name) {
-            flatLayerObject.push(layers[j]);
+            this._flatLayerObject.push(layers[j]);
           }
           if (layers[j].children) {
             getNames(layers[j].children);
@@ -454,8 +443,8 @@ function WMJSService (options) {
       };
       getNames(data.children);
 
-      succes(flatLayerObject);
+      succes(this._flatLayerObject);
     };
-    this.getNodes(callback, failure, forceReload);
-  };
+    this.getNodes(callback, failure, forceReload, xml2jsonrequestURL);
+  }
 };

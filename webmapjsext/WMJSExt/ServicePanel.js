@@ -39,7 +39,7 @@
                   _this.itemclick(_this,_this.selectedLayerName,_this.service);
                 }
               }
-              _this.tree.deselectAll();
+              // _this.tree.deselectAll(); TODO
             }
           }
         }
@@ -48,9 +48,9 @@
       _this.buildTreeFromNodes = function(forceReload){
         if(isDefined(_this.service)==false)return;
         if(_this.service.length == 0)return;     
-        _this.setLoading("GetCapabilities...");
-        _this.WMSService = WMJSgetServiceFromStore(_this.service);
-        var getNodes = function(nodeData){
+        _this.setLoading("Reading getCapabilities ...");
+        _this.WMSService = WMJSGetServiceFromStore(_this.service, xml2jsonrequestURL);
+        var getNodes = function(nodeData) {
           _this.tree.getRootNode().removeAll();
           _this.tree.getRootNode().appendChild(nodeData);
           _this.setLoading(false);
@@ -63,7 +63,7 @@
           _this.setLoading(false);
         }
         try{
-          _this.WMSService.getNodes(getNodes,failure,forceReload);
+          _this.WMSService.getNodes(getNodes,failure,forceReload, xml2jsonrequestURL);
         }catch(e){
           failure(e);
         }

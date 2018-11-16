@@ -3,7 +3,7 @@
   * Author MaartenPlieger (plieger at knmi.nl)
   * Copyright KNMI
   */
-function WMJSTimer () {
+export default function WMJSTimer () {
   /**
    * Set the length of the timer, in milli seconds, after time has elapsed function is called
    * @param secstime Time in milli seconds
@@ -12,9 +12,12 @@ function WMJSTimer () {
   this.init = function (secstime, functionhandler) {
     secs = parseInt((secstime / 10) + 0.5);
     if (secs < 1)secs = 1;
+    secs = 1 ;
     initsecs = secs;
     timehandler = functionhandler;
     StopTheClock();
+    
+    delay = secstime / 1;
     if (secs > 0)StartTheTimer();
   };
 
@@ -23,6 +26,7 @@ function WMJSTimer () {
    */
   this.reset = function () {
     secs = initsecs;
+    secs = 1;
   };
 
   /**
@@ -54,26 +58,8 @@ function WMJSTimer () {
     } else {
       secs = secs - 1;
       timerRunning = true;
-      timerID = self.setTimeout(function () { StartTheTimer(); }, delay);
+      timerID = setTimeout(StartTheTimer, delay);
     }
   }
 };
 
-var WMJSDebouncer = function () {
-  var isRunning = false;
-  var milliseconds = 10;
-  var stop = false;
-  this.init = function (ms, functionhandler) {
-    stop = false;
-    milliseconds = ms;
-    if (milliseconds < 10) milliseconds = 10;
-    if (isRunning === false) {
-      self.setTimeout(function () { isRunning = false; if (stop === false) { functionhandler(); } }, milliseconds);
-      isRunning = true;
-    }
-  };
-
-  this.stop = function () {
-    stop = true;
-  };
-};

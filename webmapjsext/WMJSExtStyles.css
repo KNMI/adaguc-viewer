@@ -1,3 +1,8 @@
+.about_adaguc{
+  background-image: url(../img/adagucbarlogo.png) !important;
+}
+
+
 #images-view .x-panel-body{
     background: white;
     font: 11px Arial, Helvetica, sans-serif;
@@ -48,7 +53,7 @@
 
 #images-view .loading-indicator {
     font-size:11px;
-    background-image:url('webmapjs/img/ajax-loader.gif');
+    background-image:url('img/ajax-loader.gif');
     background-repeat: no-repeat;
     background-position: left;
     padding-left:20px;
@@ -108,7 +113,7 @@
 
 #maptypeselector .loading-indicator {
     font-size:11px;
-    background-image:url('webmapjs/img/ajax-loader.gif');
+    background-image:url('img/ajax-loader.gif');
     background-repeat: no-repeat;
     background-position: left;
     padding-left:20px;

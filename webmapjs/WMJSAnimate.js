@@ -1,16 +1,48 @@
-var WMJSAnimate = function (_map) {
-  _map.animationDelay = 100;
+import { error } from './WMJSConstants.js';
+import WMJSTimer from './WMJSTimer.js';
+import { $ } from './WMJSExternalDependencies.js';
+export default class WMJSAnimate {
+  constructor (_map) {
+    _map.animationDelay = 100;
+    this._callBack = _map.getListener();
+    this._imageStore = _map.getImageStore();
+    this._divAnimationInfo = document.createElement('div');
+    _map.currentAnimationStep = 0;
+    _map.animationList = undefined;
+    _map.isAnimating = false;
+    _map.setAnimationDelay = (delay) => {
+      if (delay < 1)delay = 1;
+      _map.animationDelay = delay;
+    };
 
-  var callBack = _map.getListener();
-  var imageStore = _map.getImageStore();
-  var _this = this;
+    this._divAnimationInfo.style.zIndex = 10000;
+    this._divAnimationInfo.style.background = 'none';
+    this._divAnimationInfo.style.position = 'absolute';
+    this._divAnimationInfo.style.border = 'none';
+    this._divAnimationInfo.style.margin = '0px';
+    this._divAnimationInfo.style.padding = '0px';
+    this._divAnimationInfo.style.lineHeight = '14px';
+    this._divAnimationInfo.style.fontFamily = '"Courier New", "Lucida Console", Monospace';
+    this._divAnimationInfo.style.fontSize = '10px';
+    _map.getBaseElement().append(this._divAnimationInfo);
+    $(this._divAnimationInfo).mouseout(() => {
+      _map.mouseHoverAnimationBox = false;
+    });
+    _map.isAnimatingLoopRunning = false;
+    this._map = _map;
 
-  var divAnimationInfo = document.createElement('div');
-  $(divAnimationInfo).mouseout(function () {
-    _map.mouseHoverAnimationBox = false;
-  });
+    /* Bind */
+    this._removeAllChilds = this._removeAllChilds.bind(this);
+    this._drawAnimationBar = this._drawAnimationBar.bind(this);
+    this._animate = this._animate.bind(this);
+    this._animateLoop = this._animateLoop.bind(this);
+    this.checkAnimation = this.checkAnimation.bind(this);
+    this.stopAnimating = this.stopAnimating.bind(this);
+    _map.stopAnimating = this.stopAnimating;
+    _map.checkAnimation = this.checkAnimation;
+  }
 
-  function removeAllChilds (element) {
+  _removeAllChilds (element) {
     try {
       if (element.hasChildNodes()) {
         while (element.childNodes.length >= 1) {
@@ -20,143 +52,110 @@ var WMJSAnimate = function (_map) {
     } catch (e) {}
   }
 
-  var drawAnimationBar = function (h) { };// drawAnimationBar
+  _drawAnimationBar (h) { };// drawAnimationBar
 
-  var animate = function () {
-    //         if(controlsBusy == true)return;
-    if (_map.isAnimating == false) return;
-    if (_map.animateBusy == true) return;
+  _animate () {
+    if (this._map.isAnimating === false) return;
+    if (this._map.animateBusy === true) return;
 
-    var animationStep = _map.animationList[_map.currentAnimationStep];
+    let animationStep = this._map.animationList[this._map.currentAnimationStep];
     if (!animationStep) {
-      error('No animation step for ' + _map.currentAnimationStep);
+      error('No animation step for ' + this._map.currentAnimationStep);
       return;
     }
-      // _map.animateBusy = true;
+    this._map.setDimension(animationStep.name, animationStep.value, false);
+    this._callBack.triggerEvent('ondimchange');
+    this._callBack.triggerEvent('onnextanimationstep', this._map);
+    this._map._pdraw();
+    this._map.animateBusy = false;
+    // TODO: drawAnimationBar();
+  };
 
-      // console.log("draw on animation");
-     //console.log("Showing animationstep "+_map.currentAnimationStep + " with value "+ animationStep.value);
-    _map.setDimension(animationStep.name, animationStep.value , false);
-    callBack.triggerEvent('ondimchange');
-    callBack.triggerEvent('onnextanimationstep', _map);
-    _map._pdraw();
-    _map.animateBusy = false;
-    // drawAnimationBar();
-
-
-  };// animate
-
-  var myAnimationTimer = 0;
-  var animateLoop = function () {
-    if (_map.isAnimating == false) {
-      _map.isAnimatingLoopRunning = false;
+  _animateLoop () {
+    if (this._map.isAnimating === false) {
+      this._map.isAnimatingLoopRunning = false;
       return;
     }
-    _map.animationTimer.init(50, animateLoop);
-    _this.checkAnimation();
-    myAnimationTimer--; if (myAnimationTimer > 0) return;
 
-    var animationDelay = _map.animationDelay;
-    if (_map.currentAnimationStep == 0) {
+
+    let animationDelay = this._map.animationDelay;
+    if (this._map.currentAnimationStep === 0) {
       animationDelay = animationDelay * 3;// 800;
     }
-    if (_map.currentAnimationStep == _map.animationList.length - 1) {
+    if (this._map.currentAnimationStep === this._map.animationList.length - 1) {
       animationDelay = animationDelay * 5;// 800;
     }
-    myAnimationTimer = animationDelay / 50;
-    // console.log("animate:"+myAnimationTimer);
+    this._map.animationTimer.init(animationDelay, this._animateLoop);
+    this.checkAnimation();
 
 
-    if (_map.mouseHoverAnimationBox === false) {
-      animate();
+    if (this._map.mouseHoverAnimationBox === false) {
+      this._animate();
 
-      var nextStep = _map.currentAnimationStep + 1;
-      if (nextStep >= _map.animationList.length) {
+      let nextStep = this._map.currentAnimationStep + 1;
+      if (nextStep >= this._map.animationList.length) {
         nextStep = 0;
       }
 
-      var continueAnimation = false;
-      var numReady = 0;
+      let continueAnimation = false;
+      let numReady = 0;
 
-
-      var animationStep = _map.animationList[nextStep];
-      _map.setDimension(animationStep.name, animationStep.value,false);
-      _map.animationList[nextStep].requests = _map.getWMSRequests();
-      animationStep = _map.animationList[_map.currentAnimationStep];
-      _map.setDimension(animationStep.name, animationStep.value,false);
-      for (var i = 0; i < _map.animationList[nextStep].requests.length; i++) {
-        var url = _map.animationList[nextStep].requests[i];
-        var image = _map.getImageStore().getImageForSrc(url);
+      let animationStep = this._map.animationList[nextStep];
+      this._map.setDimension(animationStep.name, animationStep.value, false);
+      this._map.animationList[nextStep].requests = this._map.getWMSRequests();
+      animationStep = this._map.animationList[this._map.currentAnimationStep];
+      this._map.setDimension(animationStep.name, animationStep.value, false);
+      for (let i = 0; i < this._map.animationList[nextStep].requests.length; i++) {
+        let url = this._map.animationList[nextStep].requests[i];
+        let image = this._map.getImageStore().getImageForSrc(url);
         if (image && image.isLoaded()) {
           numReady++;
-        } else {
-          myAnimationTimer = 0;
-          //console.log('LOADING: ' + nextStep);
-//           if(image){
-//             console.log("LOADING IMAGE: "+image.isLoading());
-//           }else{
-//             console.log("LOADING !" );
-//           }
         }
       }
-      if (numReady == _map.animationList[nextStep].requests.length) {
+      if (numReady === this._map.animationList[nextStep].requests.length) {
         continueAnimation = true;
       }
 
       if (continueAnimation) {
-        _map.currentAnimationStep = nextStep;
+        this._map.currentAnimationStep = nextStep;
       }
     }
   };
 
-  _map.isAnimatingLoopRunning = false;
-
-  _this.checkAnimation = function () {
-    if (_map.isAnimating == false) {
-      _map.isAnimatingLoopRunning = false;
+  checkAnimation () {
+    if (this._map.isAnimating === false) {
+      this._map.isAnimatingLoopRunning = false;
       return;
     }
-    if (!_map.animationTimer) {
-      _map.animationTimer = new WMJSTimer();
+    if (!this._map.animationTimer) {
+      this._map.animationTimer = new WMJSTimer();
     }
-    // drawAnimationBar();
-
-
-    if (_map.mouseHoverAnimationBox === false) {
-        // _map.setDimension(animationStep.name,animationStep.value);
-        // animationStep.imagesInPrefetch = _map.prefetch(animationStep.requests);
-
-      var maxSimultaneousLoads = 4;
-
-      var getNumImagesLoading = imageStore.getNumImagesLoading();
-        // console.log("checkAnimation:getNumImagesLoading:"+getNumImagesLoading );
+    // TODO: drawAnimationBar();
+    if (this._map.mouseHoverAnimationBox === false) {
+      let maxSimultaneousLoads = 4;
+      let getNumImagesLoading = this._imageStore.getNumImagesLoading();
       if (getNumImagesLoading < maxSimultaneousLoads) {
-
-        var numberPreCacheSteps = _map.animationList.length;
-        if (_map.animationList.length > 0) {
-          for (var j = 0; j < numberPreCacheSteps; j++) {
-            var index = j + _map.currentAnimationStep;
-            while (index < 0)index += _map.animationList.length;
-            while (index >= _map.animationList.length)index -= _map.animationList.length;
+        let numberPreCacheSteps = this._map.animationList.length;
+        if (this._map.animationList.length > 0) {
+          for (let j = 0; j < numberPreCacheSteps; j++) {
+            let index = j + this._map.currentAnimationStep;
+            while (index < 0)index += this._map.animationList.length;
+            while (index >= this._map.animationList.length)index -= this._map.animationList.length;
             if (index < 0)index = 0;
 
             if (index >= 0) {
-              var animationStep = _map.animationList[index];
+              let animationStep = this._map.animationList[index];
 
-              _map.setDimension(animationStep.name, animationStep.value,false);
-              _map.animationList[index].requests = _map.getWMSRequests();
+              this._map.setDimension(animationStep.name, animationStep.value, false);
+              this._map.animationList[index].requests = this._map.getWMSRequests();
 
-              animationStep = _map.animationList[_map.currentAnimationStep];
+              animationStep = this._map.animationList[this._map.currentAnimationStep];
 
-              _map.setDimension(animationStep.name, animationStep.value,false);
+              this._map.setDimension(animationStep.name, animationStep.value, false);
 
-              _map.animationList[index].imagesInPrefetch = _map.prefetch(_map.animationList[index].requests);
+              this._map.animationList[index].imagesInPrefetch = this._map.prefetch(this._map.animationList[index].requests);
 
-//             if(_map.animationList[index].imagesInPrefetch.length>0){
-//               console.log("prefetching "+index);
-//             }
-
-              getNumImagesLoading += _map.animationList[index].imagesInPrefetch.length;// imageStore.getNumImagesLoading();
+              getNumImagesLoading += this._map.animationList[index].imagesInPrefetch.length;// imageStore.getNumImagesLoading();
               if (getNumImagesLoading > maxSimultaneousLoads - 1) break;
             }
           }
@@ -164,39 +163,18 @@ var WMJSAnimate = function (_map) {
       }
     }
 
-    if (_map.isAnimatingLoopRunning == false) {
-      _map.isAnimatingLoopRunning = true;
-      animateLoop();
+    if (this._map.isAnimatingLoopRunning === false) {
+      this._map.isAnimatingLoopRunning = true;
+      this._animateLoop();
     }
   };
 
-  _map.stopAnimating = function () {
-    if (_map.isAnimating == false) return;
-    divAnimationInfo.style.display = 'none';
-    _map.isAnimating = false;
-    _map.animateBusy = false;
-    _map.rebuildMapDimensions();
-    callBack.triggerEvent('onstopanimation', _map);
+  stopAnimating () {
+    if (this._map.isAnimating === false) return;
+    this._divAnimationInfo.style.display = 'none';
+    this._map.isAnimating = false;
+    this._map.animateBusy = false;
+    this._map.rebuildMapDimensions();
+    this._callBack.triggerEvent('onstopanimation', this._map);
   };
-
-  _map.currentAnimationStep = 0;
-  _map.animationList = undefined;
-  _map.isAnimating = false;
-
-  _map.setAnimationDelay = function (delay) {
-    if (delay < 1)delay = 1;
-    _map.animationDelay = delay;
-  };
-
-  divAnimationInfo.style.zIndex = 10000;
-  divAnimationInfo.style.background = 'none';
-  divAnimationInfo.style.position = 'absolute';
-  divAnimationInfo.style.border = 'none';
-  divAnimationInfo.style.margin = '0px';
-  divAnimationInfo.style.padding = '0px';
-      // divAnimationInfo.style.border     = '1px solid #888';
-  divAnimationInfo.style.lineHeight = '14px';
-  divAnimationInfo.style.fontFamily = '"Courier New", "Lucida Console", Monospace';
-  divAnimationInfo.style.fontSize = '10px';
-  _map.getBaseElement().append(divAnimationInfo);
 };

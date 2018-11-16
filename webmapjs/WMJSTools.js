@@ -1,8 +1,8 @@
 // ============================================================================
-// Name        : Console
+// Name        : WMJSTools
 // Author      : MaartenPlieger (plieger at knmi.nl)
-// Version     : 0.5 (September 2010)
-// Description : A simple console to which two streams can be passed: stdout and stderr
+// Version     : 3.2.0 (September 2018)
+// Description : WMJSTools provides a set of useful JS functions
 // ============================================================================
 
 /*
@@ -29,79 +29,7 @@
   THE SOFTWARE.
 */
 
-function Console (div) {
-  var element = div;
 
-  var consoleData = '';
-  var consoleBufSize = 8912 * 2;// 64096;
-
-  this.println = function (text, encode) {
-    if (encode == false) {
-      consoleData += "<p class='stdoutmessage'>" + text + '</p>';
-    } else {
-      consoleData += "<p class='stdoutmessage'>" + encodeMyHtml(text) + '</p>';
-    }
-    if (isDefined(element)) {
-      element.innerHTML = consoleData;
-      element.scrollTop = element.scrollHeight;
-    }
-    if (consoleData.length > consoleBufSize)consoleData = consoleData.substring(consoleData.length - consoleBufSize * (3 / 4));
-  };
-  this.errprintln = function (text, encode) {
-    if (encode == false) {
-      consoleData += "<p class='stderrmessage'>" + text + '</p>';
-    } else {
-      consoleData += "<p class='stderrmessage'>" + encodeMyHtml(text) + '</p>';
-    }
-
-    if (isDefined(element)) {
-      element.innerHTML = consoleData;
-      element.scrollTop = element.scrollHeight;
-    }
-  };
-  this.cls = function () {
-    consoleData = '';
-    if (isDefined(element)) {
-      element.innerHTML = consoleData;
-    }
-  };
-  this.setSize = function (w, h) {
-    if (isDefined(element)) {
-      element.scrollTop = element.scrollHeight;
-      element.style.width = w + 'px';
-      element.style.height = h + 'px';
-      element.width = w + 'px';
-      element.height = h + 'px';
-    }
-  };
-  this.setElement = function (div) {
-    element = div;
-    if (isDefined(element)) {
-      element.style.overflow = 'scroll';
-      element.style.display = 'inline-block';
-      element.style.position = 'absolute';
-      element.style.width = '100%';
-      element.style.height = '100%';
-      element.style.font = 'normal 12px courier';
-      element.noWrap = true;
-      element.style.whiteSpace = 'nowrap';
-      element.innerHTML = consoleData;
-      element.scrollTop = element.scrollHeight;
-    }
-  };
-
-  this.setElement(div);
-
-  function encodeMyHtml (html) {
-    var encodedHtml = html + '';
-    encodedHtml = encodedHtml.replace(/&/g, '&amp;');
-    encodedHtml = encodedHtml.replace(/</g, '&lt;');
-    encodedHtml = encodedHtml.replace(/>/g, '&gt;');
-    encodedHtml = encodedHtml.replace(/\"/g, '&quot;');
-    encodedHtml = encodedHtml.replace(/\n/g, '<br>');
-    return encodedHtml;
-  }
-}
 
 // ============================================================================
 // Name        : tools
@@ -109,29 +37,61 @@ function Console (div) {
 // Version     : 0.5 (September 2010)
 // Description : All kinds of small usable functions
 // ============================================================================
-function isDefined (variable) {
+
+/**
+  * Checks if variable is defined or not
+  * @param variable The variable to check
+  * @returns true if variable is indeed defined, otherwise false.
+  */
+export const isDefined = (variable) => {
   if (typeof variable === 'undefined') {
     return false;
   }
   return true;
 };
 
-function isNull (variable) {
+/**
+ * Checks if a variable is null or not
+ * @param variable The variable to check
+ * @returns true if variable is indeed null, otherwise false.
+*/
+export const isNull = (variable) => {
   if (variable === null) {
     return true;
   }
   return false;
 };
 
-function toArray (array) {
+/**
+ * Converts a variable to an array. If the variable is not an array it will be pushed to
+ * as the first entry in a new array. If the variable is already an array, nothing will  be done.
+ * @param array The variable to convert
+ * @returns Always an array
+ */
+export const toArray = (array) => {
   if (!array) return [];
   if (array.length) {
     return array;
   } else {
-    var newArray = new Array();
+    var newArray = [];
     newArray[0] = array;
     return newArray;
   }
+};
+
+/**
+  * Function which checks wether URL contains a ? token. If not, it is assumed that this token was not provided by the user,
+  * manually add the token later.
+  * @param url The URL to check
+  * @return the fixed URL
+  */
+export const WMJScheckURL = function (url) {
+  if (!isDefined(url)) return '?';
+  url = url.trim();
+  if (url.indexOf('?') === -1) {
+    url += '?';
+  }
+  return url;
 };
 
 /**
@@ -141,19 +101,23 @@ var WMJSSet = function () {};
 WMJSSet.prototype.add = function (o) { this[o] = true; };
 WMJSSet.prototype.remove = function (o) { delete this[o]; };
 
- /**
+/**
  * Splits a url into key value pairs.
  */
-function WMJSKVP (query) {
-  var kvplist = [];
-  this._parse = function (query) {
+export class WMJSKVP {
+  constructor (query) {
+    this.kvplist = [];
+    this.kvplist = this._parse(query);
+    return this.kvplist;
+  }
+  _parse (query) {
     var kvplist = [];
     var splittedKVP = query.split('&');
     if (splittedKVP) {
       for (var kvpkey in splittedKVP) {
         var kvp = splittedKVP[kvpkey];
         var kvps = kvp.split('=');
-        if (kvps.length == 2) {
+        if (kvps.length === 2) {
           var key = kvps[0];
           var value = kvps[1];
           if (!(kvplist[key] instanceof Array))kvplist[key] = [];
@@ -162,27 +126,24 @@ function WMJSKVP (query) {
       }
     }
     return kvplist;
-  };
-  this.getKeys = function () {
+  }
+  getKeys () {
     var keys = new WMJSSet();
-    for (key in kvplist) {
+    for (let key in this.kvplist) {
       keys.add(key);
     }
     return keys;
-  };
-  this.getValues = function (key) {
-    return kvplist[key];
-  };
-  this.getKeyValues = function () {
-    return kvplist;
-  };
-  kvplist = this._parse(query);
-  return kvplist;
+  }
+  getValues (key) {
+    return this.kvplist[key];
+  }
+  getKeyValues () {
+    return this.kvplist;
+  }
 };
 
-var preventdefault_event = function (e) {
+export const preventdefaultEvent = (e) => {
   var event = e || window.event;
-        // standaard-actie voorkomen
   if (event.preventDefault) { // Firefox
     event.preventDefault();
   } else { // IE
@@ -190,7 +151,7 @@ var preventdefault_event = function (e) {
   }
 };
 
-var attach_event = function (obj, evType, fn) {
+export const attachEvent = (obj, evType, fn) => {
   // Attach event that works on all browsers
   if (evType == 'mousewheel') {
     function wheel (event, handler) {
@@ -236,35 +197,35 @@ var attach_event = function (obj, evType, fn) {
   }
 };
 
-var del_event = function (obj, event_id, funct) {
+export const deleteEvent = (obj, eventId, funct) => {
   var flag = true; if (browser.isOP) { flag = false; }
   if (obj.removeEventListener) {
-    obj.removeEventListener(event_id, funct, flag);
+    obj.removeEventListener(eventId, funct, flag);
   } else if (obj.detachEvent) {
-    obj.detachEvent(event_id, funct);
-    obj.detachEvent('on' + event_id, funct);
+    obj.detachEvent(eventId, funct);
+    obj.detachEvent('on' + eventId, funct);
   }
 };
-var getClick_X = function (p_event) {
-  var my_x;
+export const getMouseXCoordinate = (event) => {
+  let myX;
   if (browser.isNS) {
-    my_x = p_event.clientX + window.scrollX;
+    myX = event.clientX + window.scrollX;
   } else {
-    my_x = window.event.clientX + document.documentElement.scrollLeft +
+    myX = window.event.clientX + document.documentElement.scrollLeft +
          document.body.scrollLeft;
   }
-  return my_x;
+  return myX;
 };
 
-var getClick_Y = function (p_event) {
-  var my_y;
+export const getMouseYCoordinate = (event) => {
+  let myY;
   if (browser.isNS) {
-    my_y = p_event.clientY + window.scrollY;
+    myY = event.clientY + window.scrollY;
   } else {
-    my_y = window.event.clientY + document.documentElement.scrollTop +
+    myY = window.event.clientY + document.documentElement.scrollTop +
          document.body.scrollTop;
   }
-  return my_y;
+  return myY;
 };
 
 var findElementPos = function (obj) {
@@ -408,16 +369,6 @@ var Url = {
 
 };
 
-if (!Array.indexOf) {
-  Array.prototype.indexOf = function (obj) {
-    for (var i = 0; i < this.length; i++) {
-      if (this[i] == obj) {
-        return i;
-      }
-    }
-    return -1;
-  };
-}
 
 // ============================================================================
 // Name        : HTTP_RequestFunctions.js
@@ -485,8 +436,8 @@ function MakeJSONRequest (fname, callbackfunction, errorfunction, pointer, usere
   }
 }
 
-function MakeHTTPRequest (fname, callbackfunction, errorfunction, pointer, useredirect) {
-  if (fname.indexOf('?') == -1) {
+export const MakeHTTPRequest = (fname, callbackfunction, errorfunction, pointer, useredirect, requestProxy) => {
+  if (fname.indexOf('?') === -1) {
     fname += '?';
   } else {
     fname += '&';
@@ -498,11 +449,11 @@ function MakeHTTPRequest (fname, callbackfunction, errorfunction, pointer, usere
   }
   function redirRequest () {
     // Let try an alternative way: redirect using PHP
-    if (useredirect == false) {
+    if (useredirect === false) {
       // alert(fname);
       fname = requestProxy + 'REQUEST=' + URLEncode(fname);
       // alert(fname);
-      MakeHTTPRequest(fname, callbackfunction, errorfunction, pointer, true);
+      MakeHTTPRequest(fname, callbackfunction, errorfunction, pointer, true, requestProxy);
     } else {
       requestError('status(' + xhr.status + ') to ' + fname);
     }
@@ -512,15 +463,15 @@ function MakeHTTPRequest (fname, callbackfunction, errorfunction, pointer, usere
     var xhr = createXHR();
     xhr.open('GET', fname, true);
     xhr.onreadystatechange = function () {
-      if (xhr.readyState == 4) {
-        if (xhr.status == 200) {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
           try {
             var data = xhr.responseText;
           } catch (err) {
             requestError('Exception occured:' + err);
             return;
           }
-          if (data == undefined || data == '') {
+          if (data === undefined || data === '') {
             requestError('request returned no data');
           } else {
             callbackfunction(data, pointer);
@@ -534,9 +485,9 @@ function MakeHTTPRequest (fname, callbackfunction, errorfunction, pointer, usere
   } catch (err) {
     redirRequest();
   }
-}
+};
 
-var URLDecode = function (encodedURL) {
+export const URLDecode = (encodedURL) => {
   if (!isDefined(encodedURL)) return '';
   encodedURL = encodedURL.replaceAll('+', ' ');
   encodedURL = encodedURL.replaceAll('%2B', '+');
@@ -557,33 +508,33 @@ var URLDecode = function (encodedURL) {
 };
 
 // Encodes plain text to URL encoding
-var URLEncode = function (plaintext) {
+export const URLEncode = (plaintext) => {
   if (!plaintext) return plaintext;
-  if (plaintext == undefined) return plaintext;
-  if (plaintext == '') return plaintext;
+  if (plaintext === undefined) return plaintext;
+  if (plaintext === '') return plaintext;
   if (typeof (plaintext) !== 'string') return plaintext;
-  var SAFECHARS = '0123456789' +          // Numeric
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +  // Alphabetic
+  var SAFECHARS = '0123456789' + // Numeric
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + // Alphabetic
       'abcdefghijklmnopqrstuvwxyz' +
-      "%-_.!~*'()";          // RFC2396 Mark characters
+      "%-_.!~*'()"; // RFC2396 Mark characters
   var HEX = '0123456789ABCDEF';
 
-  plaintext = plaintext.replace(/\%/g, '%25');
+  plaintext = plaintext.replace(/%/g, '%25');
   plaintext = plaintext.replace(/\+/g, '%2B');
-  plaintext = plaintext.replace(/\ /g, '%20');
+  plaintext = plaintext.replace(/ /g, '%20');
   plaintext = plaintext.replace(/\^/g, '%5E');
-  plaintext = plaintext.replace(/\&/g, '%26');
+  plaintext = plaintext.replace(/&/g, '%26');
   plaintext = plaintext.replace(/\?/g, '%3F');
-  plaintext = plaintext.replace(/\>/g, '%3E');
-  plaintext = plaintext.replace(/\</g, '%3C');
+  plaintext = plaintext.replace(/>/g, '%3E');
+  plaintext = plaintext.replace(/</g, '%3C');
   plaintext = plaintext.replace(/\\/g, '%5C');
 
   var encoded = '';
   for (var i = 0; i < plaintext.length; i++) {
     var ch = plaintext.charAt(i);
-    if (ch == ' ') {
-      encoded += '%20';        // x-www-urlencoded, rather than %20
-    } else if (SAFECHARS.indexOf(ch) != -1) {
+    if (ch === ' ') {
+      encoded += '%20'; // x-www-urlencoded, rather than %20
+    } else if (SAFECHARS.indexOf(ch) !== -1) {
       encoded += ch;
     } else {
       var charCode = ch.charCodeAt(0);
@@ -646,7 +597,7 @@ function checkValidInputTokens (stringToCheck) {
 };
 
 // Read a page's GET URL variables and return them as an associative array (From Roshambo's code snippets)
-function getUrlVars () {
+export const getUrlVars =() => {
   var vars = [], hash;
 
   var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -687,7 +638,7 @@ function getUrlVarsFromHashTag () {
 }
 
 // Splits a URL in a location part and separate Key Value Pairs (kvp).
-var composeUrlObjectFromURL = function (url) {
+export const composeUrlObjectFromURL = (url) => {
   var vars = [];
   if (!isDefined(url)) {
     return vars;
@@ -705,7 +656,7 @@ var composeUrlObjectFromURL = function (url) {
   }
 
   for (var i = 0; i < hashes.length; i++) {
-    hash = hashes[i].split('=');
+    let hash = hashes[i].split('=');
 
     if (isDefined(hash[1])) {
       hash[1] = URLDecode(hash[1]);
@@ -744,6 +695,7 @@ var composeUrlObjectFromURL = function (url) {
 // Check for hash tag changes.
 var currentLocationHash = '';
 var hashTagCheckerInUse = false;
+var hashTagTimerIsRunning = false;
 var _checkIfHashTagChanged = function (callback) {
   var identifier = window.location.hash; // gets everything after the hashtag i.e. #home
   if (currentLocationHash != identifier && identifier.length > 0) {
@@ -751,7 +703,7 @@ var _checkIfHashTagChanged = function (callback) {
     if (window.location.href.indexOf('#') != -1) {
       var hashLocation = (window.location.href.split('#')[1]); // Firefox automatically urldecodes the hashtag, so use href instead.
       hashLocation = hashLocation.replaceAll('%27', "'"); // Firefox automatically encodes ' tokens into %27 for some reason. We can safely decode.
-      urlVars = getUrlVarsFromHashTag();
+      let urlVars = getUrlVarsFromHashTag();
       if (isDefined(urlVars.clearhash)) {
         if (urlVars.clearhash == '1') {
           window.location.hash = '';
@@ -764,10 +716,16 @@ var _checkIfHashTagChanged = function (callback) {
       callback(hashLocation, urlVars);
     }
   }
-  setTimeout(function () { _checkIfHashTagChanged(callback); }, 100);
+  
+  if (hashTagTimerIsRunning === true)return;
+  hashTagTimerIsRunning = true;
+  setTimeout(function () { 
+    hashTagTimerIsRunning = false;
+    _checkIfHashTagChanged(callback); 
+  }, 500);
 };
 
-var checkIfHashTagChanged = function (callback) {
+export const checkIfHashTagChanged = (callback) => {
   if (!isDefined(callback)) return;
   if (hashTagCheckerInUse == true) {
     alert('checkIfHashTagChanged is in use');
@@ -786,4 +744,75 @@ var decodeBase64 = function (s) {
     while (l >= 8) { ((a = (b >>> (l -= 8)) & 0xff) || (x < (L - 2))) && (r += w(a)); }
   }
   return r;
+};
+
+
+export const addMouseWheelEvent = (element, mouseWheelHandler) => {
+  /* https://developer.mozilla.org/en-US/docs/Web/Events/wheel#Browser_compatibility */
+  if (!window.addWheelListener) {
+    var prefix = "", _addEventListener, support;
+
+    // detect event model
+    if ( window.addEventListener ) {
+        _addEventListener = "addEventListener";
+    } else {
+        _addEventListener = "attachEvent";
+        prefix = "on";
+    }
+
+    // detect available wheel event
+    support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
+              document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
+              "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
+
+    window.addWheelListener = function( elem, callback, useCapture ) {
+        _addWheelListener( elem, support, callback, useCapture );
+
+        // handle MozMousePixelScroll in older Firefox
+        if( support == "DOMMouseScroll" ) {
+            _addWheelListener( elem, "MozMousePixelScroll", callback, useCapture );
+        }
+    };
+
+    function _addWheelListener( elem, eventName, callback, useCapture ) {
+        elem[ _addEventListener ]( prefix + eventName, support == "wheel" ? callback : function( originalEvent ) {
+            !originalEvent && ( originalEvent = window.event );
+
+            // create a normalized event object
+            var event = {
+                // keep a ref to the original event object
+                originalEvent: originalEvent,
+                target: originalEvent.target || originalEvent.srcElement,
+                type: "wheel",
+                deltaMode: originalEvent.type == "MozMousePixelScroll" ? 0 : 1,
+                deltaX: 0,
+                deltaY: 0,
+                deltaZ: 0,
+                preventDefault: function() {
+                    originalEvent.preventDefault ?
+                        originalEvent.preventDefault() :
+                        originalEvent.returnValue = false;
+                }
+            };
+            
+            // calculate deltaY (and deltaX) according to the event
+            if ( support == "mousewheel" ) {
+                event.deltaY = - 1/40 * originalEvent.wheelDelta;
+                // Webkit also support wheelDeltaX
+                originalEvent.wheelDeltaX && ( event.deltaX = - 1/40 * originalEvent.wheelDeltaX );
+            } else {
+                event.deltaY = originalEvent.deltaY || originalEvent.detail;
+            }
+
+            // it's time to fire the callback
+            return callback( event );
+
+        }, useCapture || false );
+    }
+  }
+  window.addWheelListener (element, mouseWheelHandler);
+};
+
+export const removeMouseWheelEvent = (element, mouseWheelHandler) => {
+  console.error("TODO IMPLEMENT removeMouseWheelEvent in WMJSTools.js");
 };

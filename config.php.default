@@ -51,7 +51,8 @@
     "http://suite.opengeo.org/",
     "http://birdexp02.knmi.nl/",
     "http://www.ecad.eu/",
-    "http://bhlgsie01.knmi.nl/"
+    "http://bhlgsie01.knmi.nl/",
+    "http://bhw512.knmi.nl"
   );
   
   function replaceHostName($url){

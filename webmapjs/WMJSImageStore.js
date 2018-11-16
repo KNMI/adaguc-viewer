@@ -1,24 +1,34 @@
+import WMJSImage from './WMJSImage.js';
+import { WMJSKVP } from './WMJSTools.js';
+export default class WMJSImageStore {
+  constructor (maxNumberOfImages, _type, options) {
+    this.imagesbysrc = {};
+    this.imageLife = 0;
+    this._imageLifeCounter = 0;
+    this._type = _type;
+    this._loadEventCallbackList = []; // Array of callbacks, as multiple instances can register listeners
+    this._maxNumberOfImages = maxNumberOfImages;
+    this._options = options;
+    this.imageLoadEventCallback = this.imageLoadEventCallback.bind(this);
+    this.getImageForSrc = this.getImageForSrc.bind(this);
+    this.clear = this.clear.bind(this);
+    this.stopLoading = this.stopLoading.bind(this);
+    this.addLoadEventCallback = this.addLoadEventCallback.bind(this);
+    this.getNumImagesLoading = this.getNumImagesLoading.bind(this);
+    this.getImage = this.getImage.bind(this);
+    this.emptyImage = new WMJSImage();
+  }
 
-var WMJSImageStore = function (maxNumberOfImages, _type, options) {
-  // console.log("Creating new Imagestore");
-  // this.images = [];
-  this.imagesbysrc = {};
-  this.imageLife = 0;
-  var imageLifeCounter = 0;
-  var _this = this;
-  var type = _type;
-  var loadEventCallbackList = []; // Array of callbacks, as multiple instances can register listeners
-
-  var imageLoadEventCallback = function (_img, hasError) {
-    for (var j = 0; j < loadEventCallbackList.length; j++) {
-      loadEventCallbackList[j](_img);
+  imageLoadEventCallback (_img, hasError) {
+    for (let j = 0; j < this._loadEventCallbackList.length; j++) {
+      this._loadEventCallbackList[j](_img);
     }
-  };
+  }
 
-  var getKeys = function (obj) {
+  _getKeys (obj) {
     if (!Object.keys) {
-      var keys = [];
-      var k;
+      let keys = [];
+      let k;
       for (k in obj) {
         if (Object.prototype.hasOwnProperty.call(obj, k)) {
           keys.push(k);
@@ -33,30 +43,38 @@ var WMJSImageStore = function (maxNumberOfImages, _type, options) {
   /**
    * Check if we have similar images with the same source in the pipeline
    */
-  _this.getImageForSrc = function (src) {
-    if (_this.imagesbysrc[src]) {
-      return _this.imagesbysrc[src];
+  getImageForSrc (src) {
+    if (this.imagesbysrc[src]) {
+      return this.imagesbysrc[src];
     }
     return undefined;
-  };
+  }
 
-  _this.clear = function () {
-    for (var property in _this.imagesbysrc) {
-      if (_this.imagesbysrc.hasOwnProperty(property)) {
-        _this.imagesbysrc[property].clear();
+  clear () {
+    for (let property in this.imagesbysrc) {
+      if (this.imagesbysrc.hasOwnProperty(property)) {
+        this.imagesbysrc[property].clear();
       }
     }
   };
+  
+  stopLoading () {
+    for (let property in this.imagesbysrc) {
+      if (this.imagesbysrc.hasOwnProperty(property)) {
+        this.imagesbysrc[property].stopLoading();
+      }
+    }
+  }
 
-  _this.addLoadEventCallback = function (callback) {
-    loadEventCallbackList.push(callback);
+  addLoadEventCallback (callback) {
+    this._loadEventCallbackList.push(callback);
   };
 
-  _this.getNumImagesLoading = function () {
-    var numLoading = 0;
-    for (var property in _this.imagesbysrc) {
-      if (_this.imagesbysrc.hasOwnProperty(property)) {
-        if (_this.imagesbysrc[property].isLoading()) {
+  getNumImagesLoading () {
+    let numLoading = 0;
+    for (let property in this.imagesbysrc) {
+      if (this.imagesbysrc.hasOwnProperty(property)) {
+        if (this.imagesbysrc[property].isLoading()) {
           numLoading++;
         }
       }
@@ -64,59 +82,51 @@ var WMJSImageStore = function (maxNumberOfImages, _type, options) {
     return numLoading;
   };
 
-  _this.getImage = function (src) {
+  getImage (src) {
     /** Check if we have an image in the pipeline **/
-    var image = _this.getImageForSrc(src);
+    let image = this.getImageForSrc(src);
     if (image !== undefined) {
-      image.imageLife = imageLifeCounter++;
+      image.imageLife = this._imageLifeCounter++;
       // console.log("Found image");
       return image;
     }
 
-    // console.log('_this.imagesbysrc.length' + Object.keys(_this.imagesbysrc).length);
-    // console.log('_this.images.length' + _this.images.length);
-
     /** Create or reuse an image **/
-    if (getKeys(_this.imagesbysrc).length < maxNumberOfImages) {
+    if (this._getKeys(this.imagesbysrc).length < this._maxNumberOfImages) {
       // console.log("Creating new image: "+this.images.length);
       // console.log(type);
-      image = new WMJSImage(src, imageLoadEventCallback, type, options);
+      image = new WMJSImage(src, this.imageLoadEventCallback, this._type, this._options);
       image.setSource(src);
-      image.KVP = WMJSKVP(src);
-      _this.imagesbysrc[src] = image;
-      image.imageLife = imageLifeCounter++;
+      image.KVP = new WMJSKVP(src);
+      this.imagesbysrc[src] = image;
+      image.imageLife = this._imageLifeCounter++;
       return image;
     } else {
-      // We have to reuse an image
-      // error("Reusing image");
-      var imageId = -1;
-      var minImageLife = imageLifeCounter;
-      for (var property in _this.imagesbysrc) {
-        if (_this.imagesbysrc.hasOwnProperty(property)) {
-          let img = _this.imagesbysrc[property];
-          // //console.log(j+"): isloading: ["+_this.images[j].isLoading()+"] isloading: ["+_this.images[j].isLoaded()+"] imageLife: ["+_this.images[j].imageLife+"]");
-          if (img.isLoading() === false && img.isLoaded() === true) {
-            if (minImageLife >= img.imageLife) {
-              minImageLife = img.imageLife;
-              imageId = property;
-            }
+      /* We have to reuse an image */
+      let imageId = -1;
+      let minImageLife = this._imageLifeCounter;
+      Object.keys(this.imagesbysrc).forEach((property) => {
+        let img = this.imagesbysrc[property];
+        if (img.isLoading() === false) {// && img.isLoaded() === true) {
+          if (minImageLife >= img.imageLife) {
+            minImageLife = img.imageLife;
+            imageId = property;
           }
         }
-      }
-      console.log('Reusing image ' + imageId + ' with lifetime ' + minImageLife);
+      });
+      // console.log('Reusing image ' + imageId + ' with lifetime ' + minImageLife);
       if (imageId === -1) {
-        console.error('not enough cache for ' + type);
-        imageId = 0;
-        return;
+        console.error('not enough cache for ' + this._type);
+        return this.emptyImage;
       }
 
-      image = _this.imagesbysrc[imageId];
-      delete _this.imagesbysrc[imageId];
+      image = this.imagesbysrc[imageId];
+      delete this.imagesbysrc[imageId];
       image.clear();
       image.setSource(src);
-      image.KVP = WMJSKVP(src);
-      _this.imagesbysrc[src] = image;
-      image.imageLife = imageLifeCounter++;
+      image.KVP = new WMJSKVP(src);
+      this.imagesbysrc[src] = image;
+      image.imageLife = this._imageLifeCounter++;
       return image;
     }
   };

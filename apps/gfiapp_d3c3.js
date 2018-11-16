@@ -1,8 +1,30 @@
 var gfiapp_d3c3 = function(element, webmapjs) {
   var plotData = function(datatoplot, elementid) {
+    $('#' + elementid).empty();
+    $('#' + elementid).append("<div style='height=240px;border=2px solid blue;' class='chart'>a</div>");
+    $('#' + elementid).append("<div style='height=40px;border=2px solid red;' class='controls gfiapp_d3c3_export_to_csv_button'>b</div>");
 
+    let graph = $('#' + elementid).find('.chart');
+    let controls = $('#' + elementid).find('.controls');
+    graph.html('graph');
+    controls.button({label:'Export to CSV'}).click(function(){
+      let csvExport = '';
+      let data = datatoplot.datatoplot;
+      for (let line=0;line<data[0].length;line++){
+        for (let j=0;j<data.length;j++) {
+          if (j > 0)csvExport+=';';
+          csvExport += JSON.stringify(data[j][line]);
+        }
+        csvExport += '\n\r';
+      }
+      const link = document.createElement('a');
+      link.setAttribute('download', `export.csv`);
+      link.setAttribute('href', encodeURI(`data:text/csv;charset=utf-8,${csvExport}`));
+      link.click();
+    });
+    
     var chart = c3.generate({
-      bindto: '#' + elementid,
+      bindto: graph.get(0),
       data: {
         x: 'x',
         x_format: '%Y%m%d',
@@ -101,7 +123,7 @@ var gfiapp_d3c3 = function(element, webmapjs) {
     }
     for (var j = 0; j < gfidata.length; j++) {
       iterateDataObject(0, gfidata[j], gfidata[j].data, "");
-      iterateDataObject(0, gfidata[j], gfidata[j].data, "");
+      // iterateDataObject(0, gfidata[j], gfidata[j].data, "");//TODO CHECK WHY THIS WAS ADDED TWICE
     }
 
 
@@ -162,7 +184,6 @@ var gfiapp_d3c3 = function(element, webmapjs) {
       return a;
     };
     var datatoplot = sortDataObject(newFormat);
-    console.log(gfidata[0]);
     var label = gfidata[0].name;
     if(gfidata[0].units){
       label+=" in "+gfidata[0].units;
@@ -213,7 +234,7 @@ var gfiapp_d3c3 = function(element, webmapjs) {
       y: options.y
     });
 
-    $("#chart").html("<img src=\"./webmapjs/img/ajax-loader.gif\" alt=\"Loading...\"/>");
+    $("#chart").html("<img src=\"./img/ajax-loader.gif\" alt=\"Loading...\"/>");
     var layers = webmapjs.getLayers();
     if (!isDefined(layers)) {
       $("#info").html("No valid data received:<br/>" + data);
@@ -247,7 +268,7 @@ var gfiapp_d3c3 = function(element, webmapjs) {
       //GFIURL+="figheight=200";
       //html+='<img src="'+GFIURL+'"/><br/>';
       $("#chart").append("<div class='chartstyle' id='chart" + j + "'></div>")
-      $("#chart" + j).html("<img src=\"./webmapjs/img/ajax-loader.gif\" alt=\"Loading...\"/>");
+      $("#chart" + j).html("<img src=\"./img/ajax-loader.gif\" alt=\"Loading...\"/>");
       loadDataForURL(GFIURL, 'chart' + j);
     }
     $("#info").html(html);
@@ -256,8 +277,9 @@ var gfiapp_d3c3 = function(element, webmapjs) {
   webmapjs.addListener('mouseclicked', pointOnMapClicked, true);
   
   var init = function(){
-    element.html('<div id="info"></div><div id="chart"></div>');
+    element.html('<div id="info"></div><div id="chart" class="gfiapp_d3c3"></div>');
     $("#info").html("Click on the map to create a timeseries graph.");
+    console.log('init');
     webmapjs.enableInlineGetFeatureInfo(false);
   };
   

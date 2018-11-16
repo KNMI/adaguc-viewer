@@ -1,24 +1,37 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
- <!--<link rel="icon" type="image/png" href="/impactportal/favicon.ico"/>-->
+  <link rel="icon" type="image/png" href="img/adaguc-logo-favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="img/adaguc-logo-favicon-32x32.png" sizes="32x32">
+  
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Viewer</title>
+  <title>ADAGUC Radar Viewer</title>
   
   <!-- Configuration -->
   <script type="text/javascript" src="config.js"></script>
   
-  <!-- Proj4 -->
-  <script type="text/javascript" src="proj4js/lib/proj4js.js"></script>
+  <script type="text/javascript" src="./libs/node_modules/moment/moment.js"></script>
+  <script type="text/javascript" src="./libs/node_modules/proj4/dist/proj4.js"></script>
+  <script type="text/javascript" src="./libs/node_modules/jquery/dist/jquery.min.js"></script>
+  <script type="text/javascript" src="./libs/node_modules/jquery-ui-dist/jquery-ui.min.js"></script>
   
   <!-- Webmapjs, webmapjsext, ExtJS and JQuery-->
-  <script type="text/javascript" src="builds/adagucviewer.min.js"></script>
+  <script type="text/javascript" src="./builds/WMJS.min.js"></script>
   
   <!-- Style sheets -->
-  <link rel="stylesheet" href="jquery/jquery-ui.css" />
-  <link rel="stylesheet" type="text/css" href="extjs-4.2.1/resources/css/ext-all.css" />
-  <link rel="stylesheet" type="text/css" href="webmapjs/WMJSStyles.css" />
+  <link rel="stylesheet" href="./libs/node_modules/jquery-ui-dist/jquery-ui.css" />
+  <link rel="stylesheet" type="text/css" href="libs/extjs-4.2.1/resources/css/ext-all.css" />
   <link rel="stylesheet" type="text/css" href="webmapjsext/WMJSExtStyles.css" /> 
+  <link rel="stylesheet" type="text/css" href="webmapjs/WMJSStyles.css" />
+  <link rel="stylesheet" type="text/css" href="webmapjs_h/WMJSTimeSelector.css" />
+  <link rel="stylesheet" type="text/css" href="webmapjs_h/WMJS_GFITimeElevation.css" />
+  <link rel="stylesheet" type="text/css" href="libs/d3/c3.css">
+  <link rel="stylesheet" href="./apps/gfiapp_d3c3.css" />
+  <link rel="stylesheet" href="./apps/autowms_app.css" />
+
+  <script type="text/javascript" src="./libs/extjs-4.2.1/ext-all.js"></script>
+
+  <script type="text/javascript" src="webmapjsext/WMJSExtMain.js"></script>
   
   <script type="text/javascript">
     Ext.onReady(function(){

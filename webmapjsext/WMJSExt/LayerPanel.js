@@ -122,7 +122,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         return;
       }
       if(this.WMJSLayer.service.length==0)return;
-      _this.setLoading("GetCapabilities...");
+      _this.setLoading("Reading GetCapabilities ...");
 
       var dimBackup = [];
       for(var j=0;j<_this.WMJSLayer.dimensions.length;j++){
@@ -185,7 +185,6 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         }
         _this.setLoading(false);
         var msg = 'Unable to parse layer '+_this.WMJSLayer.name+'\n'+errorMessage;
-        console.log(msg);
         _this.WMJSLayer.hasError = true;
         error(msg);
       };
@@ -300,7 +299,6 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         try{
           _this.styleButton.loadStyles();
         }catch(e){
-          console.log(e);
         }
       
        var layerHasName = false; 
@@ -323,7 +321,6 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
           }
           
         if(_this.WMJSLayer.WMJSService){
-          //console.log(_this.WMJSLayer.WMJSService);
           _this.layerAbstractPanel.update(
             "<span style='margin:5px;display:block;padding:5px;'>"+
             "<b>"+ I18n.layer.text+"</b><table class='adagucviewer_wmsjsext_layerpanel_abstract'>"+
@@ -377,9 +374,19 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
       };//layerParsedCallback
       
       try{
-        _this.WMJSLayer.parseLayer(layerParsedCallback,forceReload,"LayerPanel::parseLayer");
+        _this.WMJSLayer.parseLayer(layerParsedCallback,forceReload,"LayerPanel::parseLayer", xml2jsonrequestURL);
+        if (forceReload === true) {
+          try{
+            console.log('clearing cache');
+            if (_this.WMJSLayer && _this.WMJSLayer.parentMaps && _this.WMJSLayer.parentMaps.length > 0){
+              _this.WMJSLayer.parentMaps[0].clearImageStore();
+                _this.WMJSLayer.parentMaps[0].loadLegendInline(true);        
+            }
+          }catch(e){
+            console.error(e);
+          }
+        }
       }catch(e){
-        console.log(e);
         failed(e);
       }
       
@@ -504,7 +511,6 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
                       
                       _this.setStyleText(_this.WMJSLayer.getStyleObject(_this.WMJSLayer.currentStyle));
                     }catch(e){
-                      console.log(e);
                     }
                   }
                   //_this.styleNameLabel.setText(styleText);
@@ -609,7 +615,6 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         try{
           _this.WMJSLayer.setStyle(styleObject.name);
         }catch(e){
-          console.log(e);
         }
         _this.WMJSLayer.draw("LayerPanel::setStyle");
         _this.stylePanel.hide();

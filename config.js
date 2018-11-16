@@ -86,7 +86,7 @@ var getFeatureInfoApplications = [
 var dataChooserConfiguration = [
   {
     title:'KNMI realtime precipitation radar',
-    thumbnail:'webmapjs/img/knmi_radar_icon.png',
+    thumbnail:'img/knmi_radar_icon.png',
     service:'http://geoservices.knmi.nl/cgi-bin/RADNL_OPER_R___25PCPRR_L3.cgi?',
     layer:'RADNL_OPER_R___25PCPRR_L3_COLOR',
     srs:'EPSG:3857',
@@ -96,12 +96,12 @@ var dataChooserConfiguration = [
     opacity:0.8
   },{
     title:'MSGCPP last 7 days',
-    thumbnail:'webmapjs/img/750px-MSG-CPP_Screenshot-Google_Earth-cwp.png',
+    thumbnail:'img/750px-MSG-CPP_Screenshot-Google_Earth-cwp.png',
     service:'http://msgcpp-ogc-realtime.knmi.nl/msgrt.cgi?',
     layer:'atmosphere_optical_thickness_due_to_cloud'
   },{
     title:'MSGCPP archive',
-    thumbnail:'webmapjs/img/750px-MSG-CPP_Screenshot-Google_Earth-cwp.png',
+    thumbnail:'img/750px-MSG-CPP_Screenshot-Google_Earth-cwp.png',
     service:'http://msgcpp-ogc-archive.knmi.nl/msgar.cgi?',
     layer:'atmosphere_optical_thickness_due_to_cloud'
   },/*{
@@ -113,7 +113,7 @@ var dataChooserConfiguration = [
     bbox:'-180,-90,180,90'
   },*/{
     title:'OMI yearly NO2',
-    thumbnail:'webmapjs/img/OMI_NO2_TYTRCNO_screenshot.png',
+    thumbnail:'img/OMI_NO2_TYTRCNO_screenshot.png',
     service:'http://geoservices.knmi.nl/cgi-bin/OMI___OPER_R___TYTRCNO_L3.cgi?',
     layer:'omi_yearly_tropospheric_no2',
     srs:'EPSG:4326',
@@ -170,7 +170,7 @@ var dataChooserConfiguration = [
     
   },{
         title:'Accidents in traffic',
-        thumbnail:'webmapjs/img/accidents_weather.jpg',
+        thumbnail:'img/accidents_weather.jpg',
         service:'http://geoservices.knmi.nl/cgi-bin/weathertraffic.cgi',
         layer:'Loctypon'
   },
@@ -297,17 +297,15 @@ var webMapJSSettings = {
 
 //FOR JSP:
 /*
-var scaleBarURL        = "http://webgis.nmdc.eu/viewer2.0/webmapjs/php/makeScaleBar.php?";
 var xml2jsonrequestURL = "/impactportal/AdagucViewer?SERVICE=XML2JSON&";
 var requestProxy = "/impactportal/AdagucViewer?SERVICE=PROXY&";
 */
 
 //For PHP:
-var scaleBarURL        = "http://euro4mvis.knmi.nl/adagucviewer/webmapjs/php/makeScaleBar.php?";
-var requestProxy       = "webmapjs/php/MakeRequest.php?";
-var xml2jsonrequestURL = "./webmapjs/php/xml2jsonrequest.php?"
+var requestProxy       = "./webmapjs_php/MakeRequest.php?";
+var xml2jsonrequestURL = "./webmapjs_php/xml2jsonrequest.php?"
 
-getFeatureInfoApplications.push({name:'EProfile',iconCls:'button_getfeatureinfo'});
+// getFeatureInfoApplications.push({name:'EProfile',iconCls:'button_getfeatureinfo'});
 getFeatureInfoApplications.push({name:'AutoWMS',iconCls:'button_getfeatureinfo'});
 // getFeatureInfoApplications.open = 'EProfile';
 // xml2jsonrequestURL = 'http://localhost:8080/adaguc-services/xml2json?'
@@ -487,4 +485,3 @@ var WMJSTileRendererTileSettings = {
     }
   }
 };
-

@@ -1,192 +1,224 @@
+import { $ } from './WMJSExternalDependencies.js';
+
+import { isDefined } from './WMJSTools.js';
+
+var numImagesLoading = 0;
+
 /*
  * WMJSImage
   * image.this.srcToLoad the source to load
   * image._srcLoaded the loaded source
   */
 
-var WMJSImage = function (src, callback, __type, options) {
-  var _this = this;
-
-  var randomize = true;
-  if (isDefined(options) && isDefined(options.randomizer)) {
-    if (options.randomizer === false) {
-      randomize = false;
+export default class WMJSImage {
+  constructor (src, callback, __type, options) {
+    this.randomize = true;
+    this._srcLoaded = undefined;
+    this._isLoaded = undefined;
+    this._isLoading = undefined;
+    this._hasError = undefined;
+    this._opacity = undefined;
+    if (isDefined(options) && isDefined(options.randomizer)) {
+      if (options.randomizer === false) {
+        this.randomize = false;
+      }
     }
+    this.init = this.init.bind(this);
+
+    this.isLoaded = this.isLoaded.bind(this);
+    this.isLoading = this.isLoading.bind(this);
+    this.checkIfThisSourceIsSet = this.checkIfThisSourceIsSet.bind(this);
+    this.setSource = this.setSource.bind(this);
+    this.clear = this.clear.bind(this);
+    this.getSrc = this.getSrc.bind(this);
+    this.hasError = this.hasError.bind(this);
+    this.stopLoading = this.stopLoading.bind(this);
+    this._load = this._load.bind(this);
+    this.load = this.load.bind(this);
+    this.loadEvent = this.loadEvent.bind(this);
+    this.setOpacity = this.setOpacity.bind(this);
+    this.getOpacity = this.getOpacity.bind(this);
+    this.setPosition = this.setPosition.bind(this);
+    this.setSize = this.setSize.bind(this);
+    this.setZIndex = this.setZIndex.bind(this);
+    this.getElement = this.getElement.bind(this);
+
+    this.init();
+    this.srcToLoad = src;
+    this._type = __type;
+    this.loadEventCallback = callback;
+    this.el = $(document.createElement('img'));
+    this.el.on('load', () => {
+      this.loadEvent(this, false);
+    });
+    this.el.on('error', (e) => {
+      this.loadEvent(this, true);
+    });
+    this.el.onselectstart = () => { return false; };
+    this.el.ondrag = () => { return false; };
   }
-  var _srcLoaded;
-  var _isLoaded;
-  var _isLoading;
-  var _hasError;
-  var _opacity;
+  init () {
+    this._srcLoaded = 'undefined image';
+    this._isLoaded = false;
+    this._isLoading = false;
+    this._hasError = false;
+    this._opacity = 1;
+    this._stopLoading = false;
+  }
 
-  _this.init = function () {
-    _srcLoaded = 'undefined image';
-    _isLoaded = false;
-    _isLoading = false;
-    _hasError = false;
-    _opacity = 1;
-  };
+  isLoaded () {
+    if (this._isLoading) return false;
+    return this._isLoaded;
+  }
 
-  _this.init();
+  isLoading () {
+    return this._isLoading;
+  }
 
-  this.srcToLoad = src;
-  var _type = __type;
-
-  var loadEventCallback = callback;
-
-  _this.isLoaded = function () {
-    if (_isLoading) return false;
-    return _isLoaded;
-  };
-
-  _this.isLoading = function () {
-    return _isLoading;
-  };
-
-  _this.checkIfThisSourceIsSet = function (src) {
-    if (_srcLoaded == src || this.srcToLoad == src) {
+  checkIfThisSourceIsSet (src) {
+    if (this._srcLoaded === src || this.srcToLoad === src) {
       return true;
     }
     return false;
-  };
+  }
   /**
    * Set source of image, does not load yet.
    */
-  _this.setSource = function (src) {
-    if (_isLoading) {
-      console.log("-------------------------> Source set while still loading!!! ");
+  setSource (src) {
+    if (this._isLoading) {
+      console.error('-------------------------> Source set while still loading!!! ');
       return;
     }
     this.srcToLoad = src;
-    if (_srcLoaded == this.srcToLoad) {
-      _isLoaded = true;
+    if (this._srcLoaded === this.srcToLoad) {
+      this._isLoaded = true;
       return;
     }
 
-    // console.log("Setting loaded to false");
-    _isLoaded = false;
-    // _isLoading = false;
-  };
+    this._isLoaded = false;
+  }
 
-  _this.clear = function () {
-    _this.init();
-  };
+  clear () {
+    this.init();
+    this._stopLoading = true;
+  }
 
-  _this.getSrc = function () {
+  stopLoading () {
+    this._stopLoading = true;
+  }
+
+  getSrc () {
     return this.srcToLoad;
   };
 
-  _this.hasError = function () {
-    return _hasError;
+  hasError () {
+    return this._hasError;
   };
 
   /**
    *
    * Load image *
    */
-  _this.load = function () {
+  load () {
+    this._stopLoading = false;
+    this._load();
+  }
+
+  _load () {
+    this._hasError = false;
+    if (this._isLoaded === true) {
+      this.loadEvent(this, false);
+      return;
+    }
+    this._isLoading = true;
+    if (!this.srcToLoad) {
+      console.error('Source not set');
+      this.loadEvent(this, true);
+      return;
+    }
+    
+    /* Allow relative URL's */
+    if (this.srcToLoad.startsWith('/') && !this.srcToLoad.startsWith('//')){
+      let splittedHREF = window.location.href.split('/').filter(e => e.length > 0);
+      let hostName = splittedHREF[0] + '//' + splittedHREF[1] + '/';
+      this.srcToLoad = hostName + this.srcToLoad;
+    }
+
+    if (this.srcToLoad.startsWith('http') === false && this.srcToLoad.startsWith('//') === false) {
+      console.error('Source does not start with http');
+      this.loadEvent(this, true);
+      return;
+    }
+
+    if (this.srcToLoad === this._srcLoaded) {
+      this.loadEvent(this, false);
+      return;
+    }
+
+    if (this.timerIsRunning === true)return;
+    if (numImagesLoading >= 4) {
+      if (this._stopLoading === false) {
+        this.timerIsRunning = true;
+        setTimeout(() => {
+          this.timerIsRunning = false;
+          this._load();
+        }, 10);
+      } else {
+        /* Cancel loading */
+        this.init();
+      }
+      return;
+    }
+    numImagesLoading ++;
     // console.log("WMJSImage:load "+this.srcToLoad);
 
-    _hasError = false;
-    if (_isLoaded == true) {
-       // console.log("==== Already isloaded ==== :"+_isLoaded);
-      loadEvent(_this, false);
-      return;
-    }
-    _isLoading = true;
-    
-    if(!this.srcToLoad){
-      console.log("Source not set");
-      loadEvent(_this, true);
-      return;
-    }
-    
-    if(this.srcToLoad.startsWith("http") === false && this.srcToLoad.startsWith("//") === false){
-      console.log("Source does not start with http");
-      loadEvent(_this, true);
-      return;
-    }
-
-    if (this.srcToLoad == _srcLoaded) {
-      // console.log("==== Already loaded ==== :"+this.srcToLoad);
-      loadEvent(_this, false);
-      return;
-    }
-
-    el.load(function () {
-      loadEvent(_this, false);
-    });
-    el.error(function (e) {
-      loadEvent(_this, true);
-    });
-    if (randomize) {
-      el.attr('src', this.srcToLoad + '&' + Math.random());
+    if (this.randomize) {
+      this.getElement()[0].src = this.srcToLoad + '&' + Math.random();
+      // this.el.attr('src', this.srcToLoad + '&' + Math.random());
     } else {
-      el.attr('src', this.srcToLoad);
+      this.getElement()[0].src = this.srcToLoad;
+      // this.el.attr('src', this.srcToLoad);
     }
   };
 
-  // var setImageProps = function(image){
-
-  var loadEvent = function (image, hasError) {
-//     if (_isLoading == false && _isLoaded == true) {
-//       console.log("---------------->Skipping WMJSImage:loadEvent");
-//       return;
-//     }
-    // console.log("WMJSImage:ready "+this.srcToLoad);
-    // console.log("WMJSImage:loadEvent");
-    _hasError = hasError;
-    _isLoading = false;
-    _isLoaded = true;
-    _srcLoaded = this.srcToLoad;
-    if (isDefined(loadEventCallback)) {
-      loadEventCallback(_this);
+  loadEvent (image, hasError) {
+    numImagesLoading--;
+    this._hasError = hasError;
+    this._isLoading = false;
+    this._isLoaded = true;
+    this._srcLoaded = this.srcToLoad;
+    if (isDefined(this.loadEventCallback)) {
+      this.loadEventCallback(this);
     }
+  }
+
+  setOpacity (__opacity) {
+    this._opacity = parseFloat(__opacity);
+    this.el.css('opacity', this._opacity);
   };
 
-//   _this.setLoadEventCallback = function(callback){
-//     loadEventCallback = callback;
-//   };
-//
-  _this.setOpacity = function (__opacity) {
-    _opacity = parseFloat(__opacity);
-    el.css('opacity', _opacity);
+  getOpacity (opacity) {
+    return this._opacity;
   };
 
-  _this.getOpacity = function (opacity) {
-    return _opacity;
+  setPosition (x, y) {
+    this.el.css({ top: parseInt(y) + 'px', left: parseInt(x) + 'px', position:'absolute' });
   };
 
-  _this.setPosition = function (x, y) {
-//     if(_type == 'wmjsimagebuffer'){
-    el.css({ top: parseInt(y) + 'px', left: parseInt(x) + 'px', position:'absolute' });
-//     }
-  };
-
-  _this.setSize = function (w, h) {
+  setSize (w, h) {
     w = parseInt(w);
     h = parseInt(h);
     if (w === 0 || h === 0) return;
     if (isNaN(w) || isNaN(h)) return;
-    // console.log("Set size " +w+","+h);
-    el.width(parseInt(w) + 'px');
-    el.height(parseInt(h) + 'px');
+    this.el.width(parseInt(w) + 'px');
+    this.el.height(parseInt(h) + 'px');
   };
 
-  _this.setZIndex = function (z) {
-    el.zIndex = z;
-     // el.css({position:'absolute'});
-  };
+  setZIndex (z) {
+    this.el.zIndex = z;
+  }
 
-  _this.getElement = function () {
-    return el;
-  };
-
-  var el = $(document.createElement('img'));
-  // el.attr('crossOrigin', 'use-credentials'); // This enables CORS
-  
-  el.onselectstart = function () { return false; };
-  el.ondrag = function () { return false; };
-
-  return _this;
+  getElement () {
+    return this.el;
+  }
 };

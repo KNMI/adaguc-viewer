@@ -1,39 +1,42 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
- <!--<link rel="icon" type="image/png" href="/impactportal/favicon.ico"/>-->
+ 
+  <link rel="icon" type="image/png" href="img/adaguc-logo-favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="img/adaguc-logo-favicon-32x32.png" sizes="32x32">
+
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Viewer</title>
+  <title>ADAGUC Viewer</title>
 
     <!-- Style sheets -->
-  <link rel="stylesheet" href="jquery/jquery-ui.css" />
-  <link rel="stylesheet" type="text/css" href="extjs-4.2.1/resources/css/ext-all.css" />
+  <link rel="stylesheet" href="./libs/node_modules/jquery-ui-dist/jquery-ui.css" />
+  <link rel="stylesheet" type="text/css" href="libs/extjs-4.2.1/resources/css/ext-all.css" />
   <link rel="stylesheet" type="text/css" href="webmapjsext/WMJSExtStyles.css" /> 
   <link rel="stylesheet" type="text/css" href="webmapjs/WMJSStyles.css" />
-  <link rel="stylesheet" type="text/css" href="webmapjs/WMJSTimeSelector.css" />
-  <link rel="stylesheet" type="text/css" href="webmapjs/WMJS_GFITimeElevation.css" />
-  <link rel="stylesheet" type="text/css" href="d3/c3.css">
+  <link rel="stylesheet" type="text/css" href="webmapjs_h/WMJSTimeSelector.css" />
+  <link rel="stylesheet" type="text/css" href="webmapjs_h/WMJS_GFITimeElevation.css" />
+  <link rel="stylesheet" type="text/css" href="libs/d3/c3.css">
   <link rel="stylesheet" href="./apps/gfiapp_d3c3.css" />
   <link rel="stylesheet" href="./apps/autowms_app.css" />
 
   
   <!-- Configuration -->
   <script type="text/javascript" src="config.js"></script>
+  
+  <!-- Libraries -->
+  <script type="text/javascript" src="./libs/node_modules/moment/moment.js"></script>
+  <script type="text/javascript" src="./libs/node_modules/proj4/dist/proj4.js"></script>
+  <script type="text/javascript" src="./libs/node_modules/jquery/dist/jquery.min.js"></script>
+  <script type="text/javascript" src="./libs/node_modules/jquery-ui-dist/jquery-ui.min.js"></script>
 
-  <!-- I18n -->
-  <script>
-    if ( typeof(defaultLanguage) === 'undefined' ) {
-      document.write('<script src="I18n/lang.en.js"><\/script>');
-    } else {
-      document.write('<script src="I18n/lang.' + defaultLanguage.language + '.js"><\/script>');
-    }
-  </script>
+  <script src="libs/d3/d3.v3.min.js" charset="utf-8"></script>
+  <script src="libs/d3/c3.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="libs/d3/c3.css">
+  <script type="text/javascript" src="./builds/WMJS.min.js"></script>
   
-  <!-- Proj4 -->
-  <script type="text/javascript" src="proj4js/lib/proj4js.js"></script>
-  
-  <!-- Webmapjs, webmapjsext, ExtJS and JQuery-->
-  <script type="text/javascript" src="builds/adagucviewer.min.js"></script>
+  <script type="text/javascript" src="./libs/extjs-4.2.1/ext-all.js"></script>
+
+  <script type="text/javascript" src="./builds/WMJSExt.min.js"></script>
   
 </head>
 <body>

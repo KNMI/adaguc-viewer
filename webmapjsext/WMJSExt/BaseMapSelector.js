@@ -11,7 +11,7 @@ Ext.define('webmapjsext.WMJSExt.BaseMapSelector',{
   initComponent: function() {
     var _this = this;
 
-    _webmapjsext = _this.webmapjsext;
+    var _webmapjsext = _this.webmapjsext;
     
     OverlaySelectorModel = Ext.define('OverlaySelectorModel', {
         extend: 'Ext.data.Model',

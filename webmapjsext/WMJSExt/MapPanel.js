@@ -24,8 +24,11 @@
             afterlayout:{
               fn:function(){
                 if(!_this.webMapJS){
+                  initWMJS();
                   _this.webMapJS = new WMJSMap(Ext.fly(_this.webmapjsid).dom);
+                  _this.webMapJS.setWMJSTileRendererTileSettings(WMJSTileRendererTileSettings);
                   _this.webMapJS.setBaseURL('./webmapjs/');
+                  _this.webMapJS.requestProxy = './webmapjs_php/MakeRequest.php?'
                   var baseLayers = [];
                   for(var j=0;j<baseLayerConfiguration.length;j++){
                     var a = new WMJSLayer(baseLayerConfiguration[j]); 

@@ -25,6 +25,17 @@ var autowms_app = function(element, webmapjs) {
       prevPath = [];        
       makeFileListRequest("");
     });
+    
+    $(".autowms_app_fileitem_refresh").attr('onclick','').click(function(t){
+      
+      var path = $(this).attr('name');
+      // element.html("... refreshing "+path+" ... ");
+      $(".autowms_app_fileitem").remove();
+      $(".autowms_app_layeritem").remove();
+      setTimeout(()=>{
+        makeFileListRequest(path);
+      }, 100);
+    });
   }
   
   var createFile = function(data){
@@ -57,7 +68,7 @@ var autowms_app = function(element, webmapjs) {
       "</span>";
     //     html+="<span class='autowms_app_currentpath'>Current folder: /"+prevPath[prevPath.length-1]+"</span>";
     html+="<hr/><span class='autowms_app_currentpath'>Current folder: ./"+path+"</span>";
-    html += "<span class=\"autowms_app_fileitem_header\"><span class=\"autowms_app_fileitem_return\">&#128448;&nbsp;<b>../ (&#8679;)</b></span><span class=\"autowms_app_fileitem_refresh\" name=\""+path+"\">&#8635;&nbsp;<b>Refresh</b></span></span>" ;
+    html += "<span class=\"autowms_app_fileitem_header\"><span class=\"autowms_app_fileitem_return\">&#128193;&nbsp;<b>../ (&#8679;)</b></span><span class=\"autowms_app_fileitem_refresh\" name=\""+path+"\">&#8635;&nbsp;<b>Refresh</b></span></span>" ;
     return html;
   };
   
@@ -249,8 +260,9 @@ var autowms_app = function(element, webmapjs) {
             url: url,
             success: succes,
             error:function(e){
-              console.error(e);
+              // console.error(e);
               errormessage('Unable to do ajax call');
+              // succes({error:'Unable to do ajax call'});
             }
           })
         }

@@ -45,11 +45,15 @@ export default class WMJSDialog {
         display:'inline-block'
       },
       mousedown: (event) => {
-        // // event.stopPropagation();
+        if (event.stopPropagation){
+          event.stopPropagation();
+        }
         preventdefaultEvent(event);
       },
       mousewheel: (event) => {
-        // event.stopPropagation();
+        if (event.stopPropagation){
+          event.stopPropagation();
+        }
       }
     });
 

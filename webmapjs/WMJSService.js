@@ -69,7 +69,7 @@ export const WMJSGetCapabilities = (service, forceReload, succes, fail, xml2json
   }
   debug('GetCapabilities:');
 
-  let url = service + '&service=WMS&request=GetCapabilities';
+  let url = service + '&service=WMS&request=GetCapabilities&random' + Math.random();
 
   let _xml2jsonrequestURL = xml2jsonrequestURL;
 
@@ -423,7 +423,7 @@ export class WMJSService {
    * Calls failure when something goes wrong
    */
   getLayerObjectsFlat (succes, failure, forceReload, xml2jsonrequestURL = this.xml2jsonrequestURL) {
-    if (isDefined(this._flatLayerObject)) {
+    if (isDefined(this._flatLayerObject) && forceReload !== true) {
       succes(this._flatLayerObject);
       return;
     }

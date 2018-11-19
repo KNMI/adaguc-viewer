@@ -8,6 +8,7 @@ var gfiapp_d3c3 = function(element, webmapjs) {
     let controls = $('#' + elementid).find('.controls');
     graph.html('graph');
     controls.button({label:'Export to CSV'}).click(function(){
+      console.log('Export to CSV');
       let csvExport = '';
       let data = datatoplot.datatoplot;
       for (let line=0;line<data[0].length;line++){
@@ -18,9 +19,13 @@ var gfiapp_d3c3 = function(element, webmapjs) {
         csvExport += '\n\r';
       }
       const link = document.createElement('a');
+      
       link.setAttribute('download', `export.csv`);
       link.setAttribute('href', encodeURI(`data:text/csv;charset=utf-8,${csvExport}`));
+      console.log('Clicking link');
+      document.body.appendChild(link);
       link.click();
+      link.remove();
     });
     
     var chart = c3.generate({

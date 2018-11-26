@@ -7,6 +7,11 @@ var baseLayerConfiguration = [
     type: 'twms',
     format:"image/gif"
   },{
+    title:"SKYVECTOR",
+    name:"SKYVECTOR",
+    type: 'twms',
+    enabled:false
+  },{
     title:"arcGisCanvas",
     name:"arcGisCanvas",
     type: 'twms',
@@ -74,7 +79,9 @@ var baseLayerConfiguration = [
   }
 ];
 
-var defaultProjection = {srs:'EPSG:4326',bbox:'-180,-90,180,90'};
+// var defaultProjection = {srs:'EPSG:4326',bbox:'-180,-90,180,90'};
+
+var defaultProjection = {srs:'EPSG:3857',bbox:'-19000000,-19000000,19000000,19000000'};
 
 var hashLocationNotfiyAddLayer = false;
 
@@ -375,6 +382,17 @@ var WMJSTileRendererTileSettings = {
       minLevel: 1,
       maxLevel: 18,
       tileServerType: 'arcgisonline'
+    }
+  }, 
+  "SKYVECTOR": {
+    "EPSG:3857": {
+        "home": "https://t.skyvector.com/V7pMh4zRihf1nr61/302/1812/",
+        "minLevel": 1,
+        "maxLevel": 10,
+        "tileServerType": "skyvector",
+        "tms": false,
+        "tileServerFormat": "jpg",
+        "copyRight":"TODO"
     }
   },
   OSM: {

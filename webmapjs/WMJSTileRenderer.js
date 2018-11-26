@@ -57,6 +57,7 @@ export default class WMJSTileRenderer {
     let drawBGTiles = (level) => {
       let home = tileSettings.home;
       let tileServerType = tileSettings.tileServerType; // 'osm' or 'argisonline'
+      let tileServerFormat = tileSettings.tileServerFormat || 'png';
       let tmsEnabled = tileSettings.tms || false; // 'osm' or 'argisonline'
       if (level < tileSettings.minLevel) level = tileSettings.minLevel;
       if (level > tileSettings.maxLevel) level = tileSettings.maxLevel;
@@ -93,14 +94,15 @@ export default class WMJSTileRenderer {
         let imageURL;
         if (tileServerType === 'osm') {
           if (tmsEnabled) {
-            imageURL = home + level + '/' + x + '/' + ((numTilesAtLevelY - 1) - y) + '.png';
+            imageURL = home + level + '/' + x + '/' + ((numTilesAtLevelY - 1) - y) + '.' + tileServerFormat;
           } else {
-            imageURL = home + level + '/' + x + '/' + (y) + '.png';
+            imageURL = home + level + '/' + x + '/' + (y) + '.' + tileServerFormat;
           }
-        }
-        if (tileServerType === 'arcgisonline' || tileServerType === 'wmst') {
+        } else if (tileServerType === 'arcgisonline' || tileServerType === 'wmst') {
           imageURL = home + level + '/' + y + '/' + (x);
-        }
+        } else if (tileServerType === 'skyvector') {
+          imageURL = home + 2*(11-Math.round(level)) + '/' + x + '/' + (y) + '.' + tileServerFormat;  
+        }        
         
         if (renderedURLs[imageURL]){
           return;

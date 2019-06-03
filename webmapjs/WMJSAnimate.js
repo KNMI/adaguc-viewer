@@ -25,6 +25,7 @@ export default class WMJSAnimate {
     this._divAnimationInfo.style.fontFamily = '"Courier New", "Lucida Console", Monospace';
     this._divAnimationInfo.style.fontSize = '10px';
     _map.getBaseElement().append(this._divAnimationInfo);
+    if (!$) { console.warn('WMJSAnimate: jquery is not defined, assuming unit test is running'); return; }
     $(this._divAnimationInfo).mouseout(() => {
       _map.mouseHoverAnimationBox = false;
     });
@@ -171,6 +172,7 @@ export default class WMJSAnimate {
 
   stopAnimating () {
     if (this._map.isAnimating === false) return;
+    this._map._animationList = undefined;
     this._divAnimationInfo.style.display = 'none';
     this._map.isAnimating = false;
     this._map.animateBusy = false;

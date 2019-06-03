@@ -50,7 +50,7 @@ import { WMJSDateOutSideRange, WMJSDateTooEarlyString, WMJSDateTooLateString, WM
 // var Hammer = require(['hammerjs']);
 
 let enableConsoleDebugging = false;
-let enableConsoleErrors = false;
+let enableConsoleErrors = true;
 /**
  * Set base URL of several sources used wihtin webmapjs
  */
@@ -65,7 +65,7 @@ let error = (message) => {
 /* Global vars */
 let WebMapJSMapNo = 0;
 /* Global image stores */
-let maxAnimationSteps = 60;
+let maxAnimationSteps = 72;
 var legendImageStore = new WMJSImageStore(maxAnimationSteps * 6, 'wmjslegendbuffer');
 var getMapImageStore = new WMJSImageStore(maxAnimationSteps * 6, 'wmjsimagebuffer');
 var bgMapImageStore = new WMJSImageStore(360, 'wmjsimagebuffer', { randomizer:false });
@@ -84,7 +84,7 @@ class GetFeatureInfoObject {
   */
 export default class WMJSMap {
   constructor (_element, _xml2jsonrequestURL) {
-    this.WebMapJSMapVersion = '3.2.2';
+    this.WebMapJSMapVersion = '3.2.16';
     this.base = './';
     this.noimage = undefined;
     this.showDialog = true;
@@ -155,8 +155,8 @@ export default class WMJSMap {
     this.isMapHeaderEnabled = false;
     this.showScaleBarInMap = true;
     this.mouseHoverAnimationBox = false;
-
-    this.loadingDiv = $('<div class="WMJSDivBuffer-loading"/>', {});
+    this.callBack = new WMJSListener();
+    
     this.initialized = 0;
     this.newSwapBuffer = 0;
     this.currentSwapBuffer = 1;
@@ -174,7 +174,7 @@ export default class WMJSMap {
     this.WMJSProjection_tempundo = new Array(this.MaxUndos);
     for (let j = 0; j < this.MaxUndos; j++) { this.WMJSProjection_undo[j] = new WMJSProjection(); this.WMJSProjection_tempundo[j] = new WMJSProjection(); }
     this.inlineGetFeatureInfo = true;
-    this.callBack = new WMJSListener();
+    
     this.setBaseURL('./');
     /* Contains the event values for when the mouse was pressed down (used for checking the shiftKey); */
     this.gfiDialogList = [];
@@ -283,6 +283,7 @@ export default class WMJSMap {
     this.removeAllLayers = this.removeAllLayers.bind(this);
     this.deleteLayer = this.deleteLayer.bind(this);
     this.moveLayerDown = this.moveLayerDown.bind(this);
+    this.swapLayers = this.swapLayers.bind(this);
     this.moveLayerUp = this.moveLayerUp.bind(this);
     this.addLayer = this.addLayer.bind(this);
     this.getActiveLayer = this.getActiveLayer.bind(this);
@@ -313,6 +314,7 @@ export default class WMJSMap {
     this.draw = this.draw.bind(this);
     this._draw = this._draw.bind(this);
     this._drawAndLoad = this._drawAndLoad.bind(this);
+    this._drawReady = this._drawReady.bind(this);
     this._onLayersReadyCallbackFunction = this._onLayersReadyCallbackFunction.bind(this);
     this._onMapReadyCallbackFunction = this._onMapReadyCallbackFunction.bind(this);
     this._onResumeSuspendCallbackFunction = this._onResumeSuspendCallbackFunction.bind(this);
@@ -419,6 +421,8 @@ export default class WMJSMap {
     this.showBoundingBox = this.showBoundingBox.bind(this);
     this.hideBoundingBox = this.hideBoundingBox.bind(this);
     this.clearImageStore = this.clearImageStore.bind(this);
+    if (!$) { console.warn('WMJSMap: jquery is not defined, assuming unit test is running'); return; }
+    this.loadingDiv = $('<div class="WMJSDivBuffer-loading"/>', {});
     this.init();
   };
 
@@ -579,12 +583,16 @@ export default class WMJSMap {
       }
     }catch(e){
     }
-
-    if (!this.mainElement.style.height) {
-      this.mainElement.style.height = '1px';
+    if (!this.mainElement) {
+      return;
     }
-    if (!this.mainElement.style.width) {
-      this.mainElement.style.width = '1px';
+    if (this.mainElement.style) {
+      if (!this.mainElement.style.height) {
+        this.mainElement.style.height = '1px';
+      }
+      if (!this.mainElement.style.width) {
+        this.mainElement.style.width = '1px';
+      }
     }
     this.baseDivId = this.makeComponentId('baseDiv');
     $('<div/>', {
@@ -758,38 +766,43 @@ export default class WMJSMap {
     };
 
     let adagucBeforeCanvasDisplay = (ctx) => {
+      // console.log('adagucBeforeCanvasDisplay' + this.getId());
       /* Map Pin */
       if (this.divMapPin.displayMapPin) {
         WMJSDrawMarker(ctx, this.divMapPin.x, this.divMapPin.y, '#9090FF', '#000');
       }
 
-      /* Draw legends */
-      let legendPosX = 0;
-      for (let j = 0; j < this.layers.length; j++) {
-        if (this.layers[j].enabled !== false) {
-          let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
-          if (isDefined(legendUrl)) {
+      if (this._displayLegendInMap) {
+        /* Draw legends */
+        let legendPosX = 0;
+        for (let j = 0; j < this.layers.length; j++) {
+          if (this.layers[j].enabled !== false) {
+            let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
+            if (isDefined(legendUrl)) {
 
-            let image = legendImageStore.getImage(legendUrl);
-            if (image.isLoaded() === false && image.isLoading() === false) {
-              image.load();
-            } else {
-              let el = image.getElement()[0];
-              let legendW = parseInt(el.width) + 4;
-              let legendH = parseInt(el.height) + 4;
-              legendPosX += (legendW + 4);
-              let legendX = this.width - legendPosX + 2;
-              let legendY = this.height - (legendH) - 2;
-              ctx.beginPath();
-              ctx.fillStyle = '#FFFFFF';
-              ctx.lineWidth = 0.3;
-              ctx.globalAlpha = 0.5;
-              ctx.strokeStyle = '#000000';
-              ctx.rect(parseInt(legendX) + 0.5, parseInt(legendY) + 0.5, legendW, legendH);
-              ctx.fill();
-              ctx.stroke();
-              ctx.globalAlpha = 1.0;
-              ctx.drawImage(el, legendX, legendY);
+              let image = legendImageStore.getImage(legendUrl);
+              if (image.hasError() === false) {
+                if (image.isLoaded() === false && image.isLoading() === false) {
+                  image.load();
+                } else {
+                  let el = image.getElement()[0];
+                  let legendW = parseInt(el.width) + 4;
+                  let legendH = parseInt(el.height) + 4;
+                  legendPosX += (legendW + 4);
+                  let legendX = this.width - legendPosX + 2;
+                  let legendY = this.height - (legendH) - 2;
+                  ctx.beginPath();
+                  ctx.fillStyle = '#FFFFFF';
+                  ctx.lineWidth = 0.3;
+                  ctx.globalAlpha = 0.5;
+                  ctx.strokeStyle = '#000000';
+                  ctx.rect(parseInt(legendX) + 0.5, parseInt(legendY) + 0.5, legendW, legendH);
+                  ctx.fill();
+                  ctx.stroke();
+                  ctx.globalAlpha = 1.0;
+                  ctx.drawImage(el, legendX, legendY);
+                }
+              }
             }
           }
         }
@@ -1070,7 +1083,6 @@ export default class WMJSMap {
   };
 
   setLayer (layer, getcapdoc) {
-    console.log('setlayer');
     return this.addLayer(layer, getcapdoc, layer);
   };
 
@@ -1081,7 +1093,11 @@ export default class WMJSMap {
   };
 
   setActiveLayer (layer) {
+    for (let j = 0;j < this.layers.length; j++) {
+      this.layers[j].active = false;
+    }
     this.activeLayer = layer;
+    this.activeLayer.active = true;
     this.loadLegendInline();
     this.callBack.triggerEvent('onchangeactivelayer');
   };
@@ -1143,8 +1159,8 @@ export default class WMJSMap {
     for (let i = 0; i < this.layers.length; ++i) {
       this.layers[i].setAutoUpdate(false);
     }
-    this.layers = [];
-    this.mapdimensions = [];
+    this.layers.length = 0;
+    this.mapdimensions.length = 0;
     this.callBack.triggerEvent('onlayeradd');
   };
 
@@ -1192,6 +1208,35 @@ export default class WMJSMap {
     }
   };
 
+  swapLayers (layerA, layerB) {
+    // console.log('--- swap layers ---');
+    // for(let j = 0;j < this.layers.length; j++ ) {
+    //   console.log(j + '). Name: ' + this.layers[j].name);
+    // }
+    let layerIndexA = this._getLayerIndex(layerA);
+    let layerIndexB = this._getLayerIndex(layerB);
+    // console.log(layerIndexA, layerIndexB);
+    if (layerIndexA >= 0 && layerIndexB >= 0) {
+      let layerA = this.layers[layerIndexA];
+      let layerB = this.layers[layerIndexB];
+      // console.log(layerA.name, layerB.name);
+      if (layerB && layerA) {
+        this.layers[layerIndexA] = layerB;
+        this.layers[layerIndexB] = layerA;
+      }
+    } else {
+      try {
+        error('moveLayers: layer \'' + layerA.name + '\' not found.');
+      } catch (e) {
+        error('moveLayers: layer invalid.');
+      }
+    }
+    // console.log('---');
+    // for(let j = 0;j < this.layers.length; j++ ) {
+    //   console.log(j + '). Name: ' + this.layers[j].name);
+    // }
+  }
+
   moveLayerUp (layerToMove) {
     let layerIndex = this._getLayerIndex(layerToMove);
     if (layerIndex < this.layers.length - 1) {
@@ -1211,25 +1256,34 @@ export default class WMJSMap {
   };
 
   /**
-   * @param _layer
-   * @param getcapdoc
-   * @param layerToReplace
+   * @param layer of type WMJSLayer
    */
   addLayer (layer) {
     if (!isDefined(layer)) {
+      console.warn('addLayer: undefined layer');
       return;
     }
+
+    if (!layer.constructor) {
+      console.warn('addLayer: layer has no constructor, skipping addLayer.');
+      return;
+    } 
+    if (layer.constructor.name !== 'WMJSLayer') {
+      console.warn('addLayer: layer is not a WMJSLayer object, it is a [' + layer.constructor.name + '], skipping addLayer.');
+      return;
+    }
+
     if (!layer.parentMaps.includes(this)) {
       layer.parentMaps.push(this);
     }
     this.layers.push(layer);
-    let done = (layer) => {
-      for (let j = 0; j < layer.dimensions.length; j++) {
-        let mapDim = this.getDimension(layer.dimensions[j].name);
+    let done = (layerCallback) => {
+      for (let j = 0; j < layerCallback.dimensions.length; j++) {
+        let mapDim = this.getDimension(layerCallback.dimensions[j].name);
         if (isDefined(mapDim)) {
           if (isDefined(mapDim.currentValue)) {
-            if (layer.dimensions[j].linked === true) {
-              layer.dimensions[j].setClosestValue(mapDim.currentValue);
+            if (layerCallback.dimensions[j].linked === true) {
+              layerCallback.dimensions[j].setClosestValue(mapDim.currentValue);
             }
           }
         }
@@ -1353,6 +1407,7 @@ export default class WMJSMap {
       this.setProjection(projinfo.srs, projinfo.bbox);
     }
     this.baseDiv.css({ width:this.width, height:this.height });
+    if (!this.mainElement.style) return;
     this.mainElement.style.width = this.width + 'px';
     this.mainElement.style.height = this.height + 'px';
     this.setBBOX(this.resizeBBOX);
@@ -1466,6 +1521,11 @@ export default class WMJSMap {
         request += '&I=' + x;
         request += '&J=' + y;
       }
+
+      if (layer.sldURL) {
+        request += '&SLD=' + URLEncode(layer.sldURL);
+      }
+
       request += '&FORMAT=image/gif';
       request += '&INFO_FORMAT=image/png';
       request += '&STYLES=';
@@ -1488,6 +1548,10 @@ export default class WMJSMap {
     request += 'HEIGHT=' + (this.height) + '&';
 
     request += this.getBBOXandProjString(layer);
+
+    if (layer.sldURL) {
+      request += 'SLD=' + URLEncode(layer.sldURL) + '&';
+    }
     request += 'STYLES=' + URLEncode(layer.currentStyle) + '&';
     request += 'FORMAT=' + layer.format + '&';
     if (layer.transparent === true) {
@@ -1592,6 +1656,9 @@ export default class WMJSMap {
         if (layer.legendIsDimensionDependant === true) {
           legendURL += this.getDimensionRequestString(layer) + '&';
         }
+        if (layer.sldURL) {
+          legendURL += '&SLD=' + URLEncode(layer.sldURL);
+        }          
         legendURL += '&transparent=true&width=90&height=250&';
       } catch (e) {
         return undefined;
@@ -1628,10 +1695,12 @@ export default class WMJSMap {
     if (this.layers.length === 0) return;
     let layer = this.getActiveLayer();
     if (!layer) {
+      console.warn('drawLastTimes: No active layers');
       return;
     }
     let timeDimension = layer.getDimension('time');
     if (!timeDimension) {
+      console.warn('drawLastTimes: No time dimension');
       return;
     }
     let lastIndex = timeDimension.size() - 1;
@@ -1643,6 +1712,7 @@ export default class WMJSMap {
       if (!lastTime || lastTime === WMJSDateTooEarlyString || begin.isAfter(moment.utc(lastTime))) break;
       drawDates.unshift({ name: 'time', value: lastTime });
     }
+    this.stopAnimating();
     this.draw(drawDates);
   };
   /* Animate between start and end dates with the smallest available resolution */
@@ -1650,7 +1720,7 @@ export default class WMJSMap {
     if (this.layers.length === 0) {
       return;
     }
-    let currentTime = start.format('YYYY-MM-DDTHH:mm:ss');
+    let currentTime = start.format('YYYY-MM-DDTHH:mm:ss[Z]');
     let drawDates = [];
     let iter = 0;
     // Fetch all dates within the time interval with a dynamic frequency
@@ -1701,6 +1771,7 @@ export default class WMJSMap {
   };
 
   display () {
+    if (!this.divBuffer[this.currentSwapBuffer]) return;
     this.divBuffer[this.currentSwapBuffer].display(this.updateBBOX, this.loadedBBOX);
     if (enableConsoleDebugging) console.log('drawnBBOX.setBBOX(bbox)');
     this.drawnBBOX.setBBOX(this.bbox);
@@ -1708,14 +1779,14 @@ export default class WMJSMap {
 
   _animFrameRedraw () {
     this._draw(this._animationList);
-    this.drawPending = false;
-    if (this.needsRedraw) {
-      this.needsRedraw = false;
-      this.draw(this._animationList);
-    }
   }
   draw (animationList) {
-    this._animationList = animationList;
+    // console.log('**************** draw', animationList);
+    if (typeof (animationList) === 'object') {
+      if (animationList.length > 0) {
+        this._animationList = animationList;
+      }    
+    }
     if (this.isAnimating) {
       if (enableConsoleDebugging)console.log('ANIMATING: Skipping draw:' + animationList);
       return;
@@ -1725,7 +1796,8 @@ export default class WMJSMap {
       return;
     }
     this.drawPending = true;
-    window.requestAnimationFrame(this._animFrameRedraw);
+    //window.requestAnimationFrame();
+    this._animFrameRedraw();
   };
   /**
    * API Function called to draw the layers, fires getmap request and shows the layers on the screen
@@ -1737,8 +1809,18 @@ export default class WMJSMap {
     this._drawAndLoad(animationList);
   };
 
+  _drawReady () {
+    this.drawPending = false;
+    this.drawBusy = 0;
+    if (this.needsRedraw) {
+      this.needsRedraw = false;
+      this.draw(this._animationList);
+    }
+  }
+
   _drawAndLoad (animationList) {
     if (this.width < 4 || this.height < 4) {
+      this._drawReady ();
       return;
     }
 
@@ -1749,9 +1831,8 @@ export default class WMJSMap {
         if (typeof (animationList) === 'object') {
           if (animationList.length > 0) {
             if (animationList.length > maxAnimationSteps) {
-              error('Too many animations given, max is ' + maxAnimationSteps);
-              this.draw('self');
-              return;
+              error('Too many animations given, max is ' + maxAnimationSteps + ' animating last steps only');
+              animationList = animationList.splice(-maxAnimationSteps);
             }
             this.isAnimating = true;
             this.callBack.triggerEvent('onstartanimation', this);
@@ -1769,10 +1850,6 @@ export default class WMJSMap {
           }
         }
       }
-    }
-    if (this.width < 4 || this.height < 4) {
-      console.log('map too small, skipping');
-      return;
     }
     this._pdraw();
   };
@@ -1841,7 +1918,7 @@ export default class WMJSMap {
       if (this.callBack.addToCallback('onresumesuspend', this._onResumeSuspendCallbackFunction) === true) {
         debug('Suspending on onresumesuspend');
       }
-      this.drawBusy = 0;
+      this._drawReady ();
       return;
     }
 
@@ -1860,8 +1937,7 @@ export default class WMJSMap {
               request = this.buildWMSGetMapRequest(this.baseLayers[l]);
 
               if (request) {
-                this.divBuffer[this.newSwapBuffer].setSrc(currentLayerIndex, request, this.getWidth(), this.getHeight(), { layer: this.baseLayers[l] });
-                this.divBuffer[this.newSwapBuffer].setOpacity(currentLayerIndex, this.baseLayers[l].opacity);
+                this.divBuffer[this.newSwapBuffer].setSrc(currentLayerIndex, request, this.getWidth(), this.getHeight(), { layer: this.baseLayers[l] }, this.baseLayers[l].opacity);
                 currentLayerIndex++;
               }
             }
@@ -1875,8 +1951,7 @@ export default class WMJSMap {
           let layerDimensionsObject = this.layers[j].dimensions;// getLayerDimensions(layers[j]);
           request = this.buildWMSGetMapRequest(this.layers[j], layerDimensionsObject);
           if (request) {
-            this.divBuffer[this.newSwapBuffer].setSrc(currentLayerIndex, request, this.getWidth(), this.getHeight(), { layer: this.layers[j] });
-            this.divBuffer[this.newSwapBuffer].setOpacity(currentLayerIndex, this.layers[j].opacity);
+            this.divBuffer[this.newSwapBuffer].setSrc(currentLayerIndex, request, this.getWidth(), this.getHeight(), { layer: this.layers[j] }, this.layers[j].opacity);
             this.layers[j].image = this.divBuffer[this.newSwapBuffer].layers[currentLayerIndex];
             currentLayerIndex++;
           }
@@ -1889,8 +1964,7 @@ export default class WMJSMap {
             if (this.baseLayers[l].keepOnTop === true) {
               request = this.buildWMSGetMapRequest(this.baseLayers[l]);
               if (request) {
-                this.divBuffer[this.newSwapBuffer].setSrc(currentLayerIndex, request, this.getWidth(), this.getHeight(), { layer:this.baseLayers[l] });
-                this.divBuffer[this.newSwapBuffer].setOpacity(currentLayerIndex, this.baseLayers[l].opacity);
+                this.divBuffer[this.newSwapBuffer].setSrc(currentLayerIndex, request, this.getWidth(), this.getHeight(), { layer:this.baseLayers[l] }, this.baseLayers[l].opacity);
                 currentLayerIndex++;
               }
             }
@@ -1971,6 +2045,7 @@ export default class WMJSMap {
         this.callBack.triggerEvent('onmapready', this);
         this.loadingDiv.hide();
         this.loadingDivTimer.stop();
+        this._drawReady ();
       }
     );
   };
@@ -2196,10 +2271,11 @@ export default class WMJSMap {
       this.layers[i].setAutoUpdate(false);
     }
     this.detachEvents();
+
+    this.callBack.destroy();
   };
 
   detachEvents () {
-    console.log('Detaching...');
     this.baseDiv.off('mousedown');
     // this.baseDiv.off('mousewheel');
     removeMouseWheelEvent($(this.baseDiv).get(0), this.mouseWheelEvent);
@@ -2452,7 +2528,6 @@ export default class WMJSMap {
           this.featureInfoRequestReady('Layer is not queryable.', myLayer);
         } else {
           try {
-            console.log('makehttp');
             MakeHTTPRequest(myLayer.getFeatureInfoUrl, this.featureInfoRequestReady, (data, myLayer) => {
               this.featureInfoRequestReady(data, myLayer); error(data);
             }, myLayer, false, this.requestProxy);

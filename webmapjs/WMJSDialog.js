@@ -28,7 +28,7 @@ export default class WMJSDialog {
     if (isDefined(options.autoDestroy)) {
       autoDestroy = options.autoDestroy;
     }
-
+    if (!$) { console.warn('WMJSDialog: jquery is not defined, assuming unit test is running'); return; }
     var dialog = $('<div />', {
       css:{
         minHeight:'20px',

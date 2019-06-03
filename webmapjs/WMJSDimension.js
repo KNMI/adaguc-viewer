@@ -93,12 +93,12 @@ export default class WMJSDimension {
     } else if (this._type === 'timevalues') {
       /* Filter all dates from the array which are lower than given start value */
       let newValue = parseISO8601DateToDate(val);
-      let newArray = arr.filter(function(x) {
-        return allDates[j] >= newValue;
+      let newArray = this._allDates.filter(function(x) {
+        return x >= newValue;
       });
       let newValues = '';
       for (let j = 0; j < newArray.length; j++) {
-        if (j > 0) newValues += '/';
+        if (j > 0) newValues += ',';
         newValues += newArray[j].toISO8601();
       }
       this.reInitializeValues(newValues);

@@ -47,6 +47,7 @@ export default class WMJSImage {
     this.srcToLoad = src;
     this._type = __type;
     this.loadEventCallback = callback;
+    if (!$) { console.warn('WMJSImage: jquery is not defined, assuming unit test is running'); return; }
     this.el = $(document.createElement('img'));
     this.el.on('load', () => {
       this.loadEvent(this, false);

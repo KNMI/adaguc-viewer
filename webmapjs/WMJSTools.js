@@ -152,6 +152,7 @@ export const preventdefaultEvent = (e) => {
 };
 
 export const attachEvent = (obj, evType, fn) => {
+  if (!obj) return;
   // Attach event that works on all browsers
   if (evType == 'mousewheel') {
     function wheel (event, handler) {
@@ -748,6 +749,7 @@ var decodeBase64 = function (s) {
 
 
 export const addMouseWheelEvent = (element, mouseWheelHandler) => {
+  if (!element) return;
   /* https://developer.mozilla.org/en-US/docs/Web/Events/wheel#Browser_compatibility */
   if (!window.addWheelListener) {
     var prefix = "", _addEventListener, support;
@@ -814,5 +816,5 @@ export const addMouseWheelEvent = (element, mouseWheelHandler) => {
 };
 
 export const removeMouseWheelEvent = (element, mouseWheelHandler) => {
-  console.error("TODO IMPLEMENT removeMouseWheelEvent in WMJSTools.js");
+  console.warn("TODO: Implement removeMouseWheelEvent in WMJSTools.js");
 };

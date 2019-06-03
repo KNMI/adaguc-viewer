@@ -710,13 +710,9 @@ position: absolute;
 
 .timeprevious{
   display:inline;
-  width:15px;
-   float:left;
 }
 .relativeslider{
-  width:140px;
-   display:inline;
-    float:left;
+  display:inline;
 }
 /*.timeselection .datetime  {
   width:140px;

@@ -321,7 +321,7 @@ export class ParseISOTimeRangeDuration {
     let myStopTime = this.stopTime.clone();
     myStopTime.add(this.timeInterval);
 
-    if (currentDateTime > myStopTime.getTime()) {
+    if (currentDateTime >= myStopTime.getTime()) {
       if (throwIfOutsideRange === true) {
         throw new Error(this.timeSteps - 1);
       }

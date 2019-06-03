@@ -16,13 +16,13 @@ class CallBackFunction {
 export default class WMJSListener {
   constructor () {
     this._callBacks = [];
-    this._numCallBacks = 0;
     this._suspendedEvents = [];
     this.addToCallback = this.addToCallback.bind(this);
     this.removeEvents = this.removeEvents.bind(this);
     this.suspendEvent = this.suspendEvent.bind(this);
     this.resumeEvent = this.resumeEvent.bind(this);
     this.triggerEvent = this.triggerEvent.bind(this);
+    this.destroy = this.destroy.bind(this);
   }
   /* Add multiple functions which will be called after the event with the same name is triggered */
   addToCallback (name, functionpointer, keepOnCall) {
@@ -30,7 +30,7 @@ export default class WMJSListener {
     if (!keepOnCall) {
       keepOnCall = false;
     }
-    for (let j = 0; j < this._numCallBacks; j++) {
+    for (let j = 0; j < this._callBacks.length; j++) {
       // A callback list index pointer. if finished==1, then this index may be replaced by a new one.
       if (this._callBacks[j].finished === 1) { cbp = j; break; }
       // If the current callback already exist, we will simply keep it
@@ -42,9 +42,8 @@ export default class WMJSListener {
       }
     }
     if (cbp === -1) {
-      cbp = this._numCallBacks;
-      this._numCallBacks++;
-      this._callBacks[cbp] = new CallBackFunction();
+      cbp = this._callBacks.length;
+      this._callBacks.push(new CallBackFunction());
     } else {
       // console.log('replacing old unused listener: ', name);
     }
@@ -52,12 +51,11 @@ export default class WMJSListener {
     this._callBacks[cbp].functionpointer = functionpointer;
     this._callBacks[cbp].finished = 0;
     this._callBacks[cbp].keepOnCall = keepOnCall;
-    // this._callBacks[j].timesAdded = 0;
     return true;
   };
 
   removeEvents (name, f) {
-    for (let j = 0; j < this._numCallBacks; j++) {
+    for (let j = 0; j < this._callBacks.length; j++) {
       if (this._callBacks[j].finished === 0) {
         if (this._callBacks[j].name === name) {
           if (!f) {
@@ -69,6 +67,10 @@ export default class WMJSListener {
       }
     }
   };
+
+  destroy () {
+    this._callBacks.length = 0;
+  }
 
   suspendEvent (name) {
     this._suspendedEvents[name] = true;
@@ -84,7 +86,7 @@ export default class WMJSListener {
       return;
     }
     let returnList = [];
-    for (let j = 0; j < this._numCallBacks; j++) {
+    for (let j = 0; j < this._callBacks.length; j++) {
       if (this._callBacks[j].finished === 0) {
         if (this._callBacks[j].name === name) {
           if (this._callBacks[j].keepOnCall === false) {

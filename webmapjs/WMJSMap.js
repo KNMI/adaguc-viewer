@@ -84,7 +84,7 @@ class GetFeatureInfoObject {
   */
 export default class WMJSMap {
   constructor (_element, _xml2jsonrequestURL) {
-    this.WebMapJSMapVersion = '3.2.16';
+    this.WebMapJSMapVersion = '3.2.19';
     this.base = './';
     this.noimage = undefined;
     this.showDialog = true;
@@ -1264,14 +1264,14 @@ export default class WMJSMap {
       return;
     }
 
-    if (!layer.constructor) {
-      console.warn('addLayer: layer has no constructor, skipping addLayer.');
+    if (!layer.constructor || !layer.instanceType) {
+      console.warn('addLayer: layer has no constructor or instanceType, skipping addLayer.');
       return;
     } 
-    if (layer.constructor.name !== 'WMJSLayer') {
-      console.warn('addLayer: layer is not a WMJSLayer object, it is a [' + layer.constructor.name + '], skipping addLayer.');
-      return;
-    }
+//     if (layer.instanceType !== 'WMJSLayer') {
+//       console.warn('addLayer: layer is not a WMJSLayer object, it is a [' + layer.constructor.name + '], skipping addLayer.');
+//       return;
+//     }
 
     if (!layer.parentMaps.includes(this)) {
       layer.parentMaps.push(this);

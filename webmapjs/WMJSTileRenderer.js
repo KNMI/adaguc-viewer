@@ -1,8 +1,7 @@
 export default class WMJSTileRenderer {
-  constructor () {
-  }
   render (currentBBOX, newBBOX, srs, width, height, ctx, bgMapImageStore, tileOptions, layerName) {
     let renderedURLs = {};
+    const imagesToRender = [];
     bgMapImageStore.stopLoading();
     if (!layerName) {
       console.error('layerName not defined');
@@ -54,6 +53,10 @@ export default class WMJSTileRenderer {
     let tileSetHeight = originShiftY - originShiftY2;
     let levelF = Math.log((Math.abs(originShiftX2 - originShiftX)) / ((bboxw / screenWidth) * tileSize)) / Math.log(2);
     let level = parseInt(levelF + 0.5);
+    let getAttribution = (textileLayer) => {
+      if (!textileLayer || !srs || !tileLayer[srs] || !tileLayer[srs].copyRight) return null;
+      return tileLayer[srs].copyRight;
+    };
     let drawBGTiles = (level) => {
       let home = tileSettings.home;
       let tileServerType = tileSettings.tileServerType; // 'osm' or 'argisonline'
@@ -101,17 +104,17 @@ export default class WMJSTileRenderer {
         } else if (tileServerType === 'arcgisonline' || tileServerType === 'wmst') {
           imageURL = home + level + '/' + y + '/' + (x);
         } else if (tileServerType === 'skyvector') {
-          imageURL = home + 2*(11-Math.round(level)) + '/' + x + '/' + (y) + '.' + tileServerFormat;  
-        }        
-        
-        if (renderedURLs[imageURL]){
+          imageURL = home + 2 * (11 - Math.round(level)) + '/' + x + '/' + (y) + '.' + tileServerFormat;
+        }
+
+        if (renderedURLs[imageURL]) {
           return;
         }
         renderedURLs[imageURL] = true;
         let image = bgMapImageStore.getImage(imageURL);
         // let image = bgMapImageStore.getImageForSrc(imageURL);
-        
-        if (loadImage == false){
+
+        if (loadImage === false) {
           /* Here we display lower resolution images, if not available switch to an even higher resolution */
           if (image.isLoaded()) {
             try {
@@ -124,7 +127,7 @@ export default class WMJSTileRenderer {
               drawTile(ctx, level - 1, parseInt(x / 2), parseInt(y / 2), false);
             }
           }
-        } else { 
+        } else {
           /* Not all images need to load, as we can switch to lower resolutions for the time being */
           if (loadImage) {
             if (image.isLoaded() === false && image.hasError() === false && image.isLoading() === false) {
@@ -133,7 +136,14 @@ export default class WMJSTileRenderer {
           }
           /* Here we display the images we like to have at the desired resolution */
           if (image.isLoaded()) {
-            ctx.drawImage(image.getElement()[0], parseInt(bl.x), parseInt(bl.y), parseInt(tr.x - bl.x) + 1, parseInt(tr.y - bl.y) + 1);
+            imagesToRender.push({
+              i: image.getElement()[0],
+              x:  parseInt(bl.x),
+              y: parseInt(bl.y),
+              w: parseInt(tr.x - bl.x) + 1,
+              h: parseInt(tr.y - bl.y) + 1,
+              level: level
+            });
           } else {
             /* If desired image is not yet loaded, try to load a higher resolution variant instead */
             if (level > 1) {
@@ -141,8 +151,6 @@ export default class WMJSTileRenderer {
             }
           }
         }
-
-
       };
       if (srs === 'EPSG:4326' || srs === 'EPSG:4258') {
         numTilesAtLevelX *= 2;
@@ -160,5 +168,23 @@ export default class WMJSTileRenderer {
       }
     };
     drawBGTiles(level);
+    imagesToRender.sort((imageA, imageB) => {
+      if (imageA.level < imageB.level) return -1;
+      if (imageA.level > imageB.level) return 1;
+      return 0;
+    });
+    for (let i = 0; i < imagesToRender.length; i++) {
+      ctx.drawImage(imagesToRender[i].i,
+        imagesToRender[i].x,
+        imagesToRender[i].y,
+        imagesToRender[i].w,
+        imagesToRender[i].h
+      );
+      // ctx.fillText(i, imagesToRender[i].x + 20, imagesToRender[i].y + 20);
+    };
+    const attributionText = getAttribution(tileLayer);
+    return {
+      attributionText: attributionText
+    };
   }
 };

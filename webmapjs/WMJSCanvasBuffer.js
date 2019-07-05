@@ -1,11 +1,11 @@
 import WMJSImage from './WMJSImage.js';
 import { error, debug } from './WMJSConstants.js';
 import { isDefined } from './WMJSTools.js';
-import { $ } from './WMJSExternalDependencies.js';
+import { jquery } from './WMJSExternalDependencies.js';
 export default class WMJSCanvasBuffer {
   constructor (webmapJSCallback, _type, _imageStore, w, h) {
-    if (!$) { console.warn('WMJSCanvasBuffer: jquery is not defined, assuming unit test is running'); return; }
-    this.canvas = $('<canvas/>', { 'class':'WMJSCanvasBuffer' }).width(w).height(h);
+    if (!jquery) { console.warn('WMJSCanvasBuffer: jquery is not defined, assuming unit test is running'); return; }
+    this.canvas = jquery('<canvas/>', { 'class':'WMJSCanvasBuffer' }).width(w).height(h);
     this._ctx = this.canvas[0].getContext('2d');
     this._ctx.canvas.width = w;
     this._ctx.canvas.height = h;
@@ -253,14 +253,13 @@ export default class WMJSCanvasBuffer {
   setSrc (layerIndex, imageSource, width, height, linkedInfo, opacity) {
     if (!isDefined(imageSource)) { console.log('undefined'); return; }
     while (layerIndex >= this.layers.length) {
-      this.layers.push({image:this._defaultImage, opacity: opacity, linkedInfo: linkedInfo, loadThisOne: false });
+      this.layers.push({ image:this._defaultImage, opacity: opacity, linkedInfo: linkedInfo, loadThisOne: false });
     }
     let image = this._imageStore.getImage(imageSource);
-    
-    // image.setZIndex(layerIndex);
-    
-    this.layers[layerIndex].image = image;
 
+    // image.setZIndex(layerIndex);
+
+    this.layers[layerIndex].image = image;
   };
 
   _getPixelCoordFromGeoCoord (coordinates, b) {

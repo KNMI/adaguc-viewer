@@ -3,7 +3,7 @@ import { WMSVersion, error, debug } from './WMJSConstants.js';
 import { URLEncode, isDefined, toArray, isNull } from './WMJSTools.js';
 import WMJSXMLParser from './WMJSXMLParser.js';
 
-import { $ } from './WMJSExternalDependencies.js';
+import { jquery } from './WMJSExternalDependencies.js';
 
 let config = {
   xml2jsonrequestURL: 'Check WMJSService line 8'
@@ -19,9 +19,9 @@ let loadGetCapabilitiesViaProxy = (url, succes, fail, xml2jsonrequestURL) => {
   debug("<a target='_blank' href='" + url + "'>" + url + '</a>', false);
   getcapreq += URLEncode(url);
   /* Error message in case the request goes wrong */
-  if (!$) { console.warn('WMJSService: jquery is not defined, assuming unit test is running'); return; }
+  if (!jquery) { console.warn('WMJSService: jquery is not defined, assuming unit test is running'); return; }
   try {
-    $.ajax({
+    jquery.ajax({
       url: getcapreq,
       crossDomain:true,
       dataType:'jsonp'
@@ -51,14 +51,14 @@ export const WMJSGetCapabilities = (service, forceReload, succes, fail, xml2json
     fail(I18n.service_url_empty.text);
     return;
   }
-  
+
   /* Allow relative URL's */
-  if (service.startsWith('/') && !service.startsWith('//')){
+  if (service.startsWith('/') && !service.startsWith('//')) {
     let splittedHREF = window.location.href.split('/').filter(e => e.length > 0);
     let hostName = splittedHREF[0] + '//' + splittedHREF[1] + '/';
     service = hostName + service;
   }
-  
+
   if (!service.startsWith('http://') && !service.startsWith('https:') && !service.startsWith('//')) {
     error('Service does not start with HTTPS');
     fail(I18n.service_url_empty.text);
@@ -416,7 +416,7 @@ export class WMJSService {
     };
     try {
       this.getNodes(callback, failure, forceReload, xml2jsonrequestURL);
-    } catch(e) {
+    } catch (e) {
       failure(e);
     }
   };

@@ -43,11 +43,12 @@ import WMJSAnimate from './WMJSAnimate.js';
 import WMJSTileRenderer from './WMJSTileRenderer.js';
 import WMJSDrawMarker from './WMJSDrawMarker.js';
 import I18n from './I18n/lang.en.js';
-import { $, proj4, moment } from './WMJSExternalDependencies.js';
+import { jquery, proj4, moment } from './WMJSExternalDependencies.js';
 
 import WMJSDialog from './WMJSDialog.js';
 import { WMJSDateOutSideRange, WMJSDateTooEarlyString, WMJSDateTooLateString, WMSVersion, WMJSProj4Defs } from './WMJSConstants.js';
 // var Hammer = require(['hammerjs']);
+//var pjson = require('../package.json');
 
 let enableConsoleDebugging = false;
 let enableConsoleErrors = true;
@@ -84,7 +85,8 @@ class GetFeatureInfoObject {
   */
 export default class WMJSMap {
   constructor (_element, _xml2jsonrequestURL) {
-    this.WebMapJSMapVersion = '3.2.19';
+    this.WebMapJSMapVersion = '3.3.6';
+//    if (pjson && pjson.version) this.WebMapJSMapVersion = pjson.version;
     this.base = './';
     this.noimage = undefined;
     this.showDialog = true;
@@ -156,7 +158,7 @@ export default class WMJSMap {
     this.showScaleBarInMap = true;
     this.mouseHoverAnimationBox = false;
     this.callBack = new WMJSListener();
-    
+
     this.initialized = 0;
     this.newSwapBuffer = 0;
     this.currentSwapBuffer = 1;
@@ -174,7 +176,7 @@ export default class WMJSMap {
     this.WMJSProjection_tempundo = new Array(this.MaxUndos);
     for (let j = 0; j < this.MaxUndos; j++) { this.WMJSProjection_undo[j] = new WMJSProjection(); this.WMJSProjection_tempundo[j] = new WMJSProjection(); }
     this.inlineGetFeatureInfo = true;
-    
+
     this.setBaseURL('./');
     /* Contains the event values for when the mouse was pressed down (used for checking the shiftKey); */
     this.gfiDialogList = [];
@@ -318,7 +320,7 @@ export default class WMJSMap {
     this._onLayersReadyCallbackFunction = this._onLayersReadyCallbackFunction.bind(this);
     this._onMapReadyCallbackFunction = this._onMapReadyCallbackFunction.bind(this);
     this._onResumeSuspendCallbackFunction = this._onResumeSuspendCallbackFunction.bind(this);
-    this._animFrameRedraw  =  this._animFrameRedraw .bind(this);
+    this._animFrameRedraw = this._animFrameRedraw.bind(this);
     this.getWMSRequests = this.getWMSRequests.bind(this);
     this.prefetch = this.prefetch.bind(this);
     this.getImageStore = this.getImageStore.bind(this);
@@ -421,8 +423,8 @@ export default class WMJSMap {
     this.showBoundingBox = this.showBoundingBox.bind(this);
     this.hideBoundingBox = this.hideBoundingBox.bind(this);
     this.clearImageStore = this.clearImageStore.bind(this);
-    if (!$) { console.warn('WMJSMap: jquery is not defined, assuming unit test is running'); return; }
-    this.loadingDiv = $('<div class="WMJSDivBuffer-loading"/>', {});
+    if (!jquery) { console.warn('WMJSMap: jquery is not defined, assuming unit test is running'); return; }
+    this.loadingDiv = jquery('<div class="WMJSDivBuffer-loading"/>', {});
     this.init();
   };
 
@@ -489,54 +491,54 @@ export default class WMJSMap {
 
   /* Load legend inline of the map */
   loadLegendInline (somethingchanged) {
-    return;
-//     try {
-//       if (isDefined(somethingchanged) === false) {
-//         somethingchanged = false;
-//       }
-//       if (this.legendBusy === true && isDefined(this.onLegendCallbackFunction)) {
-//         if (this.callBack.addToCallback('onlegendready', this.onLegendCallbackFunction) === true) {
-//           if (enableConsoleDebugging)console.log('Suspending on onlegendready');
-//         }
-//         return;
-//       }
-//       this.legendBusy = true;
-//       if (this.loadedLegendUrls.length !== this.layers.length) {
-//         somethingchanged = true;
-//       } else {
-//         for (let j = 0; j < this.layers.length; j++) {
-//           let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
-//           if (isDefined(legendUrl)) {
-//             if (this.loadedLegendUrls[j] !== legendUrl) {
-//               this.loadedLegendUrls[j] = legendUrl;
-//               somethingchanged = true;
-//             }
-//           }
-//         }
-//       }
-//       if (somethingchanged) {
-//         this.loadedLegendUrls = [];
-//         for (let j = 0; j < this.layers.length; j++) {
-//           if (this.layers[j].enabled !== false) {
-//             let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
-//
-//             if (isDefined(legendUrl)) {
-//               this.loadedLegendUrls[j] = legendUrl;
-//             }
-//           }
-//         }
-//
-//         if (somethingchanged){
-//           console.log( this.loadedLegendUrls);
-//         }
-//         return;
-//       }
-//
-//     } catch (e) {
-//       console.log(e);
-//     }
-//     this.legendBusy = false;
-//     this.callBack.triggerEvent('onlegendready');
+
+    //     try {
+    //       if (isDefined(somethingchanged) === false) {
+    //         somethingchanged = false;
+    //       }
+    //       if (this.legendBusy === true && isDefined(this.onLegendCallbackFunction)) {
+    //         if (this.callBack.addToCallback('onlegendready', this.onLegendCallbackFunction) === true) {
+    //           if (enableConsoleDebugging)console.log('Suspending on onlegendready');
+    //         }
+    //         return;
+    //       }
+    //       this.legendBusy = true;
+    //       if (this.loadedLegendUrls.length !== this.layers.length) {
+    //         somethingchanged = true;
+    //       } else {
+    //         for (let j = 0; j < this.layers.length; j++) {
+    //           let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
+    //           if (isDefined(legendUrl)) {
+    //             if (this.loadedLegendUrls[j] !== legendUrl) {
+    //               this.loadedLegendUrls[j] = legendUrl;
+    //               somethingchanged = true;
+    //             }
+    //           }
+    //         }
+    //       }
+    //       if (somethingchanged) {
+    //         this.loadedLegendUrls = [];
+    //         for (let j = 0; j < this.layers.length; j++) {
+    //           if (this.layers[j].enabled !== false) {
+    //             let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
+    //
+    //             if (isDefined(legendUrl)) {
+    //               this.loadedLegendUrls[j] = legendUrl;
+    //             }
+    //           }
+    //         }
+    //
+    //         if (somethingchanged){
+    //           console.log( this.loadedLegendUrls);
+    //         }
+    //         return;
+    //       }
+    //
+    //     } catch (e) {
+    //       console.log(e);
+    //     }
+    //     this.legendBusy = false;
+    //     this.callBack.triggerEvent('onlegendready');
   };
 
   setMessage (message) {
@@ -557,31 +559,31 @@ export default class WMJSMap {
 
   /* Is called when the WebMapJS object is created */
   init () {
-    try{
+    try {
       if (geoNamesURL) {
         this.geoNamesURL = geoNamesURL;
       }
-    }catch(e){
+    } catch (e) {
     }
-    try{
+    try {
       if (defaultUsernameSearch) {
         this.defaultUsernameSearch = defaultUsernameSearch;
       }
-    }catch(e){
+    } catch (e) {
     }
 
-    try{
+    try {
       if (xml2jsonrequestURL) {
         this.setXML2JSONURL(xml2jsonrequestURL);
       }
-    }catch(e){
+    } catch (e) {
     }
 
-    try{
+    try {
       if (WMJSTileRendererTileSettings) {
         this.setWMJSTileRendererTileSettings(WMJSTileRendererTileSettings);
       }
-    }catch(e){
+    } catch (e) {
     }
     if (!this.mainElement) {
       return;
@@ -595,7 +597,7 @@ export default class WMJSMap {
       }
     }
     this.baseDivId = this.makeComponentId('baseDiv');
-    $('<div/>', {
+    jquery('<div/>', {
       id:this.baseDivId,
       css: {
         position:'relative',
@@ -610,7 +612,7 @@ export default class WMJSMap {
         top:'0px'
       }
     }).appendTo(this.mainElement);
-    this.baseDiv = $('#' + this.baseDivId);
+    this.baseDiv = jquery('#' + this.baseDivId);
 
     this.baseDiv.css('cursor', 'default');
 
@@ -671,7 +673,7 @@ export default class WMJSMap {
     /* ONLY VISIBLE IF USERNAME FOR GEONAMES API IS SET */
     if (typeof (defaultUsernameSearch) !== 'undefined') {
       /* Creating the div for the input */
-      $('<div/>', {
+      jquery('<div/>', {
         id: this.makeComponentId('searchboxdiv'),
         mousedown:(event) => { event.stopPropagation(); }
       }).addClass('webmapjs_searchboxdiv').html('<input class=\'webmapjs_locationfield\' type=\'text\' name=\'searchtextfield\'' +
@@ -679,18 +681,18 @@ export default class WMJSMap {
         mousedown:(event) => { event.stopPropagation(); preventdefaultEvent(event); } })
         .appendTo(this.baseDiv);
 
-      $('<button/>', {
+      jquery('<button/>', {
         id: this.makeComponentId('searchboxbutton'),
         mousedown:(event) => { event.stopPropagation(); },
         click:() => {
-          let value = $('#searchtextfield').val();
+          let value = jquery('#searchtextfield').val();
           this.searchForLocation(value);
         } }).addClass('webmapjs_locationbutton').appendTo(this.baseDiv);
 
       /* On Enter */
-      $('#searchtextfield').keypress((e) => {
+      jquery('#searchtextfield').keypress((e) => {
         if (e.which === 13) {
-          let value = $('#searchtextfield').val();
+          let value = jquery('#searchtextfield').val();
           this.searchForLocation(value);
           return false;
         }
@@ -723,8 +725,6 @@ export default class WMJSMap {
     }, true);
     // callBack.addToCallback("drawbuffers",this.flipBuffers,true);
 
-
-
     bgMapImageStore.addLoadEventCallback(() => {
       this.draw('bgMapImageStore loaded');
     });
@@ -734,8 +734,8 @@ export default class WMJSMap {
           if (this.baseLayers[l].enabled) {
             if (this.baseLayers[l].keepOnTop === false) {
               if (this.baseLayers[l].type && this.baseLayers[l].type !== 'twms') continue;
-              if (!this.tileRenderSettings) {console.log('tileRenderSettings not set');continue;}
-              this.wmjsTileRenderer.render(
+              if (!this.tileRenderSettings) { console.log('tileRenderSettings not set'); continue; }
+              const { attributionText } = this.wmjsTileRenderer.render(
                 this.bbox,
                 this.updateBBOX,
                 this.srs,
@@ -746,6 +746,22 @@ export default class WMJSMap {
                 this.tileRenderSettings,
                 this.baseLayers[l].name
               );
+              {
+                const adagucAttribution = ('ADAGUC webmapjs ' + this.WebMapJSMapVersion);
+                const txt = attributionText ? (adagucAttribution + ' | ' + attributionText) : adagucAttribution;
+                const x = this.width - 8;
+                const y = this.height - 8;
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#FFF';
+                ctx.globalAlpha = 0.75;
+                const width = ctx.measureText(txt).width;
+                ctx.fillRect(x - (width), y - 6, (width) + 8, parseInt(14));
+                ctx.fillStyle = '#444';
+                ctx.globalAlpha = 1.0;
+                ctx.fillText(txt, x + 4, y + 2);
+              }
             }
           }
         }
@@ -756,6 +772,7 @@ export default class WMJSMap {
 
     let drawTextBG = (ctx, txt, x, y, fontSize) => {
       ctx.textBaseline = 'top';
+      ctx.textAlign = 'left';
       ctx.fillStyle = '#FFF';
       ctx.globalAlpha = 0.75;
       const width = ctx.measureText(txt).width;
@@ -779,7 +796,6 @@ export default class WMJSMap {
           if (this.layers[j].enabled !== false) {
             let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
             if (isDefined(legendUrl)) {
-
               let image = legendImageStore.getImage(legendUrl);
               if (image.hasError() === false) {
                 if (image.isLoaded() === false && image.isLoading() === false) {
@@ -790,7 +806,7 @@ export default class WMJSMap {
                   let legendH = parseInt(el.height) + 4;
                   legendPosX += (legendW + 4);
                   let legendX = this.width - legendPosX + 2;
-                  let legendY = this.height - (legendH) - 2;
+                  let legendY = this.height - (legendH) - 2 - 13;
                   ctx.beginPath();
                   ctx.fillStyle = '#FFFFFF';
                   ctx.lineWidth = 0.3;
@@ -853,6 +869,7 @@ export default class WMJSMap {
         ctx.globalAlpha = 1;
         ctx.fillStyle = 'black';
         ctx.font = '10pt Helvetica';
+        ctx.textAlign = 'left';
 
         for (let j = 0; j < this.canvasErrors.length; j++) {
           if (this.canvasErrors[j].linkedInfo) {
@@ -938,6 +955,7 @@ export default class WMJSMap {
           ctx.strokeStyle = '#000';
           ctx.font = '9px Helvetica';
           ctx.textBaseline = 'middle';
+          ctx.textAlign = 'left';
           for (let j = 0; j < 2; j++) {
             ctx.moveTo(offsetX, scaleBarHeight - 2 - j + offsetY);
             ctx.lineTo(scaleBarProps.width * 2 + offsetX + 1, scaleBarHeight - 2 - j + offsetY);
@@ -1016,14 +1034,14 @@ export default class WMJSMap {
       ctx.fillStyle = '#000000';
       ctx.fillText('Map projection: ' + this.srs, 5, this.height - 26);
 
-      ctx.font = '7px Helvetica';
-      ctx.fillText('ADAGUC webmapjs ' + this.WebMapJSMapVersion, this.width - 85, this.height - 5);
+      // ctx.font = '7px Helvetica';
+      // ctx.fillText('ADAGUC webmapjs ' + this.WebMapJSMapVersion, this.width - 85, this.height - 5);
     };
     this.addListener('beforecanvasdisplay', (ctx) => {
-      adagucBeforeCanvasDisplay (ctx);
-//       window.requestAnimationFrame(() => {
-//         this.draw();
-//       });
+      adagucBeforeCanvasDisplay(ctx);
+      //       window.requestAnimationFrame(() => {
+      //         this.draw();
+      //       });
     }, true);
     this.addListener('canvasonerror', (e) => { this.canvasErrors = e; }, true);
     this._updateBoundingBox(this.bbox);
@@ -1093,7 +1111,7 @@ export default class WMJSMap {
   };
 
   setActiveLayer (layer) {
-    for (let j = 0;j < this.layers.length; j++) {
+    for (let j = 0; j < this.layers.length; j++) {
       this.layers[j].active = false;
     }
     this.activeLayer = layer;
@@ -1264,14 +1282,10 @@ export default class WMJSMap {
       return;
     }
 
-    /*if (!layer.constructor || !layer.instanceType) {
-      console.warn('addLayer: layer has no constructor or instanceType, skipping addLayer.');
+    if (!layer.constructor) {
+      console.warn('addLayer: layer has no constructor, skipping addLayer.');
       return;
-    }*/ 
-//     if (layer.instanceType !== 'WMJSLayer') {
-//       console.warn('addLayer: layer is not a WMJSLayer object, it is a [' + layer.constructor.name + '], skipping addLayer.');
-//       return;
-//     }
+    }
 
     if (!layer.parentMaps.includes(this)) {
       layer.parentMaps.push(this);
@@ -1417,7 +1431,6 @@ export default class WMJSMap {
       this.divBuffer[0].resize(this.getWidth(), this.getHeight());
       this.divBuffer[1].resize(this.getWidth(), this.getHeight());
     }
-
 
     this.repositionLegendGraphic(true);
 
@@ -1658,7 +1671,7 @@ export default class WMJSMap {
         }
         if (layer.sldURL) {
           legendURL += '&SLD=' + URLEncode(layer.sldURL);
-        }          
+        }
         legendURL += '&transparent=true&width=90&height=250&';
       } catch (e) {
         return undefined;
@@ -1785,18 +1798,18 @@ export default class WMJSMap {
     if (typeof (animationList) === 'object') {
       if (animationList.length > 0) {
         this._animationList = animationList;
-      }    
+      }
     }
     if (this.isAnimating) {
       if (enableConsoleDebugging)console.log('ANIMATING: Skipping draw:' + animationList);
       return;
     }
-    if (this.drawPending){
+    if (this.drawPending) {
       this.needsRedraw = true;
       return;
     }
     this.drawPending = true;
-    //window.requestAnimationFrame();
+    // window.requestAnimationFrame();
     this._animFrameRedraw();
   };
   /**
@@ -1820,7 +1833,7 @@ export default class WMJSMap {
 
   _drawAndLoad (animationList) {
     if (this.width < 4 || this.height < 4) {
-      this._drawReady ();
+      this._drawReady();
       return;
     }
 
@@ -1918,7 +1931,7 @@ export default class WMJSMap {
       if (this.callBack.addToCallback('onresumesuspend', this._onResumeSuspendCallbackFunction) === true) {
         debug('Suspending on onresumesuspend');
       }
-      this._drawReady ();
+      this._drawReady();
       return;
     }
 
@@ -2045,7 +2058,7 @@ export default class WMJSMap {
         this.callBack.triggerEvent('onmapready', this);
         this.loadingDiv.hide();
         this.loadingDivTimer.stop();
-        this._drawReady ();
+        this._drawReady();
       }
     );
   };
@@ -2278,7 +2291,7 @@ export default class WMJSMap {
   detachEvents () {
     this.baseDiv.off('mousedown');
     // this.baseDiv.off('mousewheel');
-    removeMouseWheelEvent($(this.baseDiv).get(0), this.mouseWheelEvent);
+    removeMouseWheelEvent(jquery(this.baseDiv).get(0), this.mouseWheelEvent);
     deleteEvent(document, 'mouseup', this.mouseUpEvent);
     deleteEvent(document, 'mousemove', this.mouseMoveEvent);
   };
@@ -2286,7 +2299,7 @@ export default class WMJSMap {
   attachEvents () {
     this.baseDiv.on('mousedown', this.mouseDownEvent);
     // this.baseDiv.on('mousewheel', this.mouseWheelEvent);
-    addMouseWheelEvent($(this.baseDiv).get(0), this.mouseWheelEvent);
+    addMouseWheelEvent(jquery(this.baseDiv).get(0), this.mouseWheelEvent);
     attachEvent(document, 'mouseup', this.mouseUpEvent);
     attachEvent(document, 'mousemove', this.mouseMoveEvent);
     if (this.isTouchDevice()) {
@@ -2644,7 +2657,7 @@ export default class WMJSMap {
     if (isDefined(e.changedTouches)) {
       return { x:parseInt(e.changedTouches[0].screenX), y:parseInt(e.changedTouches[0].screenY) };
     }
-    let parentOffset = $(this.mainElement).parent().offset();
+    let parentOffset = jquery(this.mainElement).parent().offset();
     let pageX = e.pageX;
     let pageY = e.pageY;
     if (pageX === undefined) { pageX = getMouseXCoordinate(e); }
@@ -2658,7 +2671,7 @@ export default class WMJSMap {
     if (isDefined(e.changedTouches)) {
       return { x:parseInt(e.changedTouches[0].screenX), y:parseInt(e.changedTouches[0].screenY) };
     }
-    let parentOffset = $(this.mainElement).parent().offset();
+    let parentOffset = jquery(this.mainElement).parent().offset();
     let pageX = e.pageX;
     let pageY = e.pageY;
     if (pageX === undefined) { pageX = getMouseXCoordinate(e); }
@@ -3225,7 +3238,7 @@ export default class WMJSMap {
     /*  Validation  */
     /* ------------ */
     /* Is it a coordinate search? No Ajax calls needed. */
-    if (searchDefinition.trim().match(/^(-?(?:[1-8]?\d(?:\.\d+)?|90(?:\.0+)?),-?(?:180(?:\.0+)?|(?:(?:1[0-7]\d)|(?:[1-9]?\d))(?:\.\d+)?))$/)) {
+    if (searchDefinition.trim().match(/^(-?(?:[1-8]?\d(?:\.\d+)?|90(?:\.0+)?),-?(?:180(?:\.0+)?|(?:(?:1[0-7]\d)|(?:[1-9]?\d))(?:\.\d+)?))jquery/)) {
       let splitted = searchDefinition.split(',');
       let lat = splitted[0];
       let lng = splitted[1];
@@ -3243,16 +3256,16 @@ export default class WMJSMap {
     if (!searchDefinition.trim()) {
       debug(I18n.no_search_definition.text);
       // Reset value, in case there are only spaces.
-      $('#searchtextfield').attr('value', '');
+      jquery('#searchtextfield').attr('value', '');
       return;
     }
 
-    let searchDef = searchDefinition.trim().match(/^[a-zA-Z0-9 ]*$/);
+    let searchDef = searchDefinition.trim().match(/^[a-zA-Z0-9 ]*jquery/);
 
     /* Only Alphanumeric characters are allowed */
     if (!searchDef) {
       debug(I18n.only_alpha_num_allowed.text);
-      $('#searchtextfield').attr('value', '');
+      jquery('#searchtextfield').attr('value', '');
       return;
     }
 
@@ -3280,7 +3293,7 @@ export default class WMJSMap {
 
     let succes = (obj) => {
       /* If there is no result from the API, search the SQLite DB */
-      if ($(obj).length === 0) {
+      if (jquery(obj).length === 0) {
         let urlApiGeonames = this.geoNamesURL.replace('{searchTerm}', searchDef)
           .replace('{username}', this.defaultUsernameSearch);
         console.log('urlApiGeonames', urlApiGeonames);
@@ -3288,12 +3301,12 @@ export default class WMJSMap {
         return;
       }
       console.log('ok');
-      let lat = parseFloat($(obj)[0].lat);
-      let lng = parseFloat($(obj)[0].lon);
+      let lat = parseFloat(jquery(obj)[0].lat);
+      let lng = parseFloat(jquery(obj)[0].lon);
 
       this.calculateBoundingBoxAndZoom(lat, lng);
     };
-    $.ajax({
+    jquery.ajax({
       dataType: 'jsonp',
       contentType: 'application/jsonp',
       jsonpCallback: 'resultGeo',
@@ -3314,16 +3327,16 @@ export default class WMJSMap {
     let succes = (obj) => {
       console.log('ok', obj);
       /* If there is no result */
-      if ($(obj).find('totalResultsCount').text() === '0') {
+      if (jquery(obj).find('totalResultsCount').text() === '0') {
         error(I18n.no_results_search.text);
         /* Reset value */
         return;
       }
-      let lat = parseFloat($(obj).find('geoname').find('lat').text());
-      let lng = parseFloat($(obj).find('geoname').find('lng').text());
+      let lat = parseFloat(jquery(obj).find('geoname').find('lat').text());
+      let lng = parseFloat(jquery(obj).find('geoname').find('lng').text());
       this.calculateBoundingBoxAndZoom(lat, lng);
     };
-    $.ajax({
+    jquery.ajax({
       dataType: 'xml',
       type: 'GET',
       url: url,

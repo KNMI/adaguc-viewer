@@ -1,4 +1,4 @@
-import { $ } from './WMJSExternalDependencies.js';
+import { jquery } from './WMJSExternalDependencies.js';
 
 import { isDefined } from './WMJSTools.js';
 
@@ -47,8 +47,8 @@ export default class WMJSImage {
     this.srcToLoad = src;
     this._type = __type;
     this.loadEventCallback = callback;
-    if (!$) { console.warn('WMJSImage: jquery is not defined, assuming unit test is running'); return; }
-    this.el = $(document.createElement('img'));
+    if (!jquery) { console.warn('WMJSImage: jquery is not defined, assuming unit test is running'); return; }
+    this.el = jquery(document.createElement('img'));
     this.el.on('load', () => {
       this.loadEvent(this, false);
     });
@@ -137,9 +137,9 @@ export default class WMJSImage {
       this.loadEvent(this, true);
       return;
     }
-    
+
     /* Allow relative URL's */
-    if (this.srcToLoad.startsWith('/') && !this.srcToLoad.startsWith('//')){
+    if (this.srcToLoad.startsWith('/') && !this.srcToLoad.startsWith('//')) {
       let splittedHREF = window.location.href.split('/').filter(e => e.length > 0);
       let hostName = splittedHREF[0] + '//' + splittedHREF[1] + '/';
       this.srcToLoad = hostName + this.srcToLoad;
@@ -156,7 +156,7 @@ export default class WMJSImage {
       return;
     }
 
-    if (this.timerIsRunning === true)return;
+    if (this.timerIsRunning === true) return;
     if (numImagesLoading >= 4) {
       if (this._stopLoading === false) {
         this.timerIsRunning = true;
@@ -170,7 +170,7 @@ export default class WMJSImage {
       }
       return;
     }
-    numImagesLoading ++;
+    numImagesLoading++;
     // console.log("WMJSImage:load "+this.srcToLoad);
 
     if (this.randomize) {

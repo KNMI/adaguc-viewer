@@ -93,7 +93,7 @@ export default class WMJSDimension {
     } else if (this._type === 'timevalues') {
       /* Filter all dates from the array which are lower than given start value */
       let newValue = parseISO8601DateToDate(val);
-      let newArray = this._allDates.filter(function(x) {
+      let newArray = this._allDates.filter(function (x) {
         return x >= newValue;
       });
       let newValues = '';
@@ -103,7 +103,6 @@ export default class WMJSDimension {
       }
       this.reInitializeValues(newValues);
       this.setClosestValue();
-      return;
     }
   }
 

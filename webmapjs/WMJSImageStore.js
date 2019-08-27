@@ -57,7 +57,7 @@ export default class WMJSImageStore {
       }
     }
   };
-  
+
   stopLoading () {
     for (let property in this.imagesbysrc) {
       if (this.imagesbysrc.hasOwnProperty(property)) {
@@ -107,7 +107,7 @@ export default class WMJSImageStore {
       let minImageLife = this._imageLifeCounter;
       Object.keys(this.imagesbysrc).forEach((property) => {
         let img = this.imagesbysrc[property];
-        if (img.isLoading() === false) {// && img.isLoaded() === true) {
+        if (img.isLoading() === false) { // && img.isLoaded() === true) {
           if (minImageLife >= img.imageLife) {
             minImageLife = img.imageLife;
             imageId = property;

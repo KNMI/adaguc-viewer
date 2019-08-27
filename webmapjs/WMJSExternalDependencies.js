@@ -4,7 +4,7 @@
 // import proj4 from 'proj4';
 
 /* Use the following three definitions in case of loading the WebMapJS modules directly in a browser or google closure */
-let $ = window.$;
+let jquery = window.$;
 let moment = window.moment;
 let proj4 = window.proj4;
-export { $, moment, proj4 };
+export { jquery, moment, proj4 };

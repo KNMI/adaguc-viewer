@@ -1,5 +1,5 @@
 import { isDefined, preventdefaultEvent, MakeHTTPRequest } from './WMJSTools.js';
-import { $ } from './WMJSExternalDependencies.js';
+import { jquery } from './WMJSExternalDependencies.js';
 export default class WMJSDialog {
   closeAllDialogs (gfiDialogList) {
     for (var j = 0; j < gfiDialogList.length; j++) {
@@ -28,8 +28,8 @@ export default class WMJSDialog {
     if (isDefined(options.autoDestroy)) {
       autoDestroy = options.autoDestroy;
     }
-    if (!$) { console.warn('WMJSDialog: jquery is not defined, assuming unit test is running'); return; }
-    var dialog = $('<div />', {
+    if (!jquery) { console.warn('WMJSDialog: jquery is not defined, assuming unit test is running'); return; }
+    var dialog = jquery('<div />', {
       css:{
         minHeight:'20px',
         height:180,
@@ -45,13 +45,13 @@ export default class WMJSDialog {
         display:'inline-block'
       },
       mousedown: (event) => {
-        if (event.stopPropagation){
+        if (event.stopPropagation) {
           event.stopPropagation();
         }
         preventdefaultEvent(event);
       },
       mousewheel: (event) => {
-        if (event.stopPropagation){
+        if (event.stopPropagation) {
           event.stopPropagation();
         }
       }
@@ -84,13 +84,13 @@ export default class WMJSDialog {
     dialog.keyup((e) => {
       if (e.keyCode === 27) { dialog.closeDialog(); }
     });
-    var closeButton = $('<div/>', { css:{ color:'white', fontWeight:'bold', textColor:'white', width:'16px', height:'16px', lineHeight:'14px', margin:'1px', padding:'1px !important', zIndex:1200 },
+    var closeButton = jquery('<div/>', { css:{ color:'white', fontWeight:'bold', textColor:'white', width:'16px', height:'16px', lineHeight:'14px', margin:'1px', padding:'1px !important', zIndex:1200 },
       click:() => {
         dialog.closeDialog();
       } }).appendTo(dialog);
     closeButton.button({ label:'X' }).addClass('wmjsdialog-closebutton');
 
-    var dialogContent = $('<div/>', {
+    var dialogContent = jquery('<div/>', {
       css:{ position:'absolute', right:'0px', top:'18px', background:'#FFF', borderTop:'1px solid #01405e', width:'100%', height:'100%', overflow:'auto', fontSize:'10px', lineHeight:'12px' },
       mousedown:(event) => {
         // event.stopPropagation();

@@ -87,13 +87,13 @@ export default class WMJSLayer {
       this.getmapURL = options.service;
       this.getfeatureinfoURL = options.service;
       this.getlegendgraphicURL = options.service;
-      if (options.active === true)this.active = true; else this.active = false;
+      if (options.active === true) this.active = true; else this.active = false;
       // this.name=options.layer;
       this.name = options.name;
       if (options.getgraphinfoURL) this.getgraphinfoURL = options.getgraphinfoURL;
-      if (options.style) { this.currentStyle = options.style;  }
+      if (options.style) { this.currentStyle = options.style; }
       if (options.currentStyle) { this.currentStyle = options.currentStyle; }
-      if (options.sldURL) { this.sldURL = options.sldURL;}
+      if (options.sldURL) { this.sldURL = options.sldURL; }
       if (options.id) { this.id = options.id; }
       if (options.format) this.format = options.format; else this.format = 'image/png';
       if (options.opacity) { this.opacity = options.opacity; }
@@ -112,7 +112,7 @@ export default class WMJSLayer {
         for (let d = 0; d < options.dimensions.length; d++) {
           this.dimensions.push(new WMJSDimension(options.dimensions[d]));
         }
-     }
+      }
     }
   }
   // Extensions compatible with ncWMS WMS extensions on http://www.resc.rdg.ac.uk/trac/ncWMS/wiki/WmsExtensions
@@ -356,7 +356,7 @@ export default class WMJSLayer {
           let currentValue = layer.dimensions[i].currentValue;
           layer.dimensions[i] = dim;
           layer.dimensions[i].currentValue = currentValue;
-        }     
+        }
       } else {
         error('Skipping dimension ' + dim.name);
       }
@@ -366,7 +366,7 @@ export default class WMJSLayer {
     for (let d = 0; d < layerDimsToRemove.length; d++) {
       let i = layer.dimensions.findIndex(dim => dim.name === layerDimsToRemove[d]);
       if (i !== -1) layer.dimensions.splice(i, 1);
-    }    
+    }
     if (hasRefTimeDimension) {
       let refTimeDimension = layer.getDimension('reference_time');
       this.handleReferenceTime('reference_time', refTimeDimension.getValue());
@@ -676,7 +676,7 @@ export default class WMJSLayer {
       if (isDefined(_layerDoneCallback)) {
         try {
           _layerDoneCallback(layer);
-        }catch(e){
+        } catch (e) {
           console.log(e);
         }
       }
@@ -702,15 +702,16 @@ export default class WMJSLayer {
 
     let _xml2jsonrequest = xml2jsonrequest;
     if (!xml2jsonrequest) {
-      _xml2jsonrequest = _this.parentMaps && _this.parentMaps.length > 0 ? _this.parentMaps[0].xml2jsonrequest : undefined
+      _xml2jsonrequest = _this.parentMaps && _this.parentMaps.length > 0 ? _this.parentMaps[0].xml2jsonrequest : undefined;
     }
     _this.WMJSService = WMJSGetServiceFromStore(this.service, _xml2jsonrequest);
     _this.WMJSService.getCapabilities((data) => {
-      callback(data,_this);}, requestfail, forceReload);
+      callback(data, _this);
+    }, requestfail, forceReload);
   };
 
   cloneLayer () {
-    let layer = {} ;//new WMJSLayer(this); TODO WILL CAUSE LOOP?
+    let layer = {};// new WMJSLayer(this); TODO WILL CAUSE LOOP?
     for (let i in this) {
       layer[i] = this[i];
     }

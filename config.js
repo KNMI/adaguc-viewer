@@ -400,7 +400,8 @@ var WMJSTileRendererTileSettings = {
       home: '//b.tile.openstreetmap.org/',
       minLevel: 1,
       maxLevel: 16,
-      tileServerType: 'osm'
+      tileServerType: 'osm',
+      copyRight: 'Open Street Map'
     },
     'EPSG:28992': {
       home: 'http://services.arcgisonline.nl/ArcGIS/rest/services/Basiskaarten/PDOK_BRT/MapServer/tile/',

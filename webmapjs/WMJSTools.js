@@ -29,8 +29,6 @@
   THE SOFTWARE.
 */
 
-
-
 // ============================================================================
 // Name        : tools
 // Author      : MaartenPlieger (plieger at knmi.nl)
@@ -171,12 +169,12 @@ export const attachEvent = (obj, evType, fn) => {
         */
         delta = -event.detail / 3;
       }
-        /** If delta is nonzero, handle it.
+      /** If delta is nonzero, handle it.
         * Basically, delta is now positive if wheel was scrolled up,
         * and negative, if wheel was scrolled down.
         */
       if (delta) { handler(delta); }
-        /** Prevent default actions caused by mouse wheel.
+      /** Prevent default actions caused by mouse wheel.
         * That might be ugly, but we handle scrolls somehow
         * anyway, so don't bother here..
         */
@@ -253,14 +251,13 @@ function Browser () {
   if ((navigator.userAgent).indexOf('Opera') != -1) {
     this.isOP = true;
   } else
-     if (navigator.appName == 'Netscape' || navigator.appName == 'Konqueror') {
-       this.isNS = true;
-       this.isKonqueror = true;
-     } else
-       if ((navigator.appName).indexOf('Microsoft') != -1) {
-         this.isIE = true;
-       }
-  return;
+  if (navigator.appName == 'Netscape' || navigator.appName == 'Konqueror') {
+    this.isNS = true;
+    this.isKonqueror = true;
+  } else
+  if ((navigator.appName).indexOf('Microsoft') != -1) {
+    this.isIE = true;
+  }
 }
 var browser = new Browser();
 
@@ -293,7 +290,7 @@ function dump (arr, level, path) {
         newpath = path + item;
       }
       if (typeof (value) === 'object') { // If it is an array,
-//         dumped_text += newpath + "=object<br>\n";
+        //         dumped_text += newpath + "=object<br>\n";
         dumped_text += dump(value, level + 1, newpath + '.');
       } else {
         dumped_text += newpath + '="' + value + '"<br>\n';
@@ -307,18 +304,18 @@ function dump (arr, level, path) {
 
 var Url = {
 
-		// public method for url encoding
+  // public method for url encoding
   encode : function (string) {
     return escape(this._utf8_encode(string));
   },
 
-		// public method for url decoding
+  // public method for url decoding
   decode : function (string) {
     alert('Deprecated function !!! WMJSTools line 325 with [' + string + ']');
     return this._utf8_decode(unescape(string));
   },
 
-		// private method for UTF-8 encoding
+  // private method for UTF-8 encoding
   _utf8_encode : function (string) {
     string = string.replace(/\r\n/g, '\n');
     var utftext = '';
@@ -341,7 +338,7 @@ var Url = {
     return utftext;
   },
 
-		// private method for UTF-8 decoding
+  // private method for UTF-8 decoding
   _utf8_decode : function (utftext) {
     var string = '';
     var i = 0;
@@ -369,7 +366,6 @@ var Url = {
   }
 
 };
-
 
 // ============================================================================
 // Name        : HTTP_RequestFunctions.js
@@ -558,9 +554,9 @@ export const URLEncode = (plaintext) => {
 
 // Replaces all instances of the given substring.
 String.prototype.replaceAll = function (
-    strTarget, // The substring you want to replace
-    strSubString // The string you want to replace in.
-    ) {
+  strTarget, // The substring you want to replace
+  strSubString // The string you want to replace in.
+) {
   var strText = this;
   var intIndexOfMatch = strText.indexOf(strTarget);
   // Keep looping while an instance of the target string
@@ -598,15 +594,15 @@ function checkValidInputTokens (stringToCheck) {
 };
 
 // Read a page's GET URL variables and return them as an associative array (From Roshambo's code snippets)
-export const getUrlVars =() => {
-  var vars = [], hash;
+export const getUrlVars = () => {
+  var vars = []; var hash;
 
   var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
   for (var i = 0; i < hashes.length; i++) {
     hash = hashes[i].split('=');
 
     hash[1] = URLDecode(hash[1]);
-        // vars.push({hash[0]:hash[1]});
+    // vars.push({hash[0]:hash[1]});
     if (checkValidInputTokens(hash[0]) == false || checkValidInputTokens(hash[1]) == false) {
 
     } else {
@@ -618,7 +614,7 @@ export const getUrlVars =() => {
 
 // Read a page's GET URL variables and return them as an associative array (From Roshambo's code snippets)
 function getUrlVarsFromHashTag () {
-  var vars = [], hash;
+  var vars = []; var hash;
   var splitloc = window.location.hash.indexOf('#');
   if (window.location.hash[splitloc + 1] == '?')splitloc++;
   var hashString = window.location.hash.slice(splitloc + 1);
@@ -628,7 +624,7 @@ function getUrlVarsFromHashTag () {
     hash = hashes[i].split('=');
 
     hash[1] = URLDecode(hash[1]);
-        // vars.push({hash[0]:hash[1]});
+    // vars.push({hash[0]:hash[1]});
     if (checkValidInputTokens(hash[0]) == false || checkValidInputTokens(hash[1]) == false) {
 
     } else {
@@ -685,10 +681,10 @@ export const composeUrlObjectFromURL = (url) => {
     }
   }
   if (hashes[0].indexOf('=') == -1) {
-//     if(checkValidInputTokens(hashes[0])){
-//       location = hashes[0];
+    //     if(checkValidInputTokens(hashes[0])){
+    //       location = hashes[0];
 
-//     }
+    //     }
   }
   return { location:location, kvp:vars };
 };
@@ -717,12 +713,12 @@ var _checkIfHashTagChanged = function (callback) {
       callback(hashLocation, urlVars);
     }
   }
-  
-  if (hashTagTimerIsRunning === true)return;
+
+  if (hashTagTimerIsRunning === true) return;
   hashTagTimerIsRunning = true;
-  setTimeout(function () { 
+  setTimeout(function () {
     hashTagTimerIsRunning = false;
-    _checkIfHashTagChanged(callback); 
+    _checkIfHashTagChanged(callback);
   }, 500);
 };
 
@@ -737,7 +733,7 @@ export const checkIfHashTagChanged = (callback) => {
 };
 
 var decodeBase64 = function (s) {
-  var e = {}, i, b = 0, c, x, l = 0, a, r = '', w = String.fromCharCode, L = s.length;
+  var e = {}; var i; var b = 0; var c; var x; var l = 0; var a; var r = ''; var w = String.fromCharCode; var L = s.length;
   var A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
   for (i = 0; i < 64; i++) { e[A.charAt(i)] = i; }
   for (x = 0; x < L; x++) {
@@ -747,74 +743,72 @@ var decodeBase64 = function (s) {
   return r;
 };
 
-
 export const addMouseWheelEvent = (element, mouseWheelHandler) => {
   if (!element) return;
   /* https://developer.mozilla.org/en-US/docs/Web/Events/wheel#Browser_compatibility */
   if (!window.addWheelListener) {
-    var prefix = "", _addEventListener, support;
+    var prefix = ''; var _addEventListener; var support;
 
     // detect event model
-    if ( window.addEventListener ) {
-        _addEventListener = "addEventListener";
+    if (window.addEventListener) {
+      _addEventListener = 'addEventListener';
     } else {
-        _addEventListener = "attachEvent";
-        prefix = "on";
+      _addEventListener = 'attachEvent';
+      prefix = 'on';
     }
 
     // detect available wheel event
-    support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
-              document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
-              "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
+    support = 'onwheel' in document.createElement('div') ? 'wheel' // Modern browsers support "wheel"
+      : document.onmousewheel !== undefined ? 'mousewheel' // Webkit and IE support at least "mousewheel"
+        : 'DOMMouseScroll'; // let's assume that remaining browsers are older Firefox
 
-    window.addWheelListener = function( elem, callback, useCapture ) {
-        _addWheelListener( elem, support, callback, useCapture );
+    window.addWheelListener = function (elem, callback, useCapture) {
+      _addWheelListener(elem, support, callback, useCapture);
 
-        // handle MozMousePixelScroll in older Firefox
-        if( support == "DOMMouseScroll" ) {
-            _addWheelListener( elem, "MozMousePixelScroll", callback, useCapture );
-        }
+      // handle MozMousePixelScroll in older Firefox
+      if (support == 'DOMMouseScroll') {
+        _addWheelListener(elem, 'MozMousePixelScroll', callback, useCapture);
+      }
     };
 
-    function _addWheelListener( elem, eventName, callback, useCapture ) {
-        elem[ _addEventListener ]( prefix + eventName, support == "wheel" ? callback : function( originalEvent ) {
-            !originalEvent && ( originalEvent = window.event );
+    function _addWheelListener (elem, eventName, callback, useCapture) {
+      elem[ _addEventListener ](prefix + eventName, support == 'wheel' ? callback : function (originalEvent) {
+        !originalEvent && (originalEvent = window.event);
 
-            // create a normalized event object
-            var event = {
-                // keep a ref to the original event object
-                originalEvent: originalEvent,
-                target: originalEvent.target || originalEvent.srcElement,
-                type: "wheel",
-                deltaMode: originalEvent.type == "MozMousePixelScroll" ? 0 : 1,
-                deltaX: 0,
-                deltaY: 0,
-                deltaZ: 0,
-                preventDefault: function() {
-                    originalEvent.preventDefault ?
-                        originalEvent.preventDefault() :
-                        originalEvent.returnValue = false;
-                }
-            };
-            
-            // calculate deltaY (and deltaX) according to the event
-            if ( support == "mousewheel" ) {
-                event.deltaY = - 1/40 * originalEvent.wheelDelta;
-                // Webkit also support wheelDeltaX
-                originalEvent.wheelDeltaX && ( event.deltaX = - 1/40 * originalEvent.wheelDeltaX );
-            } else {
-                event.deltaY = originalEvent.deltaY || originalEvent.detail;
-            }
+        // create a normalized event object
+        var event = {
+          // keep a ref to the original event object
+          originalEvent: originalEvent,
+          target: originalEvent.target || originalEvent.srcElement,
+          type: 'wheel',
+          deltaMode: originalEvent.type == 'MozMousePixelScroll' ? 0 : 1,
+          deltaX: 0,
+          deltaY: 0,
+          deltaZ: 0,
+          preventDefault: function () {
+            originalEvent.preventDefault
+              ? originalEvent.preventDefault()
+              : originalEvent.returnValue = false;
+          }
+        };
 
-            // it's time to fire the callback
-            return callback( event );
+        // calculate deltaY (and deltaX) according to the event
+        if (support == 'mousewheel') {
+          event.deltaY = -1 / 40 * originalEvent.wheelDelta;
+          // Webkit also support wheelDeltaX
+          originalEvent.wheelDeltaX && (event.deltaX = -1 / 40 * originalEvent.wheelDeltaX);
+        } else {
+          event.deltaY = originalEvent.deltaY || originalEvent.detail;
+        }
 
-        }, useCapture || false );
+        // it's time to fire the callback
+        return callback(event);
+      }, useCapture || false);
     }
   }
-  window.addWheelListener (element, mouseWheelHandler);
+  window.addWheelListener(element, mouseWheelHandler);
 };
 
 export const removeMouseWheelEvent = (element, mouseWheelHandler) => {
-  console.warn("TODO: Implement removeMouseWheelEvent in WMJSTools.js");
+  console.warn('TODO: Implement removeMouseWheelEvent in WMJSTools.js');
 };

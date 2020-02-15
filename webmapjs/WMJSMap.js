@@ -1672,7 +1672,7 @@ export default class WMJSMap {
         if (layer.sldURL) {
           legendURL += '&SLD=' + URLEncode(layer.sldURL);
         }
-        legendURL += '&transparent=true&width=90&height=250&';
+        legendURL += '&transparent=true&';
       } catch (e) {
         return undefined;
       }

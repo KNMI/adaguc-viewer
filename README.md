@@ -28,3 +28,33 @@ Visit http://localhost:8091/adaguc-viewer/
 ![alt text](./docs/screenshot-viewer-autowms.png "Adaguc AutoWMS App")
 
 Done!
+
+## Adding the EProfile app to the adaguc-viewer docker
+If you want to add the EProfile app to adaguc-viewer running in your Docker container, you should update your config
+file. This can be done via the following steps:
+
+Docker exec into your adaguc-viewer container:
+```
+docker exec -it adaguc-viewer /bin/bash
+```
+Install vim such that you can edit the config file:
+```
+apt-get update
+apt-get install vim
+```
+Open the config file in vim:
+```
+vim adaguc-viewer/config.js
+```
+Edit config.js by adding the following entry to the getFeatureInfoApplications array:
+`, {name:'EProfile', iconCls:'button_getfeatureinfo', location:'apps/gfiapp_eprofile.html'}`
+
+The resulting getFeatureInfoApplications array looks for example like this:
+```
+var getFeatureInfoApplications = [
+ {name:'Time series mode',iconCls:'button_getfeatureinfo',location:'apps/gfiapp_d3c3.html'}
+ ,{name:'EProfile', iconCls:'button_getfeatureinfo', location:'apps/gfiapp_eprofile.html'}    
+ //,{name:'Glameps application',iconCls:'button_getfeatureinfo',location:'../gfiapps/GLAMEPS_gfiapp.html'}
+];
+```
+If you then visit adaguc-viewer in your browser, you will have the EProfile app available in the cogwheel menu.

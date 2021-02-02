@@ -72,14 +72,23 @@ If you then visit adaguc-viewer in your browser, you will have the EProfile app 
 
 # Developing
 
-There are two ways to develop the adaguc-viewer. For both ways you need a webserver like apache http server. You can place this folder in the documentroot.
+There are two ways to develop the adaguc-viewer. For both ways you need a webserver like apache http server or node. You can place the adaguc-viewer in the documentroot of the apache http server or use `npx serve .` to serve the current folder directly.
 
-# 1: Use index.dev.html
+## 1: Use index.dev.html
 
 Using index.dev.html uses the unminified code. Changes are directly reflected after refeshing the browser. The browser needs to support ES6 modules to be able to read the source files.
 
-# 2: Use index.html and google closure compiler
+## 2: Use index.html and google closure compiler
 
 The index.html uses the minfied code, build with the google closure compiler. Each time when changes to the source files are made, the closure compiler needs to be used to make the minified bundle. The google closure compiler is called from the ./builds/build.sh script.
 
-The google closure compiler can be downloaded from: https://repo1.maven.org/maven2/com/google/javascript/closure-compiler/v20210106/closure-compiler-v20210106.jar
+The google closure compiler can be downloaded from: https://repo1.maven.org/maven2/com/google/javascript/closure-compiler/v20210106/closure-compiler-v20210106.jar and should be placed at the same folder level as adaguc-viewer like:
+
+```
+├── adaguc-viewer/
+├── closure/compiler.jar
+```
+
+Then inside the `adaguc-viewer/builds/` call `bash build.sh` to compile the code.
+
+Tip: Serving the adaguc-viewer can also be accomplished by doing the command `npx serve .` from the adaguc-viewer folder.

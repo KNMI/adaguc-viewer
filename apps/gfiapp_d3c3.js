@@ -264,6 +264,7 @@ var gfiapp_d3c3 = function(element, webmapjs) {
         if (key == 'time') value = '1000-01-01T00:00:00Z/3000-01-01T00:00:00Z';
         if(key == 'dim_member')value = '*';
         if(key == 'dim_ensemble_member')value = '*';
+        if(key == 'dim_percentile')value = '*';
         //console.log("B"+key+"="+value);
         GFIURL += (key + "=" + URLEncode(value)) + "&";
       }

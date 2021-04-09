@@ -28,10 +28,6 @@ export default class WMJSTileRenderer {
     }
     let tileSettings = tileLayer[srs];
 
-    if (!tileSettings) {
-      return;
-    }
-
     /* If current map projection is missing in the tilesets, try to find an alternative */
     if (!tileSettings) {
       for (var tileOption in tileOptions) {
@@ -39,11 +35,11 @@ export default class WMJSTileRenderer {
           for (var epsgCode in tileOptions[tileOption]) {
             if (tileOptions[tileOption].hasOwnProperty(epsgCode)) {
               if (epsgCode === srs) {
-                console.log(
-                  "Projection not supported by tileserver: Falling back to ",
-                  tileOption,
-                  epsgCode
-                );
+                // console.log(
+                //   "Projection not supported by tileserver: Falling back to ",
+                //   tileOption,
+                //   epsgCode
+                // );
                 tileSettings = tileOptions[tileOption][epsgCode];
               }
             }
@@ -52,6 +48,14 @@ export default class WMJSTileRenderer {
       }
     }
 
+    if (!tileSettings) {
+      console.log(
+        "Projection not supported by tileserver: ",
+        tileOption,
+        epsgCode
+      );
+      return {};
+    }
     let pi = Math.PI;
     /* Default settings for OSM Mercator */
     let tileSize = 256;

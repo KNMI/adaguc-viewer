@@ -1,6 +1,6 @@
 var defaultBaselayer = {
-  service: "https://geoservices.knmi.nl/cgi-bin/worldmaps.cgi?",
-  name: "world_line",
+  service: "https://testgeoservices.knmi.nl/wms?DATASET=baselayers&",
+  name: "countryborders",
 };
 
 Ext.define("webmapjsext.WMJSExt.MapTypeSelector", {

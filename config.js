@@ -3,7 +3,7 @@ var baseLayerConfiguration = [
     service: "", // TODO We need to copy the natural earth tiles to S3
     name: "naturalearth2",
     title: "World base layer Natural Earth ",
-    enabled: true,
+    enabled: false,
     type: "twms",
     format: "image/gif",
   },
@@ -11,7 +11,7 @@ var baseLayerConfiguration = [
     title: "KNMI Basemap",
     name: "WorldMap",
     type: "twms",
-    enabled: false,
+    enabled: true,
   },
   {
     title: "ESRI ArcGis Canvas",
@@ -408,7 +408,7 @@ var WMJSTileRendererTileSettings = {
       tileServerType: "osm",
       copyRight: "Natural Earth II | Ingmapping",
     },
-    "EPSG:3575": {
+    "EPSG:3575-disabled": {
       home:
         "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap/EPSG3575/",
       minLevel: 5,

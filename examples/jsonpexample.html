@@ -7,7 +7,7 @@
      $(document).ready(function(){
        $('#result').html('ready');
 //       var url="http://bvmlab-218-41.knmi.nl/cgi-bin/ECMD_EUR.cgi?&SERVICE=WMS&REQUEST=GetPointValue&VERSION=1.1.1&SRS=EPSG:4326&QUERY_LAYERS=201306130000%2FLS_precipitation&INFO_FORMAT=application/json&time=2013-06-13T00:00:00Z/2013-06-16T00:00:00Z&X=5&Y=52&JSONP=?";
-       var url="http://geoservices.knmi.nl/cgi-bin/GLAMEPS2.cgi?&SERVICE=WMS&REQUEST=GetPointValue&VERSION=1.1.1&SRS=EPSG:4326&QUERY_LAYERS=20130311_18/members/Dewpoint,20130311_18/members/Temperature_2m&X=5.2&Y=52.0&INFO_FORMAT=application/json&time=2013-03-11T18:00:00/2013-03-13T18:00:00Z&DIM_member=AladEPS_mbr000,AladEPS_mbr025&JSONP=?";
+       var url="https://geoservices.knmi.nl/cgi-bin/GLAMEPS2.cgi?&SERVICE=WMS&REQUEST=GetPointValue&VERSION=1.1.1&SRS=EPSG:4326&QUERY_LAYERS=20130311_18/members/Dewpoint,20130311_18/members/Temperature_2m&X=5.2&Y=52.0&INFO_FORMAT=application/json&time=2013-03-11T18:00:00/2013-03-13T18:00:00Z&DIM_member=AladEPS_mbr000,AladEPS_mbr025&JSONP=?";
        $.ajax({
          type: 'GET',
 	 url: url,

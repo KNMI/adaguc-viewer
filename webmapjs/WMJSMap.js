@@ -30,23 +30,41 @@
   THE SOFTWARE.
 */
 
-import WMJSImageStore from './WMJSImageStore.js';
-import { isDefined, preventdefaultEvent, URLEncode, toArray, deleteEvent, attachEvent, WMJScheckURL,
-  MakeHTTPRequest, getMouseXCoordinate, getMouseYCoordinate, addMouseWheelEvent, removeMouseWheelEvent } from './WMJSTools.js';
-import WMJSBBOX from './WMJSBBOX.js';
-import WMJSProjection from './WMJSProjection.js';
-import WMJSListener from './WMJSListener.js';
-import WMJSTimer from './WMJSTimer.js';
-import WMJSDebouncer from './WMJSDebouncer.js';
-import WMJSCanvasBuffer from './WMJSCanvasBuffer.js';
-import WMJSAnimate from './WMJSAnimate.js';
-import WMJSTileRenderer from './WMJSTileRenderer.js';
-import WMJSDrawMarker from './WMJSDrawMarker.js';
-import I18n from './I18n/lang.en.js';
-import { jquery, proj4, moment } from './WMJSExternalDependencies.js';
+import WMJSImageStore from "./WMJSImageStore.js";
+import {
+  isDefined,
+  preventdefaultEvent,
+  URLEncode,
+  toArray,
+  deleteEvent,
+  attachEvent,
+  WMJScheckURL,
+  MakeHTTPRequest,
+  getMouseXCoordinate,
+  getMouseYCoordinate,
+  addMouseWheelEvent,
+  removeMouseWheelEvent,
+} from "./WMJSTools.js";
+import WMJSBBOX from "./WMJSBBOX.js";
+import WMJSProjection from "./WMJSProjection.js";
+import WMJSListener from "./WMJSListener.js";
+import WMJSTimer from "./WMJSTimer.js";
+import WMJSDebouncer from "./WMJSDebouncer.js";
+import WMJSCanvasBuffer from "./WMJSCanvasBuffer.js";
+import WMJSAnimate from "./WMJSAnimate.js";
+import WMJSTileRenderer from "./WMJSTileRenderer.js";
+import WMJSDrawMarker from "./WMJSDrawMarker.js";
+import I18n from "./I18n/lang.en.js";
+import { jquery, proj4, moment } from "./WMJSExternalDependencies.js";
 
-import WMJSDialog from './WMJSDialog.js';
-import { WMJSDateOutSideRange, WMJSDateTooEarlyString, WMJSDateTooLateString, WMSVersion, WMJSProj4Defs } from './WMJSConstants.js';
+import WMJSDialog from "./WMJSDialog.js";
+import {
+  WMJSDateOutSideRange,
+  WMJSDateTooEarlyString,
+  WMJSDateTooLateString,
+  WMSVersion,
+  WMJSProj4Defs,
+} from "./WMJSConstants.js";
 // var Hammer = require(['hammerjs']);
 //var pjson = require('../package.json');
 
@@ -57,37 +75,49 @@ let enableConsoleErrors = true;
  */
 
 let debug = (message) => {
-  if (enableConsoleDebugging) { console.log(message); }
+  if (enableConsoleDebugging) {
+    console.log(message);
+  }
 };
 let error = (message) => {
-  if (enableConsoleErrors) { console.log('WebMapJS warning: ', message); }
+  if (enableConsoleErrors) {
+    console.log("WebMapJS warning: ", message);
+  }
 };
 
 /* Global vars */
 let WebMapJSMapNo = 0;
 /* Global image stores */
 let maxAnimationSteps = 72;
-var legendImageStore = new WMJSImageStore(maxAnimationSteps * 6, 'wmjslegendbuffer');
-var getMapImageStore = new WMJSImageStore(maxAnimationSteps * 6, 'wmjsimagebuffer');
-var bgMapImageStore = new WMJSImageStore(360, 'wmjsimagebuffer', { randomizer:false });
+var legendImageStore = new WMJSImageStore(
+  maxAnimationSteps * 6,
+  "wmjslegendbuffer"
+);
+var getMapImageStore = new WMJSImageStore(
+  maxAnimationSteps * 6,
+  "wmjsimagebuffer"
+);
+var bgMapImageStore = new WMJSImageStore(360, "wmjsimagebuffer", {
+  randomizer: false,
+});
 
 /* GetFeature info handling */
 class GetFeatureInfoObject {
-  constructor (layer, data) {
+  constructor(layer, data) {
     this.layer = layer;
     this.data = data;
   }
-};
+}
 
 /**
 /**
   * WMJSMap class
   */
 export default class WMJSMap {
-  constructor (_element, _xml2jsonrequestURL) {
-    this.WebMapJSMapVersion = '3.3.6';
-//    if (pjson && pjson.version) this.WebMapJSMapVersion = pjson.version;
-    this.base = './';
+  constructor(_element, _xml2jsonrequestURL) {
+    this.WebMapJSMapVersion = "3.3.6";
+    //    if (pjson && pjson.version) this.WebMapJSMapVersion = pjson.version;
+    this.base = "./";
     this.noimage = undefined;
     this.showDialog = true;
     this.loadingImageSrc = undefined;
@@ -102,19 +132,19 @@ export default class WMJSMap {
     this.height = 2;
     this.layers = [];
     this.busy = 0;
-    this.mapdimensions = [];// Array of Dimension;
-    this.baseLayers = '';
+    this.mapdimensions = []; // Array of Dimension;
+    this.baseLayers = "";
     this.numBaseLayers = 0;
     this._map = this;
-    this.renderer = 'WMJSCanvasBuffer';
+    this.renderer = "WMJSCanvasBuffer";
     this.layersBusy = 0;
     this.mapBusy = false;
     this.hasGeneratedId = false;
-    this.divZoomBox = document.createElement('div');
-    this.divBoundingBox = document.createElement('div');
-    this.divDimInfo = document.createElement('div');
+    this.divZoomBox = document.createElement("div");
+    this.divBoundingBox = document.createElement("div");
+    this.divDimInfo = document.createElement("div");
     this.divMapPin = {
-      displayMapPin: true
+      displayMapPin: true,
     };
     this._displayLegendInMap = true;
     this.messageDiv = undefined;
@@ -125,34 +155,34 @@ export default class WMJSMap {
     this.loadedBBOX = new WMJSBBOX(); // Boundingbox that is used for current map
     this.loadingBBOX = new WMJSBBOX(); // Boundingbox that is used when map is loading
     this.drawnBBOX = new WMJSBBOX(); // Boundingbox that is used when map is drawn
-    this.updateSRS = '';
+    this.updateSRS = "";
 
     this.divBuffer = [];
 
     this.mapHeader = {
-      height:0,
-      fill:{
-        color:'#EEE',
-        opacity:0.4
+      height: 0,
+      fill: {
+        color: "#EEE",
+        opacity: 0.4,
       },
-      hover:{
-        color:'#017daf',
-        opacity:0.9
+      hover: {
+        color: "#017daf",
+        opacity: 0.9,
       },
-      selected:{
-        color:'#017daf',
-        opacity:1.0
+      selected: {
+        color: "#017daf",
+        opacity: 1.0,
       },
-      hoverSelected:{
-        color:'#017daf',
-        opacity:1.0
+      hoverSelected: {
+        color: "#017daf",
+        opacity: 1.0,
       },
-      cursorSet:false,
-      prevCursor:'default',
-      hovering:false
+      cursorSet: false,
+      prevCursor: "default",
+      hovering: false,
     };
 
-    this.currentCursor = 'default';
+    this.currentCursor = "default";
     this.mapIsActivated = false;
     this.isMapHeaderEnabled = false;
     this.showScaleBarInMap = true;
@@ -174,15 +204,18 @@ export default class WMJSMap {
     this.NrUndos = 0;
     this.WMJSProjection_undo = new Array(this.MaxUndos);
     this.WMJSProjection_tempundo = new Array(this.MaxUndos);
-    for (let j = 0; j < this.MaxUndos; j++) { this.WMJSProjection_undo[j] = new WMJSProjection(); this.WMJSProjection_tempundo[j] = new WMJSProjection(); }
+    for (let j = 0; j < this.MaxUndos; j++) {
+      this.WMJSProjection_undo[j] = new WMJSProjection();
+      this.WMJSProjection_tempundo[j] = new WMJSProjection();
+    }
     this.inlineGetFeatureInfo = true;
 
-    this.setBaseURL('./');
+    this.setBaseURL("./");
     /* Contains the event values for when the mouse was pressed down (used for checking the shiftKey); */
     this.gfiDialogList = [];
     this.legendBusy = false;
-    this.setTimeOffsetValue = '';
-    this.setMessageValue = '';
+    this.setTimeOffsetValue = "";
+    this.setMessageValue = "";
     this.canvasErrors = [];
 
     this.resizeWidth = -1;
@@ -225,7 +258,7 @@ export default class WMJSMap {
     this.controlsBusy = false;
     this.mouseDownPressed = 0;
     this.elementPosition = undefined;
-    this.mapMode = 'pan'; /* pan,zoom,zoomout,info */
+    this.mapMode = "pan"; /* pan,zoom,zoomout,info */
 
     this.numGetFeatureInfoRequests = 0;
     this.getFeatureInfoResult = [];
@@ -245,24 +278,32 @@ export default class WMJSMap {
     this.mapPanStartGeoCoords = undefined;
     this.mapZooming = 0;
     this.proj4 = {}; /* proj4 remembers current projection */
-    this.proj4.srs = 'empty';
+    this.proj4.srs = "empty";
     this.proj4.projection = undefined;
-    this.longlat = 'EPSG:4326';
+    this.longlat = "EPSG:4326";
     proj4.defs(WMJSProj4Defs);
     this.knmiGeoNamesURL = undefined;
     this.geoNamesURL = undefined;
-    this.defaultUsernameSearch = 'adaguc';
-    this.setDebugFunction = (debugFunction) => { debug = debugFunction; };
-    this.setErrorFunction = (errorFunction) => { error = errorFunction; };
+    this.defaultUsernameSearch = "adaguc";
+    this.setDebugFunction = (debugFunction) => {
+      debug = debugFunction;
+    };
+    this.setErrorFunction = (errorFunction) => {
+      error = errorFunction;
+    };
 
     /* Binds */
     this.setBaseURL = this.setBaseURL.bind(this);
     this.showDialogs = this.showDialogs.bind(this);
     this.setXML2JSONURL = this.setXML2JSONURL.bind(this);
-    this.setWMJSTileRendererTileSettings = this.setWMJSTileRendererTileSettings.bind(this);
+    this.setWMJSTileRendererTileSettings = this.setWMJSTileRendererTileSettings.bind(
+      this
+    );
     this.getLegendStore = this.getLegendStore.bind(this);
     this.makeComponentId = this.makeComponentId.bind(this);
-    this.enableInlineGetFeatureInfo = this.enableInlineGetFeatureInfo.bind(this);
+    this.enableInlineGetFeatureInfo = this.enableInlineGetFeatureInfo.bind(
+      this
+    );
     this.dialogClosed = this.dialogClosed.bind(this);
     this.closeAllGFIDialogs = this.closeAllGFIDialogs.bind(this);
     this.onLegendCallbackFunction = this.onLegendCallbackFunction.bind(this);
@@ -306,7 +347,9 @@ export default class WMJSMap {
     this.abort = this.abort.bind(this);
     this.isBusy = this.isBusy.bind(this);
     this._makeInfoHTML = this._makeInfoHTML.bind(this);
-    this.getLegendGraphicURLForLayer = this.getLegendGraphicURLForLayer.bind(this);
+    this.getLegendGraphicURLForLayer = this.getLegendGraphicURLForLayer.bind(
+      this
+    );
     this.showScaleBar = this.showScaleBar.bind(this);
     this.hideScaleBar = this.hideScaleBar.bind(this);
     this.getMaxNumberOfAnimations = this.getMaxNumberOfAnimations.bind(this);
@@ -317,9 +360,15 @@ export default class WMJSMap {
     this._draw = this._draw.bind(this);
     this._drawAndLoad = this._drawAndLoad.bind(this);
     this._drawReady = this._drawReady.bind(this);
-    this._onLayersReadyCallbackFunction = this._onLayersReadyCallbackFunction.bind(this);
-    this._onMapReadyCallbackFunction = this._onMapReadyCallbackFunction.bind(this);
-    this._onResumeSuspendCallbackFunction = this._onResumeSuspendCallbackFunction.bind(this);
+    this._onLayersReadyCallbackFunction = this._onLayersReadyCallbackFunction.bind(
+      this
+    );
+    this._onMapReadyCallbackFunction = this._onMapReadyCallbackFunction.bind(
+      this
+    );
+    this._onResumeSuspendCallbackFunction = this._onResumeSuspendCallbackFunction.bind(
+      this
+    );
     this._animFrameRedraw = this._animFrameRedraw.bind(this);
     this.getWMSRequests = this.getWMSRequests.bind(this);
     this.prefetch = this.prefetch.bind(this);
@@ -328,8 +377,12 @@ export default class WMJSMap {
     this._pdraw = this._pdraw.bind(this);
     this._updateBoundingBox = this._updateBoundingBox.bind(this);
     this.flipBuffers = this.flipBuffers.bind(this);
-    this.getBackBufferCanvasContext = this.getBackBufferCanvasContext.bind(this);
-    this.getFrontBufferCanvasContext = this.getFrontBufferCanvasContext.bind(this);
+    this.getBackBufferCanvasContext = this.getBackBufferCanvasContext.bind(
+      this
+    );
+    this.getFrontBufferCanvasContext = this.getFrontBufferCanvasContext.bind(
+      this
+    );
     this.redrawBuffer = this.redrawBuffer.bind(this);
     this.addBaseLayers = this.addBaseLayers.bind(this);
     this.setBaseLayers = this.setBaseLayers.bind(this);
@@ -352,13 +405,17 @@ export default class WMJSMap {
     this.getMapMode = this.getMapMode.bind(this);
     this.getWMSMetaDataRequestURL = this.getWMSMetaDataRequestURL.bind(this);
     this.getPointInfoRequestURL = this.getPointInfoRequestURL.bind(this);
-    this.getWMSGetFeatureInfoRequestURL = this.getWMSGetFeatureInfoRequestURL.bind(this);
+    this.getWMSGetFeatureInfoRequestURL = this.getWMSGetFeatureInfoRequestURL.bind(
+      this
+    );
     this.featureInfoRequestReady = this.featureInfoRequestReady.bind(this);
     this.newGetPointInfo = this.newGetPointInfo.bind(this);
     this.getPointInfo = this.getPointInfo.bind(this);
     this.newGetFeatureInfo = this.newGetFeatureInfo.bind(this);
     this.getFeatureInfo = this.getFeatureInfo.bind(this);
-    this.getGetFeatureInfoObjectAsHTML = this.getGetFeatureInfoObjectAsHTML.bind(this);
+    this.getGetFeatureInfoObjectAsHTML = this.getGetFeatureInfoObjectAsHTML.bind(
+      this
+    );
     this.getMapPinXY = this.getMapPinXY.bind(this);
     this.positionMapPinByLatLon = this.positionMapPinByLatLon.bind(this);
     this.repositionMapPin = this.repositionMapPin.bind(this);
@@ -372,11 +429,17 @@ export default class WMJSMap {
     this.setMapModePan = this.setMapModePan.bind(this);
     this.setMapModePoint = this.setMapModePoint.bind(this);
     this.setMapModeNone = this.setMapModeNone.bind(this);
-    this.getMouseCoordinatesForDocument = this.getMouseCoordinatesForDocument.bind(this);
-    this.getMouseCoordinatesForElement = this.getMouseCoordinatesForElement.bind(this);
+    this.getMouseCoordinatesForDocument = this.getMouseCoordinatesForDocument.bind(
+      this
+    );
+    this.getMouseCoordinatesForElement = this.getMouseCoordinatesForElement.bind(
+      this
+    );
     this.mouseDown = this.mouseDown.bind(this);
     this._checkInvalidMouseAction = this._checkInvalidMouseAction.bind(this);
-    this.updateMouseCursorCoordinates = this.updateMouseCursorCoordinates.bind(this);
+    this.updateMouseCursorCoordinates = this.updateMouseCursorCoordinates.bind(
+      this
+    );
     this.mouseDownEvent = this.mouseDownEvent.bind(this);
     this.mouseMoveEvent = this.mouseMoveEvent.bind(this);
     this.mouseUpEvent = this.mouseUpEvent.bind(this);
@@ -400,7 +463,9 @@ export default class WMJSMap {
     this.getPixelCoordFromLatLong = this.getPixelCoordFromLatLong.bind(this);
     this.WCJSSearchRequest = this.WCJSSearchRequest.bind(this);
     this.WCJSSearchRequestGeoNames = this.WCJSSearchRequestGeoNames.bind(this);
-    this.calculateBoundingBoxAndZoom = this.calculateBoundingBoxAndZoom.bind(this);
+    this.calculateBoundingBoxAndZoom = this.calculateBoundingBoxAndZoom.bind(
+      this
+    );
     this.getLatLongFromPixelCoord = this.getLatLongFromPixelCoord.bind(this);
     this.getPixelCoordFromGeoCoord = this.getPixelCoordFromGeoCoord.bind(this);
     this.addListener = this.addListener.bind(this);
@@ -423,75 +488,79 @@ export default class WMJSMap {
     this.showBoundingBox = this.showBoundingBox.bind(this);
     this.hideBoundingBox = this.hideBoundingBox.bind(this);
     this.clearImageStore = this.clearImageStore.bind(this);
-    if (!jquery) { console.warn('WMJSMap: jquery is not defined, assuming unit test is running'); return; }
+    if (!jquery) {
+      console.warn(
+        "WMJSMap: jquery is not defined, assuming unit test is running"
+      );
+      return;
+    }
     this.loadingDiv = jquery('<div class="WMJSDivBuffer-loading"/>', {});
     this.init();
-  };
+  }
 
-  setBaseURL (_baseURL) {
+  setBaseURL(_baseURL) {
     this.base = _baseURL;
-    this.noimage = this.base + '/img/blank.gif?';
-    this.loadingImageSrc = this.base + '/img/ajax-loader.gif';
-    this.WMSControlsImageSrc = this.base + '/img/mapcontrols.gif';
-  };
+    this.noimage = this.base + "/img/blank.gif?";
+    this.loadingImageSrc = this.base + "/img/ajax-loader.gif";
+    this.WMSControlsImageSrc = this.base + "/img/mapcontrols.gif";
+  }
 
-  showDialogs (shouldShow) {
+  showDialogs(shouldShow) {
     this.showDialog = shouldShow;
-  };
+  }
 
-  setXML2JSONURL (_xml2jsonrequest) {
+  setXML2JSONURL(_xml2jsonrequest) {
     this.xml2jsonrequest = _xml2jsonrequest;
-  };
+  }
 
-  setWMJSTileRendererTileSettings (_WMJSTileRendererTileSettings) {
+  setWMJSTileRendererTileSettings(_WMJSTileRendererTileSettings) {
     this.tileRenderSettings = _WMJSTileRendererTileSettings;
-  };
+  }
 
-  getLegendStore () {
+  getLegendStore() {
     return legendImageStore;
-  };
+  }
 
   /**
    * Function which make a component ID which is unique over several WebMapJS instances
    * @param the desired id
    * @return the unique id
    */
-  makeComponentId (id) {
+  makeComponentId(id) {
     if (!this.mainElement.id) {
-      this.mainElement.id = 'WebMapJSMapNo_' + WebMapJSMapNo;
+      this.mainElement.id = "WebMapJSMapNo_" + WebMapJSMapNo;
     }
     if (this.hasGeneratedId === false) {
       this.hasGeneratedId = true;
       WebMapJSMapNo++;
     }
-    return this.mainElement.id + '_' + id;
-  };
+    return this.mainElement.id + "_" + id;
+  }
 
-  enableInlineGetFeatureInfo (trueOrFalse) {
+  enableInlineGetFeatureInfo(trueOrFalse) {
     this.inlineGetFeatureInfo = trueOrFalse;
-  };
+  }
 
-  dialogClosed (dialog) {
+  dialogClosed(dialog) {
     for (let j = 0; j < this.gfiDialogList.length; j++) {
       if (this.gfiDialogList[j] === dialog) {
         this.gfiDialogList.splice(j, 1);
         j--;
       }
     }
-  };
+  }
 
-  closeAllGFIDialogs () {
+  closeAllGFIDialogs() {
     new WMJSDialog().closeAllDialogs(this.gfiDialogList);
-  };
+  }
 
-  onLegendCallbackFunction () {
-    if (enableConsoleDebugging)console.log('onlegendready called');
+  onLegendCallbackFunction() {
+    if (enableConsoleDebugging) console.log("onlegendready called");
     this.loadLegendInline();
-  };
+  }
 
   /* Load legend inline of the map */
-  loadLegendInline (somethingchanged) {
-
+  loadLegendInline(somethingchanged) {
     //     try {
     //       if (isDefined(somethingchanged) === false) {
     //         somethingchanged = false;
@@ -539,131 +608,133 @@ export default class WMJSMap {
     //     }
     //     this.legendBusy = false;
     //     this.callBack.triggerEvent('onlegendready');
-  };
+  }
 
-  setMessage (message) {
-    if (!message || message === '') {
-      this.setMessageValue = '';
+  setMessage(message) {
+    if (!message || message === "") {
+      this.setMessageValue = "";
     } else {
       this.setMessageValue = message;
     }
-  };
+  }
 
-  setTimeOffset (message) {
-    if (!message || message === '') {
-      this.setTimeOffsetValue = '';
+  setTimeOffset(message) {
+    if (!message || message === "") {
+      this.setTimeOffsetValue = "";
     } else {
       this.setTimeOffsetValue = message;
     }
-  };
+  }
 
   /* Is called when the WebMapJS object is created */
-  init () {
+  init() {
     try {
       if (geoNamesURL) {
         this.geoNamesURL = geoNamesURL;
       }
-    } catch (e) {
-    }
+    } catch (e) {}
     try {
       if (defaultUsernameSearch) {
         this.defaultUsernameSearch = defaultUsernameSearch;
       }
-    } catch (e) {
-    }
+    } catch (e) {}
 
     try {
       if (xml2jsonrequestURL) {
         this.setXML2JSONURL(xml2jsonrequestURL);
       }
-    } catch (e) {
-    }
+    } catch (e) {}
 
     try {
       if (WMJSTileRendererTileSettings) {
         this.setWMJSTileRendererTileSettings(WMJSTileRendererTileSettings);
       }
-    } catch (e) {
-    }
+    } catch (e) {}
     if (!this.mainElement) {
       return;
     }
     if (this.mainElement.style) {
       if (!this.mainElement.style.height) {
-        this.mainElement.style.height = '1px';
+        this.mainElement.style.height = "1px";
       }
       if (!this.mainElement.style.width) {
-        this.mainElement.style.width = '1px';
+        this.mainElement.style.width = "1px";
       }
     }
-    this.baseDivId = this.makeComponentId('baseDiv');
-    jquery('<div/>', {
-      id:this.baseDivId,
+    this.baseDivId = this.makeComponentId("baseDiv");
+    jquery("<div/>", {
+      id: this.baseDivId,
       css: {
-        position:'relative',
-        overflow:'hidden',
+        position: "relative",
+        overflow: "hidden",
         width: this.mainElement.clientWidth,
         height: this.mainElement.clientHeight,
-        border:'0px  solid black',
-        margin:0,
-        padding:0,
-        clear:'both',
-        left:'0px',
-        top:'0px'
-      }
+        border: "0px  solid black",
+        margin: 0,
+        padding: 0,
+        clear: "both",
+        left: "0px",
+        top: "0px",
+      },
     }).appendTo(this.mainElement);
-    this.baseDiv = jquery('#' + this.baseDivId);
+    this.baseDiv = jquery("#" + this.baseDivId);
 
-    this.baseDiv.css('cursor', 'default');
+    this.baseDiv.css("cursor", "default");
 
-    this.mainElement.style.margin = '0px';
-    this.mainElement.style.padding = '0px';
-    this.mainElement.style.border = 'none';// "1px solid gray";
-    this.mainElement.style.lineHeight = '0px';
-    this.mainElement.style.display = 'inline-block';
+    this.mainElement.style.margin = "0px";
+    this.mainElement.style.padding = "0px";
+    this.mainElement.style.border = "none"; // "1px solid gray";
+    this.mainElement.style.lineHeight = "0px";
+    this.mainElement.style.display = "inline-block";
 
     // Attach zoombox
-    this.divZoomBox.style.position = 'absolute';
-    this.divZoomBox.style.display = 'none';
-    this.divZoomBox.style.border = '2px dashed #000000';
-    this.divZoomBox.style.margin = '0px';
-    this.divZoomBox.style.padding = '0px';
-    this.divZoomBox.style.lineHeight = '0';
-    this.divZoomBox.style.background = '#AFFFFF';
-    this.divZoomBox.style.opacity = '0.3'; // Gecko
-    this.divZoomBox.style.filter = 'alpha(opacity=30)'; // Windows
-    this.divZoomBox.style.left = '0px';
-    this.divZoomBox.style.top = '0px';
-    this.divZoomBox.style.width = '100px';
-    this.divZoomBox.style.height = '100px';
+    this.divZoomBox.style.position = "absolute";
+    this.divZoomBox.style.display = "none";
+    this.divZoomBox.style.border = "2px dashed #000000";
+    this.divZoomBox.style.margin = "0px";
+    this.divZoomBox.style.padding = "0px";
+    this.divZoomBox.style.lineHeight = "0";
+    this.divZoomBox.style.background = "#AFFFFF";
+    this.divZoomBox.style.opacity = "0.3"; // Gecko
+    this.divZoomBox.style.filter = "alpha(opacity=30)"; // Windows
+    this.divZoomBox.style.left = "0px";
+    this.divZoomBox.style.top = "0px";
+    this.divZoomBox.style.width = "100px";
+    this.divZoomBox.style.height = "100px";
     this.divZoomBox.style.zIndex = 1000;
-    this.divZoomBox.oncontextmenu = () => { return false; };
+    this.divZoomBox.oncontextmenu = () => {
+      return false;
+    };
     this.baseDiv.append(this.divZoomBox);
 
     // Attach bbox box
-    this.divBoundingBox.style.position = 'absolute';
-    this.divBoundingBox.style.display = 'none';
-    this.divBoundingBox.style.border = '3px solid #6060FF';
-    this.divBoundingBox.style.margin = '0px';
-    this.divBoundingBox.style.padding = '0px';
-    this.divBoundingBox.style.lineHeight = '0';
-    this.divBoundingBox.style.left = '0px';
-    this.divBoundingBox.style.top = '0px';
-    this.divBoundingBox.style.width = '100px';
-    this.divBoundingBox.style.height = '100px';
+    this.divBoundingBox.style.position = "absolute";
+    this.divBoundingBox.style.display = "none";
+    this.divBoundingBox.style.border = "3px solid #6060FF";
+    this.divBoundingBox.style.margin = "0px";
+    this.divBoundingBox.style.padding = "0px";
+    this.divBoundingBox.style.lineHeight = "0";
+    this.divBoundingBox.style.left = "0px";
+    this.divBoundingBox.style.top = "0px";
+    this.divBoundingBox.style.width = "100px";
+    this.divBoundingBox.style.height = "100px";
     this.divBoundingBox.style.zIndex = 1000;
-    this.divBoundingBox.oncontextmenu = () => { return false; };
+    this.divBoundingBox.oncontextmenu = () => {
+      return false;
+    };
     this.baseDiv.append(this.divBoundingBox);
 
     /* Attach divDimInfo */
-    this.divDimInfo.style.position = 'absolute';
+    this.divDimInfo.style.position = "absolute";
     this.divDimInfo.style.zIndex = 1000;
-    this.divDimInfo.style.width = 'auto';
-    this.divDimInfo.style.height = 'auto';
-    this.divDimInfo.style.background = 'none';
+    this.divDimInfo.style.width = "auto";
+    this.divDimInfo.style.height = "auto";
+    this.divDimInfo.style.background = "none";
 
-    this.divDimInfo.oncontextmenu = () => { return false; };
-    this.divDimInfo.innerHTML = '';
+    this.divDimInfo.oncontextmenu = () => {
+      return false;
+    };
+    this.divDimInfo.innerHTML = "";
     this.baseDiv.append(this.divDimInfo);
 
     /* Attach loading image */
@@ -671,28 +742,46 @@ export default class WMJSMap {
     this.baseDiv.append(this.loadingDiv);
 
     /* ONLY VISIBLE IF USERNAME FOR GEONAMES API IS SET */
-    if (typeof (defaultUsernameSearch) !== 'undefined') {
+    if (typeof defaultUsernameSearch !== "undefined") {
       /* Creating the div for the input */
-      jquery('<div/>', {
-        id: this.makeComponentId('searchboxdiv'),
-        mousedown:(event) => { event.stopPropagation(); }
-      }).addClass('webmapjs_searchboxdiv').html('<input class=\'webmapjs_locationfield\' type=\'text\' name=\'searchtextfield\'' +
-        ' id=\'searchtextfield\' placeholder=' + I18n.place_search_term.text + ' />', {
-        mousedown:(event) => { event.stopPropagation(); preventdefaultEvent(event); } })
+      jquery("<div/>", {
+        id: this.makeComponentId("searchboxdiv"),
+        mousedown: (event) => {
+          event.stopPropagation();
+        },
+      })
+        .addClass("webmapjs_searchboxdiv")
+        .html(
+          "<input class='webmapjs_locationfield' type='text' name='searchtextfield'" +
+            " id='searchtextfield' placeholder=" +
+            I18n.place_search_term.text +
+            " />",
+          {
+            mousedown: (event) => {
+              event.stopPropagation();
+              preventdefaultEvent(event);
+            },
+          }
+        )
         .appendTo(this.baseDiv);
 
-      jquery('<button/>', {
-        id: this.makeComponentId('searchboxbutton'),
-        mousedown:(event) => { event.stopPropagation(); },
-        click:() => {
-          let value = jquery('#searchtextfield').val();
+      jquery("<button/>", {
+        id: this.makeComponentId("searchboxbutton"),
+        mousedown: (event) => {
+          event.stopPropagation();
+        },
+        click: () => {
+          let value = jquery("#searchtextfield").val();
           this.searchForLocation(value);
-        } }).addClass('webmapjs_locationbutton').appendTo(this.baseDiv);
+        },
+      })
+        .addClass("webmapjs_locationbutton")
+        .appendTo(this.baseDiv);
 
       /* On Enter */
-      jquery('#searchtextfield').keypress((e) => {
+      jquery("#searchtextfield").keypress((e) => {
         if (e.which === 13) {
-          let value = jquery('#searchtextfield').val();
+          let value = jquery("#searchtextfield").val();
           this.searchForLocation(value);
           return false;
         }
@@ -705,37 +794,51 @@ export default class WMJSMap {
     this.bbox.bottom = -90;
     this.bbox.right = 180;
     this.bbox.top = 90;
-    this.srs = 'EPSG:4326';
+    this.srs = "EPSG:4326";
     this.setSize(this.mainElement.clientWidth, this.mainElement.clientHeight);
     // IMAGE buffers
     for (let j = 0; j < 2; j++) {
-      let d = new WMJSCanvasBuffer(this.callBack, 'imagebuffer', getMapImageStore, this.getWidth(), this.getHeight());
+      let d = new WMJSCanvasBuffer(
+        this.callBack,
+        "imagebuffer",
+        getMapImageStore,
+        this.getWidth(),
+        this.getHeight()
+      );
       getMapImageStore.addLoadEventCallback(d.imageLoadComplete);
       this.baseDiv.append(d.getBuffer());
       this.divBuffer.push(d);
     }
 
     legendImageStore.addLoadEventCallback(() => {
-      this.draw('legendImageStore loaded');
+      this.draw("legendImageStore loaded");
     });
 
-    this.callBack.addToCallback('display', this.display, true);
-    this.callBack.addToCallback('draw', () => {
-      console.log('draw event triggered externally, skipping');
-    }, true);
+    this.callBack.addToCallback("display", this.display, true);
+    this.callBack.addToCallback(
+      "draw",
+      () => {
+        console.log("draw event triggered externally, skipping");
+      },
+      true
+    );
     // callBack.addToCallback("drawbuffers",this.flipBuffers,true);
 
     bgMapImageStore.addLoadEventCallback(() => {
-      this.draw('bgMapImageStore loaded');
+      this.draw("bgMapImageStore loaded");
     });
     let adagucBeforeDraw = (ctx) => {
       if (this.baseLayers) {
         for (let l = 0; l < this.baseLayers.length; l++) {
           if (this.baseLayers[l].enabled) {
             if (this.baseLayers[l].keepOnTop === false) {
-              if (this.baseLayers[l].type && this.baseLayers[l].type !== 'twms') continue;
-              if (!this.tileRenderSettings) { console.log('tileRenderSettings not set'); continue; }
-              const { attributionText } = this.wmjsTileRenderer.render(
+              if (this.baseLayers[l].type && this.baseLayers[l].type !== "twms")
+                continue;
+              if (!this.tileRenderSettings) {
+                console.log("tileRenderSettings not set");
+                continue;
+              }
+              const renderResult = this.wmjsTileRenderer.render(
                 this.bbox,
                 this.updateBBOX,
                 this.srs,
@@ -746,19 +849,22 @@ export default class WMJSMap {
                 this.tileRenderSettings,
                 this.baseLayers[l].name
               );
-              {
-                const adagucAttribution = ('ADAGUC webmapjs ' + this.WebMapJSMapVersion);
-                const txt = attributionText ? (adagucAttribution + ' | ' + attributionText) : adagucAttribution;
+              if (renderResult) {
+                const adagucAttribution =
+                  "ADAGUC webmapjs " + this.WebMapJSMapVersion;
+                const txt = renderResult.attributionText
+                  ? adagucAttribution + " | " + renderResult.attributionText
+                  : adagucAttribution;
                 const x = this.width - 8;
                 const y = this.height - 8;
-                ctx.font = '10px Arial';
-                ctx.textAlign = 'right';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = '#FFF';
+                ctx.font = "10px Arial";
+                ctx.textAlign = "right";
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = "#FFF";
                 ctx.globalAlpha = 0.75;
                 const width = ctx.measureText(txt).width;
-                ctx.fillRect(x - (width), y - 6, (width) + 8, parseInt(14));
-                ctx.fillStyle = '#444';
+                ctx.fillRect(x - width, y - 6, width + 8, parseInt(14));
+                ctx.fillStyle = "#444";
                 ctx.globalAlpha = 1.0;
                 ctx.fillText(txt, x + 4, y + 2);
               }
@@ -768,16 +874,16 @@ export default class WMJSMap {
       }
     };
 
-    this.addListener('beforecanvasstartdraw', adagucBeforeDraw, true);
+    this.addListener("beforecanvasstartdraw", adagucBeforeDraw, true);
 
     let drawTextBG = (ctx, txt, x, y, fontSize) => {
-      ctx.textBaseline = 'top';
-      ctx.textAlign = 'left';
-      ctx.fillStyle = '#FFF';
+      ctx.textBaseline = "top";
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#FFF";
       ctx.globalAlpha = 0.75;
       const width = ctx.measureText(txt).width;
       ctx.fillRect(x - 8, y - 8, width + 16, parseInt(fontSize) + 14);
-      ctx.fillStyle = '#444';
+      ctx.fillStyle = "#444";
       ctx.globalAlpha = 1.0;
       ctx.fillText(txt, x, y + 2);
     };
@@ -786,7 +892,13 @@ export default class WMJSMap {
       // console.log('adagucBeforeCanvasDisplay' + this.getId());
       /* Map Pin */
       if (this.divMapPin.displayMapPin) {
-        WMJSDrawMarker(ctx, this.divMapPin.x, this.divMapPin.y, '#9090FF', '#000');
+        WMJSDrawMarker(
+          ctx,
+          this.divMapPin.x,
+          this.divMapPin.y,
+          "#9090FF",
+          "#000"
+        );
       }
 
       if (this._displayLegendInMap) {
@@ -804,15 +916,20 @@ export default class WMJSMap {
                   let el = image.getElement()[0];
                   let legendW = parseInt(el.width) + 4;
                   let legendH = parseInt(el.height) + 4;
-                  legendPosX += (legendW + 4);
+                  legendPosX += legendW + 4;
                   let legendX = this.width - legendPosX + 2;
-                  let legendY = this.height - (legendH) - 2 - 13;
+                  let legendY = this.height - legendH - 2 - 13;
                   ctx.beginPath();
-                  ctx.fillStyle = '#FFFFFF';
+                  ctx.fillStyle = "#FFFFFF";
                   ctx.lineWidth = 0.3;
                   ctx.globalAlpha = 0.5;
-                  ctx.strokeStyle = '#000000';
-                  ctx.rect(parseInt(legendX) + 0.5, parseInt(legendY) + 0.5, legendW, legendH);
+                  ctx.strokeStyle = "#000000";
+                  ctx.rect(
+                    parseInt(legendX) + 0.5,
+                    parseInt(legendY) + 0.5,
+                    legendW,
+                    legendH
+                  );
                   ctx.fill();
                   ctx.stroke();
                   ctx.globalAlpha = 1.0;
@@ -829,11 +946,19 @@ export default class WMJSMap {
         ctx.beginPath();
         ctx.rect(0, 0, this.width, this.mapHeader.height);
         if (this.mapIsActivated === false) {
-          ctx.globalAlpha = this.mapHeader.hovering ? this.mapHeader.hover.opacity : this.mapHeader.fill.opacity;
-          ctx.fillStyle = this.mapHeader.hovering ? this.mapHeader.hover.color : this.mapHeader.fill.color;
+          ctx.globalAlpha = this.mapHeader.hovering
+            ? this.mapHeader.hover.opacity
+            : this.mapHeader.fill.opacity;
+          ctx.fillStyle = this.mapHeader.hovering
+            ? this.mapHeader.hover.color
+            : this.mapHeader.fill.color;
         } else {
-          ctx.globalAlpha = this.mapHeader.hovering ? this.mapHeader.hoverSelected.opacity : this.mapHeader.selected.opacity;
-          ctx.fillStyle = this.mapHeader.hovering ? this.mapHeader.hoverSelected.color : this.mapHeader.selected.color;
+          ctx.globalAlpha = this.mapHeader.hovering
+            ? this.mapHeader.hoverSelected.opacity
+            : this.mapHeader.selected.opacity;
+          ctx.fillStyle = this.mapHeader.hovering
+            ? this.mapHeader.hoverSelected.color
+            : this.mapHeader.selected.color;
         }
         ctx.fill();
         ctx.globalAlpha = 1;
@@ -845,12 +970,27 @@ export default class WMJSMap {
         for (let j = 0; j < this.layers[i].dimensions.length; j++) {
           // request += '&' + this._getCorrectWMSDimName(this.layers[i].dimensions[j].name);
           // request += '=' + URLEncode(this.layers[i].dimensions[j].currentValue);
-          if (this.layers[i].dimensions[j].currentValue === WMJSDateOutSideRange) {
-            this.canvasErrors.push({ linkedInfo: { layer:this.layers[i], message: 'Time outside range' } });
-          } else if (this.layers[i].dimensions[j].currentValue === WMJSDateTooEarlyString) {
-            this.canvasErrors.push({ linkedInfo:{ layer:this.layers[i], message: 'Time too early' } });
-          } else if (this.layers[i].dimensions[j].currentValue === WMJSDateTooLateString) {
-            this.canvasErrors.push({ linkedInfo:{ layer:this.layers[i], message: 'Time too late' } });
+          if (
+            this.layers[i].dimensions[j].currentValue === WMJSDateOutSideRange
+          ) {
+            this.canvasErrors.push({
+              linkedInfo: {
+                layer: this.layers[i],
+                message: "Time outside range",
+              },
+            });
+          } else if (
+            this.layers[i].dimensions[j].currentValue === WMJSDateTooEarlyString
+          ) {
+            this.canvasErrors.push({
+              linkedInfo: { layer: this.layers[i], message: "Time too early" },
+            });
+          } else if (
+            this.layers[i].dimensions[j].currentValue === WMJSDateTooLateString
+          ) {
+            this.canvasErrors.push({
+              linkedInfo: { layer: this.layers[i], message: "Time too late" },
+            });
           }
         }
       }
@@ -863,35 +1003,50 @@ export default class WMJSMap {
         let my = this.isMapHeaderEnabled ? this.mapHeader.height : 0;
         ctx.beginPath();
         ctx.rect(mx, my, mx + mw, my + mh);
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = "white";
         ctx.globalAlpha = 0.9;
         ctx.fill();
         ctx.globalAlpha = 1;
-        ctx.fillStyle = 'black';
-        ctx.font = '10pt Helvetica';
-        ctx.textAlign = 'left';
+        ctx.fillStyle = "black";
+        ctx.font = "10pt Helvetica";
+        ctx.textAlign = "left";
 
         for (let j = 0; j < this.canvasErrors.length; j++) {
           if (this.canvasErrors[j].linkedInfo) {
-            let message = this.canvasErrors[j].linkedInfo.message ? ', ' + this.canvasErrors[j].linkedInfo.message : '';
-            ctx.fillText('Layer with title ' + this.canvasErrors[j].linkedInfo.layer.title + ' failed to load' + message, mx + 5, my + 11 + j * 15);
+            let message = this.canvasErrors[j].linkedInfo.message
+              ? ", " + this.canvasErrors[j].linkedInfo.message
+              : "";
+            ctx.fillText(
+              "Layer with title " +
+                this.canvasErrors[j].linkedInfo.layer.title +
+                " failed to load" +
+                message,
+              mx + 5,
+              my + 11 + j * 15
+            );
           } else {
-            ctx.fillText('Layer failed to load.', mx + 5, my + 11 + j * 15);
+            ctx.fillText("Layer failed to load.", mx + 5, my + 11 + j * 15);
           }
         }
         this.canvasErrors = [];
       }
 
       // Time offset message
-      if (this.setTimeOffsetValue !== '') {
-        ctx.font = '20px Helvetica';
-        drawTextBG(ctx, this.setTimeOffsetValue, (this.width / 2) - 70, this.height - 26, 20);
+      if (this.setTimeOffsetValue !== "") {
+        ctx.font = "20px Helvetica";
+        drawTextBG(
+          ctx,
+          this.setTimeOffsetValue,
+          this.width / 2 - 70,
+          this.height - 26,
+          20
+        );
       }
 
       // Set message value
-      if (this.setMessageValue !== '') {
-        ctx.font = '15px Helvetica';
-        drawTextBG(ctx, this.setMessageValue, (this.width / 2) - 70, 2, 15);
+      if (this.setMessageValue !== "") {
+        ctx.font = "15px Helvetica";
+        drawTextBG(ctx, this.setMessageValue, this.width / 2 - 70, 2, 15);
       }
 
       // ScaleBar
@@ -936,13 +1091,14 @@ export default class WMJSMap {
           let d = Math.pow(10, Math.round(Math.log10(numMapUnits) + 0.5) - 1);
 
           roundedMapUnits = Math.round(roundedMapUnits / d);
-          if (roundedMapUnits < 2.5)roundedMapUnits = 2.5;
-          if (roundedMapUnits > 2.5 && roundedMapUnits < 7.5)roundedMapUnits = 5;
-          if (roundedMapUnits > 7.5)roundedMapUnits = 10;
-          roundedMapUnits = (roundedMapUnits * d);
-          divFactor = (desiredWidth / pixelsPerUnit) / roundedMapUnits;
+          if (roundedMapUnits < 2.5) roundedMapUnits = 2.5;
+          if (roundedMapUnits > 2.5 && roundedMapUnits < 7.5)
+            roundedMapUnits = 5;
+          if (roundedMapUnits > 7.5) roundedMapUnits = 10;
+          roundedMapUnits = roundedMapUnits * d;
+          divFactor = desiredWidth / pixelsPerUnit / roundedMapUnits;
           realWidth = desiredWidth / divFactor;
-          return { width:parseInt(realWidth), mapunits: roundedMapUnits };
+          return { width: parseInt(realWidth), mapunits: roundedMapUnits };
         };
         let scaleBarProps = getScaleBarProperties();
         if (scaleBarProps) {
@@ -951,106 +1107,171 @@ export default class WMJSMap {
           let scaleBarHeight = 23;
           ctx.beginPath();
           ctx.lineWidth = 2.5;
-          ctx.fillStyle = '#000';
-          ctx.strokeStyle = '#000';
-          ctx.font = '9px Helvetica';
-          ctx.textBaseline = 'middle';
-          ctx.textAlign = 'left';
+          ctx.fillStyle = "#000";
+          ctx.strokeStyle = "#000";
+          ctx.font = "9px Helvetica";
+          ctx.textBaseline = "middle";
+          ctx.textAlign = "left";
           for (let j = 0; j < 2; j++) {
             ctx.moveTo(offsetX, scaleBarHeight - 2 - j + offsetY);
-            ctx.lineTo(scaleBarProps.width * 2 + offsetX + 1, scaleBarHeight - 2 - j + offsetY);
+            ctx.lineTo(
+              scaleBarProps.width * 2 + offsetX + 1,
+              scaleBarHeight - 2 - j + offsetY
+            );
           }
 
           let subDivXW = parseInt(Math.round(scaleBarProps.width / 5));
           ctx.lineWidth = 0.5;
           for (let j = 1; j < 5; j++) {
             ctx.moveTo(offsetX + subDivXW * j, scaleBarHeight - 2 + offsetY);
-            ctx.lineTo(offsetX + subDivXW * j, scaleBarHeight - 2 - 5 + offsetY);
+            ctx.lineTo(
+              offsetX + subDivXW * j,
+              scaleBarHeight - 2 - 5 + offsetY
+            );
           }
           ctx.lineWidth = 1.0;
           ctx.moveTo(offsetX, scaleBarHeight - 2 + offsetY);
           ctx.lineTo(offsetX, scaleBarHeight - 2 - 7 + offsetY);
-          ctx.moveTo(offsetX + scaleBarProps.width, scaleBarHeight - 2 + offsetY);
-          ctx.lineTo(offsetX + scaleBarProps.width, scaleBarHeight - 2 - 7 + offsetY);
-          ctx.moveTo(offsetX + scaleBarProps.width * 2 + 1, scaleBarHeight - 2 + offsetY);
-          ctx.lineTo(offsetX + scaleBarProps.width * 2 + 1, scaleBarHeight - 2 - 7 + offsetY);
+          ctx.moveTo(
+            offsetX + scaleBarProps.width,
+            scaleBarHeight - 2 + offsetY
+          );
+          ctx.lineTo(
+            offsetX + scaleBarProps.width,
+            scaleBarHeight - 2 - 7 + offsetY
+          );
+          ctx.moveTo(
+            offsetX + scaleBarProps.width * 2 + 1,
+            scaleBarHeight - 2 + offsetY
+          );
+          ctx.lineTo(
+            offsetX + scaleBarProps.width * 2 + 1,
+            scaleBarHeight - 2 - 7 + offsetY
+          );
 
-          let units = '';
-          if (this.srs === 'EPSG:3411') units = 'meter';
-          if (this.srs === 'EPSG:3412') units = 'meter';
-          if (this.srs === 'EPSG:3575') units = 'meter';
-          if (this.srs === 'EPSG:4326') units = 'degrees';
-          if (this.srs === 'EPSG:28992') units = 'meter';
-          if (this.srs === 'EPSG:32661') units = 'meter';
-          if (this.srs === 'EPSG:3857') units = 'meter';
-          if (this.srs === 'EPSG:900913') units = 'meter';
-          if (this.srs === 'EPSG:102100') units = 'meter';
+          let units = "";
+          if (this.srs === "EPSG:3411") units = "meter";
+          if (this.srs === "EPSG:3412") units = "meter";
+          if (this.srs === "EPSG:3575") units = "meter";
+          if (this.srs === "EPSG:4326") units = "degrees";
+          if (this.srs === "EPSG:28992") units = "meter";
+          if (this.srs === "EPSG:32661") units = "meter";
+          if (this.srs === "EPSG:3857") units = "meter";
+          if (this.srs === "EPSG:900913") units = "meter";
+          if (this.srs === "EPSG:102100") units = "meter";
 
-          if (units === 'meter') {
+          if (units === "meter") {
             if (scaleBarProps.mapunits > 1000) {
               scaleBarProps.mapunits /= 1000;
-              units = 'km';
+              units = "km";
             }
           }
-          ctx.fillText('0', offsetX - 3, 12 + offsetY);
+          ctx.fillText("0", offsetX - 3, 12 + offsetY);
 
           // valueStr.print("%g",(p.mapunits));
-          let valueStr = scaleBarProps.mapunits.toPrecision() + '';
-          ctx.fillText(valueStr, offsetX + scaleBarProps.width - valueStr.length * 2.5 + 0, 12 + offsetY);
-          valueStr = (scaleBarProps.mapunits * 2).toPrecision() + '';
-          ctx.fillText(valueStr, offsetX + scaleBarProps.width * 2 - valueStr.length * 2.5 + 0, 12 + offsetY);
-          ctx.fillText(units, offsetX + scaleBarProps.width * 2 + 10, 18 + offsetY);
+          let valueStr = scaleBarProps.mapunits.toPrecision() + "";
+          ctx.fillText(
+            valueStr,
+            offsetX + scaleBarProps.width - valueStr.length * 2.5 + 0,
+            12 + offsetY
+          );
+          valueStr = (scaleBarProps.mapunits * 2).toPrecision() + "";
+          ctx.fillText(
+            valueStr,
+            offsetX + scaleBarProps.width * 2 - valueStr.length * 2.5 + 0,
+            12 + offsetY
+          );
+          ctx.fillText(
+            units,
+            offsetX + scaleBarProps.width * 2 + 10,
+            18 + offsetY
+          );
           ctx.stroke();
         }
       }
 
       // Mouse projected coords
-      ctx.font = '10px Helvetica';
-      ctx.textBaseline = 'middle';
+      ctx.font = "10px Helvetica";
+      ctx.textBaseline = "middle";
       if (isDefined(this.mouseGeoCoordXY)) {
-        let roundingFactor = 1.0 / Math.pow(10, parseInt(Math.log((this.bbox.right - this.bbox.left) / this.width) / Math.log(10)) - 2);
-        if (roundingFactor < 1)roundingFactor = 1;
-        ctx.fillStyle = '#000000';
-        let xText = Math.round(this.mouseGeoCoordXY.x * roundingFactor) / roundingFactor;
-        let yText = Math.round(this.mouseGeoCoordXY.y * roundingFactor) / roundingFactor;
-        let units = '';
-        if (this.srs === 'EPSG:3857') {
-          units = 'meter';
+        let roundingFactor =
+          1.0 /
+          Math.pow(
+            10,
+            parseInt(
+              Math.log((this.bbox.right - this.bbox.left) / this.width) /
+                Math.log(10)
+            ) - 2
+          );
+        if (roundingFactor < 1) roundingFactor = 1;
+        ctx.fillStyle = "#000000";
+        let xText =
+          Math.round(this.mouseGeoCoordXY.x * roundingFactor) / roundingFactor;
+        let yText =
+          Math.round(this.mouseGeoCoordXY.y * roundingFactor) / roundingFactor;
+        let units = "";
+        if (this.srs === "EPSG:3857") {
+          units = "meter";
         }
-        ctx.fillText('CoordYX: (' + yText + ', ' + xText + ') ' + units, 5, this.height - 50);
+        ctx.fillText(
+          "CoordYX: (" + yText + ", " + xText + ") " + units,
+          5,
+          this.height - 50
+        );
       }
       // Mouse latlon coords
       if (isDefined(this.mouseUpdateCoordinates)) {
-        let llCoord = this.getLatLongFromPixelCoord(this.mouseUpdateCoordinates);
+        let llCoord = this.getLatLongFromPixelCoord(
+          this.mouseUpdateCoordinates
+        );
 
         if (isDefined(llCoord)) {
           let roundingFactor = 100;
-          ctx.fillStyle = '#000000';
+          ctx.fillStyle = "#000000";
           let xText = Math.round(llCoord.x * roundingFactor) / roundingFactor;
           let yText = Math.round(llCoord.y * roundingFactor) / roundingFactor;
-          ctx.fillText('Lat/Lon: (' + yText.toFixed(2) + ', ' + xText.toFixed(2) + ') ' + ' degrees', 5, this.height - 38);
+          ctx.fillText(
+            "Lat/Lon: (" +
+              yText.toFixed(2) +
+              ", " +
+              xText.toFixed(2) +
+              ") " +
+              " degrees",
+            5,
+            this.height - 38
+          );
         }
       }
-      ctx.fillStyle = '#000000';
-      ctx.fillText('Map projection: ' + this.srs, 5, this.height - 26);
+      ctx.fillStyle = "#000000";
+      ctx.fillText("Map projection: " + this.srs, 5, this.height - 26);
 
       // ctx.font = '7px Helvetica';
       // ctx.fillText('ADAGUC webmapjs ' + this.WebMapJSMapVersion, this.width - 85, this.height - 5);
     };
-    this.addListener('beforecanvasdisplay', (ctx) => {
-      adagucBeforeCanvasDisplay(ctx);
-      //       window.requestAnimationFrame(() => {
-      //         this.draw();
-      //       });
-    }, true);
-    this.addListener('canvasonerror', (e) => { this.canvasErrors = e; }, true);
+    this.addListener(
+      "beforecanvasdisplay",
+      (ctx) => {
+        adagucBeforeCanvasDisplay(ctx);
+        //       window.requestAnimationFrame(() => {
+        //         this.draw();
+        //       });
+      },
+      true
+    );
+    this.addListener(
+      "canvasonerror",
+      (e) => {
+        this.canvasErrors = e;
+      },
+      true
+    );
     this._updateBoundingBox(this.bbox);
     this.wmjsAnimate = new WMJSAnimate(this);
     this.wmjsTileRenderer = new WMJSTileRenderer();
     this.initialized = 1;
-  };
+  }
 
-  rebuildMapDimensions () {
+  rebuildMapDimensions() {
     for (let j = 0; j < this.mapdimensions.length; j++) {
       this.mapdimensions[j].used = false;
     }
@@ -1076,10 +1297,10 @@ export default class WMJSMap {
         j--;
       }
     }
-    this.callBack.triggerEvent('onmapdimupdate');
-  };
+    this.callBack.triggerEvent("onmapdimupdate");
+  }
 
-  getLayerByServiceAndName (layerService, layerName) {
+  getLayerByServiceAndName(layerService, layerName) {
     for (let j = 0; j < this.layers.length; j++) {
       let layer = this.layers[this.layers.length - j - 1];
       if (layer.name === layerName) {
@@ -1088,9 +1309,9 @@ export default class WMJSMap {
         }
       }
     }
-  };
+  }
 
-  getLayers () {
+  getLayers() {
     /* Provide layers in reverse order */
     let returnlayers = [];
     for (let j = 0; j < this.layers.length; j++) {
@@ -1098,31 +1319,31 @@ export default class WMJSMap {
       returnlayers.push(layer);
     }
     return returnlayers;
-  };
+  }
 
-  setLayer (layer, getcapdoc) {
+  setLayer(layer, getcapdoc) {
     return this.addLayer(layer, getcapdoc, layer);
-  };
+  }
 
   /* Indicate weather this map component is active or not */
-  setActive (active) {
+  setActive(active) {
     this.mapIsActivated = active;
     this.isMapHeaderEnabled = true;
-  };
+  }
 
-  setActiveLayer (layer) {
+  setActiveLayer(layer) {
     for (let j = 0; j < this.layers.length; j++) {
       this.layers[j].active = false;
     }
     this.activeLayer = layer;
     this.activeLayer.active = true;
     this.loadLegendInline();
-    this.callBack.triggerEvent('onchangeactivelayer');
-  };
+    this.callBack.triggerEvent("onchangeactivelayer");
+  }
 
   // Calculates how many baselayers there are.
   // Useful when changing properties for a divbuffer index (for example setLayerOpacity)
-  calculateNumBaseLayers () {
+  calculateNumBaseLayers() {
     this.numBaseLayers = 0;
     if (this.baseLayers) {
       for (let l = 0; l < this.baseLayers.length; l++) {
@@ -1133,37 +1354,37 @@ export default class WMJSMap {
         }
       }
     }
-  };
+  }
 
-  enableLayer (layer) {
+  enableLayer(layer) {
     layer.enabled = true;
     this.calculateNumBaseLayers();
     this.rebuildMapDimensions();
     this.loadLegendInline(true);
-  };
-  disableLayer (layer) {
+  }
+  disableLayer(layer) {
     layer.enabled = false;
     this.calculateNumBaseLayers();
     this.rebuildMapDimensions();
     this.loadLegendInline(true);
-  };
-  toggleLayer (layer) {
+  }
+  toggleLayer(layer) {
     if (layer.enabled === true) {
       layer.enabled = false;
     } else layer.enabled = true;
     this.calculateNumBaseLayers();
     this.rebuildMapDimensions();
     this.loadLegendInline(true);
-  };
+  }
 
-  displayLayer (layer, enabled) {
+  displayLayer(layer, enabled) {
     layer.enabled = enabled;
     this.calculateNumBaseLayers();
     this.rebuildMapDimensions();
     this.loadLegendInline(true);
-  };
+  }
 
-  _getLayerIndex (layer) {
+  _getLayerIndex(layer) {
     if (!layer) return;
     for (let j = 0; j < this.layers.length; j++) {
       if (this.layers[j] === layer) {
@@ -1171,18 +1392,18 @@ export default class WMJSMap {
       }
     }
     return -1;
-  };
+  }
 
-  removeAllLayers () {
+  removeAllLayers() {
     for (let i = 0; i < this.layers.length; ++i) {
       this.layers[i].setAutoUpdate(false);
     }
     this.layers.length = 0;
     this.mapdimensions.length = 0;
-    this.callBack.triggerEvent('onlayeradd');
-  };
+    this.callBack.triggerEvent("onlayeradd");
+  }
 
-  deleteLayer (layerToDelete) {
+  deleteLayer(layerToDelete) {
     if (this.layers.length <= 0) return;
     layerToDelete.setAutoUpdate(false);
     let layerIndex = this._getLayerIndex(layerToDelete);
@@ -1204,11 +1425,11 @@ export default class WMJSMap {
         }
       }
     }
-    this.callBack.triggerEvent('onlayerchange');
+    this.callBack.triggerEvent("onlayerchange");
     this.rebuildMapDimensions();
-  };
+  }
 
-  moveLayerDown (layerToMove) {
+  moveLayerDown(layerToMove) {
     let layerIndex = this._getLayerIndex(layerToMove);
     if (layerIndex > 0) {
       let layerToMoveDown = this.layers[layerIndex - 1];
@@ -1219,14 +1440,14 @@ export default class WMJSMap {
       }
     } else {
       try {
-        error('moveLayerDown: layer \'' + layerToMove.name + '\' not found.');
+        error("moveLayerDown: layer '" + layerToMove.name + "' not found.");
       } catch (e) {
-        error('moveLayerDown: layer invalid.');
+        error("moveLayerDown: layer invalid.");
       }
     }
-  };
+  }
 
-  swapLayers (layerA, layerB) {
+  swapLayers(layerA, layerB) {
     // console.log('--- swap layers ---');
     // for(let j = 0;j < this.layers.length; j++ ) {
     //   console.log(j + '). Name: ' + this.layers[j].name);
@@ -1244,9 +1465,9 @@ export default class WMJSMap {
       }
     } else {
       try {
-        error('moveLayers: layer \'' + layerA.name + '\' not found.');
+        error("moveLayers: layer '" + layerA.name + "' not found.");
       } catch (e) {
-        error('moveLayers: layer invalid.');
+        error("moveLayers: layer invalid.");
       }
     }
     // console.log('---');
@@ -1255,7 +1476,7 @@ export default class WMJSMap {
     // }
   }
 
-  moveLayerUp (layerToMove) {
+  moveLayerUp(layerToMove) {
     let layerIndex = this._getLayerIndex(layerToMove);
     if (layerIndex < this.layers.length - 1) {
       let layerToMoveUp = this.layers[layerIndex + 1];
@@ -1266,24 +1487,24 @@ export default class WMJSMap {
       }
     } else {
       try {
-        error('moveLayerUp: layer \'' + layerToMove.name + '\' not found.');
+        error("moveLayerUp: layer '" + layerToMove.name + "' not found.");
       } catch (e) {
-        error('moveLayerUp: layer invalid.');
+        error("moveLayerUp: layer invalid.");
       }
     }
-  };
+  }
 
   /**
    * @param layer of type WMJSLayer
    */
-  addLayer (layer) {
+  addLayer(layer) {
     if (!isDefined(layer)) {
-      console.warn('addLayer: undefined layer');
+      console.warn("addLayer: undefined layer");
       return;
     }
 
     if (!layer.constructor) {
-      console.warn('addLayer: layer has no constructor, skipping addLayer.');
+      console.warn("addLayer: layer has no constructor, skipping addLayer.");
       return;
     }
 
@@ -1304,75 +1525,75 @@ export default class WMJSMap {
       }
 
       this.rebuildMapDimensions();
-      this.callBack.triggerEvent('onlayeradd');
+      this.callBack.triggerEvent("onlayeradd");
     };
-    layer.parseLayer(done, undefined, 'WMJSLayer::addLayer');
-  };
+    layer.parseLayer(done, undefined, "WMJSLayer::addLayer");
+  }
 
-  getActiveLayer () {
+  getActiveLayer() {
     return this.activeLayer;
-  };
+  }
 
   /**
-    * setProjection
-    * Set the projection of the current webmap object
-    *_srs also accepts a projectionProperty object
-    */
-  setProjection (_srs, _bbox) {
+   * setProjection
+   * Set the projection of the current webmap object
+   *_srs also accepts a projectionProperty object
+   */
+  setProjection(_srs, _bbox) {
     this.hideMapPin();
-    if (!_srs)_srs = 'EPSG:4326';
-    if (typeof (_srs) === 'object') {
+    if (!_srs) _srs = "EPSG:4326";
+    if (typeof _srs === "object") {
       _bbox = _srs.bbox;
       _srs = _srs.srs;
     }
-    if (!_srs)_srs = 'EPSG:4326';
+    if (!_srs) _srs = "EPSG:4326";
     this.srs = _srs;
     this.updateSRS = this.srs;
 
     if (this.proj4.srs !== this.srs || !isDefined(this.proj4.projection)) {
-      if (this.srs === 'GFI:TIME_ELEVATION') {
-        this.proj4.projection = ('EPSG:4326');
+      if (this.srs === "GFI:TIME_ELEVATION") {
+        this.proj4.projection = "EPSG:4326";
       } else {
-        this.proj4.projection = (this.srs);
+        this.proj4.projection = this.srs;
       }
       this.proj4.srs = this.srs;
     }
     this.setBBOX(_bbox);
     this.defaultBBOX.setBBOX(_bbox);
     this.updateMouseCursorCoordinates();
-    this.callBack.triggerEvent('onsetprojection', [this.srs, this.bbox]);
-  };
+    this.callBack.triggerEvent("onsetprojection", [this.srs, this.bbox]);
+  }
 
-  getBBOX () {
+  getBBOX() {
     return this.updateBBOX;
-  };
+  }
 
-  getProjection (srsName) {
+  getProjection(srsName) {
     return { srs: this.srs, bbox: this.bbox };
-  };
+  }
 
-  getSize () {
+  getSize() {
     return { width: this.width, height: this.height };
-  };
+  }
 
-  getWidth () {
+  getWidth() {
     return this.width;
-  };
+  }
 
-  getHeight () {
+  getHeight() {
     return this.height;
-  };
+  }
 
-  repositionLegendGraphic (force) {
+  repositionLegendGraphic(force) {
     if (this._displayLegendInMap) {
       this.loadLegendInline(force);
     } else {
       this.draw();
     }
-  };
+  }
 
-  setSize (w, h, nodraw) {
-    if (enableConsoleDebugging)console.log('setSize', w, h);
+  setSize(w, h, nodraw) {
+    if (enableConsoleDebugging) console.log("setSize", w, h);
     if (parseInt(w) < 4 || parseInt(h) < 4) {
       return;
     }
@@ -1395,35 +1616,37 @@ export default class WMJSMap {
     this._resizeTimer.init(200, () => {
       this._resizeTimerBusy = false;
       this._setSize(this.resizeWidth, this.resizeHeight);
-      this.draw('resizeTimer');
+      this.draw("resizeTimer");
     });
-  };
+  }
 
-  _setSize (w, h) {
+  _setSize(w, h) {
     if (!w || !h) return;
     if (parseInt(w) < 4 || parseInt(h) < 4) {
       return;
     }
 
-    if (enableConsoleDebugging)console.log('setSize(' + w + ',' + h + ')');
+    if (enableConsoleDebugging) console.log("setSize(" + w + "," + h + ")");
     let projinfo = this.getProjection();
     this.width = parseInt(w);
     this.height = parseInt(h);
     if (this.width < 4 || isNaN(this.width)) this.width = 4;
     if (this.height < 4 || isNaN(this.height)) this.height = 4;
     if (!projinfo.srs || !projinfo.bbox) {
-      error('this.setSize: Setting default projection (EPSG:4326 with (-180,-90,180,90)');
-      projinfo.srs = 'EPSG:4326';
+      error(
+        "this.setSize: Setting default projection (EPSG:4326 with (-180,-90,180,90)"
+      );
+      projinfo.srs = "EPSG:4326";
       projinfo.bbox.left = -180;
       projinfo.bbox.bottom = -90;
       projinfo.bbox.right = 180;
       projinfo.bbox.top = 90;
       this.setProjection(projinfo.srs, projinfo.bbox);
     }
-    this.baseDiv.css({ width:this.width, height:this.height });
+    this.baseDiv.css({ width: this.width, height: this.height });
     if (!this.mainElement.style) return;
-    this.mainElement.style.width = this.width + 'px';
-    this.mainElement.style.height = this.height + 'px';
+    this.mainElement.style.width = this.width + "px";
+    this.mainElement.style.height = this.height + "px";
     this.setBBOX(this.resizeBBOX);
     this.repositionMapPin();
     this.showBoundingBox();
@@ -1439,28 +1662,61 @@ export default class WMJSMap {
     }
 
     /* Fire the onresize event, to notify listeners that something happened. */
-    this.callBack.triggerEvent('onresize', [this.width, this.height]);
-  };
+    this.callBack.triggerEvent("onresize", [this.width, this.height]);
+  }
 
-  getBBOXandProjString (layer) {
-    let request = '';
-    if (layer.version === WMSVersion.version100 || layer.version === WMSVersion.version111) {
-      request += 'SRS=' + URLEncode(this.srs) + '&';
-      request += 'BBOX=' + this.bbox.left + ',' + this.bbox.bottom + ',' + this.bbox.right + ',' + this.bbox.top + '&';
+  getBBOXandProjString(layer) {
+    let request = "";
+    if (
+      layer.version === WMSVersion.version100 ||
+      layer.version === WMSVersion.version111
+    ) {
+      request += "SRS=" + URLEncode(this.srs) + "&";
+      request +=
+        "BBOX=" +
+        this.bbox.left +
+        "," +
+        this.bbox.bottom +
+        "," +
+        this.bbox.right +
+        "," +
+        this.bbox.top +
+        "&";
     }
     if (layer.version === WMSVersion.version130) {
-      request += 'CRS=' + URLEncode(this.srs) + '&';
+      request += "CRS=" + URLEncode(this.srs) + "&";
 
-      if (this.srs === 'EPSG:4326' && layer.wms130bboxcompatibilitymode === false) {
-        request += 'BBOX=' + this.bbox.bottom + ',' + this.bbox.left + ',' + this.bbox.top + ',' + this.bbox.right + '&';
+      if (
+        this.srs === "EPSG:4326" &&
+        layer.wms130bboxcompatibilitymode === false
+      ) {
+        request +=
+          "BBOX=" +
+          this.bbox.bottom +
+          "," +
+          this.bbox.left +
+          "," +
+          this.bbox.top +
+          "," +
+          this.bbox.right +
+          "&";
       } else {
-        request += 'BBOX=' + this.bbox.left + ',' + this.bbox.bottom + ',' + this.bbox.right + ',' + this.bbox.top + '&';
+        request +=
+          "BBOX=" +
+          this.bbox.left +
+          "," +
+          this.bbox.bottom +
+          "," +
+          this.bbox.right +
+          "," +
+          this.bbox.top +
+          "&";
       }
     }
     return request;
-  };
+  }
 
-  isTouchDevice () {
+  isTouchDevice() {
     return false; // TODO touch is not working properly on Max
     // let _webMapJSSettings = null;
     // try {
@@ -1471,106 +1727,123 @@ export default class WMJSMap {
     //   return typeof window.ontouchstart !== 'undefined';
     // }
     // return false;
-  };
+  }
 
-  getDimensionRequestString (layer) {
+  getDimensionRequestString(layer) {
     return this._getMapDimURL(layer);
-  };
+  }
 
-  dateToISO8601 (date) {
+  dateToISO8601(date) {
     let prf = (input, width) => {
       // print decimal with fixed length (preceding zero's)
-      let string = input + '';
+      let string = input + "";
       let len = width - string.length;
       let j;
-      let zeros = '';
-      for (j = 0; j < len; j++)zeros += '0' + zeros;
+      let zeros = "";
+      for (j = 0; j < len; j++) zeros += "0" + zeros;
       string = zeros + string;
       return string;
     };
-    let iso = prf(date.getUTCFullYear(), 4) +
-        '-' + prf(date.getUTCMonth() + 1, 2) +
-            '-' + prf(date.getUTCDate(), 2) +
-                'T' + prf(date.getUTCHours(), 2) +
-                    ':' + prf(date.getUTCMinutes(), 2) +
-                        ':' + prf(date.getUTCSeconds(), 2) + 'Z';
+    let iso =
+      prf(date.getUTCFullYear(), 4) +
+      "-" +
+      prf(date.getUTCMonth() + 1, 2) +
+      "-" +
+      prf(date.getUTCDate(), 2) +
+      "T" +
+      prf(date.getUTCHours(), 2) +
+      ":" +
+      prf(date.getUTCMinutes(), 2) +
+      ":" +
+      prf(date.getUTCSeconds(), 2) +
+      "Z";
     return iso;
-  };
+  }
 
   // Build a valid WMS request for a certain layer
-  buildWMSGetMapRequest (layer) {
+  buildWMSGetMapRequest(layer) {
     if (!isDefined(layer.name)) return;
-    if (!layer.format) { layer.format = 'image/png'; error('layer format missing!'); }
+    if (!layer.format) {
+      layer.format = "image/png";
+      error("layer format missing!");
+    }
     if (layer.name.length < 1) return;
 
     // GetFeatureInfo timeseries in the mapview
-    if (this.srs === 'GFI:TIME_ELEVATION') {
+    if (this.srs === "GFI:TIME_ELEVATION") {
       let x = 707;
       let y = 557;
-      let _bbox = '29109.947643979103,6500000,1190890.052356021,7200000';
-      let _srs = 'EPSG:3857';
+      let _bbox = "29109.947643979103,6500000,1190890.052356021,7200000";
+      let _srs = "EPSG:3857";
 
       let request = layer.getmapURL;
-      request += '&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=' + layer.version;
+      request += "&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=" + layer.version;
 
-      request += '&LAYERS=' + URLEncode(layer.name);
+      request += "&LAYERS=" + URLEncode(layer.name);
 
-      let baseLayers = layer.name.split(',');
-      request += '&QUERY_LAYERS=' + URLEncode(baseLayers[baseLayers.length - 1]);
-      request += '&BBOX=' + _bbox;
-      if (layer.version === WMSVersion.version100 || layer.version === WMSVersion.version111) {
-        request += '&SRS=' + URLEncode(_srs) + '&';
+      let baseLayers = layer.name.split(",");
+      request +=
+        "&QUERY_LAYERS=" + URLEncode(baseLayers[baseLayers.length - 1]);
+      request += "&BBOX=" + _bbox;
+      if (
+        layer.version === WMSVersion.version100 ||
+        layer.version === WMSVersion.version111
+      ) {
+        request += "&SRS=" + URLEncode(_srs) + "&";
       }
       if (layer.version === WMSVersion.version130) {
-        request += '&CRS=' + URLEncode(_srs) + '&';
+        request += "&CRS=" + URLEncode(_srs) + "&";
       }
-      request += 'WIDTH=' + this.width;
-      request += '&HEIGHT=' + this.height;
-      if (layer.version === WMSVersion.version100 || layer.version === WMSVersion.version111) {
-        request += '&X=' + x;
-        request += '&Y=' + y;
+      request += "WIDTH=" + this.width;
+      request += "&HEIGHT=" + this.height;
+      if (
+        layer.version === WMSVersion.version100 ||
+        layer.version === WMSVersion.version111
+      ) {
+        request += "&X=" + x;
+        request += "&Y=" + y;
       }
       if (layer.version === WMSVersion.version130) {
-        request += '&I=' + x;
-        request += '&J=' + y;
+        request += "&I=" + x;
+        request += "&J=" + y;
       }
 
       if (layer.sldURL) {
-        request += '&SLD=' + URLEncode(layer.sldURL);
+        request += "&SLD=" + URLEncode(layer.sldURL);
       }
 
-      request += '&FORMAT=image/gif';
-      request += '&INFO_FORMAT=image/png';
-      request += '&STYLES=';
+      request += "&FORMAT=image/gif";
+      request += "&INFO_FORMAT=image/png";
+      request += "&STYLES=";
 
       let startDate = this.dateToISO8601(new Date(this.bbox.left));
       let stopDate = this.dateToISO8601(new Date(this.bbox.right));
 
-      request += '&time=' + startDate + '/' + stopDate;
-      request += '&elevation=' + this.bbox.bottom + '/' + this.bbox.top;
+      request += "&time=" + startDate + "/" + stopDate;
+      request += "&elevation=" + this.bbox.bottom + "/" + this.bbox.top;
 
       return request;
     }
 
     let request = layer.getmapURL;
-    request += '&SERVICE=WMS&';
-    request += 'VERSION=' + layer.version + '&';
-    request += 'REQUEST=GetMap&';
-    request += 'LAYERS=' + URLEncode(layer.name) + '&';
-    request += 'WIDTH=' + this.width + '&';
-    request += 'HEIGHT=' + (this.height) + '&';
+    request += "&SERVICE=WMS&";
+    request += "VERSION=" + layer.version + "&";
+    request += "REQUEST=GetMap&";
+    request += "LAYERS=" + URLEncode(layer.name) + "&";
+    request += "WIDTH=" + this.width + "&";
+    request += "HEIGHT=" + this.height + "&";
 
     request += this.getBBOXandProjString(layer);
 
     if (layer.sldURL) {
-      request += 'SLD=' + URLEncode(layer.sldURL) + '&';
+      request += "SLD=" + URLEncode(layer.sldURL) + "&";
     }
-    request += 'STYLES=' + URLEncode(layer.currentStyle) + '&';
-    request += 'FORMAT=' + layer.format + '&';
+    request += "STYLES=" + URLEncode(layer.currentStyle) + "&";
+    request += "FORMAT=" + layer.format + "&";
     if (layer.transparent === true) {
-      request += 'TRANSPARENT=TRUE&';
+      request += "TRANSPARENT=TRUE&";
     } else {
-      request += 'TRANSPARENT=FALSE&';
+      request += "TRANSPARENT=FALSE&";
     }
     // Handle dimensions
     try {
@@ -1581,98 +1854,113 @@ export default class WMJSMap {
     // Handle WMS extensions
     request += layer.wmsextensions.url;
     return request;
-  };
+  }
 
-  abort () {
-    this.callBack.triggerEvent('onmapready');
+  abort() {
+    this.callBack.triggerEvent("onmapready");
     this.mapBusy = false;
-    this.callBack.triggerEvent('onloadingcomplete');
-  };
+    this.callBack.triggerEvent("onloadingcomplete");
+  }
 
-  isBusy () {
+  isBusy() {
     if (this.suspendDrawing === true || this.mapBusy || this.layersBusy === 1) {
       return true;
     }
-    if (this.divBuffer[0].ready === false || this.divBuffer[1].ready === false) return true;
+    if (this.divBuffer[0].ready === false || this.divBuffer[1].ready === false)
+      return true;
     return false;
-  };
+  }
 
-  _makeInfoHTML () {
+  _makeInfoHTML() {
     try {
       // Create the layerinformation table
       let infoHTML = '<table class="myTable">';
       let infoHTMLHasValidContent = false;
       // Make first a header with 'Layer' and the dimensions
-      infoHTML += '<tr><th>Layer</th>';
+      infoHTML += "<tr><th>Layer</th>";
       if (this.mapdimensions) {
         for (let d = 0; d < this.mapdimensions.length; d++) {
-          infoHTML += '<th>' + this.mapdimensions[d].name + '</th>';
+          infoHTML += "<th>" + this.mapdimensions[d].name + "</th>";
         }
       }
-      infoHTML += '</tr>';
-      infoHTML += '<tr><td>Map</tdh>';
+      infoHTML += "</tr>";
+      infoHTML += "<tr><td>Map</tdh>";
       if (this.mapdimensions) {
         for (let d = 0; d < this.mapdimensions.length; d++) {
-          infoHTML += '<td>' + this.mapdimensions[d].currentValue + '</td>';
+          infoHTML += "<td>" + this.mapdimensions[d].currentValue + "</td>";
         }
       }
-      infoHTML += '</tr>';
+      infoHTML += "</tr>";
       let l = 0;
       for (l = 0; l < this.getNumLayers(); l++) {
-        let j = (this.getNumLayers() - 1) - l;
+        let j = this.getNumLayers() - 1 - l;
         if (this.layers[j].service && this.layers[j].enabled) {
           let layerDimensionsObject = this.layers[j].dimensions;
           if (layerDimensionsObject) {
-            let layerTitle = '';
+            let layerTitle = "";
             layerTitle += this.layers[j].title;
-            infoHTML += '<tr><td>' + layerTitle + '</td>';
+            infoHTML += "<tr><td>" + layerTitle + "</td>";
             for (let mapdim = 0; mapdim < this.mapdimensions.length; mapdim++) {
               let foundDim = false;
-              for (let layerdim = 0; layerdim < layerDimensionsObject.length; layerdim++) {
-                if (layerDimensionsObject[layerdim].name.toUpperCase() === this.mapdimensions[mapdim].name.toUpperCase()) {
-                  infoHTML += '<td>' + layerDimensionsObject[layerdim].currentValue + '</td>';
+              for (
+                let layerdim = 0;
+                layerdim < layerDimensionsObject.length;
+                layerdim++
+              ) {
+                if (
+                  layerDimensionsObject[layerdim].name.toUpperCase() ===
+                  this.mapdimensions[mapdim].name.toUpperCase()
+                ) {
+                  infoHTML +=
+                    "<td>" +
+                    layerDimensionsObject[layerdim].currentValue +
+                    "</td>";
                   foundDim = true;
                   infoHTMLHasValidContent = true;
                   break;
                 }
               }
-              if (foundDim === false)infoHTML += '<td>-</td>';
+              if (foundDim === false) infoHTML += "<td>-</td>";
             }
-            infoHTML += '</tr>';
+            infoHTML += "</tr>";
           }
         }
       }
-      infoHTML += '</table>';
+      infoHTML += "</table>";
       if (infoHTMLHasValidContent === true) {
-        this.divDimInfo.style.display = '';
+        this.divDimInfo.style.display = "";
         this.divDimInfo.innerHTML = infoHTML;
         let cx = 8;
         let cy = 8;
-        this.divDimInfo.style.width = (Math.min((this.width - parseInt(this.divDimInfo.style.marginLeft) - 210), 350)) + 'px';
-        this.divDimInfo.style.left = cx + 'px';
-        this.divDimInfo.style.top = cy + 'px';
+        this.divDimInfo.style.width =
+          Math.min(
+            this.width - parseInt(this.divDimInfo.style.marginLeft) - 210,
+            350
+          ) + "px";
+        this.divDimInfo.style.left = cx + "px";
+        this.divDimInfo.style.top = cy + "px";
       } else {
-        this.divDimInfo.style.display = 'none';
+        this.divDimInfo.style.display = "none";
       }
     } catch (e) {
-      error('Exception' + e);
+      error("Exception" + e);
     }
-  };
+  }
 
-  getLegendGraphicURLForLayer (layer) {
+  getLegendGraphicURLForLayer(layer) {
     if (layer) {
       let legendURL = layer.legendGraphic;
       if (!legendURL) return undefined;
       // For THREDDS WMS we need to add layers=
-      legendURL += '&layers=' + URLEncode(layer.name) + '&';
+      legendURL += "&layers=" + URLEncode(layer.name) + "&";
       try {
         if (layer.legendIsDimensionDependant === true) {
-          legendURL += this.getDimensionRequestString(layer) + '&';
+          legendURL += this.getDimensionRequestString(layer) + "&";
         }
         if (layer.sldURL) {
-          legendURL += '&SLD=' + URLEncode(layer.sldURL);
+          legendURL += "&SLD=" + URLEncode(layer.sldURL);
         }
-        legendURL += '&transparent=true&';
+        legendURL += "&transparent=true&";
       } catch (e) {
         return undefined;
       }
@@ -1683,37 +1971,37 @@ export default class WMJSMap {
       return legendURL;
     }
     return undefined;
-  };
+  }
 
-  showScaleBar () {
+  showScaleBar() {
     this.showScaleBarInMap = true;
-    console.log('todo showScaleBar');
-  };
+    console.log("todo showScaleBar");
+  }
 
-  hideScaleBar () {
+  hideScaleBar() {
     this.showScaleBarInMap = false;
-    console.log('todo hideScaleBar');
-  };
+    console.log("todo hideScaleBar");
+  }
 
-  getMaxNumberOfAnimations () {
+  getMaxNumberOfAnimations() {
     return maxAnimationSteps;
-  };
+  }
 
   // Animate between last point and point up to `n` time-units ago of the active layer
   // E.g. Draw the last three hours of a layer
-  drawLastTimes (hoursAgo, timeUnit) {
+  drawLastTimes(hoursAgo, timeUnit) {
     if (!timeUnit) {
-      timeUnit = 'hours';
+      timeUnit = "hours";
     }
     if (this.layers.length === 0) return;
     let layer = this.getActiveLayer();
     if (!layer) {
-      console.warn('drawLastTimes: No active layers');
+      console.warn("drawLastTimes: No active layers");
       return;
     }
-    let timeDimension = layer.getDimension('time');
+    let timeDimension = layer.getDimension("time");
     if (!timeDimension) {
-      console.warn('drawLastTimes: No time dimension');
+      console.warn("drawLastTimes: No time dimension");
       return;
     }
     let lastIndex = timeDimension.size() - 1;
@@ -1722,18 +2010,23 @@ export default class WMJSMap {
     let begin = lastTime.subtract(hoursAgo, timeUnit);
     while (lastIndex >= 0) {
       lastTime = timeDimension.getValueForIndex(lastIndex--);
-      if (!lastTime || lastTime === WMJSDateTooEarlyString || begin.isAfter(moment.utc(lastTime))) break;
-      drawDates.unshift({ name: 'time', value: lastTime });
+      if (
+        !lastTime ||
+        lastTime === WMJSDateTooEarlyString ||
+        begin.isAfter(moment.utc(lastTime))
+      )
+        break;
+      drawDates.unshift({ name: "time", value: lastTime });
     }
     this.stopAnimating();
     this.draw(drawDates);
-  };
+  }
   /* Animate between start and end dates with the smallest available resolution */
-  drawAutomatic (start, end) {
+  drawAutomatic(start, end) {
     if (this.layers.length === 0) {
       return;
     }
-    let currentTime = start.format('YYYY-MM-DDTHH:mm:ss[Z]');
+    let currentTime = start.format("YYYY-MM-DDTHH:mm:ss[Z]");
     let drawDates = [];
     let iter = 0;
     // Fetch all dates within the time interval with a dynamic frequency
@@ -1741,12 +2034,12 @@ export default class WMJSMap {
       iter++;
       let smallestTime = null;
       for (let i = this.layers.length - 1; i >= 0; i--) {
-        let timeDim = this.layers[i].getDimension('time');
+        let timeDim = this.layers[i].getDimension("time");
         if (!timeDim) {
           continue;
         }
         let layerTime = timeDim.getNextClosestValue(currentTime);
-        if (!layerTime || layerTime === 'date too early') {
+        if (!layerTime || layerTime === "date too early") {
           continue;
         }
 
@@ -1757,7 +2050,7 @@ export default class WMJSMap {
       if (smallestTime === null) {
         break;
       }
-      let smallestTimeObj = { name: 'time', value: smallestTime };
+      let smallestTimeObj = { name: "time", value: smallestTime };
       drawDates.push(smallestTimeObj);
       currentTime = smallestTime;
     }
@@ -1767,7 +2060,7 @@ export default class WMJSMap {
     if (drawDates.length > 0) {
       this.draw(drawDates);
     } else {
-      let firstTimeDim = this.layers[0].getDimension('time');
+      let firstTimeDim = this.layers[0].getDimension("time");
       if (!firstTimeDim) {
         return;
       }
@@ -1777,31 +2070,38 @@ export default class WMJSMap {
 
       let dates = [];
       for (let j = numTimeSteps - numStepsBack; j < numTimeSteps; ++j) {
-        dates.push({ name:firstTimeDim.name, value:firstTimeDim.getValueForIndex(j) });
+        dates.push({
+          name: firstTimeDim.name,
+          value: firstTimeDim.getValueForIndex(j),
+        });
       }
       this.draw(dates);
     }
-  };
+  }
 
-  display () {
+  display() {
     if (!this.divBuffer[this.currentSwapBuffer]) return;
-    this.divBuffer[this.currentSwapBuffer].display(this.updateBBOX, this.loadedBBOX);
-    if (enableConsoleDebugging) console.log('drawnBBOX.setBBOX(bbox)');
+    this.divBuffer[this.currentSwapBuffer].display(
+      this.updateBBOX,
+      this.loadedBBOX
+    );
+    if (enableConsoleDebugging) console.log("drawnBBOX.setBBOX(bbox)");
     this.drawnBBOX.setBBOX(this.bbox);
-  };
+  }
 
-  _animFrameRedraw () {
+  _animFrameRedraw() {
     this._draw(this._animationList);
   }
-  draw (animationList) {
+  draw(animationList) {
     // console.log('**************** draw', animationList);
-    if (typeof (animationList) === 'object') {
+    if (typeof animationList === "object") {
       if (animationList.length > 0) {
         this._animationList = animationList;
       }
     }
     if (this.isAnimating) {
-      if (enableConsoleDebugging)console.log('ANIMATING: Skipping draw:' + animationList);
+      if (enableConsoleDebugging)
+        console.log("ANIMATING: Skipping draw:" + animationList);
       return;
     }
     if (this.drawPending) {
@@ -1811,18 +2111,18 @@ export default class WMJSMap {
     this.drawPending = true;
     // window.requestAnimationFrame();
     this._animFrameRedraw();
-  };
+  }
   /**
    * API Function called to draw the layers, fires getmap request and shows the layers on the screen
    */
-  _draw (animationList) {
-    if (enableConsoleDebugging)console.log('draw:' + animationList);
-    if (enableConsoleDebugging)console.log('drawnBBOX.setBBOX(bbox)');
+  _draw(animationList) {
+    if (enableConsoleDebugging) console.log("draw:" + animationList);
+    if (enableConsoleDebugging) console.log("drawnBBOX.setBBOX(bbox)");
     this.drawnBBOX.setBBOX(this.bbox);
     this._drawAndLoad(animationList);
-  };
+  }
 
-  _drawReady () {
+  _drawReady() {
     this.drawPending = false;
     this.drawBusy = 0;
     if (this.needsRedraw) {
@@ -1831,56 +2131,71 @@ export default class WMJSMap {
     }
   }
 
-  _drawAndLoad (animationList) {
+  _drawAndLoad(animationList) {
     if (this.width < 4 || this.height < 4) {
       this._drawReady();
       return;
     }
 
-    this.callBack.triggerEvent('beforedraw');
+    this.callBack.triggerEvent("beforedraw");
 
     if (this.isAnimating === false) {
       if (animationList !== undefined) {
-        if (typeof (animationList) === 'object') {
+        if (typeof animationList === "object") {
           if (animationList.length > 0) {
             if (animationList.length > maxAnimationSteps) {
-              error('Too many animations given, max is ' + maxAnimationSteps + ' animating last steps only');
+              error(
+                "Too many animations given, max is " +
+                  maxAnimationSteps +
+                  " animating last steps only"
+              );
               animationList = animationList.splice(-maxAnimationSteps);
             }
             this.isAnimating = true;
-            this.callBack.triggerEvent('onstartanimation', this);
+            this.callBack.triggerEvent("onstartanimation", this);
             this.currentAnimationStep = 0;
             this.animationList = [];
             this.mouseHoverAnimationBox = false;
             for (let j = 0; j < animationList.length; j++) {
-              let animationListObject = { name:animationList[j].name, value:animationList[j].value };
-              this.setDimension(animationList[j].name, animationList[j].value, false);
+              let animationListObject = {
+                name: animationList[j].name,
+                value: animationList[j].value,
+              };
+              this.setDimension(
+                animationList[j].name,
+                animationList[j].value,
+                false
+              );
               animationListObject.requests = this.getWMSRequests();
               this.animationList.push(animationListObject);
             }
-            this.setDimension(this.animationList[this.currentAnimationStep].name, this.animationList[this.currentAnimationStep].value, false);
+            this.setDimension(
+              this.animationList[this.currentAnimationStep].name,
+              this.animationList[this.currentAnimationStep].value,
+              false
+            );
             this.wmjsAnimate.checkAnimation();
           }
         }
       }
     }
     this._pdraw();
-  };
+  }
 
-  _onLayersReadyCallbackFunction () {
-    this.draw('onlayersready callback');
-  };
+  _onLayersReadyCallbackFunction() {
+    this.draw("onlayersready callback");
+  }
 
-  _onMapReadyCallbackFunction () {
-    debug('--> onmapready event called');
-    this.draw('onmapready callback');
-  };
+  _onMapReadyCallbackFunction() {
+    debug("--> onmapready event called");
+    this.draw("onmapready callback");
+  }
 
-  _onResumeSuspendCallbackFunction () {
-    this.draw('onresumesuspend callback');
-  };
+  _onResumeSuspendCallbackFunction() {
+    this.draw("onresumesuspend callback");
+  }
 
-  getWMSRequests () {
+  getWMSRequests() {
     let requests = [];
     let n = this.getNumLayers();
     for (let j = 0; j < n; j++) {
@@ -1892,7 +2207,7 @@ export default class WMJSMap {
       }
     }
     return requests;
-  };
+  }
 
   /**
    * Prefetches given requests
@@ -1900,7 +2215,7 @@ export default class WMJSMap {
    * @param requests An array of requests to prefetch
    * @return The list of images in prefetch
    */
-  prefetch (requests) {
+  prefetch(requests) {
     let prefetching = [];
     for (let j = 0; j < requests.length; j++) {
       let image = getMapImageStore.getImage(requests[j]);
@@ -1910,33 +2225,38 @@ export default class WMJSMap {
       }
     }
     return prefetching;
-  };
+  }
 
-  getImageStore () {
+  getImageStore() {
     return getMapImageStore;
-  };
+  }
 
   /* Returns 0: not loaded, 1 loading, 2 loaded */
-  isThisRequestLoaded (request) {
+  isThisRequestLoaded(request) {
     let image = getMapImageStore.getImageForSrc(request);
     if (image === undefined) return 0;
     if (image.isLoaded()) return 2;
     if (image.isLoading()) return 1;
-  };
+  }
 
-  _pdraw () {
+  _pdraw() {
     if (this.initialized === 0) return;
 
     if (this.suspendDrawing === true) {
-      if (this.callBack.addToCallback('onresumesuspend', this._onResumeSuspendCallbackFunction) === true) {
-        debug('Suspending on onresumesuspend');
+      if (
+        this.callBack.addToCallback(
+          "onresumesuspend",
+          this._onResumeSuspendCallbackFunction
+        ) === true
+      ) {
+        debug("Suspending on onresumesuspend");
       }
       this._drawReady();
       return;
     }
 
     let loadLayers = () => {
-      if (enableConsoleDebugging)console.log('loadLayers');
+      if (enableConsoleDebugging) console.log("loadLayers");
       let request;
 
       let currentLayerIndex = 0;
@@ -1945,12 +2265,20 @@ export default class WMJSMap {
         for (let l = 0; l < this.baseLayers.length; l++) {
           if (this.baseLayers[l].enabled) {
             if (this.baseLayers[l].keepOnTop === false) {
-              if (this.baseLayers[l].type && this.baseLayers[l].type === 'twms') continue;
+              if (this.baseLayers[l].type && this.baseLayers[l].type === "twms")
+                continue;
               this.numBaseLayers++;
               request = this.buildWMSGetMapRequest(this.baseLayers[l]);
 
               if (request) {
-                this.divBuffer[this.newSwapBuffer].setSrc(currentLayerIndex, request, this.getWidth(), this.getHeight(), { layer: this.baseLayers[l] }, this.baseLayers[l].opacity);
+                this.divBuffer[this.newSwapBuffer].setSrc(
+                  currentLayerIndex,
+                  request,
+                  this.getWidth(),
+                  this.getHeight(),
+                  { layer: this.baseLayers[l] },
+                  this.baseLayers[l].opacity
+                );
                 currentLayerIndex++;
               }
             }
@@ -1961,11 +2289,23 @@ export default class WMJSMap {
       for (let j = 0; j < this.getNumLayers(); j++) {
         if (this.layers[j].service && this.layers[j].enabled) {
           /* Get the dimension object for this layer */
-          let layerDimensionsObject = this.layers[j].dimensions;// getLayerDimensions(layers[j]);
-          request = this.buildWMSGetMapRequest(this.layers[j], layerDimensionsObject);
+          let layerDimensionsObject = this.layers[j].dimensions; // getLayerDimensions(layers[j]);
+          request = this.buildWMSGetMapRequest(
+            this.layers[j],
+            layerDimensionsObject
+          );
           if (request) {
-            this.divBuffer[this.newSwapBuffer].setSrc(currentLayerIndex, request, this.getWidth(), this.getHeight(), { layer: this.layers[j] }, this.layers[j].opacity);
-            this.layers[j].image = this.divBuffer[this.newSwapBuffer].layers[currentLayerIndex];
+            this.divBuffer[this.newSwapBuffer].setSrc(
+              currentLayerIndex,
+              request,
+              this.getWidth(),
+              this.getHeight(),
+              { layer: this.layers[j] },
+              this.layers[j].opacity
+            );
+            this.layers[j].image = this.divBuffer[this.newSwapBuffer].layers[
+              currentLayerIndex
+            ];
             currentLayerIndex++;
           }
         }
@@ -1977,7 +2317,14 @@ export default class WMJSMap {
             if (this.baseLayers[l].keepOnTop === true) {
               request = this.buildWMSGetMapRequest(this.baseLayers[l]);
               if (request) {
-                this.divBuffer[this.newSwapBuffer].setSrc(currentLayerIndex, request, this.getWidth(), this.getHeight(), { layer:this.baseLayers[l] }, this.baseLayers[l].opacity);
+                this.divBuffer[this.newSwapBuffer].setSrc(
+                  currentLayerIndex,
+                  request,
+                  this.getWidth(),
+                  this.getHeight(),
+                  { layer: this.baseLayers[l] },
+                  this.baseLayers[l].opacity
+                );
                 currentLayerIndex++;
               }
             }
@@ -1992,93 +2339,107 @@ export default class WMJSMap {
 
     /* if layers are not ready yet, wait for them */
     if (this.layersBusy === 1) {
-      if (this.callBack.addToCallback('onlayersready', this._onLayersReadyCallbackFunction) === true) {
-        debug('Suspending on onlayersready');
+      if (
+        this.callBack.addToCallback(
+          "onlayersready",
+          this._onLayersReadyCallbackFunction
+        ) === true
+      ) {
+        debug("Suspending on onlayersready");
       }
       return;
     }
     if (this.mapBusy) {
-      if (this.callBack.addToCallback('onmapready', this._onMapReadyCallbackFunction) === true) {
-        debug('Suspending on onmapready');
+      if (
+        this.callBack.addToCallback(
+          "onmapready",
+          this._onMapReadyCallbackFunction
+        ) === true
+      ) {
+        debug("Suspending on onmapready");
       }
       return;
     }
 
     loadLayers();
-    this.callBack.triggerEvent('ondrawready', this.map);
+    this.callBack.triggerEvent("ondrawready", this.map);
     this.loadLegendInline();
-  };
+  }
 
-  _updateBoundingBox (_mapbbox) {
+  _updateBoundingBox(_mapbbox) {
     if (this.divBuffer.length === 0) return;
-    let mapbbox = this.bbox; if (isDefined(_mapbbox))mapbbox = _mapbbox;
+    let mapbbox = this.bbox;
+    if (isDefined(_mapbbox)) mapbbox = _mapbbox;
     this.updateBBOX.copy(mapbbox);
-    this.divBuffer[this.currentSwapBuffer].setBBOX(this.updateBBOX, this.loadedBBOX);
+    this.divBuffer[this.currentSwapBuffer].setBBOX(
+      this.updateBBOX,
+      this.loadedBBOX
+    );
     this.divBuffer[this.currentSwapBuffer].mapbbox = this.updateBBOX;
     this.showBoundingBox(this.divBoundingBox.bbox, this.updateBBOX);
-    this.callBack.triggerEvent('onupdatebbox', this.updateBBOX);
+    this.callBack.triggerEvent("onupdatebbox", this.updateBBOX);
     this.repositionMapPin(_mapbbox);
-  };
+  }
 
-  flipBuffers () {
-    if (enableConsoleDebugging)console.log('flipBuffers');
+  flipBuffers() {
+    if (enableConsoleDebugging) console.log("flipBuffers");
     let prev = this.currentSwapBuffer;
     let current = this.newSwapBuffer;
-    this.callBack.triggerEvent('onmapstartloading');
+    this.callBack.triggerEvent("onmapstartloading");
     this.mapBusy = true;
-    this.loadingDivTimer.init(500, () => { this.loadingDiv.show(); });
+    this.loadingDivTimer.init(500, () => {
+      this.loadingDiv.show();
+    });
     this.loadingBBOX.setBBOX(this.bbox);
 
     if (!this.divBuffer[current]) return;
-    this.divBuffer[current].load(
-      () => {
-        if (enableConsoleDebugging)console.log('flipBuffers loadcomplete');
-        try {
-          this.divBuffer[prev].srs = this.srs;
-          this.divBuffer[current].bbox = this.bbox.clone();
-          this.divBuffer[current].srs = this.srs;
-          if (enableConsoleDebugging)console.log('loadedBBOX.setBBOX(bbox)');
-          this.loadedBBOX.setBBOX(this.loadingBBOX);
-          if (enableConsoleDebugging)console.log('-----------------------');
+    this.divBuffer[current].load(() => {
+      if (enableConsoleDebugging) console.log("flipBuffers loadcomplete");
+      try {
+        this.divBuffer[prev].srs = this.srs;
+        this.divBuffer[current].bbox = this.bbox.clone();
+        this.divBuffer[current].srs = this.srs;
+        if (enableConsoleDebugging) console.log("loadedBBOX.setBBOX(bbox)");
+        this.loadedBBOX.setBBOX(this.loadingBBOX);
+        if (enableConsoleDebugging) console.log("-----------------------");
 
-          this.divBuffer[current].display(this.updateBBOX, this.loadedBBOX);
+        this.divBuffer[current].display(this.updateBBOX, this.loadedBBOX);
 
-          this.divMapPin.oldx = this.divMapPin.exactX;
-          this.divMapPin.oldy = this.divMapPin.exactY;
-          this.divBuffer[prev].hide();
-          this.currentSwapBuffer = current;
-          this.newSwapBuffer = prev;
-        } catch (e) {
-          console.log(e);
-        }
-        this.mapBusy = false;
-
-        this.callBack.triggerEvent('onmaploadingcomplete', this);
-        this.callBack.triggerEvent('onloadingcomplete', this);
-        this.callBack.triggerEvent('onmapready', this);
-        this.loadingDiv.hide();
-        this.loadingDivTimer.stop();
-        this._drawReady();
+        this.divMapPin.oldx = this.divMapPin.exactX;
+        this.divMapPin.oldy = this.divMapPin.exactY;
+        this.divBuffer[prev].hide();
+        this.currentSwapBuffer = current;
+        this.newSwapBuffer = prev;
+      } catch (e) {
+        console.log(e);
       }
-    );
-  };
+      this.mapBusy = false;
 
-  getBackBufferCanvasContext () {
+      this.callBack.triggerEvent("onmaploadingcomplete", this);
+      this.callBack.triggerEvent("onloadingcomplete", this);
+      this.callBack.triggerEvent("onmapready", this);
+      this.loadingDiv.hide();
+      this.loadingDivTimer.stop();
+      this._drawReady();
+    });
+  }
+
+  getBackBufferCanvasContext() {
     return this.divBuffer[this.newSwapBuffer].getCanvasContext();
-  };
+  }
 
-  getFrontBufferCanvasContext () {
+  getFrontBufferCanvasContext() {
     return this.divBuffer[this.currentSwapBuffer].getCanvasContext();
-  };
+  }
 
-  redrawBuffer () {
+  redrawBuffer() {
     this.divBuffer[this.currentSwapBuffer].display();
-    if (enableConsoleDebugging)console.log('drawnBBOX.setBBOX(bbox)');
+    if (enableConsoleDebugging) console.log("drawnBBOX.setBBOX(bbox)");
     this.drawnBBOX.setBBOX(this.bbox);
     this.draw();
-  };
+  }
 
-  addBaseLayers (layer) {
+  addBaseLayers(layer) {
     if (layer) {
       this.numBaseLayers = 0;
       layer = toArray(layer);
@@ -2088,11 +2449,11 @@ export default class WMJSMap {
           this.numBaseLayers++;
         }
       }
-      this.callBack.triggerEvent('onlayeradd');
+      this.callBack.triggerEvent("onlayeradd");
     } else this.baseLayers = undefined;
-  };
+  }
 
-  setBaseLayers (layer) {
+  setBaseLayers(layer) {
     // TODO use calculate baselayer instead...
     if (layer) {
       this.numBaseLayers = 0;
@@ -2103,29 +2464,38 @@ export default class WMJSMap {
           this.numBaseLayers++;
         }
       }
-      this.callBack.triggerEvent('onlayerchange');
+      this.callBack.triggerEvent("onlayerchange");
     } else this.baseLayers = undefined;
-  };
+  }
 
-  getBaseLayers () {
+  getBaseLayers() {
     return this.baseLayers;
-  };
+  }
 
-  getNumLayers () {
+  getNumLayers() {
     return this.layers.length;
-  };
+  }
 
-  getBaseElement () {
+  getBaseElement() {
     return this.baseDiv;
-  };
+  }
 
-  flyZoomToBBOXTimerFunc () {
-    this.flyZoomToBBOXScaler = (this.flyZoomToBBOXTimerLoop / this.flyZoomToBBOXTimerSteps);
+  flyZoomToBBOXTimerFunc() {
+    this.flyZoomToBBOXScaler =
+      this.flyZoomToBBOXTimerLoop / this.flyZoomToBBOXTimerSteps;
     let z1 = 1 - this.flyZoomToBBOXScaler;
-    this.flyZoomToBBOXFly.left = this.flyZoomToBBOXCurrent.left * z1 + this.flyZoomToBBOXNew.left * this.flyZoomToBBOXScaler;
-    this.flyZoomToBBOXFly.bottom = this.flyZoomToBBOXCurrent.bottom * z1 + this.flyZoomToBBOXNew.bottom * this.flyZoomToBBOXScaler;
-    this.flyZoomToBBOXFly.right = this.flyZoomToBBOXCurrent.right * z1 + this.flyZoomToBBOXNew.right * this.flyZoomToBBOXScaler;
-    this.flyZoomToBBOXFly.top = this.flyZoomToBBOXCurrent.top * z1 + this.flyZoomToBBOXNew.top * this.flyZoomToBBOXScaler;
+    this.flyZoomToBBOXFly.left =
+      this.flyZoomToBBOXCurrent.left * z1 +
+      this.flyZoomToBBOXNew.left * this.flyZoomToBBOXScaler;
+    this.flyZoomToBBOXFly.bottom =
+      this.flyZoomToBBOXCurrent.bottom * z1 +
+      this.flyZoomToBBOXNew.bottom * this.flyZoomToBBOXScaler;
+    this.flyZoomToBBOXFly.right =
+      this.flyZoomToBBOXCurrent.right * z1 +
+      this.flyZoomToBBOXNew.right * this.flyZoomToBBOXScaler;
+    this.flyZoomToBBOXFly.top =
+      this.flyZoomToBBOXCurrent.top * z1 +
+      this.flyZoomToBBOXNew.top * this.flyZoomToBBOXScaler;
     this._updateBoundingBox(this.flyZoomToBBOXFly);
 
     this.flyZoomToBBOXTimerLoop += 1;
@@ -2137,11 +2507,14 @@ export default class WMJSMap {
       if (this.flyZoomToBBOXTimerFuncBusyAndContinue === 0) {
         this.flyZoomToBBOXTimerFuncBusyAndContinue = 0;
         this.flyZoomToBBOXTimerFuncBusy = 0;
-        this.draw('flyZoomToBBOXTimerFunc');
+        this.draw("flyZoomToBBOXTimerFunc");
       } else {
         this.flyZoomToBBOXTimerFuncBusyAndContinue = 0;
         this.flyZoomToBBOXTimerFuncBusy = 0;
-        this.flyZoomToBBOXStartZoom(this.updateBBOX, this.flyZoomToBBOXContinueNew);
+        this.flyZoomToBBOXStartZoom(
+          this.updateBBOX,
+          this.flyZoomToBBOXContinueNew
+        );
       }
       return;
     }
@@ -2149,7 +2522,7 @@ export default class WMJSMap {
     this.flyZoomToBBOXTimer.init(10, this.flyZoomToBBOXTimerFunc);
   }
 
-  flyZoomToBBOXStop (currentbox, newbox) {
+  flyZoomToBBOXStop(currentbox, newbox) {
     if (this.flyZoomToBBOXTimerFuncBusy) {
       this.setBBOX(this.flyZoomToBBOXFly);
     }
@@ -2158,7 +2531,7 @@ export default class WMJSMap {
     this.flyZoomToBBOXTimer.stop();
   }
 
-  flyZoomToBBOXStartZoom (currentbox, newbox) {
+  flyZoomToBBOXStartZoom(currentbox, newbox) {
     if (this.flyZoomToBBOXTimerFuncBusy === 1) {
       this.flyZoomToBBOXContinueNew.copy(newbox);
       this.flyZoomToBBOXTimerFuncBusyAndContinue = 1;
@@ -2172,17 +2545,20 @@ export default class WMJSMap {
       this.flyZoomToBBOXTimerFuncBusy = 1;
       this.flyZoomToBBOXTimerFunc();
     }
-  };
+  }
 
-  mouseWheelEvent (event) {
+  mouseWheelEvent(event) {
     preventdefaultEvent(event);
     if (this.mouseWheelBusy === 1) return;
     let delta = -event.deltaY;
     this.mouseWheelBusy = 1;
-    let w = (this.updateBBOX.right - this.updateBBOX.left);
-    let h = (this.updateBBOX.bottom - this.updateBBOX.top);
-    let geoMouseXY = this.getGeoCoordFromPixelCoord({ x:this.mouseX, y:this.mouseY }, this.drawnBBOX);
-    let nx = (geoMouseXY.x - this.updateBBOX.left) / w;// Normalized to 0-1
+    let w = this.updateBBOX.right - this.updateBBOX.left;
+    let h = this.updateBBOX.bottom - this.updateBBOX.top;
+    let geoMouseXY = this.getGeoCoordFromPixelCoord(
+      { x: this.mouseX, y: this.mouseY },
+      this.drawnBBOX
+    );
+    let nx = (geoMouseXY.x - this.updateBBOX.left) / w; // Normalized to 0-1
     let ny = (geoMouseXY.y - this.updateBBOX.top) / h;
 
     let zoomW;
@@ -2191,8 +2567,8 @@ export default class WMJSMap {
       zoomW = w * -0.25;
       zoomH = h * -0.25;
     } else {
-      zoomW = w * 0.20;
-      zoomH = h * 0.20;
+      zoomW = w * 0.2;
+      zoomH = h * 0.2;
     }
     let newLeft = this.updateBBOX.left + zoomW;
     let newTop = this.updateBBOX.top + zoomH;
@@ -2205,9 +2581,9 @@ export default class WMJSMap {
     let newX = nx * newW + newLeft;
     let newY = ny * newH + newTop;
 
-    let panX = (newX - geoMouseXY.x);
+    let panX = newX - geoMouseXY.x;
 
-    let panY = (newY - geoMouseXY.y);
+    let panY = newY - geoMouseXY.y;
     newLeft -= panX;
     newRight -= panX;
     newTop -= panY;
@@ -2218,67 +2594,83 @@ export default class WMJSMap {
     this.mouseWheelEventBBOXNew.right = newRight;
     this.mouseWheelEventBBOXNew.top = newTop;
     this.mouseWheelBusy = 0;
-    this.flyZoomToBBOXStartZoom(this.mouseWheelEventBBOXCurrent, this.mouseWheelEventBBOXNew);
-  };
+    this.flyZoomToBBOXStartZoom(
+      this.mouseWheelEventBBOXCurrent,
+      this.mouseWheelEventBBOXNew
+    );
+  }
 
-  pinchStart (x, y, e) {
-    this.pinchStart1 = { x:e.pointers[0].clientX, y:e.pointers[0].clientY };
-    this.pinchStart2 = { x:e.pointers[1].clientX, y:e.pointers[1].clientY };
+  pinchStart(x, y, e) {
+    this.pinchStart1 = { x: e.pointers[0].clientX, y: e.pointers[0].clientY };
+    this.pinchStart2 = { x: e.pointers[1].clientX, y: e.pointers[1].clientY };
     this.pinchBox = this.bbox.clone();
     this.controlsBusy = true;
     this.mouseDownPressed = 0;
     this.mouseDragging = 1;
     this.mouseWheelBusy = 1;
-  };
+  }
 
-  pinchMove (x, y, e) {
+  pinchMove(x, y, e) {
     this.mouseDownPressed = 0;
-    this.pinchMove1 = { x:e.pointers[0].clientX, y:e.pointers[0].clientY };
-    this.pinchMove2 = { x:e.pointers[1].clientX, y:e.pointers[1].clientY };
-    let dX1 = (this.pinchMove2.x - this.pinchMove1.x);
-    let dX2 = (this.pinchStart2.x - this.pinchStart1.x);
-    let dY1 = (this.pinchMove2.y - this.pinchMove1.y);
-    let dY2 = (this.pinchStart2.y - this.pinchStart1.y);
+    this.pinchMove1 = { x: e.pointers[0].clientX, y: e.pointers[0].clientY };
+    this.pinchMove2 = { x: e.pointers[1].clientX, y: e.pointers[1].clientY };
+    let dX1 = this.pinchMove2.x - this.pinchMove1.x;
+    let dX2 = this.pinchStart2.x - this.pinchStart1.x;
+    let dY1 = this.pinchMove2.y - this.pinchMove1.y;
+    let dY2 = this.pinchStart2.y - this.pinchStart1.y;
 
-    if (dX2 === 0)dX2 = 1;
-    if (dY2 === 0)dY2 = 1;
+    if (dX2 === 0) dX2 = 1;
+    if (dY2 === 0) dY2 = 1;
 
     if (dX1 * dX1 > dY1 * dY1) {
       let sx = dX1 / dX2;
-      let newxr = ((this.width - this.pinchMove1.x) / sx) + this.pinchStart1.x;
-      let newxl = this.pinchStart1.x - (this.pinchMove1.x / sx);
-      this.bbox.right = (newxr / this.width) * (this.pinchBox.right - this.pinchBox.left) + this.pinchBox.left;
-      this.bbox.left = (newxl / this.width) * (this.pinchBox.right - this.pinchBox.left) + this.pinchBox.left;
-      let aspect = (this.pinchBox.right - this.pinchBox.left) / (this.pinchBox.top - this.pinchBox.bottom);
+      let newxr = (this.width - this.pinchMove1.x) / sx + this.pinchStart1.x;
+      let newxl = this.pinchStart1.x - this.pinchMove1.x / sx;
+      this.bbox.right =
+        (newxr / this.width) * (this.pinchBox.right - this.pinchBox.left) +
+        this.pinchBox.left;
+      this.bbox.left =
+        (newxl / this.width) * (this.pinchBox.right - this.pinchBox.left) +
+        this.pinchBox.left;
+      let aspect =
+        (this.pinchBox.right - this.pinchBox.left) /
+        (this.pinchBox.top - this.pinchBox.bottom);
       let centerH = (this.bbox.top + this.bbox.bottom) / 2;
-      let extentH = ((this.bbox.left - this.bbox.right) / 2) / aspect;
+      let extentH = (this.bbox.left - this.bbox.right) / 2 / aspect;
       this.bbox.bottom = centerH + extentH;
       this.bbox.top = centerH - extentH;
     } else {
       let sy = dY1 / dY2;
-      let newyb = ((this.height - this.pinchMove1.y) / sy) + this.pinchStart1.y;
-      let newyt = this.pinchStart1.y - (this.pinchMove1.y / sy);
-      this.bbox.bottom = (newyb / this.height) * (this.pinchBox.bottom - this.pinchBox.top) + this.pinchBox.top;
-      this.bbox.top = (newyt / this.height) * (this.this.pinchBox.bottom - this.pinchBox.top) + this.pinchBox.top;
-      let aspect = (this.pinchBox.right - this.pinchBox.left) / (this.pinchBox.top - this.pinchBox.bottom);
+      let newyb = (this.height - this.pinchMove1.y) / sy + this.pinchStart1.y;
+      let newyt = this.pinchStart1.y - this.pinchMove1.y / sy;
+      this.bbox.bottom =
+        (newyb / this.height) * (this.pinchBox.bottom - this.pinchBox.top) +
+        this.pinchBox.top;
+      this.bbox.top =
+        (newyt / this.height) *
+          (this.this.pinchBox.bottom - this.pinchBox.top) +
+        this.pinchBox.top;
+      let aspect =
+        (this.pinchBox.right - this.pinchBox.left) /
+        (this.pinchBox.top - this.pinchBox.bottom);
       let centerW = (this.bbox.right + this.bbox.left) / 2;
       let extentW = ((this.bbox.bottom - this.bbox.top) / 2) * aspect;
       this.bbox.left = centerW + extentW;
       this.bbox.right = centerW - extentW;
     }
     this._updateBoundingBox(this.bbox);
-  };
+  }
 
-  pinchEnd (x, y, e) {
+  pinchEnd(x, y, e) {
     this.controlsBusy = false;
     this.mouseDownPressed = 0;
     this.mouseDragging = 0;
     this.mouseWheelBusy = 0;
     this.zoomTo(this.bbox);
-    this.draw('pinchEnd');
-  };
+    this.draw("pinchEnd");
+  }
 
-  destroy () {
+  destroy() {
     this.stopAnimating();
     for (let i = this.layers.length - 1; i >= 0; i--) {
       this.layers[i].setAutoUpdate(false);
@@ -2286,22 +2678,22 @@ export default class WMJSMap {
     this.detachEvents();
 
     this.callBack.destroy();
-  };
+  }
 
-  detachEvents () {
-    this.baseDiv.off('mousedown');
+  detachEvents() {
+    this.baseDiv.off("mousedown");
     // this.baseDiv.off('mousewheel');
     removeMouseWheelEvent(jquery(this.baseDiv).get(0), this.mouseWheelEvent);
-    deleteEvent(document, 'mouseup', this.mouseUpEvent);
-    deleteEvent(document, 'mousemove', this.mouseMoveEvent);
-  };
+    deleteEvent(document, "mouseup", this.mouseUpEvent);
+    deleteEvent(document, "mousemove", this.mouseMoveEvent);
+  }
 
-  attachEvents () {
-    this.baseDiv.on('mousedown', this.mouseDownEvent);
+  attachEvents() {
+    this.baseDiv.on("mousedown", this.mouseDownEvent);
     // this.baseDiv.on('mousewheel', this.mouseWheelEvent);
     addMouseWheelEvent(jquery(this.baseDiv).get(0), this.mouseWheelEvent);
-    attachEvent(document, 'mouseup', this.mouseUpEvent);
-    attachEvent(document, 'mousemove', this.mouseMoveEvent);
+    attachEvent(document, "mouseup", this.mouseUpEvent);
+    attachEvent(document, "mousemove", this.mouseMoveEvent);
     if (this.isTouchDevice()) {
       this.enableInlineGetFeatureInfo(false);
       // let mc = new Hammer.Manager(document.body);
@@ -2309,43 +2701,63 @@ export default class WMJSMap {
       // mc.add(new Hammer.Pinch());
       // mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
       // mc.add(new Hammer.Swipe()).recognizeWith(mc.get('pan'));
-      mc.on('panstart', (ev) => { ev.preventDefault(); this.mouseDown(ev.center.x, ev.center.y, ev); });
-      mc.on('panmove', (ev) => { ev.preventDefault(); this.mouseMove(ev.center.x, ev.center.y, ev); });
-      mc.on('panend', (ev) => { ev.preventDefault(); this.mouseUp(ev.center.x, ev.center.y, ev); });
-      mc.on('pinchstart', (ev) => { ev.preventDefault(); this.pinchStart(ev.center.x, ev.center.y, ev); });
-      mc.on('pinchmove', (ev) => { ev.preventDefault(); this.pinchMove(ev.center.x, ev.center.y, ev); });
-      mc.on('pinchend', (ev) => { ev.preventDefault(); this.pinchEnd(ev.center.x, ev.center.y, ev); });
+      mc.on("panstart", (ev) => {
+        ev.preventDefault();
+        this.mouseDown(ev.center.x, ev.center.y, ev);
+      });
+      mc.on("panmove", (ev) => {
+        ev.preventDefault();
+        this.mouseMove(ev.center.x, ev.center.y, ev);
+      });
+      mc.on("panend", (ev) => {
+        ev.preventDefault();
+        this.mouseUp(ev.center.x, ev.center.y, ev);
+      });
+      mc.on("pinchstart", (ev) => {
+        ev.preventDefault();
+        this.pinchStart(ev.center.x, ev.center.y, ev);
+      });
+      mc.on("pinchmove", (ev) => {
+        ev.preventDefault();
+        this.pinchMove(ev.center.x, ev.center.y, ev);
+      });
+      mc.on("pinchend", (ev) => {
+        ev.preventDefault();
+        this.pinchEnd(ev.center.x, ev.center.y, ev);
+      });
     }
 
     this.setMapModePan();
-  };
+  }
 
   /* Adds DIM_ for certain dims */
-  _getCorrectWMSDimName (origDimName) {
+  _getCorrectWMSDimName(origDimName) {
     /* Adds DIM_ for dimensions other than height or time */
-    if (origDimName.toUpperCase() === 'TIME') return origDimName;
-    if (origDimName.toUpperCase() === 'ELEVATION') return origDimName;
-    return 'DIM_' + origDimName;
-  };
+    if (origDimName.toUpperCase() === "TIME") return origDimName;
+    if (origDimName.toUpperCase() === "ELEVATION") return origDimName;
+    return "DIM_" + origDimName;
+  }
 
   /* Returns all dimensions with its current values as URL */
-  _getMapDimURL (layer) {
-    let request = '';
+  _getMapDimURL(layer) {
+    let request = "";
     for (let j = 0; j < layer.dimensions.length; j++) {
       let currentValue = layer.dimensions[j].getValue();
-      request += '&' + this._getCorrectWMSDimName(layer.dimensions[j].name);
-      request += '=' + URLEncode(currentValue);
-      if (currentValue === WMJSDateOutSideRange ||
+      request += "&" + this._getCorrectWMSDimName(layer.dimensions[j].name);
+      request += "=" + URLEncode(currentValue);
+      if (
+        currentValue === WMJSDateOutSideRange ||
         currentValue === WMJSDateTooEarlyString ||
-        currentValue === WMJSDateTooLateString) {
-        throw (WMJSDateOutSideRange);
+        currentValue === WMJSDateTooLateString
+      ) {
+        throw WMJSDateOutSideRange;
       }
     }
     return request;
-  };
+  }
 
   /* Returns all dimensions with its current values as object */
-  _buildLayerDims () {
+  _buildLayerDims() {
     if (this.buildLayerDimsBusy === true) {
       return;
     }
@@ -2356,14 +2768,17 @@ export default class WMJSMap {
           let layerDim = this.layers[j].dimensions[i];
           if (layerDim.linked === true) {
             if (layerDim.name === mapDim.name) {
-              if (mapDim.currentValue === 'current' ||
-                mapDim.currentValue === 'default' ||
-                mapDim.currentValue === '' ||
-                mapDim.currentValue === 'earliest' ||
-                mapDim.currentValue === 'middle' ||
-                mapDim.currentValue === 'latest'
+              if (
+                mapDim.currentValue === "current" ||
+                mapDim.currentValue === "default" ||
+                mapDim.currentValue === "" ||
+                mapDim.currentValue === "earliest" ||
+                mapDim.currentValue === "middle" ||
+                mapDim.currentValue === "latest"
               ) {
-                mapDim.currentValue = layerDim.getClosestValue(mapDim.currentValue);
+                mapDim.currentValue = layerDim.getClosestValue(
+                  mapDim.currentValue
+                );
               }
               this.buildLayerDimsBusy = true;
               layerDim.setClosestValue(mapDim.currentValue);
@@ -2373,122 +2788,137 @@ export default class WMJSMap {
         }
       }
     }
-  };
+  }
 
-  getMapMode () {
+  getMapMode() {
     return this.mapMode;
-  };
+  }
 
   /* GetMetaData handling */
-  getWMSMetaDataRequestURL (layer) {
+  getWMSMetaDataRequestURL(layer) {
     let request = layer.service;
-    request += '&SERVICE=WMS&REQUEST=GetMetaData&VERSION=' + layer.version;
-    request += '&LAYER=' + URLEncode(layer.name);
-    request += '&FORMAT=text/html';
+    request += "&SERVICE=WMS&REQUEST=GetMetaData&VERSION=" + layer.version;
+    request += "&LAYER=" + URLEncode(layer.name);
+    request += "&FORMAT=text/html";
     try {
-      request += '&' + this._getMapDimURL(layer);
+      request += "&" + this._getMapDimURL(layer);
     } catch (e) {
       return undefined;
     }
-    debug('<a target="_blank" href="' + request + '">' + request + '</a>', false);
+    debug(
+      '<a target="_blank" href="' + request + '">' + request + "</a>",
+      false
+    );
     return request;
-  };
+  }
 
-  getPointInfoRequestURL (layer, x, y, service, style) {
+  getPointInfoRequestURL(layer, x, y, service, style) {
     let request = service;
-    request += '&GRAPHSTYLE=' + style;
-    request += '&' + this.getBBOXandProjString(layer);
-    request += '&LAYERS=' + URLEncode(layer.name);
-    request += 'WIDTH=' + this.width;
-    request += '&HEIGHT=' + this.height;
-    request += '&X=' + x;
-    request += '&Y=' + y;
-    request += '&FORMAT=image/png';
-    request += '&INFO_FORMAT=text/html';
-    request += '&STYLES=';
+    request += "&GRAPHSTYLE=" + style;
+    request += "&" + this.getBBOXandProjString(layer);
+    request += "&LAYERS=" + URLEncode(layer.name);
+    request += "WIDTH=" + this.width;
+    request += "&HEIGHT=" + this.height;
+    request += "&X=" + x;
+    request += "&Y=" + y;
+    request += "&FORMAT=image/png";
+    request += "&INFO_FORMAT=text/html";
+    request += "&STYLES=";
     try {
-      request += '&' + this._getMapDimURL(layer);
+      request += "&" + this._getMapDimURL(layer);
     } catch (e) {
       return undefined;
     }
-    debug('<a target="_blank" href="' + request + '">' + request + '</a>', false);
+    debug(
+      '<a target="_blank" href="' + request + '">' + request + "</a>",
+      false
+    );
     return request;
-  };
+  }
 
   // Makes a valid getfeatureinfoURL for each layer
-  getWMSGetFeatureInfoRequestURL (layer, x, y, format = 'text/html') {
+  getWMSGetFeatureInfoRequestURL(layer, x, y, format = "text/html") {
     let request = WMJScheckURL(layer.service);
-    request += '&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=' + layer.version;
+    request += "&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=" + layer.version;
 
-    request += '&LAYERS=' + URLEncode(layer.name);
+    request += "&LAYERS=" + URLEncode(layer.name);
 
-    let baseLayers = layer.name.split(',');
-    request += '&QUERY_LAYERS=' + URLEncode(baseLayers[baseLayers.length - 1]);
-    request += '&' + this.getBBOXandProjString(layer);
-    request += 'WIDTH=' + this.width;
-    request += '&HEIGHT=' + this.height;
-    if (layer.version === WMSVersion.version100 || layer.version === WMSVersion.version111) {
-      request += '&X=' + x;
-      request += '&Y=' + y;
+    let baseLayers = layer.name.split(",");
+    request += "&QUERY_LAYERS=" + URLEncode(baseLayers[baseLayers.length - 1]);
+    request += "&" + this.getBBOXandProjString(layer);
+    request += "WIDTH=" + this.width;
+    request += "&HEIGHT=" + this.height;
+    if (
+      layer.version === WMSVersion.version100 ||
+      layer.version === WMSVersion.version111
+    ) {
+      request += "&X=" + x;
+      request += "&Y=" + y;
     }
     if (layer.version === WMSVersion.version130) {
-      request += '&I=' + x;
-      request += '&J=' + y;
+      request += "&I=" + x;
+      request += "&J=" + y;
     }
-    request += '&FORMAT=image/gif';
-    request += '&INFO_FORMAT=' + format;
-    request += '&STYLES=';
+    request += "&FORMAT=image/gif";
+    request += "&INFO_FORMAT=" + format;
+    request += "&STYLES=";
     try {
-      request += '&' + this._getMapDimURL(layer);
+      request += "&" + this._getMapDimURL(layer);
     } catch (e) {
       return undefined;
     }
-    debug('<a target="_blank" href="' + request + '">' + request + '</a>', false);
+    debug(
+      '<a target="_blank" href="' + request + '">' + request + "</a>",
+      false
+    );
     return request;
-  };
+  }
 
   /* Called when a HTTP request is finished */
-  featureInfoRequestReady (data, layer) {
+  featureInfoRequestReady(data, layer) {
     this.numGetFeatureInfoRequests--;
     let result;
     if (layer) {
       if (layer.queryable === true) {
         result = new GetFeatureInfoObject(layer, data);
       } else {
-        result = new GetFeatureInfoObject(layer, 'not queryable');
+        result = new GetFeatureInfoObject(layer, "not queryable");
       }
-    } else result = new GetFeatureInfoObject(layer, 'Query failed...');
+    } else result = new GetFeatureInfoObject(layer, "Query failed...");
     this.getFeatureInfoResult.push(result);
     if (this.numGetFeatureInfoRequests <= 0) {
       this.numGetFeatureInfoRequests = 0;
-      this.callBack.triggerEvent('ongetfeatureinfoready', this.getFeatureInfoResult);
+      this.callBack.triggerEvent(
+        "ongetfeatureinfoready",
+        this.getFeatureInfoResult
+      );
     }
-  };
+  }
 
-  newGetPointInfo () {
-    debug('resuming on ongetpointinfoready');
+  newGetPointInfo() {
+    debug("resuming on ongetpointinfoready");
     this.getPointInfo(this.mouseDownX, this.mouseDownY);
-  };
+  }
 
-  getPointInfo (x, y) {
+  getPointInfo(x, y) {
     if (this.getPointInfoBusy) {
-      debug('suspending on ongetpointinfoready');
-      this.addListener('ongetpointinfoready', this.newGetPointInfo, false);
+      debug("suspending on ongetpointinfoready");
+      this.addListener("ongetpointinfoready", this.newGetPointInfo, false);
       return;
     }
     this.getPointInfoBusy = true;
-    this.callBack.triggerEvent('beforegetpointinfo', { x: x, y: y });
+    this.callBack.triggerEvent("beforegetpointinfo", { x: x, y: y });
 
     let gr = this.getGraphingData();
 
     if (gr === undefined) {
-      error('getPointInfo getGraphingData is undefined');
+      error("getPointInfo getGraphingData is undefined");
       this.getPointInfoBusy = false;
       return;
     }
-    debug('getPointInfo(' + x + ',' + y + ')' + ' ' + gr.layer.name);
+    debug("getPointInfo(" + x + "," + y + ")" + " " + gr.layer.name);
     let url = this.getPointInfoRequestURL(gr.layer, x, y, gr.service, gr.style);
-    debug('GetPointInfo: ' + url);
+    debug("GetPointInfo: " + url);
 
     let graphingImage = new Image();
     graphingImage.loadEvent = () => {
@@ -2498,104 +2928,128 @@ export default class WMJSMap {
       getPointInfoResult.layer = gr.layer;
       getPointInfoResult.img = graphingImage;
 
-      this.callBack.triggerEvent('ongetpointinfoready', getPointInfoResult);
+      this.callBack.triggerEvent("ongetpointinfoready", getPointInfoResult);
     };
     graphingImage.src = url;
-  };
+  }
 
-  newGetFeatureInfo () {
-    debug('resuming on ongetfeatureinfoready');
-    this.callBack.triggerEvent('beforegetfeatureinfo');
+  newGetFeatureInfo() {
+    debug("resuming on ongetfeatureinfoready");
+    this.callBack.triggerEvent("beforegetfeatureinfo");
     this.getFeatureInfo(this.mouseDownX, this.mouseDownY);
-  };
+  }
 
-  getFeatureInfo (x, y) {
+  getFeatureInfo(x, y) {
     if (this.numGetFeatureInfoRequests > 0) {
-      debug('suspending on ongetfeatureinfoready');
-      this.addListener('ongetfeatureinfoready', this.newGetFeatureInfo, false);
+      debug("suspending on ongetfeatureinfoready");
+      this.addListener("ongetfeatureinfoready", this.newGetFeatureInfo, false);
       return;
     }
-    debug('GetFeatureInfo:');
+    debug("GetFeatureInfo:");
     this.getFeatureInfoResult = [];
     this.numGetFeatureInfoRequests = 0;
     for (let j = 0; j < this.layers.length; j++) {
       let layer = this.layers[this.layers.length - j - 1];
-      layer.getFeatureInfoUrl = '';
+      layer.getFeatureInfoUrl = "";
       if (layer.service && layer.enabled && layer.queryable === true) {
-        layer.getFeatureInfoUrl = this.getWMSGetFeatureInfoRequestURL(layer, x, y);
+        layer.getFeatureInfoUrl = this.getWMSGetFeatureInfoRequestURL(
+          layer,
+          x,
+          y
+        );
         if (!isDefined(layer.getFeatureInfoUrl)) {
-          layer.getFeatureInfoUrl = '';
+          layer.getFeatureInfoUrl = "";
         } else {
           this.numGetFeatureInfoRequests++;
         }
       }
     }
     if (this.numGetFeatureInfoRequests === 0) {
-      this.callBack.triggerEvent('ongetfeatureinfoready', ['No layers to query']);
+      this.callBack.triggerEvent("ongetfeatureinfoready", [
+        "No layers to query",
+      ]);
     }
     for (let j = 0; j < this.layers.length; j++) {
       let myLayer = this.layers[this.layers.length - j - 1];
 
-      if (myLayer.getFeatureInfoUrl !== '') {
+      if (myLayer.getFeatureInfoUrl !== "") {
         if (myLayer.queryable === false) {
-          this.featureInfoRequestReady('Layer is not queryable.', myLayer);
+          this.featureInfoRequestReady("Layer is not queryable.", myLayer);
         } else {
           try {
-            MakeHTTPRequest(myLayer.getFeatureInfoUrl, this.featureInfoRequestReady, (data, myLayer) => {
-              this.featureInfoRequestReady(data, myLayer); error(data);
-            }, myLayer, false, this.requestProxy);
+            MakeHTTPRequest(
+              myLayer.getFeatureInfoUrl,
+              this.featureInfoRequestReady,
+              (data, myLayer) => {
+                this.featureInfoRequestReady(data, myLayer);
+                error(data);
+              },
+              myLayer,
+              false,
+              this.requestProxy
+            );
           } catch (e) {
             console.log(e);
-            this.featureInfoRequestReady('Exception: ' + e, myLayer);
+            this.featureInfoRequestReady("Exception: " + e, myLayer);
           }
         }
       }
     }
-  };
+  }
 
-  getGetFeatureInfoObjectAsHTML (data) {
-    let html = '';
+  getGetFeatureInfoObjectAsHTML(data) {
+    let html = "";
     try {
       html += '<div class="getfeatureinfo">';
       for (let j = 0; j < this.layers.length; j++) {
         for (let i = 0; i < data.length; i++) {
           if (data[i].layer === this.layers[j]) {
             html += '<div class="getfeatureinfolayer">';
-            html += "<b><a target='_blank' href='" + data[i].layer.getFeatureInfoUrl + "'>" + data[i].layer.title + '</a></b><br/>';
+            html +=
+              "<b><a target='_blank' href='" +
+              data[i].layer.getFeatureInfoUrl +
+              "'>" +
+              data[i].layer.title +
+              "</a></b><br/>";
             html += data[i].data;
-            html += '</div>';
+            html += "</div>";
           }
         }
       }
-      html += '</div>';
-    } catch (e) { html = 'No layers to query.'; }
+      html += "</div>";
+    } catch (e) {
+      html = "No layers to query.";
+    }
     return html;
-  };
+  }
 
   /* End of GetFeature info handling */
 
-  getMapPinXY () {
+  getMapPinXY() {
     return [this.divMapPin.exactX, this.divMapPin.exactY];
-  };
+  }
 
-  positionMapPinByLatLon (coord) {
-    debug('positionMapPinByLatLon at ' + coord.x + ',' + coord.y);
+  positionMapPinByLatLon(coord) {
+    debug("positionMapPinByLatLon at " + coord.x + "," + coord.y);
     let newpos = this.getPixelCoordFromLatLong(coord);
     this.setMapPin(newpos.x, newpos.y);
     this.showMapPin();
-  };
+  }
 
-  repositionMapPin (_bbox) {
+  repositionMapPin(_bbox) {
     let b = this.bbox;
     if (isDefined(_bbox)) b = _bbox;
-    let newpos = this.getPixelCoordFromGeoCoord({ x:this.divMapPin.geoPosX, y:this.divMapPin.geoPosY }, b);
+    let newpos = this.getPixelCoordFromGeoCoord(
+      { x: this.divMapPin.geoPosX, y: this.divMapPin.geoPosY },
+      b
+    );
     this.setMapPin(newpos.x, newpos.y, b);
-  };
+  }
 
-  setMapPin (_x, _y, _bbox) {
+  setMapPin(_x, _y, _bbox) {
     let x = _x;
     let y = _y;
-    if (typeof (_x) === 'object') {
+    if (typeof _x === "object") {
       x = _x.x;
       y = _x.y;
     }
@@ -2604,84 +3058,101 @@ export default class WMJSMap {
     this.divMapPin.y = parseInt(y);
     this.divMapPin.exactX = parseFloat(x);
     this.divMapPin.exactY = parseFloat(y);
-    let geopos = this.getGeoCoordFromPixelCoord({ x:this.divMapPin.exactX, y:this.divMapPin.exactY }, _bbox);
+    let geopos = this.getGeoCoordFromPixelCoord(
+      { x: this.divMapPin.exactX, y: this.divMapPin.exactY },
+      _bbox
+    );
     this.divMapPin.geoPosX = geopos.x;
     this.divMapPin.geoPosY = geopos.y;
-  };
+  }
 
-  isMapPinVisible () {
+  isMapPinVisible() {
     return this.divMapPin.displayMapPin;
-  };
+  }
 
-  showMapPin () {
+  showMapPin() {
     this.divMapPin.displayMapPin = true;
     this.draw();
-  };
+  }
 
-  hideMapPin () {
+  hideMapPin() {
     this.divMapPin.displayMapPin = false;
     this.draw();
-  };
+  }
 
-  setMapModeGetInfo () {
-    this.mapMode = 'info';
-    this.baseDiv.css('cursor', 'default');
-  };
+  setMapModeGetInfo() {
+    this.mapMode = "info";
+    this.baseDiv.css("cursor", "default");
+  }
 
-  setMapModeZoomBoxIn (e) {
-    this.mapMode = 'zoom';
-    this.baseDiv.css('cursor', 'default');
-  };
+  setMapModeZoomBoxIn(e) {
+    this.mapMode = "zoom";
+    this.baseDiv.css("cursor", "default");
+  }
 
-  setMapModeZoomOut (e) {
-    this.mapMode = 'zoomout';
-    this.baseDiv.css('cursor', 'default');
-  };
+  setMapModeZoomOut(e) {
+    this.mapMode = "zoomout";
+    this.baseDiv.css("cursor", "default");
+  }
 
-  setMapModePan (e) {
-    this.mapMode = 'pan';
-    this.baseDiv.css('cursor', 'default');
-  };
+  setMapModePan(e) {
+    this.mapMode = "pan";
+    this.baseDiv.css("cursor", "default");
+  }
 
-  setMapModePoint (e, graphWin) {
-    this.mapMode = 'point';
-    this.baseDiv.css('cursor', 'url(webmapjs/img/aero_pen.cur), default');
-  };
+  setMapModePoint(e, graphWin) {
+    this.mapMode = "point";
+    this.baseDiv.css("cursor", "url(webmapjs/img/aero_pen.cur), default");
+  }
 
-  setMapModeNone (e) {
-    this.mapMode = 'none';
-    this.baseDiv.css('cursor', 'default');
-  };
+  setMapModeNone(e) {
+    this.mapMode = "none";
+    this.baseDiv.css("cursor", "default");
+  }
 
-  getMouseCoordinatesForDocument (e) {
+  getMouseCoordinatesForDocument(e) {
     if (isDefined(e.changedTouches)) {
-      return { x:parseInt(e.changedTouches[0].screenX), y:parseInt(e.changedTouches[0].screenY) };
+      return {
+        x: parseInt(e.changedTouches[0].screenX),
+        y: parseInt(e.changedTouches[0].screenY),
+      };
     }
     let parentOffset = jquery(this.mainElement).parent().offset();
     let pageX = e.pageX;
     let pageY = e.pageY;
-    if (pageX === undefined) { pageX = getMouseXCoordinate(e); }
-    if (pageY === undefined) { pageY = getMouseYCoordinate(e); }
+    if (pageX === undefined) {
+      pageX = getMouseXCoordinate(e);
+    }
+    if (pageY === undefined) {
+      pageY = getMouseYCoordinate(e);
+    }
     let relX = pageX - parentOffset.left;
     let relY = pageY - parentOffset.top;
-    return { x:relX, y:relY };
-  };
+    return { x: relX, y: relY };
+  }
 
-  getMouseCoordinatesForElement (e) {
+  getMouseCoordinatesForElement(e) {
     if (isDefined(e.changedTouches)) {
-      return { x:parseInt(e.changedTouches[0].screenX), y:parseInt(e.changedTouches[0].screenY) };
+      return {
+        x: parseInt(e.changedTouches[0].screenX),
+        y: parseInt(e.changedTouches[0].screenY),
+      };
     }
     let parentOffset = jquery(this.mainElement).parent().offset();
     let pageX = e.pageX;
     let pageY = e.pageY;
-    if (pageX === undefined) { pageX = getMouseXCoordinate(e); }
-    if (pageY === undefined) { pageY = getMouseYCoordinate(e); }
+    if (pageX === undefined) {
+      pageX = getMouseXCoordinate(e);
+    }
+    if (pageY === undefined) {
+      pageY = getMouseYCoordinate(e);
+    }
     let relX = pageX - parentOffset.left;
     let relY = pageY - parentOffset.top;
-    return { x:relX, y:relY };
-  };
+    return { x: relX, y: relY };
+  }
 
-  mouseDown (mouseCoordX, mouseCoordY, event) {
+  mouseDown(mouseCoordX, mouseCoordY, event) {
     let shiftKey = false;
     if (event) {
       if (event.shiftKey === true) {
@@ -2691,7 +3162,7 @@ export default class WMJSMap {
 
     let detectLeftButton = (evt) => {
       evt = evt || window.event;
-      if ('buttons' in evt) {
+      if ("buttons" in evt) {
         return evt.buttons === 1;
       }
       let button = evt.which || evt.button;
@@ -2702,17 +3173,17 @@ export default class WMJSMap {
     this.mouseDownY = mouseCoordY;
     this.mouseDownPressed = 1;
     if (this.mouseDragging === 0) {
-      if (this._checkInvalidMouseAction(this.mouseDownX, this.mouseDownY) === 0) {
-        let triggerResults = this.callBack.triggerEvent(
-          'beforemousedown',
-          { mouseX:mouseCoordX,
-            mouseY:mouseCoordY,
-            mouseDown:true,
-            event:event,
-            leftButton: detectLeftButton(event),
-            shiftKey: shiftKey
-          }
-        );
+      if (
+        this._checkInvalidMouseAction(this.mouseDownX, this.mouseDownY) === 0
+      ) {
+        let triggerResults = this.callBack.triggerEvent("beforemousedown", {
+          mouseX: mouseCoordX,
+          mouseY: mouseCoordY,
+          mouseDown: true,
+          event: event,
+          leftButton: detectLeftButton(event),
+          shiftKey: shiftKey,
+        });
         for (let j = 0; j < triggerResults.length; j++) {
           if (triggerResults[j] === false) {
             return;
@@ -2728,83 +3199,98 @@ export default class WMJSMap {
       }
     } else {
       if (this.oldMapMode === undefined) this.oldMapMode = this.mapMode;
-      this.mapMode = 'zoom';
+      this.mapMode = "zoom";
     }
-    this.callBack.triggerEvent('mousedown', { map:this, x:this.mouseDownX, y:this.mouseDownY });
+    this.callBack.triggerEvent("mousedown", {
+      map: this,
+      x: this.mouseDownX,
+      y: this.mouseDownY,
+    });
 
-    if (this.mapMode === 'info') {
-      debug('GetFeatureInfo');
+    if (this.mapMode === "info") {
+      debug("GetFeatureInfo");
       this.setMapPin(this.mouseDownX, this.mouseDownY);
       this.showMapPin();
 
-      this.callBack.triggerEvent('beforegetfeatureinfo', { map:this, x:this.mouseDownX, y:this.mouseDownY });
+      this.callBack.triggerEvent("beforegetfeatureinfo", {
+        map: this,
+        x: this.mouseDownX,
+        y: this.mouseDownY,
+      });
       this.getFeatureInfo(this.mouseDownX, this.mouseDownY);
-    } else if (this.mapMode === 'point') {
+    } else if (this.mapMode === "point") {
       this.setMapPin(this.mouseDownX, this.mouseDownY);
       this.showMapPin();
       this.getPointInfo(this.mouseDownX, this.mouseDownY);
     }
-  };
+  }
 
-  _checkInvalidMouseAction (MX, MY) {
-    if (MY < 0 | MX < 0 | MX > this.width | MY > this.height) { this.InValidMouseAction = 1; return -1; }
+  _checkInvalidMouseAction(MX, MY) {
+    if ((MY < 0) | (MX < 0) | (MX > this.width) | (MY > this.height)) {
+      this.InValidMouseAction = 1;
+      return -1;
+    }
     return 0;
-  };
+  }
 
-  updateMouseCursorCoordinates (coordinates) {
+  updateMouseCursorCoordinates(coordinates) {
     this.mouseUpdateCoordinates = coordinates;
     this.mouseGeoCoordXY = this.getGeoCoordFromPixelCoord(coordinates);
-    this.display('updateMouseCursorCoordinates');
-  };
+    this.display("updateMouseCursorCoordinates");
+  }
 
-  mouseDownEvent (e) {
+  mouseDownEvent(e) {
     preventdefaultEvent(e);
     let mouseCoords = this.getMouseCoordinatesForDocument(e);
     if (this.mapHeader.cursorSet && mouseCoords.y < this.mapHeader.height) {
       return;
     }
     this.mouseDown(mouseCoords.x, mouseCoords.y, e);
-  };
+  }
 
-  mouseMoveEvent (e) {
+  mouseMoveEvent(e) {
     preventdefaultEvent(e);
     let mouseCoords = this.getMouseCoordinatesForDocument(e);
-    if (this.mouseDownPressed === 0 && mouseCoords.y >= 0 && mouseCoords.y < this.mapHeader.height && mouseCoords.x >= 0 && mouseCoords.x <= this.width) {
+    if (
+      this.mouseDownPressed === 0 &&
+      mouseCoords.y >= 0 &&
+      mouseCoords.y < this.mapHeader.height &&
+      mouseCoords.x >= 0 &&
+      mouseCoords.x <= this.width
+    ) {
       if (this.mapHeader.cursorSet === false) {
         this.mapHeader.cursorSet = true;
         this.mapHeader.prevCursor = this.currentCursor;
         this.mapHeader.hovering = true;
-        this.setCursor('pointer');
-        this.draw('mouseMoveEvent');
+        this.setCursor("pointer");
+        this.draw("mouseMoveEvent");
       }
     } else {
       if (this.mapHeader.cursorSet === true) {
         this.mapHeader.cursorSet = false;
         this.mapHeader.hovering = false;
         this.setCursor(this.mapHeader.prevCursor);
-        this.draw('mouseMoveEvent');
+        this.draw("mouseMoveEvent");
       }
     }
     this.mouseMove(mouseCoords.x, mouseCoords.y, e);
-  };
+  }
 
-  mouseUpEvent (e) {
+  mouseUpEvent(e) {
     preventdefaultEvent(e);
     let mouseCoords = this.getMouseCoordinatesForDocument(e);
     this.mouseUp(mouseCoords.x, mouseCoords.y, e);
-  };
+  }
 
-  mouseMove (mouseCoordX, mouseCoordY) {
+  mouseMove(mouseCoordX, mouseCoordY) {
     this.mouseX = mouseCoordX;
     this.mouseY = mouseCoordY;
     if (this.mouseDragging === 0) {
-      let triggerResults = this.callBack.triggerEvent(
-        'beforemousemove', {
-          mouseX:this.mouseX,
-          mouseY:this.mouseY,
-          mouseDown:this.mouseDownPressed === 1
-        }
-      );
+      let triggerResults = this.callBack.triggerEvent("beforemousemove", {
+        mouseX: this.mouseX,
+        mouseY: this.mouseY,
+        mouseDown: this.mouseDownPressed === 1,
+      });
       for (let j = 0; j < triggerResults.length; j++) {
         if (triggerResults[j] === false) {
           return;
@@ -2812,57 +3298,123 @@ export default class WMJSMap {
       }
     }
     if (this.divBoundingBox.displayed === true && this.mapPanning === 0) {
-      let tlpx = this.getPixelCoordFromGeoCoord({ x:this.divBoundingBox.bbox.left, y:this.divBoundingBox.bbox.top });
-      let brpx = this.getPixelCoordFromGeoCoord({ x:this.divBoundingBox.bbox.right, y:this.divBoundingBox.bbox.bottom });
+      let tlpx = this.getPixelCoordFromGeoCoord({
+        x: this.divBoundingBox.bbox.left,
+        y: this.divBoundingBox.bbox.top,
+      });
+      let brpx = this.getPixelCoordFromGeoCoord({
+        x: this.divBoundingBox.bbox.right,
+        y: this.divBoundingBox.bbox.bottom,
+      });
 
       let foundBBOXRib = false;
 
       if (this.mouseDownPressed === 0) {
-        if (this.resizingBBOXEnabled === false) this.resizingBBOXCursor = this.baseDiv.css('cursor');
+        if (this.resizingBBOXEnabled === false)
+          this.resizingBBOXCursor = this.baseDiv.css("cursor");
         // Find left rib
-        if (Math.abs(this.mouseX - tlpx.x) < 6 && this.mouseY > tlpx.y && this.mouseY < brpx.y) {
-          foundBBOXRib = true; this.baseDiv.css('cursor', 'col-resize'); this.resizingBBOXEnabled = 'left';
+        if (
+          Math.abs(this.mouseX - tlpx.x) < 6 &&
+          this.mouseY > tlpx.y &&
+          this.mouseY < brpx.y
+        ) {
+          foundBBOXRib = true;
+          this.baseDiv.css("cursor", "col-resize");
+          this.resizingBBOXEnabled = "left";
         }
         // Find top rib
-        if (Math.abs(this.mouseY - tlpx.y) < 6 && this.mouseX > tlpx.x && this.mouseX < brpx.x) {
-          foundBBOXRib = true; this.baseDiv.css('cursor', 'row-resize'); this.resizingBBOXEnabled = 'top';
+        if (
+          Math.abs(this.mouseY - tlpx.y) < 6 &&
+          this.mouseX > tlpx.x &&
+          this.mouseX < brpx.x
+        ) {
+          foundBBOXRib = true;
+          this.baseDiv.css("cursor", "row-resize");
+          this.resizingBBOXEnabled = "top";
         }
         // Find right rib
-        if (Math.abs(this.mouseX - brpx.x) < 6 && this.mouseY > tlpx.y && this.mouseY < brpx.y) {
-          foundBBOXRib = true; this.baseDiv.css('cursor', 'col-resize'); this.resizingBBOXEnabled = 'right';
+        if (
+          Math.abs(this.mouseX - brpx.x) < 6 &&
+          this.mouseY > tlpx.y &&
+          this.mouseY < brpx.y
+        ) {
+          foundBBOXRib = true;
+          this.baseDiv.css("cursor", "col-resize");
+          this.resizingBBOXEnabled = "right";
         }
         // Find bottom rib
-        if (Math.abs(this.mouseY - brpx.y) < 6 && this.mouseX > tlpx.x && this.mouseX < brpx.x) {
-          foundBBOXRib = true; this.baseDiv.css('cursor', 'row-resize'); this.resizingBBOXEnabled = 'bottom';
+        if (
+          Math.abs(this.mouseY - brpx.y) < 6 &&
+          this.mouseX > tlpx.x &&
+          this.mouseX < brpx.x
+        ) {
+          foundBBOXRib = true;
+          this.baseDiv.css("cursor", "row-resize");
+          this.resizingBBOXEnabled = "bottom";
         }
         // Find topleft corner
-        if (Math.abs(this.mouseX - tlpx.x) < 6 && Math.abs(this.mouseY - tlpx.y) < 6) {
-          foundBBOXRib = true; this.baseDiv.css('cursor', 'nw-resize'); this.resizingBBOXEnabled = 'topleft';
+        if (
+          Math.abs(this.mouseX - tlpx.x) < 6 &&
+          Math.abs(this.mouseY - tlpx.y) < 6
+        ) {
+          foundBBOXRib = true;
+          this.baseDiv.css("cursor", "nw-resize");
+          this.resizingBBOXEnabled = "topleft";
         }
         // Find topright corner
-        if (Math.abs(this.mouseX - brpx.x) < 6 && Math.abs(this.mouseY - tlpx.y) < 6) {
-          foundBBOXRib = true; this.baseDiv.css('cursor', 'ne-resize'); this.resizingBBOXEnabled = 'topright';
+        if (
+          Math.abs(this.mouseX - brpx.x) < 6 &&
+          Math.abs(this.mouseY - tlpx.y) < 6
+        ) {
+          foundBBOXRib = true;
+          this.baseDiv.css("cursor", "ne-resize");
+          this.resizingBBOXEnabled = "topright";
         }
         // Find bottomleft corner
-        if (Math.abs(this.mouseX - tlpx.x) < 6 && Math.abs(this.mouseY - brpx.y) < 6) {
-          foundBBOXRib = true; this.baseDiv.css('cursor', 'sw-resize'); this.resizingBBOXEnabled = 'bottomleft';
+        if (
+          Math.abs(this.mouseX - tlpx.x) < 6 &&
+          Math.abs(this.mouseY - brpx.y) < 6
+        ) {
+          foundBBOXRib = true;
+          this.baseDiv.css("cursor", "sw-resize");
+          this.resizingBBOXEnabled = "bottomleft";
         }
         // Find bottomright corner
-        if (Math.abs(this.mouseX - brpx.x) < 6 && Math.abs(this.mouseY - brpx.y) < 6) {
-          foundBBOXRib = true; this.baseDiv.css('cursor', 'se-resize'); this.resizingBBOXEnabled = 'bottomright';
+        if (
+          Math.abs(this.mouseX - brpx.x) < 6 &&
+          Math.abs(this.mouseY - brpx.y) < 6
+        ) {
+          foundBBOXRib = true;
+          this.baseDiv.css("cursor", "se-resize");
+          this.resizingBBOXEnabled = "bottomright";
         }
       }
 
-      if (foundBBOXRib === true || (this.resizingBBOXEnabled !== false && this.mouseDownPressed === 1)) {
+      if (
+        foundBBOXRib === true ||
+        (this.resizingBBOXEnabled !== false && this.mouseDownPressed === 1)
+      ) {
         if (this.mouseDownPressed === 1) {
-          if (this.resizingBBOXEnabled === 'left')tlpx.x = this.mouseX;
-          if (this.resizingBBOXEnabled === 'top')tlpx.y = this.mouseY;
-          if (this.resizingBBOXEnabled === 'right')brpx.x = this.mouseX;
-          if (this.resizingBBOXEnabled === 'bottom')brpx.y = this.mouseY;
-          if (this.resizingBBOXEnabled === 'topleft') { tlpx.x = this.mouseX; tlpx.y = this.mouseY; }
-          if (this.resizingBBOXEnabled === 'topright') { brpx.x = this.mouseX; tlpx.y = this.mouseY; }
-          if (this.resizingBBOXEnabled === 'bottomleft') { tlpx.x = this.mouseX; brpx.y = this.mouseY; }
-          if (this.resizingBBOXEnabled === 'bottomright') { brpx.x = this.mouseX; brpx.y = this.mouseY; }
+          if (this.resizingBBOXEnabled === "left") tlpx.x = this.mouseX;
+          if (this.resizingBBOXEnabled === "top") tlpx.y = this.mouseY;
+          if (this.resizingBBOXEnabled === "right") brpx.x = this.mouseX;
+          if (this.resizingBBOXEnabled === "bottom") brpx.y = this.mouseY;
+          if (this.resizingBBOXEnabled === "topleft") {
+            tlpx.x = this.mouseX;
+            tlpx.y = this.mouseY;
+          }
+          if (this.resizingBBOXEnabled === "topright") {
+            brpx.x = this.mouseX;
+            tlpx.y = this.mouseY;
+          }
+          if (this.resizingBBOXEnabled === "bottomleft") {
+            tlpx.x = this.mouseX;
+            brpx.y = this.mouseY;
+          }
+          if (this.resizingBBOXEnabled === "bottomright") {
+            brpx.x = this.mouseX;
+            brpx.y = this.mouseY;
+          }
 
           tlpx = this.getGeoCoordFromPixelCoord(tlpx);
           brpx = this.getGeoCoordFromPixelCoord(brpx);
@@ -2873,18 +3425,18 @@ export default class WMJSMap {
           this.showBoundingBox(this.divBoundingBox.bbox);
 
           let data = { map: this, bbox: this.divBoundingBox.bbox };
-          this.callBack.triggerEvent('bboxchanged', data);
+          this.callBack.triggerEvent("bboxchanged", data);
         }
         return;
       } else {
         this.resizingBBOXEnabled = false;
-        this.baseDiv.css('cursor', this.resizingBBOXCursor);
+        this.baseDiv.css("cursor", this.resizingBBOXCursor);
       }
     }
 
     if (this._checkInvalidMouseAction(this.mouseX, this.mouseY) === -1) {
       try {
-        this.callBack.triggerEvent('onmousemove', [undefined, undefined]);
+        this.callBack.triggerEvent("onmousemove", [undefined, undefined]);
         this.updateMouseCursorCoordinates(undefined);
       } catch (e) {
         console.error(e);
@@ -2892,7 +3444,8 @@ export default class WMJSMap {
       this.mouseUpX = this.mouseX;
       this.mouseUpY = this.mouseY;
       if (this.mapPanning === 0) return;
-      if (this.mouseDownPressed === 1) if (this.mapMode === 'zoomout') this.zoomOut();
+      if (this.mouseDownPressed === 1)
+        if (this.mapMode === "zoomout") this.zoomOut();
       this.mouseDownPressed = 0;
       if (this.mouseDragging === 1) {
         this.mouseDragEnd(this.mouseUpX, this.mouseUpY);
@@ -2901,21 +3454,31 @@ export default class WMJSMap {
     }
 
     if (this.mouseDownPressed === 1) {
-      if (!(Math.abs(this.mouseDownX - this.mouseX) < 3 && Math.abs(this.mouseDownY - this.mouseY) < 3)) {
+      if (
+        !(
+          Math.abs(this.mouseDownX - this.mouseX) < 3 &&
+          Math.abs(this.mouseDownY - this.mouseY) < 3
+        )
+      ) {
         this.mouseDrag(this.mouseX, this.mouseY);
       }
     }
-    this.callBack.triggerEvent('onmousemove', [this.mouseX, this.mouseY]);
-    this.updateMouseCursorCoordinates({ x: this.mouseX, y:this.mouseY });
-  };
+    this.callBack.triggerEvent("onmousemove", [this.mouseX, this.mouseY]);
+    this.updateMouseCursorCoordinates({ x: this.mouseX, y: this.mouseY });
+  }
 
-  mouseUp (mouseCoordX, mouseCoordY, e) {
+  mouseUp(mouseCoordX, mouseCoordY, e) {
     this.controlsBusy = false;
     this.mouseUpX = mouseCoordX;
     this.mouseUpY = mouseCoordY;
     if (this.mouseDragging === 0) {
       if (this._checkInvalidMouseAction(this.mouseUpX, this.mouseUpY) === 0) {
-        let triggerResults = this.callBack.triggerEvent('beforemouseup', { mouseX:mouseCoordX, mouseY:mouseCoordY, mouseDown:false, event:e });
+        let triggerResults = this.callBack.triggerEvent("beforemouseup", {
+          mouseX: mouseCoordX,
+          mouseY: mouseCoordY,
+          mouseDown: false,
+          event: e,
+        });
         for (let j = 0; j < triggerResults.length; j++) {
           if (triggerResults[j] === false) {
             this.mouseDownPressed = 0;
@@ -2925,16 +3488,36 @@ export default class WMJSMap {
       }
     }
     if (this.mouseDownPressed === 1) {
-      if (this.mapMode === 'zoomout') { this.zoomOut(); }
+      if (this.mapMode === "zoomout") {
+        this.zoomOut();
+      }
       if (this.mouseDragging === 0) {
-        if (Math.abs(this.mouseDownX - this.mouseUpX) < 3 && Math.abs(this.mouseDownY - this.mouseUpY) < 3) {
+        if (
+          Math.abs(this.mouseDownX - this.mouseUpX) < 3 &&
+          Math.abs(this.mouseDownY - this.mouseUpY) < 3
+        ) {
           if (isDefined(e)) {
-            this.callBack.triggerEvent('mouseclicked', { map:this, x:this.mouseUpX, y:this.mouseUpY, shiftKeyPressed: (e.shiftKey === true) });
+            this.callBack.triggerEvent("mouseclicked", {
+              map: this,
+              x: this.mouseUpX,
+              y: this.mouseUpY,
+              shiftKeyPressed: e.shiftKey === true,
+            });
           }
           if (this.inlineGetFeatureInfo === true) {
             let dialog;
             if (this.gfiDialogList.length === 0) {
-              dialog = new WMJSDialog().createDialog({ show: this.showDialog, x:this.mouseUpX, y:this.mouseUpY, autoDestroy:false }, this.baseDiv, this, this.loadingImageSrc);
+              dialog = new WMJSDialog().createDialog(
+                {
+                  show: this.showDialog,
+                  x: this.mouseUpX,
+                  y: this.mouseUpY,
+                  autoDestroy: false,
+                },
+                this.baseDiv,
+                this,
+                this.loadingImageSrc
+              );
               this.gfiDialogList.push(dialog);
             } else {
               dialog = this.gfiDialogList[0];
@@ -2947,7 +3530,7 @@ export default class WMJSMap {
               }
             }
 
-            dialog.on('hide', (event, ui) => {
+            dialog.on("hide", (event, ui) => {
               dialog.hasBeenDragged = false;
             });
             dialog.setLoading();
@@ -2956,10 +3539,14 @@ export default class WMJSMap {
               dialog.setHTML(this.getGetFeatureInfoObjectAsHTML(data));
             };
 
-            this.addListener('ongetfeatureinfoready', ongetfeatureinfoready, true);
+            this.addListener(
+              "ongetfeatureinfoready",
+              ongetfeatureinfoready,
+              true
+            );
             this.setMapPin(this.mouseDownX, this.mouseDownY);
             this.showMapPin();
-            this.callBack.triggerEvent('beforegetfeatureinfo');
+            this.callBack.triggerEvent("beforegetfeatureinfo");
             this.getFeatureInfo(this.mouseDownX, this.mouseDownY);
           } else {
             this.setMapPin(this.mouseDownX, this.mouseDownY);
@@ -2967,39 +3554,51 @@ export default class WMJSMap {
           }
         }
       }
-      this.callBack.triggerEvent('mouseup', { map: this, x: this.mouseUpX, y: this.mouseUpY });
+      this.callBack.triggerEvent("mouseup", {
+        map: this,
+        x: this.mouseUpX,
+        y: this.mouseUpY,
+      });
     }
     this.mouseDownPressed = 0;
     if (this.mouseDragging === 1) {
       this.mouseDragEnd(this.mouseUpX, this.mouseUpY);
     }
-  };
+  }
 
   /* Derived mouse methods */
-  _mouseDragStart (x, y) {
-    if (this.mapMode === 'pan') this._mapPanStart(x, y);
-    if (this.mapMode === 'zoom') this._mapZoomStart(x, y);
-  };
+  _mouseDragStart(x, y) {
+    if (this.mapMode === "pan") this._mapPanStart(x, y);
+    if (this.mapMode === "zoom") this._mapZoomStart(x, y);
+  }
 
-  mouseDrag (x, y) {
-    if (this.mouseDragging === 0) { this._mouseDragStart(x, y); this.mouseDragging = 1; }
-    if (this.mapMode === 'pan') this._mapPan(x, y);
-    if (this.mapMode === 'zoom') this._mapZoom(x, y);
-  };
+  mouseDrag(x, y) {
+    if (this.mouseDragging === 0) {
+      this._mouseDragStart(x, y);
+      this.mouseDragging = 1;
+    }
+    if (this.mapMode === "pan") this._mapPan(x, y);
+    if (this.mapMode === "zoom") this._mapZoom(x, y);
+  }
 
-  mouseDragEnd (x, y) {
+  mouseDragEnd(x, y) {
     if (this.mouseDragging === 0) return;
     this.mouseDragging = 0;
-    if (this.mapMode === 'pan') this._mapPanEnd(x, y);
-    if (this.mapMode === 'zoom') this._mapZoomEnd(x, y);
-    this.callBack.triggerEvent('mapdragend', { map:this, x:this.mouseUpX, y:this.mouseUpY });
-  };
+    if (this.mapMode === "pan") this._mapPanEnd(x, y);
+    if (this.mapMode === "zoom") this._mapZoomEnd(x, y);
+    this.callBack.triggerEvent("mapdragend", {
+      map: this,
+      x: this.mouseUpX,
+      y: this.mouseUpY,
+    });
+  }
 
   /* Map zoom and pan methodss */
-  _mapPanStart (_x, _y) {
+  _mapPanStart(_x, _y) {
     this.flyZoomToBBOXStop();
-    this.baseDiv.css('cursor', 'move');
-    let x = parseInt(_x); let y = parseInt(_y);
+    this.baseDiv.css("cursor", "move");
+    let x = parseInt(_x);
+    let y = parseInt(_y);
 
     this.divMapPin.oldx = this.divMapPin.exactX;
     this.divMapPin.oldy = this.divMapPin.exactY;
@@ -3008,20 +3607,32 @@ export default class WMJSMap {
       this.gfiDialogList[j].origY = this.gfiDialogList[j].y;
     }
     this.mapPanning = 1;
-    if (enableConsoleDebugging)console.log('updateBBOX.setBBOX(drawnBBOX)');
+    if (enableConsoleDebugging) console.log("updateBBOX.setBBOX(drawnBBOX)");
     this.updateBBOX.setBBOX(this.drawnBBOX);
-    this.mapPanStartGeoCoords = this.getGeoCoordFromPixelCoord({ x:x, y:y }, this.bbox);
-  };
+    this.mapPanStartGeoCoords = this.getGeoCoordFromPixelCoord(
+      { x: x, y: y },
+      this.bbox
+    );
+  }
 
-  _mapPan (_x, _y) {
+  _mapPan(_x, _y) {
     if (this.mapPanning === 0) return;
-    let x = parseInt(_x); let y = parseInt(_y);
+    let x = parseInt(_x);
+    let y = parseInt(_y);
 
-    if (this.mouseX < 0 || this.mouseY < 0 || this.mouseX > parseInt(this.mainElement.clientWidth) || this.mouseY > parseInt(this.mainElement.clientHeight)) {
+    if (
+      this.mouseX < 0 ||
+      this.mouseY < 0 ||
+      this.mouseX > parseInt(this.mainElement.clientWidth) ||
+      this.mouseY > parseInt(this.mainElement.clientHeight)
+    ) {
       this.mapPanEnd(x, y);
       return;
     }
-    let mapPanGeoCoords = this.getGeoCoordFromPixelCoord({ x:x, y:y }, this.updateBBOX);
+    let mapPanGeoCoords = this.getGeoCoordFromPixelCoord(
+      { x: x, y: y },
+      this.updateBBOX
+    );
     let diffX = mapPanGeoCoords.x - this.mapPanStartGeoCoords.x;
     let diffY = mapPanGeoCoords.y - this.mapPanStartGeoCoords.y;
     this.updateBBOX.left = this.updateBBOX.left - diffX;
@@ -3029,16 +3640,19 @@ export default class WMJSMap {
     this.updateBBOX.right = this.updateBBOX.right - diffX;
     this.updateBBOX.top = this.updateBBOX.top - diffY;
     this._updateBoundingBox(this.updateBBOX);
-  };
+  }
 
-  _mapPanEnd (_x, _y) {
-    this.baseDiv.css('cursor', 'default');
+  _mapPanEnd(_x, _y) {
+    this.baseDiv.css("cursor", "default");
     let x = parseInt(_x);
     let y = parseInt(_y);
     if (this.mapPanning === 0) return;
     this.mapPanning = 0;
 
-    let mapPanGeoCoords = this.getGeoCoordFromPixelCoord({ x:x, y:y }, this.drawnBBOX);
+    let mapPanGeoCoords = this.getGeoCoordFromPixelCoord(
+      { x: x, y: y },
+      this.drawnBBOX
+    );
     let diffX = mapPanGeoCoords.x - this.mapPanStartGeoCoords.x;
     let diffY = mapPanGeoCoords.y - this.mapPanStartGeoCoords.y;
     this.updateBBOX.left = this.drawnBBOX.left - diffX;
@@ -3047,44 +3661,44 @@ export default class WMJSMap {
     this.updateBBOX.top = this.drawnBBOX.top - diffY;
     this._updateBoundingBox(this.updateBBOX);
     this.zoomTo(this.updateBBOX);
-    this.draw('mapPanEnd');
-  };
+    this.draw("mapPanEnd");
+  }
 
-  _mapZoomStart (x, y) {
-    this.baseDiv.css('cursor', 'crosshair');
+  _mapZoomStart(x, y) {
+    this.baseDiv.css("cursor", "crosshair");
     this.mapZooming = 1;
-  };
-  _mapZoom (x, y) {
+  }
+  _mapZoom(x, y) {
     if (this.mapZooming === 0) return;
     x = this.mouseX - this.mouseDownX;
     y = this.mouseY - this.mouseDownY;
     if (x < 0 && y < 0) {
-      this.baseDiv.css('cursor', 'not-allowed');
+      this.baseDiv.css("cursor", "not-allowed");
     } else {
-      this.baseDiv.css('cursor', 'crosshair');
+      this.baseDiv.css("cursor", "crosshair");
     }
     let w = x;
     let h = y;
-    this.divZoomBox.style.display = '';
+    this.divZoomBox.style.display = "";
     if (w < 0) {
       w = -w;
-      this.divZoomBox.style.left = (this.mouseX) + 'px';
-    } else this.divZoomBox.style.left = (this.mouseDownX) + 'px';
+      this.divZoomBox.style.left = this.mouseX + "px";
+    } else this.divZoomBox.style.left = this.mouseDownX + "px";
     if (h < 0) {
       h = -h;
-      this.divZoomBox.style.top = (this.mouseY) + 'px';
-    } else this.divZoomBox.style.top = (this.mouseDownY) + 'px';
-    this.divZoomBox.style.width = w + 'px';
-    this.divZoomBox.style.height = h + 'px';
-  };
+      this.divZoomBox.style.top = this.mouseY + "px";
+    } else this.divZoomBox.style.top = this.mouseDownY + "px";
+    this.divZoomBox.style.width = w + "px";
+    this.divZoomBox.style.height = h + "px";
+  }
 
-  _mapZoomEnd (x, y) {
+  _mapZoomEnd(x, y) {
     x = this.mouseUpX - this.mouseDownX;
     y = this.mouseUpY - this.mouseDownY;
-    this.baseDiv.css('cursor', 'default');
+    this.baseDiv.css("cursor", "default");
     if (this.mapZooming === 0) return;
     this.mapZooming = 0;
-    this.divZoomBox.style.display = 'none';
+    this.divZoomBox.style.display = "none";
     if (x < 0 && y < 0) return;
     let zoomBBOXPixels = new WMJSBBOX();
 
@@ -3102,39 +3716,47 @@ export default class WMJSMap {
       zoomBBOXPixels.top = this.mouseDownY;
       zoomBBOXPixels.bottom = this.mouseDownY + y;
     }
-    let p1 = this.pixelCoordinatesToXY({ x:zoomBBOXPixels.left, y:zoomBBOXPixels.bottom });
-    let p2 = this.pixelCoordinatesToXY({ x:zoomBBOXPixels.right, y:zoomBBOXPixels.top });
+    let p1 = this.pixelCoordinatesToXY({
+      x: zoomBBOXPixels.left,
+      y: zoomBBOXPixels.bottom,
+    });
+    let p2 = this.pixelCoordinatesToXY({
+      x: zoomBBOXPixels.right,
+      y: zoomBBOXPixels.top,
+    });
 
     zoomBBOXPixels.left = p1.x;
     zoomBBOXPixels.bottom = p1.y;
     zoomBBOXPixels.right = p2.x;
     zoomBBOXPixels.top = p2.y;
     this.zoomTo(zoomBBOXPixels);
-    this.draw('mapZoomEnd');
-  };
+    this.draw("mapZoomEnd");
+  }
 
-  setCursor (cursor) {
+  setCursor(cursor) {
     if (cursor) {
       this.currentCursor = cursor;
     } else {
-      this.currentCursor = 'default';
+      this.currentCursor = "default";
     }
-    this.baseDiv.css('cursor', this.currentCursor);
-  };
+    this.baseDiv.css("cursor", this.currentCursor);
+  }
 
-  getId () {
-    return this.makeComponentId('webmapjsinstance');
-  };
+  getId() {
+    return this.makeComponentId("webmapjsinstance");
+  }
 
-  zoomTo (_newbbox) {
-    if (enableConsoleDebugging)console.log('zoomTo');
+  zoomTo(_newbbox) {
+    if (enableConsoleDebugging) console.log("zoomTo");
     let setOrigBox = false;
 
     let newbbox = new WMJSBBOX(_newbbox);
     // Maintain aspect ratio
     let ratio = 1;
     try {
-      ratio = (this.resizeBBOX.left - this.resizeBBOX.right) / (this.resizeBBOX.bottom - this.resizeBBOX.top);
+      ratio =
+        (this.resizeBBOX.left - this.resizeBBOX.right) /
+        (this.resizeBBOX.bottom - this.resizeBBOX.top);
     } catch (e) {
       setOrigBox = true;
     }
@@ -3143,10 +3765,10 @@ export default class WMJSMap {
       setOrigBox = true;
     }
     if (setOrigBox === true) {
-      error('Invalid bbox: setting ratio to 1');
+      error("Invalid bbox: setting ratio to 1");
       ratio = 1;
     }
-    if (ratio < 0)ratio = -ratio;
+    if (ratio < 0) ratio = -ratio;
 
     let screenRatio = this.width / this.height;
 
@@ -3154,7 +3776,7 @@ export default class WMJSMap {
     if (ratio > screenRatio) {
       // W is more than H, so calc H
       let centerH = (newbbox.top + newbbox.bottom) / 2;
-      let extentH = ((newbbox.left - newbbox.right) / 2) / ratio;
+      let extentH = (newbbox.left - newbbox.right) / 2 / ratio;
       newbbox.bottom = centerH + extentH;
       newbbox.top = centerH - extentH;
     } else {
@@ -3172,47 +3794,57 @@ export default class WMJSMap {
     let resetMapPinAndDialogs = () => {
       // let newpos = this.getPixelCoordFromGeoCoord({ x:divMapPin.geoPosX, y:divMapPin.geoPosY });
       for (let j = 0; j < this.gfiDialogList.length; j++) {
-        let newpos = this.getPixelCoordFromGeoCoord({ x:this.gfiDialogList[j].geoPosX, y:this.gfiDialogList[j].geoPosY });
+        let newpos = this.getPixelCoordFromGeoCoord({
+          x: this.gfiDialogList[j].geoPosX,
+          y: this.gfiDialogList[j].geoPosY,
+        });
         if (this.gfiDialogList[j].hasBeenDragged === false) {
           if (this.gfiDialogList[j].moveToMouseCursor === true) {
-            this.gfiDialogList[j].setXY(this.gfiDialogList[j].origX + newpos.x, this.gfiDialogList[j].origY + newpos.y);
+            this.gfiDialogList[j].setXY(
+              this.gfiDialogList[j].origX + newpos.x,
+              this.gfiDialogList[j].origY + newpos.y
+            );
           }
         }
       }
     };
     resetMapPinAndDialogs();
-  };
+  }
 
-  pixelCoordinatesToXY (coordinates) {
+  pixelCoordinatesToXY(coordinates) {
     return this.getGeoCoordFromPixelCoord(coordinates);
-  };
+  }
 
-  getGeoCoordFromPixelCoord (coordinates, _bbox) {
+  getGeoCoordFromPixelCoord(coordinates, _bbox) {
     let mybbox = this.bbox;
-    if (_bbox)mybbox = _bbox;
+    if (_bbox) mybbox = _bbox;
     if (!isDefined(coordinates)) return undefined;
     try {
-      let lon = (coordinates.x / this.width) * (mybbox.right - mybbox.left) + mybbox.left;
-      let lat = (coordinates.y / this.height) * (mybbox.bottom - mybbox.top) + mybbox.top;
-      return { x:lon, y:lat };
+      let lon =
+        (coordinates.x / this.width) * (mybbox.right - mybbox.left) +
+        mybbox.left;
+      let lat =
+        (coordinates.y / this.height) * (mybbox.bottom - mybbox.top) +
+        mybbox.top;
+      return { x: lon, y: lat };
     } catch (e) {
       return undefined;
     }
-  };
+  }
 
-  getProj4 () {
-    if (!this.srs || this.srs === 'GFI:TIME_ELEVATION') {
+  getProj4() {
+    if (!this.srs || this.srs === "GFI:TIME_ELEVATION") {
       return null;
     }
     if (this.proj4.srs !== this.srs || !isDefined(this.proj4.projection)) {
-      this.proj4.projection = (this.srs);
+      this.proj4.projection = this.srs;
       this.proj4.srs = this.srs;
     }
     return { lonlat: this.longlat, crs: this.proj4.projection, proj4: proj4 };
-  };
+  }
 
-  getPixelCoordFromLatLong (coordinates) {
-    if (!this.srs || this.srs === 'GFI:TIME_ELEVATION') {
+  getPixelCoordFromLatLong(coordinates) {
+    if (!this.srs || this.srs === "GFI:TIME_ELEVATION") {
       return coordinates;
     }
     let result;
@@ -3221,33 +3853,42 @@ export default class WMJSMap {
       p.x = parseFloat(coordinates.x);
       p.y = parseFloat(coordinates.y);
       if (this.proj4.srs !== this.srs || !isDefined(this.proj4.projection)) {
-        this.proj4.projection = (this.srs);
+        this.proj4.projection = this.srs;
         this.proj4.srs = this.srs;
       }
       result = proj4(this.longlat, this.proj4.projection, [p.x, p.y]);
     } catch (e) {
-      error('error in getPixelCoordFromLatLong ' + e);
+      error("error in getPixelCoordFromLatLong " + e);
       return undefined;
     }
     return this.getPixelCoordFromGeoCoord({ x: result[0], y: result[1] });
-  };
+  }
 
-  WCJSSearchRequest (searchDefinition) {
+  WCJSSearchRequest(searchDefinition) {
     console.log(searchDefinition);
     /* ------------ */
     /*  Validation  */
     /* ------------ */
     /* Is it a coordinate search? No Ajax calls needed. */
-    if (searchDefinition.trim().match(/^(-?(?:[1-8]?\d(?:\.\d+)?|90(?:\.0+)?),-?(?:180(?:\.0+)?|(?:(?:1[0-7]\d)|(?:[1-9]?\d))(?:\.\d+)?))jquery/)) {
-      let splitted = searchDefinition.split(',');
+    if (
+      searchDefinition
+        .trim()
+        .match(
+          /^(-?(?:[1-8]?\d(?:\.\d+)?|90(?:\.0+)?),-?(?:180(?:\.0+)?|(?:(?:1[0-7]\d)|(?:[1-9]?\d))(?:\.\d+)?))jquery/
+        )
+    ) {
+      let splitted = searchDefinition.split(",");
       let lat = splitted[0];
       let lng = splitted[1];
-      console.log('LATLON');
+      console.log("LATLON");
       this.calculateBoundingBoxAndZoom(lat, lng);
       return;
     }
 
-    if (typeof (geoNamesURL) === 'undefined' && typeof (knmiGeoNamesURL) === 'undefined') {
+    if (
+      typeof geoNamesURL === "undefined" &&
+      typeof knmiGeoNamesURL === "undefined"
+    ) {
       error(I18n.no_urls_in_config.text);
       return;
     }
@@ -3256,7 +3897,7 @@ export default class WMJSMap {
     if (!searchDefinition.trim()) {
       debug(I18n.no_search_definition.text);
       // Reset value, in case there are only spaces.
-      jquery('#searchtextfield').attr('value', '');
+      jquery("#searchtextfield").attr("value", "");
       return;
     }
 
@@ -3265,7 +3906,7 @@ export default class WMJSMap {
     /* Only Alphanumeric characters are allowed */
     if (!searchDef) {
       debug(I18n.only_alpha_num_allowed.text);
-      jquery('#searchtextfield').attr('value', '');
+      jquery("#searchtextfield").attr("value", "");
       return;
     }
 
@@ -3274,18 +3915,27 @@ export default class WMJSMap {
      * If not succesful, try our own SQLite3 DB.
      */
     let urlKNMIGeoNames;
-    if (typeof (knmiGeoNamesURL) !== 'undefined') {
-      urlKNMIGeoNames = this.knmiGeoNamesURL.replace('{searchTerm}', searchDef);
+    if (typeof knmiGeoNamesURL !== "undefined") {
+      urlKNMIGeoNames = this.knmiGeoNamesURL.replace("{searchTerm}", searchDef);
     } else {
       /* If only geonames is configured, try this instead */
-      let urlApiGeonames = this.geoNamesURL.replace('{searchTerm}', searchDef).replace('{username}', this.defaultUsernameSearch);
+      let urlApiGeonames = this.geoNamesURL
+        .replace("{searchTerm}", searchDef)
+        .replace("{username}", this.defaultUsernameSearch);
       this.WCJSSearchRequestGeoNames(urlApiGeonames);
       return;
     }
 
     /* Debugging text */
     debug(I18n.debug_searching_location.text);
-    debug('<a target="_blank" href="' + urlKNMIGeoNames + '">' + urlKNMIGeoNames + '</a>', false);
+    debug(
+      '<a target="_blank" href="' +
+        urlKNMIGeoNames +
+        '">' +
+        urlKNMIGeoNames +
+        "</a>",
+      false
+    );
 
     let errormessage = (jqXHR, textStatus, errorThrown) => {
       error(I18n.geonames_api_call_failed.text);
@@ -3294,65 +3944,65 @@ export default class WMJSMap {
     let succes = (obj) => {
       /* If there is no result from the API, search the SQLite DB */
       if (jquery(obj).length === 0) {
-        let urlApiGeonames = this.geoNamesURL.replace('{searchTerm}', searchDef)
-          .replace('{username}', this.defaultUsernameSearch);
-        console.log('urlApiGeonames', urlApiGeonames);
+        let urlApiGeonames = this.geoNamesURL
+          .replace("{searchTerm}", searchDef)
+          .replace("{username}", this.defaultUsernameSearch);
+        console.log("urlApiGeonames", urlApiGeonames);
         this.WCJSSearchRequestGeoNames(urlApiGeonames);
         return;
       }
-      console.log('ok');
+      console.log("ok");
       let lat = parseFloat(jquery(obj)[0].lat);
       let lng = parseFloat(jquery(obj)[0].lon);
 
       this.calculateBoundingBoxAndZoom(lat, lng);
     };
     jquery.ajax({
-      dataType: 'jsonp',
-      contentType: 'application/jsonp',
-      jsonpCallback: 'resultGeo',
+      dataType: "jsonp",
+      contentType: "application/jsonp",
+      jsonpCallback: "resultGeo",
       crossDomain: true,
-      type: 'GET',
+      type: "GET",
       url: urlKNMIGeoNames,
       success: succes,
-      error:errormessage
+      error: errormessage,
     });
-  };
+  }
 
-  WCJSSearchRequestGeoNames (url) {
+  WCJSSearchRequestGeoNames(url) {
     debug(I18n.debug_searching_sqlite_location.text);
-    debug('<a target="_blank" href="' + url + '">' + url + '</a>', false);
+    debug('<a target="_blank" href="' + url + '">' + url + "</a>", false);
     let errormessage = (jqXHR, textStatus, errorThrown) => {
       error(I18n.geonames_sqlite_call_failed.text);
     };
     let succes = (obj) => {
-      console.log('ok', obj);
+      console.log("ok", obj);
       /* If there is no result */
-      if (jquery(obj).find('totalResultsCount').text() === '0') {
+      if (jquery(obj).find("totalResultsCount").text() === "0") {
         error(I18n.no_results_search.text);
         /* Reset value */
         return;
       }
-      let lat = parseFloat(jquery(obj).find('geoname').find('lat').text());
-      let lng = parseFloat(jquery(obj).find('geoname').find('lng').text());
+      let lat = parseFloat(jquery(obj).find("geoname").find("lat").text());
+      let lng = parseFloat(jquery(obj).find("geoname").find("lng").text());
       this.calculateBoundingBoxAndZoom(lat, lng);
     };
     jquery.ajax({
-      dataType: 'xml',
-      type: 'GET',
+      dataType: "xml",
+      type: "GET",
       url: url,
       success: succes,
-      error:errormessage
+      error: errormessage,
     });
-  };
+  }
 
-  calculateBoundingBoxAndZoom (lat, lng) {
+  calculateBoundingBoxAndZoom(lat, lng) {
     let lengthToBBOX = 500000;
-    if (this.srs === 'EPSG:4326' ||
-      this.srs === 'EPSG:50001') {
+    if (this.srs === "EPSG:4326" || this.srs === "EPSG:50001") {
       lengthToBBOX = 5;
     }
     console.log(lat, lng);
-    let latlng = this.getPixelCoordFromLatLong({ x:lng, y:lat });
+    let latlng = this.getPixelCoordFromLatLong({ x: lng, y: lat });
     console.log(latlng);
     let geolatlng = this.getGeoCoordFromPixelCoord(latlng);
     console.log(geolatlng);
@@ -3366,87 +4016,91 @@ export default class WMJSMap {
     searchZoomBBOX.top = geolatlng.y + lengthToBBOX;
 
     this.zoomTo(searchZoomBBOX);
-    this.positionMapPinByLatLon({ x:lng, y:lat });
-    this.draw('zoomIn');
-  };
+    this.positionMapPinByLatLon({ x: lng, y: lat });
+    this.draw("zoomIn");
+  }
 
-  getLatLongFromPixelCoord (coordinates) {
-    if (!this.srs || this.srs === 'GFI:TIME_ELEVATION') {
+  getLatLongFromPixelCoord(coordinates) {
+    if (!this.srs || this.srs === "GFI:TIME_ELEVATION") {
       return coordinates;
     }
     try {
       let p = {};
-      p.x = (coordinates.x / this.width) * (this.bbox.right - this.bbox.left) + this.bbox.left;
-      p.y = (coordinates.y / this.height) * (this.bbox.bottom - this.bbox.top) + this.bbox.top;
+      p.x =
+        (coordinates.x / this.width) * (this.bbox.right - this.bbox.left) +
+        this.bbox.left;
+      p.y =
+        (coordinates.y / this.height) * (this.bbox.bottom - this.bbox.top) +
+        this.bbox.top;
       if (this.proj4.srs !== this.srs) {
-        this.proj4.projection = (this.srs);
+        this.proj4.projection = this.srs;
         this.proj4.srs = this.srs;
       }
       let result = proj4(this.proj4.projection, this.longlat, [p.x, p.y]);
-      return { x:result[0], y:result[1] };
+      return { x: result[0], y: result[1] };
     } catch (e) {
       return undefined;
     }
-  };
+  }
 
-  getPixelCoordFromGeoCoord (coordinates, _bbox, _width, _height) {
+  getPixelCoordFromGeoCoord(coordinates, _bbox, _width, _height) {
     let w = this.width;
     let h = this.height;
     let b = this.updateBBOX;
-    if (isDefined(_width))w = _width;
-    if (isDefined(_height))h = _height;
-    if (isDefined(_bbox))b = _bbox;
+    if (isDefined(_width)) w = _width;
+    if (isDefined(_height)) h = _height;
+    if (isDefined(_bbox)) b = _bbox;
 
     let x = (w * (coordinates.x - b.left)) / (b.right - b.left);
     let y = (h * (coordinates.y - b.top)) / (b.bottom - b.top);
     // Was parseInt, but we require sub-pixel precision
-    return { x:parseFloat(x), y:parseFloat(y) };
-  };
+    return { x: parseFloat(x), y: parseFloat(y) };
+  }
 
   // listeners:
-  addListener (name, f, keep) {
+  addListener(name, f, keep) {
     return this.callBack.addToCallback(name, f, keep);
-  };
+  }
 
-  removeListener (name, f) {
+  removeListener(name, f) {
     return this.callBack.removeEvents(name, f);
-  };
+  }
 
-  getListener (name) {
+  getListener(name) {
     return this.callBack;
-  };
+  }
 
-  suspendEvent (name) {
+  suspendEvent(name) {
     this.callBack.suspendEvent(name);
-  };
+  }
 
-  resumeEvent (name) {
+  resumeEvent(name) {
     this.callBack.resumeEvent(name);
-  };
+  }
 
-  getDimensionList () {
+  getDimensionList() {
     return this.mapdimensions;
-  };
+  }
 
-  getDimension (name) {
+  getDimension(name) {
     for (let i = 0; i < this.mapdimensions.length; i++) {
       if (this.mapdimensions[i].name === name) {
         return this.mapdimensions[i];
       }
     }
     return undefined;
-  };
+  }
 
-  setDimension (name, value, triggerEvent) {
-    debug('WebMapJS::setDimension(' + name + ',' + value + ')');
+  setDimension(name, value, triggerEvent) {
+    debug("WebMapJS::setDimension(" + name + "," + value + ")");
     if (!isDefined(name) || !isDefined(value)) {
-      error('Unable to set dimension with undefined value or name');
+      error("Unable to set dimension with undefined value or name");
       return;
     }
     let dim = this.getDimension(name);
 
     if (isDefined(dim) === false) {
-      dim = { name:name, currentValue:value };
+      dim = { name: name, currentValue: value };
       this.mapdimensions.push(dim);
     }
 
@@ -3461,28 +4115,32 @@ export default class WMJSMap {
         triggerEvent = true;
       }
       if (triggerEvent === true) {
-        this.callBack.triggerEvent('ondimchange', name);
+        this.callBack.triggerEvent("ondimchange", name);
       }
     }
-  };
+  }
 
   /* Layer handling */
-  setLayerOpacity (_layer, _opacity) {
+  setLayerOpacity(_layer, _opacity) {
     if (!_layer) return;
     _layer.opacity = _opacity;
     let currentLayerIndex = this.numBaseLayers;
     for (let j = 0; j < this.getNumLayers(); j++) {
       if (this.layers[j].service && this.layers[j].enabled) {
         if (_layer === this.layers[j]) {
-          this.setBufferImageOpacity(this.newSwapBuffer, currentLayerIndex, _opacity);
+          this.setBufferImageOpacity(
+            this.newSwapBuffer,
+            currentLayerIndex,
+            _opacity
+          );
           return;
         }
         currentLayerIndex++;
       }
     }
-  };
+  }
 
-  zoomToLayer (_layer) {
+  zoomToLayer(_layer) {
     // Tries to zoom to the layers boundingbox corresponding to the current map projection
     // If something fails, the defaultBBOX is used instead.
     let layer = _layer;
@@ -3491,13 +4149,17 @@ export default class WMJSMap {
     }
     if (!layer) {
       this.zoomTo(this.defaultBBOX);
-      this.draw('zoomTolayer');
+      this.draw("zoomTolayer");
       return;
     }
     for (let j = 0; j < layer.projectionProperties.length; j++) {
       if (layer.projectionProperties[j].srs === this.srs) {
-        let w = layer.projectionProperties[j].bbox.right - layer.projectionProperties[j].bbox.left;
-        let h = layer.projectionProperties[j].bbox.top - layer.projectionProperties[j].bbox.bottom;
+        let w =
+          layer.projectionProperties[j].bbox.right -
+          layer.projectionProperties[j].bbox.left;
+        let h =
+          layer.projectionProperties[j].bbox.top -
+          layer.projectionProperties[j].bbox.bottom;
         let newBBOX = layer.projectionProperties[j].bbox.clone();
         newBBOX.left -= w / 100;
         newBBOX.right += w / 100;
@@ -3505,41 +4167,56 @@ export default class WMJSMap {
         newBBOX.top += h / 100;
 
         this.zoomTo(newBBOX);
-        this.draw('zoomTolayer');
+        this.draw("zoomTolayer");
         return;
       }
     }
-    error('Unable to find the correct bbox with current map projection ' + this.srs + ' for layer ' + layer.title + '. Using default bbox instead.');
+    error(
+      "Unable to find the correct bbox with current map projection " +
+        this.srs +
+        " for layer " +
+        layer.title +
+        ". Using default bbox instead."
+    );
     this.zoomTo(this.defaultBBOX);
-    this.draw('zoomTolayer');
-  };
+    this.draw("zoomTolayer");
+  }
 
-  setPreviousExtent () {
+  setPreviousExtent() {
     this.DoUndo = 1;
     this.UndoPointer++;
-    if (this.UndoPointer >= this.NrOfUndos) this.UndoPointer = this.NrOfUndos - 1;
-    this.setProjection(this.WMJSProjection_undo[this.UndoPointer].srs, this.WMJSProjection_undo[this.UndoPointer].bbox);
-    this.draw('setPreviousExtent');
-  };
+    if (this.UndoPointer >= this.NrOfUndos)
+      this.UndoPointer = this.NrOfUndos - 1;
+    this.setProjection(
+      this.WMJSProjection_undo[this.UndoPointer].srs,
+      this.WMJSProjection_undo[this.UndoPointer].bbox
+    );
+    this.draw("setPreviousExtent");
+  }
 
-  setNextExtent () {
+  setNextExtent() {
     this.DoRedo = 1;
-    this.UndoPointer--; if (this.UndoPointer < 0) this.UndoPointer = 0;
-    this.setProjection(this.WMJSProjection_undo[this.UndoPointer].srs, this.WMJSProjection_undo[this.UndoPointer].bbox);
-    this.draw('setNextExtent');
-  };
+    this.UndoPointer--;
+    if (this.UndoPointer < 0) this.UndoPointer = 0;
+    this.setProjection(
+      this.WMJSProjection_undo[this.UndoPointer].srs,
+      this.WMJSProjection_undo[this.UndoPointer].bbox
+    );
+    this.draw("setNextExtent");
+  }
 
-  setBBOX (left, bottom, right, top) {
-    if (enableConsoleDebugging)console.log('setBBOX');
+  setBBOX(left, bottom, right, top) {
+    if (enableConsoleDebugging) console.log("setBBOX");
     this.bbox.setBBOX(left, bottom, right, top);
     this.resizeBBOX.setBBOX(this.bbox);
 
-    if (this.srs !== 'GFI:TIME_ELEVATION') {
-      let divRatio = (this.width / this.height);
-      let bboxRatio = (this.bbox.right - this.bbox.left) / (this.bbox.top - this.bbox.bottom);
+    if (this.srs !== "GFI:TIME_ELEVATION") {
+      let divRatio = this.width / this.height;
+      let bboxRatio =
+        (this.bbox.right - this.bbox.left) / (this.bbox.top - this.bbox.bottom);
       if (bboxRatio > divRatio) {
         let centerH = (this.bbox.top + this.bbox.bottom) / 2;
-        let extentH = ((this.bbox.left - this.bbox.right) / 2) / divRatio;
+        let extentH = (this.bbox.left - this.bbox.right) / 2 / divRatio;
         this.bbox.bottom = centerH + extentH;
         this.bbox.top = centerH - extentH;
       } else {
@@ -3556,12 +4233,18 @@ export default class WMJSMap {
     /* Undo part */
     if (this.DoRedo === 0 && this.DoUndo === 0) {
       if (this.UndoPointer !== 0) {
-        for (let j = 0; j <= this.UndoPointer; j++) this.WMJSProjection_tempundo[j] = this.WMJSProjection_undo[j];
-        for (let j = 0; j <= this.UndoPointer; j++) this.WMJSProjection_undo[j] = this.WMJSProjection_tempundo[this.UndoPointer - j];
+        for (let j = 0; j <= this.UndoPointer; j++)
+          this.WMJSProjection_tempundo[j] = this.WMJSProjection_undo[j];
+        for (let j = 0; j <= this.UndoPointer; j++)
+          this.WMJSProjection_undo[j] = this.WMJSProjection_tempundo[
+            this.UndoPointer - j
+          ];
         this.UndoPointer = 0;
       }
       for (let j = this.MaxUndos - 1; j > 0; j--) {
-        this.WMJSProjection_undo[j].bbox.setBBOX(this.WMJSProjection_undo[j - 1].bbox);
+        this.WMJSProjection_undo[j].bbox.setBBOX(
+          this.WMJSProjection_undo[j - 1].bbox
+        );
         this.WMJSProjection_undo[j].srs = this.WMJSProjection_undo[j - 1].srs;
       }
       this.WMJSProjection_undo[0].bbox.setBBOX(this.bbox);
@@ -3574,17 +4257,24 @@ export default class WMJSMap {
     if (this.bbox.equals(left, bottom, right, top) === true) {
       return false;
     }
-    this.callBack.triggerEvent('aftersetbbox', this);
+    this.callBack.triggerEvent("aftersetbbox", this);
     return true;
-  };
+  }
 
-  zoomOut () {
+  zoomOut() {
     let a = (this.resizeBBOX.right - this.resizeBBOX.left) / 6;
-    this.zoomTo(new WMJSBBOX(this.resizeBBOX.left - a, this.resizeBBOX.bottom - a, this.resizeBBOX.right + a, this.resizeBBOX.top + a));
-    this.draw('zoomOut');
-  };
+    this.zoomTo(
+      new WMJSBBOX(
+        this.resizeBBOX.left - a,
+        this.resizeBBOX.bottom - a,
+        this.resizeBBOX.right + a,
+        this.resizeBBOX.top + a
+      )
+    );
+    this.draw("zoomOut");
+  }
 
-  zoomIn (ratio) {
+  zoomIn(ratio) {
     let a = (this.resizeBBOX.left - this.resizeBBOX.right) / 8;
     if (isDefined(ratio) === false) {
       ratio = 1;
@@ -3592,45 +4282,58 @@ export default class WMJSMap {
       if (ratio === 0) return;
     }
     a = a * ratio;
-    this.zoomTo(new WMJSBBOX(this.resizeBBOX.left - a, this.resizeBBOX.bottom - a, this.resizeBBOX.right + a, this.resizeBBOX.top + a));
-    this.draw('zoomIn');
-  };
+    this.zoomTo(
+      new WMJSBBOX(
+        this.resizeBBOX.left - a,
+        this.resizeBBOX.bottom - a,
+        this.resizeBBOX.right + a,
+        this.resizeBBOX.top + a
+      )
+    );
+    this.draw("zoomIn");
+  }
 
-  searchForLocation (searchParam) {
+  searchForLocation(searchParam) {
     this.WCJSSearchRequest(searchParam);
-  };
+  }
 
-  displayLegendInMap (_displayLegendInMap) {
+  displayLegendInMap(_displayLegendInMap) {
     this._displayLegendInMap = _displayLegendInMap;
     this.repositionLegendGraphic();
-  };
+  }
 
-  showBoundingBox (_bbox, _mapbbox) {
+  showBoundingBox(_bbox, _mapbbox) {
     if (isDefined(_bbox)) {
       this.divBoundingBox.bbox = _bbox;
-      this.divBoundingBox.style.display = '';
+      this.divBoundingBox.style.display = "";
       this.divBoundingBox.displayed = true;
     }
     if (this.divBoundingBox.displayed !== true) return;
 
     let b = this.bbox;
-    if (isDefined(_mapbbox))b = _mapbbox;
-    let coord1 = this.getPixelCoordFromGeoCoord({ x:this.divBoundingBox.bbox.left, y:this.divBoundingBox.bbox.top }, b);
-    let coord2 = this.getPixelCoordFromGeoCoord({ x:this.divBoundingBox.bbox.right, y:this.divBoundingBox.bbox.bottom }, b);
+    if (isDefined(_mapbbox)) b = _mapbbox;
+    let coord1 = this.getPixelCoordFromGeoCoord(
+      { x: this.divBoundingBox.bbox.left, y: this.divBoundingBox.bbox.top },
+      b
+    );
+    let coord2 = this.getPixelCoordFromGeoCoord(
+      { x: this.divBoundingBox.bbox.right, y: this.divBoundingBox.bbox.bottom },
+      b
+    );
 
-    this.divBoundingBox.style.left = (coord1.x - 1) + 'px';
-    this.divBoundingBox.style.top = (coord1.y - 2) + 'px';
-    this.divBoundingBox.style.width = (coord2.x - coord1.x) + 'px';
-    this.divBoundingBox.style.height = (coord2.y - coord1.y - 1) + 'px';
-  };
+    this.divBoundingBox.style.left = coord1.x - 1 + "px";
+    this.divBoundingBox.style.top = coord1.y - 2 + "px";
+    this.divBoundingBox.style.width = coord2.x - coord1.x + "px";
+    this.divBoundingBox.style.height = coord2.y - coord1.y - 1 + "px";
+  }
 
-  hideBoundingBox () {
-    this.divBoundingBox.style.display = 'none';
+  hideBoundingBox() {
+    this.divBoundingBox.style.display = "none";
     this.divBoundingBox.displayed = false;
-  };
+  }
 
-  clearImageStore () {
+  clearImageStore() {
     this.getLegendStore().clear();
     this.getImageStore().clear();
-  };
-};
+  }
+}

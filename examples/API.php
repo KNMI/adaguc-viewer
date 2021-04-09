@@ -37,7 +37,7 @@
     
  $( document ).ready(function() {
       initWMJS();
-      var serviceURL = 'http://geoservices.knmi.nl/cgi-bin/RADNL_OPER_R___25PCPRR_L3.cgi?';
+      var serviceURL = 'https://geoservices.knmi.nl/cgi-bin/RADNL_OPER_R___25PCPRR_L3.cgi?';
 
       var service = WMJSGetServiceFromStore(serviceURL);
 

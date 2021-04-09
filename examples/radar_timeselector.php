@@ -59,7 +59,7 @@
       
       
       var baseLayer = new WMJSLayer({
-        service:"http://geoservices.knmi.nl/cgi-bin/worldmaps.cgi?",
+        service:"https://geoservices.knmi.nl/cgi-bin/worldmaps.cgi?",
         name:"world_raster",
         title:"World base layer",
         format:"image/gif",
@@ -67,7 +67,7 @@
       });
       
       var topLayer = new WMJSLayer({
-        service:"http://geoservices.knmi.nl/cgi-bin/worldmaps.cgi?",
+        service:"https://geoservices.knmi.nl/cgi-bin/worldmaps.cgi?",
         name:"world_line",
         format:"image/png",
         title:"World country borders",
@@ -76,7 +76,7 @@
       });
 
       var modisLayer = new WMJSLayer({
-        service:"http://geoservices.knmi.nl/cgi-bin/MODIS_Netherlands.cgi?",
+        service:"https://geoservices.knmi.nl/cgi-bin/MODIS_Netherlands.cgi?",
         name:"modis_250m_netherlands_8bit",
         format:"image/gif",
         title:"Modis base layer - The Netherlands",
@@ -85,7 +85,7 @@
       });
       
       var layer = new WMJSLayer({
-        service:'http://geoservices.knmi.nl/cgi-bin/RADNL_OPER_R___25PCPRR_L3.cgi?',
+        service:'https://geoservices.knmi.nl/cgi-bin/RADNL_OPER_R___25PCPRR_L3.cgi?',
         name:'RADNL_OPER_R___25PCPRR_L3_COLOR'
       });
       

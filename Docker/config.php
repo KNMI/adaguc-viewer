@@ -1,6 +1,6 @@
 <?php
   $trustedURLS=array(
-    "http://geoservices.knmi.nl",
+    "https://geoservices.knmi.nl",
     "http://data.ncof.co.uk:8080/ncWMS/wms?",
     "http://gdsc.nlr.nl/wms/aster_all?",
     "http://demo.deegree.org/deegree-wms/services?",
@@ -15,7 +15,7 @@
     "http://behemoth.nerc-essc.ac.uk/",
     "http://bhlbontw.knmi.nl",
     "http://webgis.nmdc.eu",
-    "http://geoservices.knmi.nl",
+    "https://geoservices.knmi.nl",
     "http://wms.met.no/",
     "http://synopsis1.meteo.fr",
     "http://www.dinoservices.nl",

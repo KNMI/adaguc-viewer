@@ -38,7 +38,7 @@
     
     var services = [
     'http://msgcpp-ogc-realtime.knmi.nl/msgrt.cgi?',
-    'http://geoservices.knmi.nl/cgi-bin/RADNL_OPER_R___25PCPRR_L3.cgi?'
+    'https://geoservices.knmi.nl/cgi-bin/RADNL_OPER_R___25PCPRR_L3.cgi?'
     ];
       
     var queryLayer = function(serviceURL,layerNameEncoded){

@@ -54,7 +54,7 @@
       });
       
       var topLayer = new WMJSLayer({
-        service:"http://geoservices.knmi.nl/cgi-bin/worldmaps.cgi?",
+        service:"https://geoservices.knmi.nl/cgi-bin/worldmaps.cgi?",
         name:"world_line",
         format:"image/png",
         title:"World country borders",
@@ -63,7 +63,7 @@
       });
 
       var layer = new WMJSLayer({
-        service:'http://geoservices.knmi.nl/cgi-bin/CSService.cgi?',
+        service:'https://geoservices.knmi.nl/cgi-bin/CSService.cgi?',
         name:'24h_air_polar_subtrop'
       });
       

@@ -44,7 +44,7 @@
     
     //Global layer variable with our radar service
     var radarLayer = new WMJSLayer({
-      service:'http://geoservices.knmi.nl/cgi-bin/RADNL_OPER_R___25PCPRR_L3.cgi?',
+      service:'https://geoservices.knmi.nl/cgi-bin/RADNL_OPER_R___25PCPRR_L3.cgi?',
       name:'RADNL_OPER_R___25PCPRR_L3_COLOR'
     });
   
@@ -52,9 +52,9 @@
     var newMap = function(element){
     
       //Define baselayers
-      var baseLayer = new WMJSLayer({service:"http://geoservices.knmi.nl/cgi-bin/worldmaps.cgi?",name:"world_raster",title:"World base layer",format:"image/gif",enabled:true});
-      var topLayer = new WMJSLayer({service:"http://geoservices.knmi.nl/cgi-bin/worldmaps.cgi?",name:"world_line",format:"image/png",title:"World country borders",keepOnTop:true,enabled:true});
-      var modisLayer = new WMJSLayer({service:"http://geoservices.knmi.nl/cgi-bin/MODIS_Netherlands.cgi?",name:"modis_250m_netherlands_8bit",format:"image/gif",title:"Modis base layer - The Netherlands",enabled:true,opacity:0.75});
+      var baseLayer = new WMJSLayer({service:"https://geoservices.knmi.nl/cgi-bin/worldmaps.cgi?",name:"world_raster",title:"World base layer",format:"image/gif",enabled:true});
+      var topLayer = new WMJSLayer({service:"https://geoservices.knmi.nl/cgi-bin/worldmaps.cgi?",name:"world_line",format:"image/png",title:"World country borders",keepOnTop:true,enabled:true});
+      var modisLayer = new WMJSLayer({service:"https://geoservices.knmi.nl/cgi-bin/MODIS_Netherlands.cgi?",name:"modis_250m_netherlands_8bit",format:"image/gif",title:"Modis base layer - The Netherlands",enabled:true,opacity:0.75});
 
       //Create new webmapjs mapping element
       var webMapJS  = new WMJSMap(document.getElementById(element));

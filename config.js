@@ -3,7 +3,7 @@ var baseLayerConfiguration = [
     service: "", // TODO We need to copy the natural earth tiles to S3
     name: "naturalearth2",
     title: "World base layer Natural Earth ",
-    enabled: false,
+    enabled: true,
     type: "twms",
     format: "image/gif",
   },
@@ -11,7 +11,7 @@ var baseLayerConfiguration = [
     title: "KNMI Basemap",
     name: "WorldMap",
     type: "twms",
-    enabled: true,
+    enabled: false,
   },
   {
     title: "ESRI ArcGis Canvas",
@@ -38,17 +38,10 @@ var baseLayerConfiguration = [
     enabled: false,
   },
   {
-    name: "OSM",
+    name: "OpenStreetMap_Service",
     title: "Open streetmap",
     type: "twms",
     enabled: false,
-  },
-  {
-    service: "https://geoservices.knmi.nl/cgi-bin/MODIS_Netherlands.cgi?",
-    name: "modis_250m_netherlands_8bit",
-    title: "Static Modis image of the Netherlands",
-    enabled: false,
-    format: "image/png",
   },
   {
     service: "https://testgeoservices.knmi.nl/wms?DATASET=baselayers&",
@@ -57,14 +50,6 @@ var baseLayerConfiguration = [
     title: "World country borders",
     enabled: true,
     keepOnTop: true,
-  },
-  {
-    service: "https://geoservices.knmi.nl/cgi-bin/worldmaps.cgi?",
-    name: "nl_raster_latlon",
-    format: "image/png",
-    title: "KNMI baselayer of the Netherlands",
-    enabled: false,
-    keepOnTop: false,
   },
 ];
 
@@ -94,7 +79,7 @@ var dataChooserConfiguration = [
     layer: "RAD_NL25_PCP_CM",
     srs: "EPSG:3857",
     bbox: "220000,6500000,1000000,7200000",
-    baselayerservice: "https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?",
+    baselayerservice: "",
     baselayername: "streetmap",
     opacity: 0.8,
   },
@@ -125,12 +110,7 @@ var mapTypeConfiguration = [
       name: "WorldMap",
       type: "twms",
     },
-  } /*{ 
-    title: 'Mollweide (7399)', 
-    bbox: [-18157572.744146045,-11212941.682924412,18085661.018022258,11419683.192411266],
-    srs: 'EPSG:7399',
-    baselayer:{service:'https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2',type: 'wms'}
-  },*/,
+  },
   {
     title: "Robinson",
     bbox: [
@@ -161,9 +141,9 @@ var mapTypeConfiguration = [
     bbox: [-19000000, -19000000, 19000000, 19000000],
     srs: "EPSG:3857",
     baselayer: {
-      service: "https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?",
-      name: "streetmap",
-      type: "wms",
+      service: "",
+      name: "OpenStreetMap_Service",
+      type: "twms",
     },
   },
   {
@@ -176,9 +156,9 @@ var mapTypeConfiguration = [
     ],
     srs: "EPSG:3411",
     baselayer: {
-      service: "https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?",
-      name: "naturalearth2",
-      type: "wms",
+      service: "",
+      name: "NaturalEarth2",
+      type: "twms",
     },
   },
   {
@@ -191,9 +171,9 @@ var mapTypeConfiguration = [
     ],
     srs: "EPSG:3412",
     baselayer: {
-      service: "https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?",
-      name: "naturalearth2",
-      type: "wms",
+      service: "",
+      name: "NaturalEarth2",
+      type: "twms",
     },
   },
   {
@@ -201,9 +181,9 @@ var mapTypeConfiguration = [
     bbox: [-13000000, -13000000, 13000000, 13000000],
     srs: "EPSG:3575",
     baselayer: {
-      service: "https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?",
-      name: "naturalearth2",
-      type: "wms",
+      service: "",
+      name: "NaturalEarth2",
+      type: "twms",
     },
   },
 
@@ -217,9 +197,9 @@ var mapTypeConfiguration = [
     ],
     srs: "EPSG:32661",
     baselayer: {
-      service: "https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?",
-      name: "naturalearth2",
-      type: "wms",
+      service: "",
+      name: "NaturalEarth2",
+      type: "twms",
     },
   },
   {
@@ -232,9 +212,9 @@ var mapTypeConfiguration = [
     ],
     srs: "EPSG:50001",
     baselayer: {
-      service: "https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?",
-      name: "naturalearth2",
-      type: "wms",
+      service: "",
+      name: "NaturalEarth2",
+      type: "twms",
     },
   },
 
@@ -243,43 +223,11 @@ var mapTypeConfiguration = [
     bbox: [220000, 6500000, 1000000, 7200000],
     srs: "EPSG:3857",
     baselayer: {
-      service: "https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?",
-      name: "streetmap",
-      type: "wms",
+      service: "",
+      name: "OpenStreetMap_Service",
+      type: "twms",
     },
-  } /*,{ 
-    title: 'The Netherlands (28992)', 
-    bbox: [-350000,125000,700000,900000 ],
-    srs: 'EPSG:28992',
-    baselayer:{service:'https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2',type: 'wms'}
-  },*/ /*{ 
-    title: 'PDOK BRT NL', 
-    bbox: [-350000,125000,700000,900000],   
-    srs: 'EPSG:28992', 
-    baselayer:{service:'https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'streetmap',type: 'wms'}
-  },*/ /*{ 
-    title: 'Openstreetmap Schiphol', 
-    bbox: [515813.2988839851,6850485.5537392385,544160.8241851525,6869318.449956324],   
-    srs: 'EPSG:3857', 
-    baselayer:{service:'https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'streetmap',type: 'wms'}
-  }*/,
-
-  /*,{ 
-    title: 'Schiphol Satellite + Aerial Mercator', 
-    bbox: [522402.16196646384,6852917.910540686,537831.8792436487,6863959.075064662],
-    srs: 'EPSG:3857',
-    baselayer:{service:'http://birdexp03.knmi.nl/cgi-bin/plieger/wmst.cgi?',name:'satellite'}
-  },{ 
-    title: 'Topographic Mercator in NL', 
-    bbox: [220000,6500000,1000000,7200000],
-    srs: 'EPSG:3857',
-    baselayer:{service:'http://birdexp03.knmi.nl/cgi-bin/plieger/wmst.cgi?',name:'topo'}
-  },{ 
-    title: 'Canvas Mercator in NL', 
-    bbox: [220000,6500000,1000000,7200000],
-    srs: 'EPSG:3857',
-    baselayer:{service:'http://birdexp03.knmi.nl/cgi-bin/plieger/wmst.cgi?',name:'canvas'}
-  }*/
+  },
 ];
 
 var defaultLanguage = { language: "en" }; // <-- Language for the ADAGUC viewer.
@@ -587,7 +535,8 @@ var WMJSTileRendererTileSettings = {
   },
   NaturalEarth2: {
     "EPSG:3411": {
-      home: "https://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG3411/",
+      home:
+        "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG3411/",
       minLevel: 1,
       maxLevel: 6,
       origX: -12400000,
@@ -597,7 +546,8 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:3412": {
-      home: "https://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG3412/",
+      home:
+        "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG3412/",
       minLevel: 1,
       maxLevel: 6,
       origX: -12400000,
@@ -607,7 +557,8 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:3575": {
-      home: "https://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG3575/",
+      home:
+        "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG3575/",
       minLevel: 1,
       maxLevel: 6,
       origX: -13000000,
@@ -617,14 +568,16 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:3857": {
-      home: "https://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG3857/",
+      home:
+        "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG3857/",
       minLevel: 1,
       maxLevel: 7,
       tileServerType: "wmst",
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:4258": {
-      home: "https://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG4326/",
+      home:
+        "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG4326/",
       minLevel: 1,
       maxLevel: 6,
       origX: -180,
@@ -634,7 +587,8 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:4326": {
-      home: "https://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG4326/",
+      home:
+        "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG4326/",
       minLevel: 1,
       maxLevel: 6,
       origX: -180,
@@ -645,7 +599,7 @@ var WMJSTileRendererTileSettings = {
     },
     "EPSG:28992": {
       home:
-        "https://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG28992/",
+        "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG28992/",
       minLevel: 1,
       maxLevel: 5,
       origX: -2999000,
@@ -656,7 +610,7 @@ var WMJSTileRendererTileSettings = {
     },
     "EPSG:32661": {
       home:
-        "https://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG32661/",
+        "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG32661/",
       minLevel: 1,
       maxLevel: 7,
       origX: -5000000,
@@ -667,7 +621,7 @@ var WMJSTileRendererTileSettings = {
     },
     "EPSG:54030": {
       home:
-        "https://geoservices.knmi.nl/tiledbasemaps/NaturalEarth2/EPSG54030/",
+        "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG54030/",
       minLevel: 1,
       maxLevel: 7,
       origX: -17000000,

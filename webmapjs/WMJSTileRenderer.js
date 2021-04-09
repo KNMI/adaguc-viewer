@@ -18,8 +18,8 @@ export default class WMJSTileRenderer {
       return;
     }
     /* Temporal mappings from bgmaps.cgi service names to names defined here */
-    if (layerName === "streetmap") layerName = "OSM";
-    if (layerName === "pdok") layerName = "OSM";
+    if (layerName === "streetmap") layerName = "OpenStreetMap_Service";
+    if (layerName === "pdok") layerName = "OpenStreetMap_Service";
     if (layerName === "naturalearth2") layerName = "NaturalEarth2";
     let tileLayer = tileOptions[layerName];
     if (!tileLayer) {
@@ -27,6 +27,10 @@ export default class WMJSTileRenderer {
       return;
     }
     let tileSettings = tileLayer[srs];
+
+    if (!tileSettings) {
+      return;
+    }
 
     /* If current map projection is missing in the tilesets, try to find an alternative */
     if (!tileSettings) {

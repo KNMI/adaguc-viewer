@@ -101,8 +101,12 @@
         });
 
         var baselayer = new WMJSLayer({
-          service: "https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?",
+          service: "", // TODO We need to copy the natural earth tiles to S3
           name: "naturalearth2",
+          title: "World base layer Natural Earth ",
+          enabled: true,
+          type: "twms",
+          format: "image/gif",
         });
 
         layer.onReady = function () {

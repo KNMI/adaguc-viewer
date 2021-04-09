@@ -15,7 +15,6 @@
     "http://behemoth.nerc-essc.ac.uk/",
     "http://bhlbontw.knmi.nl",
     "http://webgis.nmdc.eu",
-    "https://geoservices.knmi.nl",
     "http://wms.met.no/",
     "http://synopsis1.meteo.fr",
     "http://www.dinoservices.nl",

@@ -5,7 +5,7 @@ var error = function (e) {
 var debug = function (e) {
   console.log(e);
 };
-var versionInfo = "ADAGUC viewer version 4.0.0.";
+var versionInfo = "ADAGUC viewer version 4.0.1.";
 var mainWebmapJS;
 
 function decimalFormatter(input, width) {
@@ -1207,6 +1207,13 @@ Ext.onReady(function () {
         eastPanelGFI.hide();
         eastPanelGFI.show();
       }, 100);
+    }
+
+    if (urlVars && urlVars.wms) {
+      console.log("wms found", urlVars.wms);
+      createNewLayerPanel(mainWebmapJS.webMapJS, {
+        service: urlVars.wms,
+      });
     }
 
     ////alert(dump(urlVars));

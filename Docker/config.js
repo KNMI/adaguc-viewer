@@ -94,24 +94,29 @@ var dataChooserConfiguration = [
     layer: "RAD_NL25_PCP_CM",
     srs: "EPSG:3857",
     bbox: "220000,6500000,1000000,7200000",
-    baselayerservice: "https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?",
+    baselayerservice: "",
     baselayername: "streetmap",
     opacity: 0.8,
   },
   {
     title: "KNMI: Actuele 10min observaties",
-    thumbnail:
-      "https://geoservices.knmi.nl/wms?DATASET=OBS&SERVICE=WMS&&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10M%2Fta&WIDTH=200&HEIGHT=150&CRS=EPSG%3A3857&BBOX=322115.66902323,6737567.801887248,800549.41514577,7306708.317720752&STYLES=observation.temperature%2Fpoint&FORMAT=image/png&TRANSPARENT=FALSE&time=current&showdims=true&title=Stations",
+    thumbnail: "img/knmi-10mobs.png",
     service: "https://geoservices.knmi.nl/wms?DATASET=OBS&",
     layer: "10M/ta",
   },
   {
     title: "KNMI: Dagelijks geinterpoleerde grids",
-    thumbnail:
-      "https://geoservices.knmi.nl/adagucserver?dataset=gridded_interpolations&service=WMS&request=getmap&format=image/png&layers=daily_temperature/INTER_OPER_R___TAVGD___L3__0005_prediction&width=200&height=150&CRS=EPSG:4326&STYLES=&EXCEPTIONS=INIMAGE&showlegend=true&0.9718626831038963&Title=Grids",
+    thumbnail: "img/knmi-grids",
     service:
       "https://geoservices.knmi.nl/adagucserver?dataset=gridded_interpolations&",
     layer: "daily_temperature/INTER_OPER_R___TAVGD___L3__0005_prediction",
+  },
+  {
+    title: "KNMI: Waarneemstations",
+    thumbnail: "img/knmi-waarneemstations.png",
+    service:
+      "https://geoservices.knmi.nl/adagucserver?dataset=knmi_waarneemstations&",
+    layer: "obs_temp",
   },
 ];
 

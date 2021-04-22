@@ -2,7 +2,7 @@ var autowms_app = function (element, webmapjs) {
   initWMJS();
   element.addClass("autowms_app_container");
 
-  let requestURL = "https://testgeoservices.knmi.nl/autowms?";
+  let requestURL = "https://geoservices.knmi.nl/autowms?";
 
   try {
     requestURL = autowmsURL;

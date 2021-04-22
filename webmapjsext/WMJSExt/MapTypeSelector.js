@@ -1,5 +1,5 @@
 var defaultBaselayer = {
-  service: "https://testgeoservices.knmi.nl/wms?DATASET=baselayers&",
+  service: "https://geoservices.knmi.nl/wms?DATASET=baselayers&",
   name: "countryborders",
 };
 

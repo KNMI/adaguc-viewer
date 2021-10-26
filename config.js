@@ -1,47 +1,21 @@
 var baseLayerConfiguration = [
   {
-    service: "", // TODO We need to copy the natural earth tiles to S3
-    name: "naturalearth2",
-    title: "World base layer Natural Earth ",
-    enabled: false,
-    type: "twms",
-    format: "image/gif",
+    name:"OSM",
+    title:"Open streetmap",
+    type: 'twms',
+    enabled:true
   },
   {
-    title: "KNMI Basemap",
-    name: "WorldMap",
-    type: "twms",
-    enabled: true,
+    name:"TERRAIN",
+    title:"terrain",
+    type: 'twms',
+    enabled:false
   },
   {
-    title: "ESRI ArcGis Canvas",
-    name: "arcGisCanvas",
-    type: "twms",
-    enabled: false,
-  },
-  {
-    title: "ESRI ArcGis Satellite",
-    name: "arcGisSat",
-    type: "twms",
-    enabled: false,
-  },
-  {
-    title: "ESRI ArcGis Topography",
-    name: "arcGisTopo",
-    type: "twms",
-    enabled: false,
-  },
-  {
-    title: "ESRI ArcGis Ocean",
-    name: "arcGisOceanBaseMap",
-    type: "twms",
-    enabled: false,
-  },
-  {
-    name: "OpenStreetMap_Service",
-    title: "Open streetmap",
-    type: "twms",
-    enabled: false,
+    name:"LITE",
+    title:"toner-lite",
+    type: 'twms',
+    enabled:false
   },
   {
     service: "https://geoservices.knmi.nl/wms?DATASET=baselayers&",
@@ -51,62 +25,136 @@ var baseLayerConfiguration = [
     enabled: true,
     keepOnTop: true,
   },
+
 ];
 
-// var defaultProjection = {srs:'EPSG:4326',bbox:'-180,-90,180,90'};
+//var defaultProjection = {srs:'EPSG:4326',bbox:'-180,-90,180,90'};
 
-var defaultProjection = {
-  srs: "EPSG:3857",
-  bbox: "-19000000,-19000000,19000000,19000000",
-};
+var defaultProjection = {srs:'EPSG:3857',bbox:'-19000000,-19000000,19000000,19000000'};
 
 var hashLocationNotfiyAddLayer = false;
 
 var getFeatureInfoApplications = [
-  {
-    name: "Time series mode",
-    iconCls: "button_getfeatureinfo",
-    location: "apps/gfiapp_d3c3.html",
-  },
+  {name:'Time series mode',iconCls:'button_getfeatureinfo',location:'apps/gfiapp_d3c3.html'}
   //,{name:'Glameps application',iconCls:'button_getfeatureinfo',location:'../gfiapps/GLAMEPS_gfiapp.html'}
 ];
 
 var dataChooserConfiguration = [
   {
-    title: "KNMI realtime precipitation radar",
-    thumbnail: "img/knmi_radar_icon.png",
-    service: "https://geoservices.knmi.nl/adagucserver?dataset=RADAR&",
-    layer: "RAD_NL25_PCP_CM",
-    srs: "EPSG:3857",
-    bbox: "220000,6500000,1000000,7200000",
-    baselayerservice: "",
-    baselayername: "streetmap",
-    opacity: 0.8,
-  },
-  {
-    title: "KNMI: Actuele 10min observaties",
-    thumbnail: "img/knmi-10mobs.png",
-    service: "https://geoservices.knmi.nl/wms?DATASET=OBS&",
-    layer: "10M/ta",
-  },
-  {
-    title: "KNMI: Dagelijks geinterpoleerde grids",
-    thumbnail: "img/knmi-grids.png",
-    service:
-      "https://geoservices.knmi.nl/adagucserver?dataset=gridded_interpolations&",
-    layer: "daily_temperature/INTER_OPER_R___TAVGD___L3__0005_prediction",
-  },
-  {
-    title: "KNMI: Waarneemstations",
-    thumbnail: "img/knmi-waarneemstations.png",
-    service:
-      "https://geoservices.knmi.nl/adagucserver?dataset=knmi_waarneemstations&",
-    layer: "obs_temp",
-  },
+    title:'VIS ALTA RES',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=HRV-REFN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HRV-REFN_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=HRV-REFN&',
+        layer:'HRV-REFN_data'
+  },{
+    title:'VIS06',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=VIS06-REFN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS06-REFN_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=VIS06-REFN&',
+        layer:'VIS06-REFN_data'
+  },{
+    title:'WV62 RAD',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=WV62-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV62-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=WV62-BT&',
+        layer:'WV62-BT_data'
+  },{
+    title:'IR108 BT',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IR108-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IR108-BT&',
+        layer:'IR108-BT_data'
+  },{
+    title:'LIGHTNING',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=LIGHTNING&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,LIGHTNING_lightningAddLayers&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=LIGHTNING&',
+    layer:'LIGHTNING_lightningTimePeriod',
+  },{ 
+    title:'METAR',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=METAR&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,T_Td_Vis&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=METAR&&service=WMS&request=GetCapabilities',
+    layer:'T_Td_Vis'
+  },{ 
+    title:'OPERA-RATE',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=OPERA-COMP-RATE&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,OPERA_rainfall_rate&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=OPERA-COMP-RATE&&service=WMS&request=GetCapabilities',
+    layer:'OPERA_rainfall_rate'
+  },{
+    title:'CRR',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CRR&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CRR_crr_intensity,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CRR&',
+        layer:'CRR_crr_intensity'
+  },{
+    title:'CRR-Ph',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CRR-Ph&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CRR-Ph_crrph_intensity,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CRR-Ph&',
+        layer:'CRR-Ph_crrph_intensity'
+  },{
+    title:'PC',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=PC&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=PC_pc,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=PC&',
+        layer:'PC_pc'
+  },{
+    title:'CI',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CI&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CI_ci_prob90,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CI&',
+        layer:'CI_ci_prob90'
+  },{
+    title:'LIFTED INDEX',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=iSHAI&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=iSHAI_IR_band,iSHAI_ishai_li,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=PRECONV&',
+        layer:'LIFTED'
+  },{
+    title:'HUMIDITY DIF NWP/MSG',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=iSHAI&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=iSHAI_IR_band,iSHAI_ishai_diffml,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=PRECONV&',
+        layer:'DIFFERENCES'
+  },{
+    title:'RDT',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RDT_NOW&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,RDT&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=RDT_NOW&',
+        layer:'RDT'  
+  },{
+    title:'CTTH-FL',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IMASK&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IMASK_imask_ctth_FL,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IMASK&',
+        layer:'IMASK_imask_ctth_FL'
+  },{
+    title:'ASII-TF',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=ASII-TF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=ASII-TF_asii_turb_trop_prob,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=ASII-TF&',
+        layer:'ASII-TF_asii_turb_trop_prob'
+  },{
+    title:'ASII-GW',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=ASII-GW&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=ASII-GW_asii_turb_wave_prob,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=ASII-GW&',
+        layer:'ASII-GW_asii_turb_wave_prob'
+  },{
+    title:'IMASK',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IMASK&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IMASK_imask,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IMASK&',
+        layer:'IMASK_imask'
+  },{
+    title:'WIND',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=HRW&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,windHRW&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=HRW&',
+        layer:'Wind_pressure'
+  },{
+    title:'CT',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CT_ct,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CT&',
+        layer:'CT_ct'
+  },{
+    title:'EXIM-CT',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CT_ct,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EXIM-CT&',
+        layer:'EXIM_CT_ct'
+  },{
+    title:'EMAS',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multiLayer&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'multiLayer'
+  }
+  
 ];
 
-var mapTypeConfiguration = [
-  {
+var mapTypeConfiguration = [  {
     title: "World WGS84",
     bbox: [-180, -90, 180, 90],
     srs: "EPSG:4326",
@@ -207,42 +255,16 @@ var mapTypeConfiguration = [
       type: "twms",
     },
   },
-  {
-    title: "North America",
-    bbox: [
-      -2015360.8716608454,
-      -697107.5349683464,
-      9961718.159421016,
-      6782157.107682772,
-    ],
-    srs: "EPSG:50001",
-    baselayer: {
-      service: "",
-      name: "NaturalEarth2",
-      type: "twms",
-    },
-  },
-
-  {
-    title: "Openstreetmap NL",
-    bbox: [220000, 6500000, 1000000, 7200000],
-    srs: "EPSG:3857",
-    baselayer: {
-      service: "",
-      name: "OpenStreetMap_Service",
-      type: "twms",
-    },
-  },
+    
 ];
 
-var defaultLanguage = { language: "en" }; // <-- Language for the ADAGUC viewer.
-var defaultUsernameSearch = "adaguc"; // <-- Username for the GeoNames API. 1
-var geoNamesURL =
-  "http://api.geonames.org/search?q={searchTerm}&username={username}&maxRows=1"; // <-- URL for the GeoNames API. Requires 'defaultUsernameSearch'
+var defaultLanguage = { language: 'en' }; // <-- Language for the ADAGUC viewer.
+var defaultUsernameSearch = "vorticeops"; // <-- Username for the GeoNames API. 1
+var geoNamesURL = "http://api.geonames.org/search?q={searchTerm}&username={username}&maxRows=1"; // <-- URL for the GeoNames API. Requires 'defaultUsernameSearch'    
 
 var webMapJSSettings = {
-  enableTouchDevice: true,
-};
+  enableTouchDevice:true
+}
 
 //FOR JSP:
 /*
@@ -251,20 +273,75 @@ var requestProxy = "/impactportal/AdagucViewer?SERVICE=PROXY&";
 */
 
 //For PHP:
-var requestProxy = "./webmapjs_php/MakeRequest.php?";
-var xml2jsonrequestURL = "./webmapjs_php/xml2jsonrequest.php?";
+var requestProxy       = "./webmapjs_php/MakeRequest.php?";
+var xml2jsonrequestURL = "./webmapjs_php/xml2jsonrequest.php?"
 
 // getFeatureInfoApplications.push({name:'EProfile',iconCls:'button_getfeatureinfo'});
-getFeatureInfoApplications.push({
-  name: "AutoWMS",
-  iconCls: "button_getfeatureinfo",
-});
+getFeatureInfoApplications.push({name:'AutoWMS',iconCls:'button_getfeatureinfo'});
 // getFeatureInfoApplications.open = 'EProfile';
 // xml2jsonrequestURL = 'http://localhost:8080/adaguc-services/xml2json?'
 // autowmsURL = 'http://localhost:8080/adaguc-services/autowms?';
 // getFeatureInfoApplications.push({name:'AutoWMS',iconCls:'button_getfeatureinfo'});
 
 var WMJSTileRendererTileSettings = {
+ 
+  OSM: {
+    'EPSG:3857': {
+      home: 'https://b.tile.openstreetmap.org/',
+      minLevel: 1,
+      maxLevel: 16,
+      tileServerType: 'osm',
+      copyRight: 'Open Street Map'
+    },
+    'EPSG:28992': {
+      home: 'http://services.arcgisonline.nl/ArcGIS/rest/services/Basiskaarten/PDOK_BRT/MapServer/tile/',
+      minLevel: 1,
+      maxLevel: 12,
+      origX:-285401.92,
+      origY:903401.92,
+      resolution:3440.64,
+      tileServerType: 'arcgisonline',
+      copyRight: 'Basiskaart bronnen: PDOK, Kadaster, OpenStreetMap'
+    }
+  },
+ TERRAIN: {
+    'EPSG:3857': {
+      home: 'http://d.tile.stamen.com/terrain/',
+      minLevel: 1,
+      maxLevel: 20,
+      tileServerType: 'osm',
+      copyRight: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+    },
+    'EPSG:28992': {
+      home: 'http://services.arcgisonline.nl/ArcGIS/rest/services/Basiskaarten/PDOK_BRT/MapServer/tile/',
+      minLevel: 1,
+      maxLevel: 12,
+      origX:-285401.92,
+      origY:903401.92,
+      resolution:3440.64,
+      tileServerType: 'arcgisonline',
+      copyRight: 'Basiskaart bronnen: PDOK, Kadaster, OpenStreetMap'
+    }
+  },
+ LITE: {
+    'EPSG:3857': {
+      home: 'http://b.tile.stamen.com/toner-lite/',
+      minLevel: 1,
+      maxLevel: 20,
+      tileServerType: 'osm',
+      copyRight: 'Open Street Map'
+    },
+    'EPSG:28992': {
+      home: 'http://services.arcgisonline.nl/ArcGIS/rest/services/Basiskaarten/PDOK_BRT/MapServer/tile/',
+      minLevel: 1,
+      maxLevel: 12,
+      origX:-285401.92,
+      origY:903401.92,
+      resolution:3440.64,
+      tileServerType: 'arcgisonline',
+      copyRight: 'Basiskaart bronnen: PDOK, Kadaster, OpenStreetMap'
+    }
+  },
   WorldMap_Light_Grey_Canvas: {
     "EPSG:3857": {
       home:
@@ -636,4 +713,8 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
   },
+  
 };
+
+xml2jsonrequestURL = '/adaguc-services/xml2json?'
+autowmsURL = '/adaguc-services/autowms?';

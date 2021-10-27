@@ -844,68 +844,7 @@ Ext.onReady(function () {
         },
       },
     ],
-  bbar: [
-      {
-        scale: "small",
-        tooltip: I18n.add_new_layer.tooltip,
-        iconCls: "layer_logos button_layerlist_layernew",
-        handler: function () {
-          //addData(dataPanelClicked,mainWebmapJS.WebMapJS);
-          createNewLayerPanel(mainWebmapJS.webMapJS, {
-            service: "",
-          });
-        },
-      },
-      {
-        iconCls: "button_duplicate",
-        tooltip: I18n.clone_this_layer.tooltip,
-        handler: function () {
-          var layer = getSelectedLayer();
-          if (isDefined(layer)) {
-            layer.duplicateLayer();
-          }
-        },
-      },
-      {
-        xtype: "button",
-        tooltip: I18n.remove_this_layer.tooltip,
-        iconCls: "button_layerlist_layerdelete",
-        handler: function (o, c) {
-          removeLayer();
-        },
-      },
-      {
-        xtype: "button",
-        tooltip: I18n.move_layer_up.tooltip,
-        iconCls: "button_layerlist_layerup",
-        handler: function (o, c) {
-          var layer = getSelectedLayer();
-          if (isDefined(layer)) {
-            layer.moveUp();
-          }
-        },
-      },
-      {
-        xtype: "button",
-        tooltip: I18n.move_layer_down.tooltip,
-        iconCls: "button_layerlist_layerdown",
-        handler: function (o, c) {
-          var layer = getSelectedLayer();
-          if (isDefined(layer)) {
-            layer.moveDown();
-          }
-        },
-      },
-      { xtype: "tbfill" },
-      {
-        iconCls: "button_settings_icon",
-        tooltip: I18n.settings_and_options.tooltip,
-        menu: {
-          xtype: "menu",
-          items: mainOptionMenuItems,
-        },
-      },
-    ],
+
   });
 
   var projectionchooserpanel = Ext.create(

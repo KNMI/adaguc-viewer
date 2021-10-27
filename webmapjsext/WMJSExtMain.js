@@ -900,7 +900,7 @@ Ext.onReady(function () {
         },
       },{
         scale: "large",
-        text: "NWC",
+        text: "SAF",
         tooltip: I18n.add_layers.tooltip,
         iconCls: "button_adddata32",
         handler: function () {

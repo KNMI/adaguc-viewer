@@ -3901,7 +3901,7 @@ export default class WMJSMap {
       return;
     }
 
-    let searchDef = searchDefinition.trim().match(/^[a-zA-Z0-9 ]*jquery/);
+    let searchDef = searchDefinition.trim();
 
     /* Only Alphanumeric characters are allowed */
     if (!searchDef) {
@@ -3910,79 +3910,23 @@ export default class WMJSMap {
       return;
     }
 
-    /*
-     * First attempt if getting the lat/lng from GeoNames.org.
-     * If not succesful, try our own SQLite3 DB.
-     */
-    let urlKNMIGeoNames;
-    if (typeof knmiGeoNamesURL !== "undefined") {
-      urlKNMIGeoNames = this.knmiGeoNamesURL.replace("{searchTerm}", searchDef);
-    } else {
-      /* If only geonames is configured, try this instead */
-      let urlApiGeonames = this.geoNamesURL
+    geoNamesURL = this.geoNamesURL
         .replace("{searchTerm}", searchDef)
         .replace("{username}", this.defaultUsernameSearch);
-      this.WCJSSearchRequestGeoNames(urlApiGeonames);
-      return;
-    }
+    this.WCJSSearchRequestGeoNames(geoNamesURL);
 
-    /* Debugging text */
-    debug(I18n.debug_searching_location.text);
-    debug(
-      '<a target="_blank" href="' +
-        urlKNMIGeoNames +
-        '">' +
-        urlKNMIGeoNames +
-        "</a>",
-      false
-    );
-
-    let errormessage = (jqXHR, textStatus, errorThrown) => {
-      error(I18n.geonames_api_call_failed.text);
-    };
-
-    let succes = (obj) => {
-      /* If there is no result from the API, search the SQLite DB */
-      if (jquery(obj).length === 0) {
-        let urlApiGeonames = this.geoNamesURL
-          .replace("{searchTerm}", searchDef)
-          .replace("{username}", this.defaultUsernameSearch);
-        console.log("urlApiGeonames", urlApiGeonames);
-        this.WCJSSearchRequestGeoNames(urlApiGeonames);
-        return;
-      }
-      console.log("ok");
-      let lat = parseFloat(jquery(obj)[0].lat);
-      let lng = parseFloat(jquery(obj)[0].lon);
-
-      this.calculateBoundingBoxAndZoom(lat, lng);
-    };
-    jquery.ajax({
-      dataType: "jsonp",
-      contentType: "application/jsonp",
-      jsonpCallback: "resultGeo",
-      crossDomain: true,
-      type: "GET",
-      url: urlKNMIGeoNames,
-      success: succes,
-      error: errormessage,
-    });
   }
 
   WCJSSearchRequestGeoNames(url) {
-    debug(I18n.debug_searching_sqlite_location.text);
-    debug('<a target="_blank" href="' + url + '">' + url + "</a>", false);
+    
+    
     let errormessage = (jqXHR, textStatus, errorThrown) => {
       error(I18n.geonames_sqlite_call_failed.text);
+      console.log(error);
     };
+    console.log(errormessage);
     let succes = (obj) => {
       console.log("ok", obj);
-      /* If there is no result */
-      if (jquery(obj).find("totalResultsCount").text() === "0") {
-        error(I18n.no_results_search.text);
-        /* Reset value */
-        return;
-      }
       let lat = parseFloat(jquery(obj).find("geoname").find("lat").text());
       let lng = parseFloat(jquery(obj).find("geoname").find("lng").text());
       this.calculateBoundingBoxAndZoom(lat, lng);

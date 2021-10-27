@@ -872,7 +872,7 @@ Ext.onReady(function () {
 
   var viewportwestpanel = {
     id: "viewportwestpanel",
-    width: 500,
+    width: 320,
     region: "west",
     layout: "border",
     collapsible: true,
@@ -898,96 +898,102 @@ Ext.onReady(function () {
           t.show();
           
         },
-      },{
-        scale: "large",
-        text: "SAF",
-        tooltip: I18n.add_layers.tooltip,
-        iconCls: "button_adddata32",
-        handler: function () {
-          dataChooserConfiguration = dataChooserConfigurationNWC;
-          var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
-            dataPanelClicked: dataPanelClicked,
-            webMapJS: mainWebmapJS.webMapJS,
-            
-          });         
-          t.show();
- 
-        },
-      },{
-        scale: "large",
-        text: "MSG",
-        tooltip: I18n.add_layers.tooltip,
-        iconCls: "button_adddata32",
-        handler: function () {
-          dataChooserConfiguration = dataChooserConfigurationMSG;
-          var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
-            dataPanelClicked: dataPanelClicked,
-            webMapJS: mainWebmapJS.webMapJS,
-            
-          });         
-          t.show();
- 
-        },
-      },{
-        scale: "large",
-        text: "IRIS",
-        tooltip: I18n.add_layers.tooltip,
-        iconCls: "button_adddata32",
-        handler: function () {
-          dataChooserConfiguration = dataChooserConfigurationIRIS;
-          var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
-            dataPanelClicked: dataPanelClicked,
-            webMapJS: mainWebmapJS.webMapJS,
-            
-          });        
-          t.show();
- 
-        },
-      },{
-        scale: "large",
-        text: "NWP",
-        tooltip: I18n.add_layers.tooltip,
-        iconCls: "button_adddata32",
-        handler: function () {
-          dataChooserConfiguration = dataChooserConfigurationNWP;
-          var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
-            dataPanelClicked: dataPanelClicked,
-            webMapJS: mainWebmapJS.webMapJS,
-            
-          });         
-          t.show();
- 
-        },
-      },{
-        scale: "large",
-        text: "EMA",
-        tooltip: I18n.add_layers.tooltip,
-        iconCls: "button_adddata32",
-        handler: function () {
-          dataChooserConfiguration = dataChooserConfigurationEMA;
-          var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
-            dataPanelClicked: dataPanelClicked,
-            webMapJS: mainWebmapJS.webMapJS,
-            
-          });
-           
-          
-          t.show();
- 
-        },
-      },
-      {
-        iconCls: "button_settings32",
-        tooltip: I18n.settings_and_options.tooltip,
-        scale: "large",
-        menu: {
-          xtype: "menu",
-          items: mainOptionMenuItems,
-        },
       },
     ],
   };
+  if (dataChooserConfigurationNWC.length !== 0) 
+                        {viewportwestpanel.tbar.push({
+                          scale: "large",
+                          text: "SAF",
+                          tooltip: I18n.add_layers.tooltip,
+                          iconCls: "button_adddata32",
+                          handler: function () {
+                            dataChooserConfiguration = dataChooserConfigurationNWC;
+                            var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
+                              dataPanelClicked: dataPanelClicked,
+                              webMapJS: mainWebmapJS.webMapJS,
+                            });                           
+                            t.show();
+                          },
+                        });
+                        };
+  if (dataChooserConfigurationNWP.length !== 0) 
+                        {viewportwestpanel.tbar.push({
+                          scale: "large",
+                          text: "NWP",
+                          tooltip: I18n.add_layers.tooltip,
+                          iconCls: "button_adddata32",
+                          handler: function () {
+                            dataChooserConfiguration = dataChooserConfigurationNWP;
+                            var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
+                              dataPanelClicked: dataPanelClicked,
+                              webMapJS: mainWebmapJS.webMapJS,
+                            });                           
+                            t.show();
+                          },
+                        });
+                        viewportwestpanel.width = viewportwestpanel.width + 60;
+                        };
+  if (dataChooserConfigurationMSG.length !== 0) 
+                        {viewportwestpanel.tbar.push({
+                          scale: "large",
+                          text: "MSG</br>(demo)",
+                          tooltip: I18n.add_layers.tooltip,
+                          iconCls: "button_adddata32",
+                          handler: function () {
+                            dataChooserConfiguration = dataChooserConfigurationMSG;
+                            var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
+                              dataPanelClicked: dataPanelClicked,
+                              webMapJS: mainWebmapJS.webMapJS,
+                            });                           
+                            t.show();
+                          },
+                        });
+                        };
+  if (dataChooserConfigurationIRIS.length !== 0) 
+                        {viewportwestpanel.tbar.push({
+                          scale: "large",
+                          text: "IRIS",
+                          tooltip: I18n.add_layers.tooltip,
+                          iconCls: "button_adddata32",
+                          handler: function () {
+                            dataChooserConfiguration = dataChooserConfigurationNWP;
+                            var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
+                              dataPanelClicked: dataPanelClicked,
+                              webMapJS: mainWebmapJS.webMapJS,
+                            });                           
+                            t.show();
+                          },
+                        });
+                        viewportwestpanel.width = viewportwestpanel.width + 60;
+                        };
 
+  if (dataChooserConfigurationEMA.length !== 0) 
+                        {viewportwestpanel.tbar.push({
+                          scale: "large",
+                          text: "EMA",
+                          tooltip: I18n.add_layers.tooltip,
+                          iconCls: "button_adddata32",
+                          handler: function () {
+                            dataChooserConfiguration = dataChooserConfigurationEMA;
+                            var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
+                              dataPanelClicked: dataPanelClicked,
+                              webMapJS: mainWebmapJS.webMapJS,
+                            });                           
+                            t.show();
+                          },
+                        });
+                        viewportwestpanel.width = viewportwestpanel.width + 60;
+                        };
+  viewportwestpanel.tbar.push({
+                              iconCls: "button_settings32",
+                              tooltip: I18n.settings_and_options.tooltip,
+                              scale: "large",
+                              menu: {
+                                xtype: "menu",
+                                items: mainOptionMenuItems,
+                              },
+                            });
 
 
   var viewport = Ext.create("Ext.Viewport", {

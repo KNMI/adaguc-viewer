@@ -951,6 +951,7 @@ Ext.onReady(function () {
         tooltip: I18n.add_layers.tooltip,
         iconCls: "button_adddata32",
         handler: function () {
+          dataChooserConfiguration = dataChooserConfigurationAdd;
           var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
             dataPanelClicked: dataPanelClicked,
             webMapJS: mainWebmapJS.webMapJS,
@@ -964,6 +965,7 @@ Ext.onReady(function () {
         tooltip: I18n.add_layers.tooltip,
         iconCls: "button_adddata32",
         handler: function () {
+          dataChooserConfiguration = dataChooserConfigurationNWC;
           var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
             dataPanelClicked: dataPanelClicked,
             webMapJS: mainWebmapJS.webMapJS,
@@ -978,6 +980,7 @@ Ext.onReady(function () {
         tooltip: I18n.add_layers.tooltip,
         iconCls: "button_adddata32",
         handler: function () {
+          dataChooserConfiguration = dataChooserConfigurationMSG;
           var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
             dataPanelClicked: dataPanelClicked,
             webMapJS: mainWebmapJS.webMapJS,
@@ -992,6 +995,7 @@ Ext.onReady(function () {
         tooltip: I18n.add_layers.tooltip,
         iconCls: "button_adddata32",
         handler: function () {
+          dataChooserConfiguration = dataChooserConfigurationIRIS;
           var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
             dataPanelClicked: dataPanelClicked,
             webMapJS: mainWebmapJS.webMapJS,
@@ -1006,6 +1010,7 @@ Ext.onReady(function () {
         tooltip: I18n.add_layers.tooltip,
         iconCls: "button_adddata32",
         handler: function () {
+          dataChooserConfiguration = dataChooserConfigurationNWP;
           var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
             dataPanelClicked: dataPanelClicked,
             webMapJS: mainWebmapJS.webMapJS,
@@ -1020,6 +1025,7 @@ Ext.onReady(function () {
         tooltip: I18n.add_layers.tooltip,
         iconCls: "button_adddata32",
         handler: function () {
+          dataChooserConfiguration = dataChooserConfigurationEMA;
           var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
             dataPanelClicked: dataPanelClicked,
             webMapJS: mainWebmapJS.webMapJS,

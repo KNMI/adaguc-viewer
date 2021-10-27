@@ -30,7 +30,9 @@ var baseLayerConfiguration = [
 
 //var defaultProjection = {srs:'EPSG:4326',bbox:'-180,-90,180,90'};
 
-var defaultProjection = {srs:'EPSG:3857',bbox:'-19000000,-19000000,19000000,19000000'};
+//var defaultProjection = {srs:'EPSG:3857',bbox:'-19000000,-12000000,19000000,16000000'};
+
+var defaultProjection = {srs:'EPSG:3857',bbox:'-3900000,3000000,3500000,8300000'};
 
 var hashLocationNotfiyAddLayer = false;
 
@@ -38,8 +40,9 @@ var getFeatureInfoApplications = [
   {name:'Time series mode',iconCls:'button_getfeatureinfo',location:'apps/gfiapp_d3c3.html'}
   //,{name:'Glameps application',iconCls:'button_getfeatureinfo',location:'../gfiapps/GLAMEPS_gfiapp.html'}
 ];
+var dataChooserConfiguration = [];
 
-var dataChooserConfiguration = [
+var dataChooserConfigurationAdd = [
   {
     title:'VIS ALTA RES',
         thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=HRV-REFN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HRV-REFN_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
@@ -153,6 +156,16 @@ var dataChooserConfiguration = [
   }
   
 ];
+
+var dataChooserConfigurationNWC = [];
+
+var dataChooserConfigurationMSG = [];
+
+var dataChooserConfigurationIRIS = [];
+
+var dataChooserConfigurationNWP = [];
+
+var dataChooserConfigurationEMA = [];
 
 var mapTypeConfiguration = [  {
     title: "World WGS84",

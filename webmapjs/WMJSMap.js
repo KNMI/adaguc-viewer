@@ -903,37 +903,62 @@ export default class WMJSMap {
 
       if (this._displayLegendInMap) {
         /* Draw legends */
+        var coded_legends = new Set();
+        
         let legendPosX = 0;
         for (let j = 0; j < this.layers.length; j++) {
           if (this.layers[j].enabled !== false) {
             let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
             if (isDefined(legendUrl)) {
               let image = legendImageStore.getImage(legendUrl);
+              //console.log(image);
               if (image.hasError() === false) {
                 if (image.isLoaded() === false && image.isLoading() === false) {
                   image.load();
                 } else {
+
                   let el = image.getElement()[0];
-                  let legendW = parseInt(el.width) + 4;
-                  let legendH = parseInt(el.height) + 4;
-                  legendPosX += legendW + 4;
-                  let legendX = this.width - legendPosX + 2;
-                  let legendY = this.height - legendH - 2 - 13;
-                  ctx.beginPath();
-                  ctx.fillStyle = "#FFFFFF";
-                  ctx.lineWidth = 0.3;
-                  ctx.globalAlpha = 0.5;
-                  ctx.strokeStyle = "#000000";
-                  ctx.rect(
-                    parseInt(legendX) + 0.5,
-                    parseInt(legendY) + 0.5,
-                    legendW,
-                    legendH
-                  );
-                  ctx.fill();
-                  ctx.stroke();
-                  ctx.globalAlpha = 1.0;
-                  ctx.drawImage(el, legendX, legendY);
+                  //console.log(el.src);
+                  
+                  
+                  var img = document.createElement("img");
+                  img.crossOrigin="anonymous";
+                  img.src = el.src;
+                  var c = document.createElement('canvas');
+                  c.height = img.naturalHeight;
+                  c.width = img.naturalWidth;
+                  var foo_ctx = c.getContext('2d');
+                  foo_ctx.drawImage(img, 0, 0, c.width, c.height);
+                  
+                  var base64String = c.toDataURL();
+                  var base64String_loaded = (base64String.length > 6);
+                  //console.log(base64String.slice(-5));
+
+                  //Checking if the legend is already present;            
+                  if (!coded_legends.has(base64String) && base64String_loaded)
+                       {coded_legends.add(base64String);
+                        let legendW = parseInt(el.width) + 4;
+                        let legendH = parseInt(el.height) + 4;
+                        legendPosX += legendW + 4;
+                        let legendX = this.width - legendPosX + 2;
+                        let legendY = this.height - legendH - 2 - 13;
+                        ctx.beginPath();
+                        ctx.fillStyle = "#FFFFFF";
+                        ctx.lineWidth = 0.3;
+                        ctx.globalAlpha = 0.5;
+                        ctx.strokeStyle = "#000000";
+                        ctx.rect(
+                          parseInt(legendX) + 0.5,
+                          parseInt(legendY) + 0.5,
+                          legendW,
+                          legendH
+                        );
+                        ctx.fill();
+                        ctx.stroke();
+                        ctx.globalAlpha = 1.0;
+                        ctx.drawImage(el, legendX, legendY, el.width, el.height);
+                        };
+                  //console.log(coded_legends.size);
                 }
               }
             }

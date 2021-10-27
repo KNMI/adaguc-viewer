@@ -3874,7 +3874,7 @@ export default class WMJSMap {
       searchDefinition
         .trim()
         .match(
-          /^(-?(?:[1-8]?\d(?:\.\d+)?|90(?:\.0+)?),-?(?:180(?:\.0+)?|(?:(?:1[0-7]\d)|(?:[1-9]?\d))(?:\.\d+)?))jquery/
+          /^(-?(?:[1-8]?\d(?:\.\d+)?|90(?:\.0+)?),-?(?:180(?:\.0+)?|(?:(?:1[0-7]\d)|(?:[1-9]?\d))(?:\.\d+)?))/
         )
     ) {
       let splitted = searchDefinition.split(",");

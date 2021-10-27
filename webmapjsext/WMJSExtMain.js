@@ -499,6 +499,7 @@ Ext.onReady(function () {
   });
 
   var dataPanelClicked = function (node) {
+    console.log(node.slot);
     var panel = createNewLayerPanel(mainWebmapJS.webMapJS, {
       service: node.service,
       name: node.layer,
@@ -543,6 +544,7 @@ Ext.onReady(function () {
         }
       },
     });
+    
     return panel;
   };
 
@@ -775,12 +777,74 @@ Ext.onReady(function () {
     id: "layerlistpanel",
     tooltip: I18n.layers.tooltip,
     overflowY: "auto",
-    //bodyStyle:{"background-color":"#D8E0F0"},
+    //bodyStyle:{"background-color":"#FF00F0"},
     //bodyStyle:{"background-color":"#a8b8c8"},
     bodyCls: "layerlistbg",
     iconCls: "button_layers32",
 
     bbar: [
+      {
+        scale: "small",
+        tooltip: I18n.add_new_layer.tooltip,
+        iconCls: "layer_logos button_layerlist_layernew",
+        handler: function () {
+          //addData(dataPanelClicked,mainWebmapJS.WebMapJS);
+          createNewLayerPanel(mainWebmapJS.webMapJS, {
+            service: "",
+          });
+        },
+      },
+      {
+        iconCls: "button_duplicate",
+        tooltip: I18n.clone_this_layer.tooltip,
+        handler: function () {
+          var layer = getSelectedLayer();
+          if (isDefined(layer)) {
+            layer.duplicateLayer();
+          }
+        },
+      },
+      {
+        xtype: "button",
+        tooltip: I18n.remove_this_layer.tooltip,
+        iconCls: "button_layerlist_layerdelete",
+        handler: function (o, c) {
+          removeLayer();
+        },
+      },
+      {
+        xtype: "button",
+        tooltip: I18n.move_layer_up.tooltip,
+        iconCls: "button_layerlist_layerup",
+        handler: function (o, c) {
+          var layer = getSelectedLayer();
+          if (isDefined(layer)) {
+            layer.moveUp();
+          }
+        },
+      },
+      {
+        xtype: "button",
+        tooltip: I18n.move_layer_down.tooltip,
+        iconCls: "button_layerlist_layerdown",
+        handler: function (o, c) {
+          var layer = getSelectedLayer();
+          if (isDefined(layer)) {
+            layer.moveDown();
+          }
+        },
+      },
+      { xtype: "tbfill" },
+      {
+        iconCls: "button_settings_icon",
+        tooltip: I18n.settings_and_options.tooltip,
+        menu: {
+          xtype: "menu",
+          items: mainOptionMenuItems,
+        },
+      },
+    ],
+  bbar: [
       {
         scale: "small",
         tooltip: I18n.add_new_layer.tooltip,
@@ -869,11 +933,11 @@ Ext.onReady(function () {
 
   var viewportwestpanel = {
     id: "viewportwestpanel",
-    width: 400,
+    width: 500,
     region: "west",
     layout: "border",
     collapsible: true,
-    animCollapse: false,
+    animCollapse: true,
     border: true,
     split: true,
     header: false,
@@ -883,7 +947,7 @@ Ext.onReady(function () {
     tbar: [
       {
         scale: "large",
-        text: I18n.add_layers.text,
+        text: "Add",
         tooltip: I18n.add_layers.tooltip,
         iconCls: "button_adddata32",
         handler: function () {
@@ -892,8 +956,79 @@ Ext.onReady(function () {
             webMapJS: mainWebmapJS.webMapJS,
           });
           t.show();
-          //                 t.setMapType(maptypeclicked,mainWebmapJS);
-          //                 addData(dataPanelClicked,mainWebmapJS.webMapJS);
+          
+        },
+      },{
+        scale: "large",
+        text: "NWC",
+        tooltip: I18n.add_layers.tooltip,
+        iconCls: "button_adddata32",
+        handler: function () {
+          var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
+            dataPanelClicked: dataPanelClicked,
+            webMapJS: mainWebmapJS.webMapJS,
+            
+          });         
+          t.show();
+ 
+        },
+      },{
+        scale: "large",
+        text: "MSG",
+        tooltip: I18n.add_layers.tooltip,
+        iconCls: "button_adddata32",
+        handler: function () {
+          var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
+            dataPanelClicked: dataPanelClicked,
+            webMapJS: mainWebmapJS.webMapJS,
+            
+          });         
+          t.show();
+ 
+        },
+      },{
+        scale: "large",
+        text: "IRIS",
+        tooltip: I18n.add_layers.tooltip,
+        iconCls: "button_adddata32",
+        handler: function () {
+          var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
+            dataPanelClicked: dataPanelClicked,
+            webMapJS: mainWebmapJS.webMapJS,
+            
+          });        
+          t.show();
+ 
+        },
+      },{
+        scale: "large",
+        text: "NWP",
+        tooltip: I18n.add_layers.tooltip,
+        iconCls: "button_adddata32",
+        handler: function () {
+          var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
+            dataPanelClicked: dataPanelClicked,
+            webMapJS: mainWebmapJS.webMapJS,
+            
+          });         
+          t.show();
+ 
+        },
+      },{
+        scale: "large",
+        text: "EMA",
+        tooltip: I18n.add_layers.tooltip,
+        iconCls: "button_adddata32",
+        handler: function () {
+          var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
+            dataPanelClicked: dataPanelClicked,
+            webMapJS: mainWebmapJS.webMapJS,
+            
+          });
+           
+          
+          t.show();
+ 
         },
       },
       {
@@ -907,6 +1042,8 @@ Ext.onReady(function () {
       },
     ],
   };
+
+
 
   var viewport = Ext.create("Ext.Viewport", {
     layout: "border",
@@ -1025,7 +1162,7 @@ Ext.onReady(function () {
   };
 
   var checkIfClassicADAGUCStateIsGiven = function (urlVars) {
-    var zoomToLayer = false;
+    var zoomToLayer = true;
 
     var autoChooseLayer = false;
     if (isDefined(urlVars.collapse)) {

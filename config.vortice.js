@@ -161,93 +161,93 @@ var dataChooserConfigurationNWC = [];
 
 var dataChooserConfigurationMSG = [
   {title:'Airmass',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Airmass,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Airmass,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
       layer:'Airmass'
 },{
   title:'Ash',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Ash,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Ash,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
       layer:'Ash'
 },{
   title:'CloudtopDaytime',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CloudtopDaytime,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CloudtopDaytime,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
       layer:'CloudtopDaytime'
 },{
   title:'Cloudtop',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Cloudtop,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Cloudtop,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
       layer:'Cloudtop'
 },{
   title:'ColorizedIrClouds',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=ColorizedIrClouds,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=ColorizedIrClouds,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
       layer:'ColorizedIrClouds'
 },{
   title:'Convection',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Convection,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Convection,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
       layer:'Convection'
 },{
   title:'Sandwich',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IrSandwich,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB-HRV&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IrSandwich,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB-HRV&',
       layer:'IrSandwich'
 },{
   title:'DayMicrophysics',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=DayMicrophysics,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=DayMicrophysics,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
       layer:'DayMicrophysics'
 },{
   title:'DayMicrophysicsWinter',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=DayMicrophysicsWinter,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=DayMicrophysicsWinter,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
       layer:'DayMicrophysicsWinter'
 },{
   title:'Dust',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Dust,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Dust,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
       layer:'Dust'
 },{
   title:'Fog',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Fog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Fog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
       layer:'Fog'
 },{
   title:'HrvFog',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HrvFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB-HRV&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HrvFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB-HRV&',
       layer:'HrvFog'
 },{
   title:'Snow',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Snow,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Snow,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
       layer:'Snow'
 },{
   title:'NaturalColor',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalColor,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalColor,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
       layer:'NaturalColor'
 },{
   title:'NaturalWithNightFog',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalWithNightFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalWithNightFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
       layer:'NaturalWithNightFog'
 },{
   title:'NightFog',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NightFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NightFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
       layer:'NightFog'
 },{
   title:'NightMicrophysics',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NightMicrophysics,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NightMicrophysics,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
       layer:'NightMicrophysics'
 },{
   title:'Overview',
-      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Overview,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
+      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Overview,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RGB&',
       layer:'Overview'
 },{
   title:'HIGH RES',

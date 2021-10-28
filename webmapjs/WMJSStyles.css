@@ -272,6 +272,13 @@
   background-position: 0px -64px !important;
 }
 
+.folder_adddata32 {
+  background-image:url(./img/adagucviewerlogos1.png) !important;
+  width:32px;
+  height:32px;
+  background-position: -64px -96px !important;
+}
+
 .button_settings32 {
   background-image:url(./img/adagucviewerlogos.png) !important;
   width:32px;

@@ -42,118 +42,120 @@ var getFeatureInfoApplications = [
 ];
 var dataChooserConfiguration = [];
 
+var dataChooserConfigurationFolder =[]; 
+
 var dataChooserConfigurationAdd = [
   {
     title:'VIS ALTA RES',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=HRV-REFN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HRV-REFN_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-        service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=HRV-REFN&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=HRV-REFN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HRV-REFN_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=HRV-REFN&',
         layer:'HRV-REFN_data'
   },{
     title:'VIS06',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=VIS06-REFN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS06-REFN_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-        service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=VIS06-REFN&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=VIS06-REFN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS06-REFN_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=VIS06-REFN&',
         layer:'VIS06-REFN_data'
   },{
     title:'WV62 RAD',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=WV62-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV62-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-        service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=WV62-BT&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=WV62-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV62-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=WV62-BT&',
         layer:'WV62-BT_data'
   },{
     title:'IR108 BT',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IR108-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-        service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IR108-BT&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IR108-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IR108-BT&',
         layer:'IR108-BT_data'
   },{
     title:'LIGHTNING',
-    thumbnail:'http://vortice.aemet.es:8080/adaguc-services//wms?DATASET=LIGHTNING&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,LIGHTNING_lightningAddLayers&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
-    service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=LIGHTNING&',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=LIGHTNING&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,LIGHTNING_lightningAddLayers&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=LIGHTNING&',
     layer:'LIGHTNING_lightningTimePeriod',
   },{ 
     title:'METAR',
-    thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=METAR&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,T_Td_Vis&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-    service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=METAR&&service=WMS&request=GetCapabilities',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=METAR&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,T_Td_Vis&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=METAR&&service=WMS&request=GetCapabilities',
     layer:'T_Td_Vis'
   },{ 
     title:'OPERA-RATE',
-    thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=OPERA-COMP-RATE&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,OPERA_rainfall_rate&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-    service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=OPERA-COMP-RATE&&service=WMS&request=GetCapabilities',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=OPERA-COMP-RATE&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,OPERA_rainfall_rate&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=OPERA-COMP-RATE&&service=WMS&request=GetCapabilities',
     layer:'OPERA_rainfall_rate'
   },{
     title:'CRR',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=CRR&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CRR_crr_intensity,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
-        service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=CRR&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CRR&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CRR_crr_intensity,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CRR&',
         layer:'CRR_crr_intensity'
   },{
     title:'CRR-Ph',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=CRR-Ph&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CRR-Ph_crrph_intensity,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
-        service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=CRR-Ph&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CRR-Ph&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CRR-Ph_crrph_intensity,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CRR-Ph&',
         layer:'CRR-Ph_crrph_intensity'
   },{
     title:'PC',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=PC&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=PC_pc,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
-        service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=PC&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=PC&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=PC_pc,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=PC&',
         layer:'PC_pc'
   },{
     title:'CI',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=CI&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CI_ci_prob90,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
-        service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=CI&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CI&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CI_ci_prob90,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CI&',
         layer:'CI_ci_prob90'
   },{
     title:'LIFTED INDEX',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=iSHAI&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=iSHAI_IR_band,iSHAI_ishai_li,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
-        service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=PRECONV&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=iSHAI&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=iSHAI_IR_band,iSHAI_ishai_li,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=PRECONV&',
         layer:'LIFTED'
   },{
     title:'HUMIDITY DIF NWP/MSG',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=iSHAI&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=iSHAI_IR_band,iSHAI_ishai_diffml,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
-        service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=PRECONV&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=iSHAI&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=iSHAI_IR_band,iSHAI_ishai_diffml,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=PRECONV&',
         layer:'DIFFERENCES'
   },{
     title:'RDT',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=RDT_NOW&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,RDT&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
-        service:'http://vortice.aemet.es:8080/adaguc-services//wms?DATASET=RDT_NOW&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=RDT_NOW&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,RDT&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=RDT_NOW&',
         layer:'RDT'  
   },{
     title:'CTTH-FL',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IMASK&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IMASK_imask_ctth_FL,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
-        service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IMASK&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IMASK&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IMASK_imask_ctth_FL,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IMASK&',
         layer:'IMASK_imask_ctth_FL'
   },{
     title:'ASII-TF',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=ASII-TF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=ASII-TF_asii_turb_trop_prob,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
-        service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=ASII-TF&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=ASII-TF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=ASII-TF_asii_turb_trop_prob,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=ASII-TF&',
         layer:'ASII-TF_asii_turb_trop_prob'
   },{
     title:'ASII-GW',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=ASII-GW&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=ASII-GW_asii_turb_wave_prob,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
-        service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=ASII-GW&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=ASII-GW&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=ASII-GW_asii_turb_wave_prob,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=ASII-GW&',
         layer:'ASII-GW_asii_turb_wave_prob'
   },{
     title:'IMASK',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IMASK&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IMASK_imask,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
-        service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IMASK&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IMASK&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IMASK_imask,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IMASK&',
         layer:'IMASK_imask'
   },{
     title:'WIND',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=HRW&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,windHRW&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
-        service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=HRW&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=HRW&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,windHRW&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=HRW&',
         layer:'Wind_pressure'
   },{
     title:'CT',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=CT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CT_ct,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
-        service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=CT&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CT_ct,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CT&',
         layer:'CT_ct'
   },{
     title:'EXIM-CT',
-        thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=CT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CT_ct,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
-        service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=EXIM-CT&',
+        thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=CT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CT_ct,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EXIM-CT&',
         layer:'EXIM_CT_ct'
-  }/*,{
+  },{
     title:'EMAS',
-    thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multiLayer&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-    service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multiLayer&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
     layer:'multiLayer'
-  }*/
+  }
   
 ];
 
@@ -251,58 +253,58 @@ var dataChooserConfigurationMSG = [
       layer:'Overview'
 },{
   title:'HIGH RES',
-      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=HRV-REFN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HRV-REFN_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=HRV-REFN&',
+      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=HRV-REFN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HRV-REFN_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=HRV-REFN&',
       layer:'HRV-REFN_data'
 },{
   title:'VIS06',
-      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=VIS06-REFN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS06-REFN_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=VIS06-REFN&',
+      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=VIS06-REFN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS06-REFN_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=VIS06-REFN&',
       layer:'VIS06-REFN_data'
 },{
   title:'VIS08',
-      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=VIS08-REFN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS08-REFN_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=VIS08-REFN&',
+      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=VIS08-REFN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS08-REFN_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=VIS08-REFN&',
       layer:'VIS08-REFN_data'
 },{
   title:'IR38 BT',
-      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IR38-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR38-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IR38-BT&',
+      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IR38-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR38-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IR38-BT&',
       layer:'IR38-BT_data'
 },{
   title:'IR87 BT',
-      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IR87-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR87-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IR87-BT&',
+      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IR87-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR87-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IR87-BT&',
       layer:'IR87-BT_data'
 },{
   title:'IR97 BT',
-      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IR97-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR97-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IR97-BT&',
+      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IR97-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR97-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IR97-BT&',
       layer:'IR97-BT_data'
 },{
   title:'IR108 BT',
-      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IR108-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IR108-BT&',
+      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IR108-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IR108-BT&',
       layer:'IR108-BT_data'
 },{
   title:'IR120 BT',
-      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IR120-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR120-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IR120-BT&',
+      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IR120-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR120-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IR120-BT&',
       layer:'IR120-BT_data'
 },{
   title:'IR134 BT',
-      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IR134-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR134-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=IR134-BT&',
+      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IR134-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR134-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IR134-BT&',
       layer:'IR134-BT_data'
 },{
   title:'WV62 RAD',
-      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=WV62-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV62-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=WV62-BT&',
+      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=WV62-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV62-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=WV62-BT&',
       layer:'WV62-BT_data'
 },{
   title:'WV73 RAD',
-      thumbnail:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=WV73-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV73-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:'http://vortice.aemet.es:8080/adaguc-services//adagucserver?dataset=WV73-BT&',
+      thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=WV73-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV73-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=WV73-BT&',
       layer:'WV73-BT_data'
 }];
 
@@ -398,7 +400,140 @@ var dataChooserConfigurationNWP = [ {title:'Ceiling_ground_00',
       layer:'TI2_IFS-HRES_12'
 }];
 
-var dataChooserConfigurationEMA = [];
+
+
+var dataChooserConfigurationEMA = [
+  {
+    title:'THIES',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multi_THIES&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'multi_THIES'
+  },{
+    title:'SEACV2',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multi_SEACV2&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'multi_SEACV2'
+  },{
+    title:'VAISALA',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multi_VAISALA&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'multi_VAISALA'
+  },{
+title:'ESOC',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multi_ESOC&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'multi_ESOC'
+  },{
+title:'ESOS',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multi_ESOS&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'multi_ESOS'
+  },{
+title:'NSIM',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multi_NSIM&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'multi_NSIM'
+  },{
+title:'FTP',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multi_FTP&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'multi_FTP'
+  },{
+title:'SIMAS',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multi_SIMAS&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'multi_SIMAS'
+  },{
+title:'SOSS',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multi_SOSS&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'multi_SOSS'
+  }
+,{
+	  title:'CAMPBELL',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multi_CAMPBELL&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'multi_CAMPBELL'
+  },{
+	  title:'OTRAS',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multi_OTRAS&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'multi_SIMAS'
+  },{
+	  title:'RESTO',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multi_RESTO&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'multi_RESTO'
+  },{
+    title:'TODAS',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multiLayer&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'multiLayer'
+  }
+];
+
+var dataChooserConfigurationFoldersEMA = [
+  { 
+    title:"Prueba",
+    thumbnail:'./img/open-file-folder.png',
+    dataChooserConfiguration: dataChooserConfigurationEMA
+  },{
+    title:"Prueba2",
+    thumbnail:'./img/open-file-folder.png',
+    dataChooserConfiguration: dataChooserConfigurationMSG
+  },
+  { 
+    title:"Prueba3",
+    thumbnail:'./img/open-file-folder.png',
+    dataChooserConfiguration: dataChooserConfigurationEMA
+  },{
+    title:"Prueba4",
+    thumbnail:'./img/open-file-folder.png',
+    dataChooserConfiguration: dataChooserConfigurationMSG
+  },
+  { 
+    title:"Prueba5",
+    thumbnail:'./img/open-file-folder.png',
+    dataChooserConfiguration: dataChooserConfigurationEMA
+  },{
+    title:"Prueba6",
+    thumbnail:'./img/open-file-folder.png',
+    dataChooserConfiguration: dataChooserConfigurationMSG
+  }
+];
+
+//Definimos el nombre y contenido de los botones de la toolbar
+var dataChooser =[
+ { 
+    title: "NWC",
+    dataChooserConfiguration: dataChooserConfigurationNWC
+  },{ 
+    title: "IRIS",
+    dataChooserConfiguration: dataChooserConfigurationIRIS
+  },{ 
+    title: "MSG",
+    dataChooserConfiguration: dataChooserConfigurationMSG
+  },{ 
+    title: "NWP",
+    dataChooserConfiguration: dataChooserConfigurationNWP
+  },{  
+    title: "EMA",
+    dataChooserConfiguration: dataChooserConfigurationEMA
+  } 
+];
+
+//Definimos el nombre y el contenido de las carpetas de la toolbar
+var folderChooser =[
+ {
+   title: "TEXT",
+   dataChooserConfigurationFolder: dataChooserConfigurationFoldersEMA
+ },
+ {
+   title: "TEXT2",
+   dataChooserConfigurationFolder: dataChooserConfigurationFoldersEMA
+} 
+];
+
 
 var mapTypeConfiguration = [  {
     title: "World WGS84",
@@ -505,7 +640,7 @@ var mapTypeConfiguration = [  {
 ];
 
 var defaultLanguage = { language: 'en' }; // <-- Language for the ADAGUC viewer.
-var defaultUsernameSearch = "vorticeops"; // <-- Username for the GeoNames API. 1
+var defaultUsernameSearch = "dorsalops"; // <-- Username for the GeoNames API. 1
 var geoNamesURL = "http://api.geonames.org/search?q={searchTerm}&username={username}&maxRows=1"; // <-- URL for the GeoNames API. Requires 'defaultUsernameSearch'    
 
 var webMapJSSettings = {

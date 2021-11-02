@@ -134,7 +134,7 @@
     background-image:url(./img/adagucviewerlogos.png) !important;
     width:16px;
     height:16px;
-    background-position: -96px -16px;
+    background-position: -96px -16px;*/
 }
 .button_play_animation {
     background-image:url(./img/adagucviewerlogos.png) !important;
@@ -265,6 +265,20 @@
   background-position: 0px -48px !important;
 }
 
+.button_scale_on {
+  background-image:url(./img/adagucviewerlogos2.png) !important;
+  width:16px;
+  height:16px;
+  background-position: -32px -48px !important;
+}
+
+.button_scale_off {
+  background-image:url(./img/adagucviewerlogos2.png) !important;
+  width:16px;
+  height:16px;
+  background-position: -48px -48px !important;
+}
+
 .button_adddata32 {
   background-image:url(./img/adagucviewerlogos.png) !important;
   width:32px;
@@ -273,7 +287,7 @@
 }
 
 .folder_adddata32 {
-  background-image:url(./img/adagucviewerlogos1.png) !important;
+  background-image:url(./img/adagucviewerlogos2.png) !important;
   width:32px;
   height:32px;
   background-position: -64px -96px !important;

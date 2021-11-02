@@ -3,10 +3,12 @@ Ext.define("webmapjsext.WMJSExt.DataPanel", {
   alias: "WMJSExtDataPanel",
   initComponent: function () {
     var _this = this;
+    var parentDataPanelClicked = this.dataPanelClicked;
     DataSelectorModel = Ext.define("DataSelectorModel", {
       extend: "Ext.data.Model",
       fields: [
         { name: "title" },
+        { name: "abs"},
         { name: "thumbnail" },
         { name: "service" },
         { name: "layer" },
@@ -167,10 +169,29 @@ Ext.define("webmapjsext.WMJSExt.DataPanel", {
       buttons: [
         {
           scale: "large",
+          text: "BACK",
+          handler: function () {
+            _this.close();
+            var t = Ext.create("webmapjsext.WMJSExt.FolderPanel", {
+              dataPanelClicked: parentDataPanelClicked,
+              webMapJS: mainWebmapJS.webMapJS,
+              });                           
+            t.show();
+          },
+        },
+        {
+          scale: "large",
           text: I18n.add_custom_wms_service.text,
           handler: function () {
             _this.close();
             showAddCustomWMSWindow(_this.dataPanelClicked, _this.webMapJS);
+          },
+        },
+        {
+          scale: "large",
+          text: "CLOSE",
+          handler: function () {
+            _this.close();
           },
         },
       ],
@@ -179,7 +200,7 @@ Ext.define("webmapjsext.WMJSExt.DataPanel", {
         tpl: [
           '<tpl for=".">',
           '<div class="thumb-wrap" id="{title}">',
-          '<div class="thumb"><img src="{thumbnail}" title="{title}"></div>',
+          '<div class="thumb"><img src="{thumbnail}" title="{abs}"></div>',
           '<span class="x-editable">{title}</span></div>',
           "</tpl>",
           '<div class="x-clear"></div>',

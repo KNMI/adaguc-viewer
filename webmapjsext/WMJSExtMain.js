@@ -921,7 +921,7 @@ Ext.onReady(function () {
                               t.show();
                             },
                           });
-                          viewportwestpanel.width = viewportwestpanel.width + 60;
+                          viewportwestpanel.width = viewportwestpanel.width + 30;
                         };
                       }; 
                           
@@ -943,7 +943,7 @@ Ext.onReady(function () {
                                 t.show();
                               },
                             });
-                            viewportwestpanel.width = viewportwestpanel.width + 60;
+                            viewportwestpanel.width = viewportwestpanel.width + 30;
                           };
                         };
 

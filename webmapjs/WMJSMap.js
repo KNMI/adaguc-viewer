@@ -901,14 +901,63 @@ export default class WMJSMap {
         );
       }
 
-      if (this._displayLegendInMap) {
-        /* Draw legends */
+      //if (this._displayLegendInMap) {
+      if (this.showScaleBarInMap) {
+        // Draw legends
         var coded_legends = new Set();
-        
-        let legendPosX = 0;
+        //Meto en un array las capas para ordenarlas segun la anchura de la leyenda
+        var imgArray =[];
         for (let j = 0; j < this.layers.length; j++) {
-          if (this.layers[j].enabled !== false) {
-            let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
+          imgArray.push(this.layers[j]);
+        }
+        imgArray.sort(
+          function compare(a,b){
+            /*aUrl = this.getLegendGraphicURLForLayer(a);
+            bUrl = this.getLegendGraphicURLForLayer(b);
+            if (aUrl<bUrl){
+              return -1;
+            } 
+            if (aUrl>bUrl){
+              return 1;
+            }
+            if (aUrl<bUrl){
+              return 0;
+            }*/
+            if (isDefined(a.legendGraphic) && isDefined(b.legendGraphic)) {
+              let ima=legendImageStore.getImage(a.legendGraphic)
+              let imb=legendImageStore.getImage(b.legendGraphic)
+              if (ima.hasError() === false && imb.hasError() === false) {
+                if (ima.isLoaded() === false && ima.isLoading() === false && imb.isLoaded() === false && imb.isLoading() === false) {
+                  ima.load();
+                  imb.load();
+                } else {
+                  let ela = ima.getElement()[0];
+                  console.log(ela.width+"x"+ela.height)
+                  let elb = imb.getElement()[0];
+                  console.log(elb.width+"x"+elb.height)
+                  if( parseInt(ela.width) > parseInt(elb.width) ) return 1
+                  if( parseInt(ela.width) < parseInt(elb.width) ) return -1
+                  if( parseInt(ela.width) == parseInt(elb.width) ) return 0
+                } 
+              }      
+            }
+            return -1
+          }  
+        )
+        //FIN DE LA ORDENACION
+        //console.log(imgArray.length+"-"+this.layers.length)
+
+        /*for (let j = 0; j < imgArray.length; j++) {
+        window.alert(this.getLegendGraphicURLForLayer(imgArray[j]))
+        }*/
+
+        let legendPosX = 0;
+        //for (let j = 0; j < this.layers.length; j++) {
+        for (let j = 0; j < imgArray.length; j++) {
+          if (imgArray[j].enabled !== false && imgArray[j].displayLegendInMapEnable !== false) {
+          //if (imgArray[j].enabled !== false && this.showScaleBarInMap) {
+            //console.log(imgArray[j].displayLegendInMapEnable)
+            let legendUrl = this.getLegendGraphicURLForLayer(imgArray[j]);
             if (isDefined(legendUrl)) {
               let image = legendImageStore.getImage(legendUrl);
               //console.log(image);
@@ -934,7 +983,7 @@ export default class WMJSMap {
                   var base64String_loaded = (base64String.length > 6);
                   //console.log(base64String.slice(-5));
 
-                  //Checking if the legend is already present;            
+                  //Checking if the legend is already present;         
                   if (!coded_legends.has(base64String) && base64String_loaded)
                        {coded_legends.add(base64String);
                         let legendW = parseInt(el.width) + 4;
@@ -1609,6 +1658,10 @@ export default class WMJSMap {
     return this.height;
   }
 
+  getDisplayLegendInMap(){
+    return this._displayLegendInMap;
+  } 
+
   repositionLegendGraphic(force) {
     if (this._displayLegendInMap) {
       this.loadLegendInline(force);
@@ -1992,7 +2045,6 @@ export default class WMJSMap {
 
       // Handle WMS extensions
       legendURL += layer.wmsextensions.url;
-
       return legendURL;
     }
     return undefined;

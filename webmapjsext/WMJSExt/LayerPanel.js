@@ -23,7 +23,14 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
     if(!isDefined(_this.opacity)){
       _this.opacity = 1.0;
     }
-   _this.WMJSLayer = new WMJSLayer({service:_this.service,name:_this.name,style:_this.style,opacity:_this.opacity,transparent:_this.transparent,enabled:_this.enabled}); 
+    _this.WMJSLayer = new WMJSLayer({
+      service:_this.service,
+      name:_this.name,
+      style:_this.style,
+      opacity:_this.opacity,
+      transparent:_this.transparent,
+      enabled:_this.enabled
+    }); 
     
     _this.opacitySliderChanged = function(value){
       if(_this.WMJSLayer){
@@ -71,6 +78,21 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
       }
       _this.WMJSLayer.draw("LayerPanel::HideShow");
     }});
+
+    _this.hideShowLegendButton = Ext.create("Ext.button.Button",{
+      xtype:'button',tooltip: I18n.hide_or_display_legend.tooltip,
+      iconCls:_this.WMJSLayer.displayLegendInMapEnable===true?'button_scale_on':'button_scale_off',handler:function(o,c){
+        //console.log(_this.WMJSLayer.displayLegendInMapEnable)
+        _this.WMJSLayer.displayLegendInMap(!_this.WMJSLayer.displayLegendInMapEnable);
+        if(_this.WMJSLayer.displayLegendInMapEnable==false){
+          this.setIconCls('button_scale_off');
+        }else {
+          this.setIconCls('button_scale_on');
+        }
+        _this.WMJSLayer.draw("LayerPanel::HideShow");
+      }
+    });
+
     /**
      * selects this layer panel and colors the borders
      */
@@ -700,26 +722,27 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
             _this.WMJSLayer.parentMaps[0].draw(dates);
           }
         
-      }};
+      }
+    };
       
 
       
-      _this.moveUp = function(){
-        var myContainer=_this.up('panel');
-        var childIndex = myContainer.items.indexOf(_this);
-        if(childIndex>0){
-          myContainer.move(childIndex,childIndex-1);
-          _this.WMJSLayer.moveUp();
-        }
-      };
-      _this.moveDown = function(){
-        var myContainer=_this.up('panel');
-        var childIndex = myContainer.items.indexOf(_this);
-        if(childIndex<myContainer.items.length-1){
-          myContainer.move(childIndex,childIndex+1);
-          _this.WMJSLayer.moveDown();
-        }
-      };
+    _this.moveUp = function(){
+      var myContainer=_this.up('panel');
+      var childIndex = myContainer.items.indexOf(_this);
+      if(childIndex>0){
+        myContainer.move(childIndex,childIndex-1);
+        _this.WMJSLayer.moveUp();
+      }
+    };
+    _this.moveDown = function(){
+      var myContainer=_this.up('panel');
+      var childIndex = myContainer.items.indexOf(_this);
+      if(childIndex<myContainer.items.length-1){
+        myContainer.move(childIndex,childIndex+1);
+        _this.WMJSLayer.moveDown();
+      }
+    };
     
       
   
@@ -826,7 +849,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
               //alert(o.findParentByType('button'));
               _this.propertiesPanel.showAt(o.getPosition());
             }
-          },{
+        },{
           iconCls:'button_refresh',tooltip: I18n.reload_this_layer.tooltip,
           handler:function(){
             if(isDefined(_this.servicePanelWindow)){
@@ -867,7 +890,9 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
             
           }*/,
         {xtype:'tbfill'},{xtype:'label',text: I18n.opacity.text},
-        _this.opacitySlider,_this.hideShowButton,
+        _this.opacitySlider,
+        _this.hideShowButton,
+        _this.hideShowLegendButton,
         {scale:'small',iconCls:'button_zoomfullextent',tooltip: I18n.zoom_to_this_layer.tooltip,handler:function(){_this.WMJSLayer.zoomToLayer()}}
       ],
       listeners:{

@@ -703,7 +703,7 @@ var dataChooserConfigurationAC1H = [
     title:'ACUM1H-ZAR',
     thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-ACUM1H&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisACUM1H_ZAR_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
     service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-ACUM1H&',
-    layer:'irisTOPS_ZAR_mask',
+    layer:'irisACUM1H_ZAR_mask',
   },
   {
     title:'ACUM1H-LPA',

@@ -932,9 +932,9 @@ export default class WMJSMap {
                   imb.load();
                 } else {
                   let ela = ima.getElement()[0];
-                  console.log(ela.width+"x"+ela.height)
+                  //console.log(ela.width+"x"+ela.height)
                   let elb = imb.getElement()[0];
-                  console.log(elb.width+"x"+elb.height)
+                  //console.log(elb.width+"x"+elb.height)
                   if( parseInt(ela.width) > parseInt(elb.width) ) return 1
                   if( parseInt(ela.width) < parseInt(elb.width) ) return -1
                   if( parseInt(ela.width) == parseInt(elb.width) ) return 0

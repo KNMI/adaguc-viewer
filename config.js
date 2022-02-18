@@ -1611,7 +1611,7 @@ var requestProxy = "/impactportal/AdagucViewer?SERVICE=PROXY&";
 var requestProxy       = "./webmapjs_php/MakeRequest.php?";
 var xml2jsonrequestURL = "./webmapjs_php/xml2jsonrequest.php?"
 
-getFeatureInfoApplications.push({name:'EProfile',iconCls:'button_getfeatureinfo'});
+//getFeatureInfoApplications.push({name:'EProfile',iconCls:'button_getfeatureinfo'});
 getFeatureInfoApplications.push({name:'AutoWMS',iconCls:'button_getfeatureinfo'});
 //getFeatureInfoApplications.push({name:'Sondeo',iconCls:'button_getfeatureinfo',location:'apps/tddjs.html'});
 //getFeatureInfoApplications.open = 'EProfile';

@@ -730,8 +730,9 @@ Ext.onReady(function () {
     mainOptionMenuItems.push({
       text: getFeatureInfoApplications[j].name,
       iconCls: getFeatureInfoApplications[j].iconCls,
-      location: location,
+      location: getFeatureInfoApplications[j].location,
       handler: function () {
+        console.log(location)
         eastPanelGFI.setApplication(location);
         eastPanelGFI.hide();
         eastPanelGFI.show();
@@ -767,6 +768,7 @@ Ext.onReady(function () {
       }).show();
     },
   });
+
 
   var layerlistpanel = Ext.create("Ext.panel.Panel", {
     header: false,

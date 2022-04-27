@@ -265,6 +265,8 @@ var autowms_app = function (element, webmapjs) {
       var html = createReturnLink(data, path);
       element.html("... working ... ");
 
+      data.result.sort((a,b) => {return a.name.localeCompare(b.name);});
+
       data.result.sort((a, b) => {
         if (a.leaf === b.leaf) return 0;
         if (a.leaf === true) return 1;

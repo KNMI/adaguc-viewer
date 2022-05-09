@@ -36,6 +36,8 @@ export default class WMJSLayer {
     this.queryable = false;
 
     this.enabled = true;
+    this.displayLegendInMapEnable = true;
+
     this.styles = undefined;
     this.currentStyle = '';
     this.id = -1;
@@ -78,6 +80,9 @@ export default class WMJSLayer {
     this.getProjection = this.getProjection.bind(this);
     this.setSLDURL = this.setSLDURL.bind(this);
     this.display = this.display.bind(this);
+
+    this.displayLegendInMap = this.displayLegendInMap.bind(this);
+
     this.init();
     this._options = options;
     this.sldURL = null;
@@ -883,4 +888,12 @@ export default class WMJSLayer {
       this.parentMaps[j].displayLayer(this, this.enabled);
     }
   }
+
+  displayLegendInMap(displayornot){
+    this.displayLegendInMapEnable = displayornot;
+    for (let j = 0; j < this.parentMaps.length; j++) {
+      //console.log(this.parentMaps[j])
+      this.parentMaps[j].displayLegendInMap(this.displayLegendInMapEnable);
+    }
+  }  
 };

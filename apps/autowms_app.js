@@ -244,7 +244,7 @@ var autowms_app = function (element, webmapjs) {
       path = "";
     }
     let customInput = $(".autowms_app_request_input").first().val();
-
+    
     if (customInput && customInput.length > 0) {
       requestURL = customInput.trim().split("?")[0];
       if (!requestURL.endsWith("?")) {
@@ -263,18 +263,20 @@ var autowms_app = function (element, webmapjs) {
         prevPath.push(path);
       }
       var html = createReturnLink(data, path);
+
       element.html("... working ... ");
 
       data.result.sort((a, b) => {
-        if (a.leaf === b.leaf) return 0;
-        if (a.leaf === true) return 1;
-        if (b.leaf === true) return -1;
+        if (a.name <= b.name) return -1;
+        if (a.name > b.name) return 1;
+        if (a.name == b.name) return 0;
       });
 
       for (var j = 0; j < data.result.length; j++) {
-        html += createFile(data.result[j]);
+        html += createFile(data.result[j]); 
         currentData[data.result[j].name] = data.result[j];
       }
+
       element.html(html);
       $(".autowms_app_fileitem_return")
         .attr("onclick", "")

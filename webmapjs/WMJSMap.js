@@ -901,39 +901,113 @@ export default class WMJSMap {
         );
       }
 
-      if (this._displayLegendInMap) {
-        /* Draw legends */
-        let legendPosX = 0;
+      //if (this._displayLegendInMap) {
+      if (this.showScaleBarInMap) {
+        // Draw legends
+        var coded_legends = new Set();
+        //Meto en un array las capas para ordenarlas segun la anchura de la leyenda
+        var imgArray =[];
         for (let j = 0; j < this.layers.length; j++) {
-          if (this.layers[j].enabled !== false) {
-            let legendUrl = this.getLegendGraphicURLForLayer(this.layers[j]);
+          imgArray.push(this.layers[j]);
+        }
+        imgArray.sort(
+          function compare(a,b){
+            /*aUrl = this.getLegendGraphicURLForLayer(a);
+            bUrl = this.getLegendGraphicURLForLayer(b);
+            if (aUrl<bUrl){
+              return -1;
+            } 
+            if (aUrl>bUrl){
+              return 1;
+            }
+            if (aUrl<bUrl){
+              return 0;
+            }*/
+            if (isDefined(a.legendGraphic) && isDefined(b.legendGraphic)) {
+              let ima=legendImageStore.getImage(a.legendGraphic)
+              let imb=legendImageStore.getImage(b.legendGraphic)
+              if (ima.hasError() === false && imb.hasError() === false) {
+                if (ima.isLoaded() === false && ima.isLoading() === false && imb.isLoaded() === false && imb.isLoading() === false) {
+                  ima.load();
+                  imb.load();
+                } else {
+                  let ela = ima.getElement()[0];
+                  //console.log(ela.width+"x"+ela.height)
+                  let elb = imb.getElement()[0];
+                  //console.log(elb.width+"x"+elb.height)
+                  if( parseInt(ela.width) > parseInt(elb.width) ) return 1
+                  if( parseInt(ela.width) < parseInt(elb.width) ) return -1
+                  if( parseInt(ela.width) == parseInt(elb.width) ) return 0
+                } 
+              }      
+            }
+            return -1
+          }  
+        )
+        //FIN DE LA ORDENACION
+        //console.log(imgArray.length+"-"+this.layers.length)
+
+        /*for (let j = 0; j < imgArray.length; j++) {
+        window.alert(this.getLegendGraphicURLForLayer(imgArray[j]))
+        }*/
+
+        let legendPosX = 0;
+        //for (let j = 0; j < this.layers.length; j++) {
+        for (let j = 0; j < imgArray.length; j++) {
+          if (imgArray[j].enabled !== false && imgArray[j].displayLegendInMapEnable !== false) {
+          //if (imgArray[j].enabled !== false && this.showScaleBarInMap) {
+            //console.log(imgArray[j].displayLegendInMapEnable)
+            let legendUrl = this.getLegendGraphicURLForLayer(imgArray[j]);
             if (isDefined(legendUrl)) {
               let image = legendImageStore.getImage(legendUrl);
+              //console.log(image);
               if (image.hasError() === false) {
                 if (image.isLoaded() === false && image.isLoading() === false) {
                   image.load();
                 } else {
+
                   let el = image.getElement()[0];
-                  let legendW = parseInt(el.width) + 4;
-                  let legendH = parseInt(el.height) + 4;
-                  legendPosX += legendW + 4;
-                  let legendX = this.width - legendPosX + 2;
-                  let legendY = this.height - legendH - 2 - 13;
-                  ctx.beginPath();
-                  ctx.fillStyle = "#FFFFFF";
-                  ctx.lineWidth = 0.3;
-                  ctx.globalAlpha = 0.5;
-                  ctx.strokeStyle = "#000000";
-                  ctx.rect(
-                    parseInt(legendX) + 0.5,
-                    parseInt(legendY) + 0.5,
-                    legendW,
-                    legendH
-                  );
-                  ctx.fill();
-                  ctx.stroke();
-                  ctx.globalAlpha = 1.0;
-                  ctx.drawImage(el, legendX, legendY);
+                  //console.log(el.src);
+                  
+                  
+                  var img = document.createElement("img");
+                  img.crossOrigin="anonymous";
+                  img.src = el.src;
+                  var c = document.createElement('canvas');
+                  c.height = img.naturalHeight;
+                  c.width = img.naturalWidth;
+                  var foo_ctx = c.getContext('2d');
+                  foo_ctx.drawImage(img, 0, 0, c.width, c.height);
+                  
+                  var base64String = c.toDataURL();
+                  var base64String_loaded = (base64String.length > 6);
+                  //console.log(base64String.slice(-5));
+
+                  //Checking if the legend is already present;         
+                  if (!coded_legends.has(base64String) && base64String_loaded)
+                       {coded_legends.add(base64String);
+                        let legendW = parseInt(el.width) + 4;
+                        let legendH = parseInt(el.height) + 4;
+                        legendPosX += legendW + 4;
+                        let legendX = this.width - legendPosX + 2;
+                        let legendY = this.height - legendH - 2 - 13;
+                        ctx.beginPath();
+                        ctx.fillStyle = "#FFFFFF";
+                        ctx.lineWidth = 0.3;
+                        ctx.globalAlpha = 0.5;
+                        ctx.strokeStyle = "#000000";
+                        ctx.rect(
+                          parseInt(legendX) + 0.5,
+                          parseInt(legendY) + 0.5,
+                          legendW,
+                          legendH
+                        );
+                        ctx.fill();
+                        ctx.stroke();
+                        ctx.globalAlpha = 1.0;
+                        ctx.drawImage(el, legendX, legendY, el.width, el.height);
+                        };
+                  //console.log(coded_legends.size);
                 }
               }
             }
@@ -1584,6 +1658,10 @@ export default class WMJSMap {
     return this.height;
   }
 
+  getDisplayLegendInMap(){
+    return this._displayLegendInMap;
+  } 
+
   repositionLegendGraphic(force) {
     if (this._displayLegendInMap) {
       this.loadLegendInline(force);
@@ -1967,7 +2045,6 @@ export default class WMJSMap {
 
       // Handle WMS extensions
       legendURL += layer.wmsextensions.url;
-
       return legendURL;
     }
     return undefined;
@@ -3874,7 +3951,7 @@ export default class WMJSMap {
       searchDefinition
         .trim()
         .match(
-          /^(-?(?:[1-8]?\d(?:\.\d+)?|90(?:\.0+)?),-?(?:180(?:\.0+)?|(?:(?:1[0-7]\d)|(?:[1-9]?\d))(?:\.\d+)?))jquery/
+          /^(-?(?:[1-8]?\d(?:\.\d+)?|90(?:\.0+)?),-?(?:180(?:\.0+)?|(?:(?:1[0-7]\d)|(?:[1-9]?\d))(?:\.\d+)?))/
         )
     ) {
       let splitted = searchDefinition.split(",");
@@ -3901,7 +3978,7 @@ export default class WMJSMap {
       return;
     }
 
-    let searchDef = searchDefinition.trim().match(/^[a-zA-Z0-9 ]*jquery/);
+    let searchDef = searchDefinition.trim();
 
     /* Only Alphanumeric characters are allowed */
     if (!searchDef) {
@@ -3910,79 +3987,23 @@ export default class WMJSMap {
       return;
     }
 
-    /*
-     * First attempt if getting the lat/lng from GeoNames.org.
-     * If not succesful, try our own SQLite3 DB.
-     */
-    let urlKNMIGeoNames;
-    if (typeof knmiGeoNamesURL !== "undefined") {
-      urlKNMIGeoNames = this.knmiGeoNamesURL.replace("{searchTerm}", searchDef);
-    } else {
-      /* If only geonames is configured, try this instead */
-      let urlApiGeonames = this.geoNamesURL
+    geoNamesURL = this.geoNamesURL
         .replace("{searchTerm}", searchDef)
         .replace("{username}", this.defaultUsernameSearch);
-      this.WCJSSearchRequestGeoNames(urlApiGeonames);
-      return;
-    }
+    this.WCJSSearchRequestGeoNames(geoNamesURL);
 
-    /* Debugging text */
-    debug(I18n.debug_searching_location.text);
-    debug(
-      '<a target="_blank" href="' +
-        urlKNMIGeoNames +
-        '">' +
-        urlKNMIGeoNames +
-        "</a>",
-      false
-    );
-
-    let errormessage = (jqXHR, textStatus, errorThrown) => {
-      error(I18n.geonames_api_call_failed.text);
-    };
-
-    let succes = (obj) => {
-      /* If there is no result from the API, search the SQLite DB */
-      if (jquery(obj).length === 0) {
-        let urlApiGeonames = this.geoNamesURL
-          .replace("{searchTerm}", searchDef)
-          .replace("{username}", this.defaultUsernameSearch);
-        console.log("urlApiGeonames", urlApiGeonames);
-        this.WCJSSearchRequestGeoNames(urlApiGeonames);
-        return;
-      }
-      console.log("ok");
-      let lat = parseFloat(jquery(obj)[0].lat);
-      let lng = parseFloat(jquery(obj)[0].lon);
-
-      this.calculateBoundingBoxAndZoom(lat, lng);
-    };
-    jquery.ajax({
-      dataType: "jsonp",
-      contentType: "application/jsonp",
-      jsonpCallback: "resultGeo",
-      crossDomain: true,
-      type: "GET",
-      url: urlKNMIGeoNames,
-      success: succes,
-      error: errormessage,
-    });
   }
 
   WCJSSearchRequestGeoNames(url) {
-    debug(I18n.debug_searching_sqlite_location.text);
-    debug('<a target="_blank" href="' + url + '">' + url + "</a>", false);
+    
+    
     let errormessage = (jqXHR, textStatus, errorThrown) => {
       error(I18n.geonames_sqlite_call_failed.text);
+      console.log(error);
     };
+    console.log(errormessage);
     let succes = (obj) => {
       console.log("ok", obj);
-      /* If there is no result */
-      if (jquery(obj).find("totalResultsCount").text() === "0") {
-        error(I18n.no_results_search.text);
-        /* Reset value */
-        return;
-      }
       let lat = parseFloat(jquery(obj).find("geoname").find("lat").text());
       let lng = parseFloat(jquery(obj).find("geoname").find("lng").text());
       this.calculateBoundingBoxAndZoom(lat, lng);

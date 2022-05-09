@@ -499,6 +499,7 @@ Ext.onReady(function () {
   });
 
   var dataPanelClicked = function (node) {
+    console.log(node.slot);
     var panel = createNewLayerPanel(mainWebmapJS.webMapJS, {
       service: node.service,
       name: node.layer,
@@ -543,6 +544,7 @@ Ext.onReady(function () {
         }
       },
     });
+    
     return panel;
   };
 
@@ -728,8 +730,9 @@ Ext.onReady(function () {
     mainOptionMenuItems.push({
       text: getFeatureInfoApplications[j].name,
       iconCls: getFeatureInfoApplications[j].iconCls,
-      location: location,
+      location: getFeatureInfoApplications[j].location,
       handler: function () {
+        console.log(location)
         eastPanelGFI.setApplication(location);
         eastPanelGFI.hide();
         eastPanelGFI.show();
@@ -766,6 +769,7 @@ Ext.onReady(function () {
     },
   });
 
+
   var layerlistpanel = Ext.create("Ext.panel.Panel", {
     header: false,
     title: " ",
@@ -775,7 +779,7 @@ Ext.onReady(function () {
     id: "layerlistpanel",
     tooltip: I18n.layers.tooltip,
     overflowY: "auto",
-    //bodyStyle:{"background-color":"#D8E0F0"},
+    //bodyStyle:{"background-color":"#FF00F0"},
     //bodyStyle:{"background-color":"#a8b8c8"},
     bodyCls: "layerlistbg",
     iconCls: "button_layers32",
@@ -842,6 +846,7 @@ Ext.onReady(function () {
         },
       },
     ],
+
   });
 
   var projectionchooserpanel = Ext.create(
@@ -869,11 +874,11 @@ Ext.onReady(function () {
 
   var viewportwestpanel = {
     id: "viewportwestpanel",
-    width: 400,
+    width: 320,
     region: "west",
     layout: "border",
     collapsible: true,
-    animCollapse: false,
+    animCollapse: true,
     border: true,
     split: true,
     header: false,
@@ -883,30 +888,77 @@ Ext.onReady(function () {
     tbar: [
       {
         scale: "large",
-        text: I18n.add_layers.text,
+        text: "Add",
         tooltip: I18n.add_layers.tooltip,
         iconCls: "button_adddata32",
         handler: function () {
+          dataChooserConfiguration = dataChooserConfigurationAdd;
           var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
             dataPanelClicked: dataPanelClicked,
             webMapJS: mainWebmapJS.webMapJS,
           });
           t.show();
-          //                 t.setMapType(maptypeclicked,mainWebmapJS);
-          //                 addData(dataPanelClicked,mainWebmapJS.webMapJS);
-        },
-      },
-      {
-        iconCls: "button_settings32",
-        tooltip: I18n.settings_and_options.tooltip,
-        scale: "large",
-        menu: {
-          xtype: "menu",
-          items: mainOptionMenuItems,
+          
         },
       },
     ],
   };
+  for (var j=0;j<dataChooser.length;j++){
+    if (dataChooser[j].dataChooserConfiguration.length !== 0) 
+                        {
+                          viewportwestpanel.tbar.push({
+                            scale: "large",
+                            text: dataChooser[j].title ,
+                            tooltip: I18n.add_layers.tooltip,
+                            iconCls: "button_adddata32",
+                            ind: j,
+                            handler: function () {
+                              //window.alert(this.ind);
+                              dataChooserConfiguration = dataChooser[this.ind].dataChooserConfiguration;
+                              //dataChooserConfiguration = dataChooserConfigurationNWP;
+                              var t = Ext.create("webmapjsext.WMJSExt.DataPanel", {
+                                dataPanelClicked: dataPanelClicked,
+                                webMapJS: mainWebmapJS.webMapJS,
+                              });                           
+                              t.show();
+                            },
+                          });
+                          viewportwestpanel.width = viewportwestpanel.width + 30;
+                        };
+                      }; 
+                          
+  for (var j=0;j<folderChooser.length;j++){
+    if (folderChooser[j].dataChooserConfigurationFolder.length !== 0) 
+                          {
+                            viewportwestpanel.tbar.push({
+                              scale: "large",
+                              text: folderChooser[j].title ,
+                              tooltip: I18n.add_layers.tooltip,
+                              iconCls: "folder_adddata32",
+                              ind: j,
+                              handler: function () {
+                                dataChooserConfigurationFolder = folderChooser[this.ind].dataChooserConfigurationFolder;
+                                var t = Ext.create("webmapjsext.WMJSExt.FolderPanel", {
+                                  dataPanelClicked: dataPanelClicked,
+                                  webMapJS: mainWebmapJS.webMapJS,
+                                });                           
+                                t.show();
+                              },
+                            });
+                            viewportwestpanel.width = viewportwestpanel.width + 30;
+                          };
+                        };
+
+  viewportwestpanel.tbar.push({
+                              iconCls: "button_settings32",
+                              tooltip: I18n.settings_and_options.tooltip,
+                              scale: "large",
+                              menu: {
+                                xtype: "menu",
+                                items: mainOptionMenuItems,
+                              },
+                            });
+
 
   var viewport = Ext.create("Ext.Viewport", {
     layout: "border",
@@ -1025,7 +1077,7 @@ Ext.onReady(function () {
   };
 
   var checkIfClassicADAGUCStateIsGiven = function (urlVars) {
-    var zoomToLayer = false;
+    var zoomToLayer = true;
 
     var autoChooseLayer = false;
     if (isDefined(urlVars.collapse)) {

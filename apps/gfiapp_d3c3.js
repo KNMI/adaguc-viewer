@@ -80,6 +80,7 @@ var gfiapp_d3c3 = function(element, webmapjs) {
 
 
   var parseADAGUCGFIToPlotData = function(gfidata, elementid) {
+    //console.log(gfidata);
     var ndims = 1;
     if (typeof(gfidata[0].dims) != 'string') {
       ndims = gfidata[0].dims.length;
@@ -199,7 +200,13 @@ var gfiapp_d3c3 = function(element, webmapjs) {
 
 
   var loadDataForURL = function(mURL, elementid) {
-    //console.log(mURL);
+    console.log(mURL);
+    if (mURL.includes("time=")){ 
+      i=mURL.indexOf("time=");
+      mURL0=mURL.slice(0,i+5);
+      mURLF=mURL.slice(i+5, mURL.length);
+      mURL=mURL0+"/"+mURLF
+    } 
     mURL += "&JSONP=?";
     $.ajax({
       type: 'GET',

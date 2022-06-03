@@ -5,7 +5,7 @@ var error = function (e) {
 var debug = function (e) {
   console.log(e);
 };
-var versionInfo = "ADAGUC viewer version 4.0.3.";
+var versionInfo = "ADAGUC viewer version 4.0.4.";
 var mainWebmapJS;
 
 function decimalFormatter(input, width) {
@@ -389,7 +389,8 @@ Ext.onReady(function () {
     border: true,
   });
 
-  var ISO_8601_re = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d{3}))?(Z|[\+-]\d{2}(?::\d{2})?)$/;
+  var ISO_8601_re =
+    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d{3}))?(Z|[\+-]\d{2}(?::\d{2})?)$/;
   var startDate = Ext.create("Ext.form.field.Text", {
     value: "1000-01-01T00:00:00Z",
     regex: ISO_8601_re,

@@ -1016,7 +1016,7 @@ var dataChooserConfigurationVIL = [
     title:'VIL-ZAR',
     thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-VIL&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisVIL_ZAR_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
     service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-VIL&',
-    layer:'irisTOPS_ZAR_mask',
+    layer:'irisVIL_ZAR_mask',
   },
   {
     title:'VIL-LPA',
@@ -1032,6 +1032,195 @@ var dataChooserConfigurationVIL = [
   }
 
 ]
+
+//contenido carpeta PPID
+var dataChooserConfigurationPPID = [
+  {
+    title:'PPID-ALM',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPID&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPID_ALM_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPID&',
+    layer:'irisPPID_ALM_mask',
+  },
+  {
+    title:'PPID-BAD',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPID&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPID_BAD_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPID&',
+    layer:'irisPPID_BAD_mask',
+  },
+  {
+    title:'PPID-BAR',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPID&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPID_BAR_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPID&',
+    layer:'irisPPID_BAR_mask',
+  },
+  {
+    title:'PPID-COR',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPID&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPID_COR_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPID&',
+    layer:'irisPPID_COR_mask',
+  },
+   {
+    title:'PPID-LID',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPID&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPID_LID_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPID&',
+    layer:'irisPPID_LID_mask',
+  },
+  {
+    title:'PPID-MAD',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPID&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPID_MAD_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPID&',
+    layer:'irisPPID_MAD_mask',
+  },
+  {
+    title:'PPID-MAL',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPID&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPID_MAL_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPID&',
+    layer:'irisPPID_MAL_mask',
+  },
+  {
+    title:'PPID-MUR',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPID&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPID_MUR_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPID&',
+    layer:'irisPPID_MUR_mask',
+  },
+  {
+    title:'PPID-PMA',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPID&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPID_PMA_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPID&',
+    layer:'irisPPID_PMA_mask',
+  },
+  {
+    title:'PPID-SAN',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPID&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPID_SAN_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPID&',
+    layer:'irisPPID_SAN_mask',
+  },
+  {
+    title:'PPID-SEV',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPID&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPID_SEV_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPID&',
+    layer:'irisPPID_SEV_mask',
+  },
+  {
+    title:'PPID-SSE',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPID&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPID_SSE_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPID&',
+    layer:'irisPPID_SSE_mask',
+  },
+  {
+    title:'PPID-VAL',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPID&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPID_VAL_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPID&',
+    layer:'irisPPID_VAL_mask',
+  },
+  {
+    title:'PPID-ZAR',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPID&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPID_ZAR_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPID&',
+    layer:'irisPPID_ZAR_mask',
+  },
+  {
+    title:'PPID-LPA',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPID&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPID_LPA_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPID&',
+    layer:'irisPPID_LPA_mask',
+  },
+]
+
+//contenido carpeta PPIW
+var dataChooserConfigurationPPIW = [
+  {
+    title:'PPIW-ALM',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPIW&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPIW_ALM_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPIW&',
+    layer:'irisPPIW_ALM_mask',
+  },
+  {
+    title:'PPIW-BAD',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPIW&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPIW_BAD_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPIW&',
+    layer:'irisPPIW_BAD_mask',
+  },
+  {
+    title:'PPIW-BAR',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPIW&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPIW_BAR_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPIW&',
+    layer:'irisPPIW_BAR_mask',
+  },
+  {
+    title:'PPIW-COR',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPIW&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPIW_COR_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPIW&',
+    layer:'irisPPIW_COR_mask',
+  },
+   {
+    title:'PPIW-LID',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPIW&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPIW_LID_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPIW&',
+    layer:'irisPPIW_LID_mask',
+  },
+  {
+    title:'PPIW-MAD',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPIW&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPIW_MAD_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPIW&',
+    layer:'irisPPIW_MAD_mask',
+  },
+  {
+    title:'PPIW-MAL',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPIW&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPIW_MAL_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPIW&',
+    layer:'irisPPIW_MAL_mask',
+  },
+  {
+    title:'PPIW-MUR',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPIW&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPIW_MUR_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPIW&',
+    layer:'irisPPIW_MUR_mask',
+  },
+  {
+    title:'PPIW-PMA',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPIW&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPIW_PMA_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPIW&',
+    layer:'irisPPIW_PMA_mask',
+  },
+  {
+    title:'PPIW-SAN',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPIW&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPIW_SAN_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPIW&',
+    layer:'irisPPIW_SAN_mask',
+  },
+  {
+    title:'PPIW-SEV',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPIW&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPIW_SEV_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPIW&',
+    layer:'irisPPIW_SEV_mask',
+  },
+  {
+    title:'PPIW-SSE',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPIW&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPIW_SSE_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPIW&',
+    layer:'irisPPIW_SSE_mask',
+  },
+  {
+    title:'PPIW-VAL',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPIW&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPIW_VAL_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPIW&',
+    layer:'irisPPIW_VAL_mask',
+  },
+  {
+    title:'PPIW-ZAR',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPIW&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPIW_ZAR_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPIW&',
+    layer:'irisPPIW_ZAR_mask',
+  },
+  {
+    title:'PPIW-LPA',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//wms?DATASET=IRIS-PPIW&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,irisPPIW_LPA_mask&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=IRIS-PPIW&',
+    layer:'irisPPIW_LPA_mask',
+  },
+]
+
 
 
 var dataChooserConfigurationMSGOPE = [
@@ -1096,6 +1285,18 @@ var dataChooserConfigurationFoldersTEL = [
   thumbnail:'./img/open-file-folder.png',
   abs:"RADAR IRIS VIL",
   dataChooserConfiguration: dataChooserConfigurationVIL
+  },
+  {
+  title:"PPID",
+  thumbnail:'./img/open-file-folder.png',
+  abs:"RADAR IRIS PPI short range",
+  dataChooserConfiguration: dataChooserConfigurationPPID
+  },
+  {
+  title:"PPIW",
+  thumbnail:'./img/open-file-folder.png',
+  abs:"RADAR IRIS radial doppler wind",
+  dataChooserConfiguration: dataChooserConfigurationPPIW
   },
   {
   title:"OPERA",
@@ -1631,7 +1832,7 @@ var mapTypeConfiguration = [  {
 ];
 
 var defaultLanguage = { language: 'en' }; // <-- Language for the ADAGUC viewer.
-var defaultUsernameSearch = "dorsalops"; // <-- Username for the GeoNames API. 1
+var defaultUsernameSearch = "adaguc"; // <-- Username for the GeoNames API. 1
 var geoNamesURL = "http://api.geonames.org/search?q={searchTerm}&username={username}&maxRows=1"; // <-- URL for the GeoNames API. Requires 'defaultUsernameSearch'    
 
 var webMapJSSettings = {
@@ -1650,6 +1851,7 @@ var xml2jsonrequestURL = "./webmapjs_php/xml2jsonrequest.php?"
 
 //getFeatureInfoApplications.push({name:'EProfile',iconCls:'button_getfeatureinfo'});
 getFeatureInfoApplications.push({name:'AutoWMS',iconCls:'button_getfeatureinfo'});
+getFeatureInfoApplications.open = "AutoWMS";
 //getFeatureInfoApplications.push({name:'Sondeo',iconCls:'button_getfeatureinfo',location:'apps/tddjs.html'});
 //getFeatureInfoApplications.open = 'EProfile';
 // xml2jsonrequestURL = 'http://localhost:8080/adaguc-services/xml2json?'
@@ -2091,3 +2293,4 @@ var WMJSTileRendererTileSettings = {
 
 xml2jsonrequestURL = '/adaguc-services/xml2json?'
 autowmsURL = '/adaguc-services/autowms?';
+//autowmsURL = '/autowms?';

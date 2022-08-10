@@ -1,8 +1,33 @@
-var isDefined, WMJSMap, WMJSLayer, getUrlVars, checkIfHashTagChanged, WMJSTimer, WMJSGetServiceFromStore, WMJScheckURL, URLEncode, URLDecode, WMJSDateOutSideRange, WMJSDateTooEarlyString, WMJSDateTooLateString, WMJSEmptyLayerName, WMJSEmptyLayerTitle, parseISO8601DateToDate, I18n, removeMouseWheelEvent, addMouseWheelEvent, WMJSKVP, composeUrlObjectFromURL, WMJSBBOX, toArray;
+var isDefined,
+  WMJSMap,
+  WMJSLayer,
+  getUrlVars,
+  checkIfHashTagChanged,
+  WMJSTimer,
+  WMJSGetServiceFromStore,
+  WMJScheckURL,
+  URLEncode,
+  URLDecode,
+  WMJSDateOutSideRange,
+  WMJSDateTooEarlyString,
+  WMJSDateTooLateString,
+  WMJSEmptyLayerName,
+  WMJSEmptyLayerTitle,
+  parseISO8601DateToDate,
+  I18n,
+  removeMouseWheelEvent,
+  addMouseWheelEvent,
+  WMJSKVP,
+  composeUrlObjectFromURL,
+  WMJSBBOX,
+  toArray,
+  WMJSCoverage,
+  WCJSRequest,
+  parseDescribeCoverage;
 var initWMJS = function () {
   let wmjs = window.wmjs;
   if (!wmjs) {
-   $( document ).ready(function() {
+    $(document).ready(function () {
       initWMJS();
     });
     return;
@@ -30,4 +55,7 @@ var initWMJS = function () {
   composeUrlObjectFromURL = wmjs.composeUrlObjectFromURL;
   WMJSBBOX = wmjs.WMJSBBOX;
   toArray = wmjs.toArray;
+  WMJSCoverage = wmjs.WMJSCoverage;
+  WCJSRequest = wmjs.WCJSRequest;
+  parseDescribeCoverage = wmjs.parseDescribeCoverage;
 };

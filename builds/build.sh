@@ -11,7 +11,7 @@ java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES
 --js ../webmapjs_h/WMJSTimeSelector.js \
 --js ../webmapjs_h/WMJSTimeSlider.js \
 --js ../webmapjs_h/WMJS_GFITimeElevation.js \
---js ../webmapjs_h/WMJSCoverage.js \
+--js ../webmapjs/WMJSCoverage.js \
 --js ../webmapjs/WMJSExternalDependencies.js \
 --js ../webmapjs/WMJSConstants.js \
 --js ../webmapjs/WMJSGlobals.js \

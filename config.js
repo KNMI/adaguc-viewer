@@ -1923,7 +1923,7 @@ var xml2jsonrequestURL = "./webmapjs_php/xml2jsonrequest.php?"
 //getFeatureInfoApplications.push({name:'EProfile',iconCls:'button_getfeatureinfo'});
 getFeatureInfoApplications.push({name:'AutoWMS',iconCls:'button_getfeatureinfo'});
 getFeatureInfoApplications.open = "AutoWMS";
-//getFeatureInfoApplications.push({name:'Sondeo',iconCls:'button_getfeatureinfo',location:'apps/tddjs.html'});
+getFeatureInfoApplications.push({name:'Sondeo',iconCls:'button_getfeatureinfo',location:'apps/tddjs.html'});
 //getFeatureInfoApplications.open = 'EProfile';
 // xml2jsonrequestURL = 'http://localhost:8080/adaguc-services/xml2json?'
 // autowmsURL = 'http://localhost:8080/adaguc-services/autowms?';

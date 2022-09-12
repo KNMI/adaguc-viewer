@@ -1,0 +1,27 @@
+<h3>MUCIN ( \( \mathrm{J/kg} \) )</h3>
+
+<p>
+CIN correspondiente al ascenso más inestable (MUCAPE) siguiendo las mismas reglas que el ECMWF. 
+Se calcula el ascenso más inestable a partir de los niveles del modelo hasta 350 hPa. 
+En los primeros 60 hPa se usan capas de mezcla de 30 hPa.
+</p>
+
+<p>
+Notar que para los cálculos de CIN se usa la fórmula siguiente, en lugar de usar la aproximación 
+a partir de la temperatura potencial virtual que se describe en la referencia. 
+</p>
+
+
+$$ CIN  = - \int_{0}^{NCL} B dz \
+        = - \int_{0}^{NCL} g \left( \frac{T_{parcel} - T_{env}}{T_{env}} \right) dz \
+        = - \int_{0}^{NCL} g (T_{env} - T_{parcel})dlnp \
+$$
+
+
+<br>Referencias:
+<ul> 
+<li><a target="_blank" href="https://www.ecmwf.int/file/284928/download?token=fPUifgzQ">Technical Memo 852 - ECMWF</a></li>
+</ul>
+
+
+<span class="closetdd">&times;</span>

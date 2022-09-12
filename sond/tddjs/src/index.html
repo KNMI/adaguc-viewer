@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- <meta http-equiv="refresh" content="10"> -->
+
+<title>TDD</title>
+
+<script src="../vendor/jquery-3.3.1.min.js"></script>
+<script src="../vendor/d3-6.7.js"></script>
+<script src="../vendor/moment-with-locales.min.js"></script>
+<script src="../vendor/mathjax.js"></script>
+
+<script src="physics/thermo.js"></script>
+<script src="physics/thlines.js"></script>
+<script src="physics/vertical.js"></script>
+<script src="physics/adiablift.js"></script>
+<script src="physics/sounding.js"></script> 
+<script src="utils/io.js"></script>
+<script src="graphics/diagram.js"></script>
+
+<link rel="stylesheet" type="text/css" href="graphics/style.css"/>
+
+</head>
+
+
+
+<!--================================================================================-->
+<body>
+
+<!-- <div id="tdd" "></div> -->
+<div id="tdd1" style="float: left; margin-top: 0px"></div>
+<div id="tdd2" style="float: left;"></div>
+<div id="tdd3" style="float: left;"></div>
+
+<!-- <img src="../data/fromtable.png" style="float: right; width: 900px;"> -->
+<img id="sondpng" src="../data/sondeo.png" style="float: right; width: 900px;">
+<img id="hodopng" src="../data/hodo.png"   style="float: right; width: 900px;">
+
+<script>
+
+//document.addEventListener('DOMContentLoaded', function() { start() }) // Vanilla
+$(function () { start() }); // jQuery
+
+function start(){
+    a = new TDD('tdd1') //, {width: 1000, height: 300})
+    //a = new TDD('tdd1', {width: 800, height: 800})
+
+    a.load_json('../data/test001.json') // datos de desarrollo
+    //a.load_json('../test/test011.json') // data vacio por una mala petición
+    //a.load_json('../test/error.json')   // error falta de grib           RESUELTO 
+    //a.load_json('../test/test010.json') // areas CAPE/CIN
+    //a.load_json('../test/test014.json') // error en Panel
+    //a.load_json('../test/test015.json') // problema humedad Harmonie >250%
+    //a.load_json('../test/test016b.json') // problema:  Cannot read properties of undefined (reading 'p')
+}
+
+</script>
+
+</body>
+</html>
+
+

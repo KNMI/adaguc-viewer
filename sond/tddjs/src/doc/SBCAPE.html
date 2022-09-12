@@ -1,0 +1,24 @@
+<h3>SBCAPE ( \( \mathrm{J/kg} \) )</h3>
+
+<p>
+La Energía Potencial Disponible para la Convección (CAPE) de la burbuja con raíz en superficie (Surface Based CAPE).
+Se trata de la burbuja que parte desde el primer nivel del modelo.
+El SBCAPE no es representativo de la realidad en casos de convección elevada, y sobrestima la
+inestabilidad si este primer nivel es muy húmedo. 
+Por eso es habitual considerar capas de mezcla en los primeros 30, 60 y 100 hPa.
+</p>
+
+
+$$ CAPE = \int_{NCL}^{NE} B dz \
+        = \int_{NCL}^{NE} g \left( \frac{T_{parcel} - T_{env}}{T_{env}} \right) dz \
+        = \int_{NCL}^{NE} g (T_{env} - T_{parcel})dlnp \
+$$
+
+
+<br>Referencias:
+<ul> 
+<li><a target="_blank" href="https://en.wikipedia.org/wiki/Convective_available_potential_energy">Wikipedia</a></li>
+</ul>
+
+
+<span class="closetdd">&times;</span>

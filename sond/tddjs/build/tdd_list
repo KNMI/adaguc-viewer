@@ -1,0 +1,11 @@
+../src/physics/thermo.js
+../src/physics/thlines.js
+../src/physics/vertical.js
+../src/physics/adiablift.js  
+../src/physics/sounding.js
+
+../src/utils/io.js
+
+../src/graphics/diagram.js
+
+

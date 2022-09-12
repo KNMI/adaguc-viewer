@@ -1,0 +1,35 @@
+<h3>Parámetro Significativo de Tornados (adimensional)</h3>
+
+<p>
+Índice compuesto por varios ingredientes que resalta entornos favorables para la aparición
+de tornados. Cuanto mayor es el índice mayor es la superposición de ingredientes.   
+La representatividad del STP está subordinada a la existencia de un mesociclón preexistente. 
+No es adecuado para caracterizar ambientes favorables a tornados no mesociclónicos.
+</p>
+
+<p>
+$$ 
+STP  = \frac{CAPE}{1500 J/kg} \
+ \cdot \frac{EFFSHEAR_{sfc}}{20 m/s} \
+ \cdot \frac{EFFSRH}{150 m^2/s^2} \
+ \cdot \frac{2000-LCL}{1500 m} \
+ \cdot \frac{250+CIN}{200 J/kg} \
+$$
+
+Donde \( EFFSHEAR_{sfc} \) es la cizalladura en la capa efectiva de la burbuja con raíz en superficie,
+ \( EFFSRH \) la helicidad relativa a la tormenta en la capa efectiva a izquierdas o derechas 
+según corresponda y LCL el nivel de condensación por ascenso.
+El término de cizalladura se hace 0 para valores inferiores a 10 m/s, y a 1.5 para valores superiores
+a 30 m/s. Notar que el índice es 0 si el CIN es mayor de 250 J/kg.
+</p>
+
+
+<br>Referencias:
+<ul> 
+<li><a href="https://www.spc.noaa.gov/publications/thompson/stp_scp.pdf" target="_blank">Thompson et al. (2004a)</a></li>
+<li><a target="_blank" href="http://brisa.aemet.es/cataplogo/ficha.php?tab=campos&id=STP">cATÁPlogo</a></li>
+<li><a target="_blank" href="https://www.spc.noaa.gov/exper/mesoanalysis/help/begin.html">SPC</a></li>
+</ul>
+
+
+<span class="closetdd">&times;</span>

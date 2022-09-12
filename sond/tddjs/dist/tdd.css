@@ -1,0 +1,270 @@
+
+
+/*======== main ========*/
+
+.svgtdd {
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	line-height: 1.15;
+}
+
+
+/*==== common lines ====*/
+
+.thinline   { stroke: black; stroke-width: 0.25; fill: none; vector-effect: non-scaling-stroke;}
+.mediumline { stroke: black; stroke-width: 0.75; fill: none; vector-effect: non-scaling-stroke;}
+.normalline { stroke: black; stroke-width: 1.00; fill: none; vector-effect: non-scaling-stroke;}
+
+.debug { stroke: red; stroke-width: 0.25px; fill: none; vector-effect: non-scaling-stroke;}
+
+/*==== background ====*/
+
+.tempbg   { stroke: black;   stroke-width: 0.25; fill: none; vector-effect: non-scaling-stroke;}
+.pressbg  { stroke: black;   stroke-width: 0.25; fill: none; vector-effect: non-scaling-stroke;}
+.mixingbg { stroke: blue;    stroke-width: 0.25; fill: none; vector-effect: non-scaling-stroke; stroke-dasharray: 1; }
+.dryadbg  { stroke: black;   stroke-width: 0.25; fill: none; vector-effect: non-scaling-stroke;}
+.pseadbg  { stroke: #990000; stroke-width: 0.25; fill: none; vector-effect: non-scaling-stroke;}
+
+.mixinglabel { font-size: 7px; fill: blue; text-anchor: middle; }
+.pseadlabel  { font-size: 7px; fill: #990000; text-anchor: middle; }
+
+
+/*==== main lines ====*/
+
+.Tline  { stroke: #cc0000; stroke-width: 2.0; fill: none; vector-effect: non-scaling-stroke; }
+.Tdline { stroke: #cc0000; stroke-width: 1.5; fill: none; vector-effect: non-scaling-stroke; stroke-dasharray: 3 }
+.Teline { stroke: orange;  stroke-width: 1.5; fill: none; vector-effect: non-scaling-stroke; }
+.Tvline { stroke: #FF0000; stroke-width: 1.5; fill: none; vector-effect: non-scaling-stroke; stroke-dasharray: 1,2 }
+.Tpline { stroke: magenta; stroke-width: 1.5; fill: none; vector-effect: non-scaling-stroke; }
+.Twline { stroke: blue;    stroke-width: 1.5; fill: none; vector-effect: non-scaling-stroke; }
+.Tfline { stroke: #d94ad3; stroke-width: 1.5; fill: none; vector-effect: non-scaling-stroke; }
+
+.Tlegend  { fill: #cc0000; }
+.Tdlegend { fill: #cc0000; }
+.Telegend { fill: orange;  }
+.Tvlegend { fill: #FF0000; }
+.Tplegend { fill: magenta; }
+.Twlegend { fill: blue;    }
+.Tflegend { fill: #d94ad3; }
+
+.Tlift  { stroke: black; stroke-width: 0.75px; fill: none; vector-effect: non-scaling-stroke; }
+.Tvlift { stroke: black; stroke-width: 0.75px; fill: none; vector-effect: non-scaling-stroke; stroke-dasharray: 3 }
+.rlift  { stroke: blue;  stroke-width: 0.75px; fill: none; vector-effect: non-scaling-stroke; }
+.insthw { stroke: black; stroke-width: 3.00px; fill: none; vector-effect: non-scaling-stroke; }
+
+/*==== areas ====*/
+
+.capearea  { fill: #008000; fill-opacity: 0.5 }
+.capevarea { fill: #008000; fill-opacity: 0.5 }
+.cinarea   { fill: #808000; fill-opacity: 0.5 }
+.cinvarea  { fill: #808000; fill-opacity: 0.5 }
+
+.ground_soil { fill: #8D4925; fill-opacity: 0.5 }
+.ground_snow { fill: #F5E5F5; fill-opacity: 0.5 }
+.ground_sea  { fill: #4169E1; fill-opacity: 0.5 }
+
+/*==== wind ====*/
+
+.windbarb { stroke: #000; stroke-width: 1.00px; fill: none;}
+.flag { fill: #000; }
+.hrline  { stroke: #729fcf; stroke-width: 2.0; fill: none; vector-effect: non-scaling-stroke; }
+
+/*==== hodo ====*/
+
+.windline    { stroke: grey; stroke-width: 1.5px; fill: none;}
+.hodocircle  { stroke: grey; stroke-width: 0.5px; fill: none;}
+.bunkersline { stroke: grey; stroke-width: 0.7px; fill: none;}
+
+#hodoaxes .domain { stroke: grey; stroke-width: 0.5px; fill: none;}
+
+
+/*========================*/
+/*======== Legend ========*/
+/*========================*/
+
+/*==== info ====*/
+
+.tdc  { text-align: center}
+.tdr  { text-align: right}
+.tdr2 { text-align: right}
+.tdl  { text-align: left}
+ 
+.titlelegend {
+	line-height: 1.05;
+	white-space: nowrap;
+	/* font-size: 16px; */
+} 
+ 
+.tablelegend {
+	line-height: 1.10;
+	cursor: pointer;
+    width : 100%;
+    border-spacing : 0px; 
+}
+
+.tablelegend td {
+   padding: 0; 
+   margin: 0;
+}
+
+#tableindexinstability .tdr {
+	padding-right: 20px;
+}
+
+
+/*==== controls ====*/
+
+#ctrlegend {
+    position: absolute;
+    bottom: 0px;
+    margin-bottom: 3px;
+}
+
+.hrlegend {
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
+    border: 0;
+    border-top: 1px solid rgba(0,0,0,.1);
+}
+
+.tablectr {
+    line-height: 1.15;
+    width : 100%;
+    border-spacing : 1px; 
+    border-collapse: initial;
+}
+
+.tablectr td {
+   padding: 1; 
+   margin: 0;
+}
+
+.linebtn {
+   cursor: pointer;
+   padding: 0; 
+   margin: 0;
+   border-width: 4px;
+   border-radius: 4px;
+   border-style: solid;
+   font-size: 1em;
+}
+.toolbtn {
+   cursor: pointer;
+   padding: 0; 
+   margin: 0;
+   border-width: 2px;
+   border-radius: 4px;
+   border-style: solid;
+   font-size: 1em;
+}
+
+.Tbtn  { border-color: #cc0000; }
+.Tdbtn { border-color: #cc0000; }
+.Tebtn { border-color: orange;  }
+.Tvbtn { border-color: #FF0000; }
+.Tpbtn { border-color: magenta; }
+.Twbtn { border-color: blue;    }
+.Tfbtn { border-color: #d94ad3; }
+
+.Ttoolbtn  { color: #cc0000; }
+.Tdtoolbtn { color: #cc0000; }
+.Tetoolbtn { color: orange;  }
+.Tvtoolbtn { color: #FF0000; }
+.Tptoolbtn { color: magenta; }
+.Twtoolbtn { color: blue;    }
+.Tftoolbtn { color: #d94ad3; }
+
+
+/*==== parcel controls ====*/
+
+.parcelbtn {
+   cursor: pointer;
+   padding: 0; 
+   margin: 0;
+   border-radius: 4px;
+   border-style: solid;
+   border-color: #767676;
+   font-size: 1em;
+}
+.btnact  { background: #7fbf7f; }
+
+
+
+/*==== html tooltip ====*/
+
+/* Tooltip container */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text */
+  position: absolute;
+  /* z-index: 1; */
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Tooltip arrow */
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+
+/*==== info ====*/
+
+
+.tableinfo{  
+  border-collapse: collapse;
+}
+
+.tableinfo td, .tableinfo th{  
+  border: 1px solid black;
+}
+
+.closetdd {
+  cursor: pointer;
+  position: absolute;
+  top: 0%;
+  right: 0%;
+  padding: 2px 10px;
+  color: black;
+  font-size: 2em;
+  border: 1px solid black;
+}
+
+.infowindowimg{
+	height: 300px;
+    width: 300px;
+    object-fit: contain;
+}
+
+

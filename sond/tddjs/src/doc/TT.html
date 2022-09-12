@@ -1,0 +1,43 @@
+<h3>Total de Totales (ºC)</h3>
+
+<p>
+El índice de Total de Totales consta de dos componentes, VT (Vertical Totals) y CT (Cross Totals).
+El VT representa la estabilidad estática entre 850 y 500 hPa. El CT incluye el punto de rocío de 850 hPa. 
+Como resultado, el TT representa tanto la estabilidad estática como la humedad de 850 mb, pero es
+poco representativo en situaciones donde la humedad está por debajo de los 850 hPa.
+Además, la convección puede inhibirse a pesar de un alto valor de TT si existe una inversión significativa.
+</p><p>
+<ul>
+
+<li>No proporciona información sobre inestabilidad por debajo del nivel de 850 hPa (por ejemplo, 
+donde haya calentamiento marítimo intenso) ni sobre la humedad por debajo de ese mismo nivel. 
+<li>Puede proporcionar altos valores que den lugar a error cuando el término VT es particularmente alto y 
+la humedad es baja.
+<ul>
+	<li> VT ~ 40 cuando se sigue una adiabática seca en la capa 850-500 hPa, aunque generalmente este valor es menor.
+	<li> VT> ~26 representa suficiente inestabilidad estática (sin considerar la humedad) para la ocurrencia de tormentas.
+	<li> CT > 18 es normalmente necesario para la ocurrencia de convección.
+</ul>
+<li>Capas con humedad cerca de los niveles de 850 hPa o 700 hPa no serán tenidas en cuenta. 
+<li>El índice es más fiable en zonas planas de elevaciones bajas o moderadas. No proporciona buenos resultados en altas elevaciones. 
+<li>La interpretación del índice varía con la estación del año y la localización.
+</ul>
+</p>
+
+$$ TT = \underbrace{(T_{850}-T_{500})}_\text{VT} + \underbrace{(T_{d_{850}}-T_{500})}_\text{CT} = (T_{850}+T_{d_{850}})-2T_{500} $$
+
+<table class="tableinfo">
+<tr><th>Total de Totales </th><th>Tiempo esperado                             </th></tr>
+<tr><td><44              </td><td>Estable                                     </td></tr>
+<tr><td>44-50            </td><td>Tormentas                                   </td></tr>
+<tr><td>50-54            </td><td>Posibilidad de tormenas severas             </td></tr>
+<tr><td>>54              </td><td>Posibilidad de tormenas severas con tornado </td></tr>   
+</table>
+
+
+<br>Referencias: 
+<ul> 
+<li><a target="_blank" href="http://brisa.aemet.es/cataplogo/ficha.php?tab=campos&id=TTK">cATÁPlogo</a></li>
+<li><a target="_blank" href="https://www.weather.gov/lmk/indices">NWS</a></li>
+</ul>
+<span class="closetdd">&times;</span>

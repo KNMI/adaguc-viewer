@@ -1,0 +1,24 @@
+<h3>Parámetro Compuesto de Supercélulas</h3>
+
+<p>
+Parámetro Compuesto de Supercélulas para una supercélula mesoanticiclónica (desplazamiento a izquierdas).
+
+Observaciones: En el cálculo de SCPL se invierte el signo de la helicidad relativa a la 
+izquierda en la capa efectiva para considerar positivos aquellos valores que favorezcan 
+el desarrollo y propagación de la supercélula que se desplaza a la izquierda del viento medio.
+</p>
+
+$$ K=(T_{850}-T_{500})+T_{d_{850}}-(T_{700}-T_{d_{700}}) $$
+
+<table class="tableinfo">
+<tr><th>K-index </th><th>TS probablity                 </th></tr>
+<tr><td><20     </td><td>Thunderstorms unlikely        </td></tr>
+<tr><td>20 to 25</td><td>Isolated thunderstorms        </td></tr>
+<tr><td>26 to 30</td><td>Widely scattered thunderstorms</td></tr>
+<tr><td>31 to 35</td><td>Numerous thunderstorms        </td></tr>   
+<tr><td>Above 35</td><td>Thunderstorms very likely     </td></tr>
+</table>
+
+<br>Referencias: <a target="_blank" href="https://www.spc.noaa.gov/publications/thompson/stp_scp.pdf">Thompson et al. (2004a)</a>
+
+<span class="closetdd">&times;</span>

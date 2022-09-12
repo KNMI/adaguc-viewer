@@ -27,7 +27,7 @@ var gfiapp_d3c3 = function(element, webmapjs) {
       link.click();
       link.remove();
     });
-    
+
     var chart = c3.generate({
       bindto: graph.get(0),
       data: {

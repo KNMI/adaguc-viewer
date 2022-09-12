@@ -15,7 +15,7 @@ class tddjs {
     var data ="";
 
     var pointOnMapClicked = function (options) {
-      console.log(d3.scaleLog());
+      console.log(s3.scaleLog());
       html = ""
       document.getElementById("info").innerHTML = html
       if (enabled == false)

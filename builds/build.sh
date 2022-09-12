@@ -89,11 +89,11 @@ java -jar ../../closure/compiler.jar \
 --js ../webmapjsext/WMJSExt/WindowFader.js \
 --js ../webmapjsext/WMJSExtMain.js \
 --js ../apps/gfiapp_d3c3.js \
+--js ../sond/tddjs/vendor/d3-6.7.js \
+--js ../webmapjs/tddjs.js \
 --js ../apps/gfiapp_point_interest.js \
 --js ../apps/gfiapp_eprofile.js \
 --js ../apps/autowms_app.js \
---js ../webmapjs/tddjs.js \
---js ../sond/tddjs/vendor/d3-6.7.js \
 --js_output_file  WMJSExt.min.js
 
 echo "//# sourceMappingURL=WMJSExt.min.js.map" >> WMJSExt.min.js

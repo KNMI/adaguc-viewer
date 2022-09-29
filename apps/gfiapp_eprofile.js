@@ -83,6 +83,7 @@ var gfiapp_eprofile = function(element, webmapjs) {
       $("#info").html("Displaying dates "+webmapjs.dateToISO8601(new Date(newBBOX.left))+" till "+webmapjs.dateToISO8601(new Date(newBBOX.right)));
     };
     
+    console.log(gfiWindows[0])
     gfiWindows[0].getWebMapJS().addListener("onloadingcomplete",ondimchange_profile,true);
     
     webmapjs.enableInlineGetFeatureInfo(false);

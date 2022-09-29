@@ -5,6 +5,7 @@
 
 #images-view .x-panel-body{
     background: white;
+    height: 100%;
     font: 11px Arial, Helvetica, sans-serif;
 }
 #images-view .thumb{

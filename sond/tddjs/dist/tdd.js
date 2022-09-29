@@ -2102,10 +2102,13 @@ class Sounding extends Vertical{
         d.Twsn = d.TSn*Math.pow((d.p*c0)/((c0+d.T)*PSEA),0.54)
         if (d.Twsn<0) d.Twsn=0.
 		// wind speed and math direction
-		d.wS = Math.sqrt(d.u*d.u+d.v*d.v)
+		//d.wS = Math.sqrt(d.u*d.u+d.v*d.v)
+
 		//d.wD = Math.atan(d.u/d.v)
-		d.wD = Math.atan2(d.v,d.u)
+		//d.wD = Math.atan2(d.v,d.u)
 		// clean
+		d.u=d.wS*Math.cos(d.wD)
+		d.v=d.wS*Math.sin(d.wD)
 		delete d.t		
         
         
@@ -4334,8 +4337,9 @@ class WindDiagram extends AbstractDiagram{
 		this.barbs.selectAll("barbs")
 			.data(barbs).enter().append("use")
 			.attr("xlink:href", d => "#barb"+Math.round(convert_wind(d.wS,'kt')/5)*5 ) // 0,5,10,15,... always in kt
-			.attr("transform",  d => "translate("+this.width/2+","+this.newY(d.p)+") rotate("+(math2met(d.wD*RAD2DEG)-180)+") scale(0.75)" ) // Because of barb definition: 0 rotation == South wind, so subtract 180
-		// hr
+			//.attr("transform",  d => "translate("+this.width/2+","+this.newY(d.p)+") rotate("+(math2met(d.wD*RAD2DEG)-180)+") scale(0.75)" ) // Because of barb definition: 0 rotation == South wind, so subtract 180
+			.attr("transform",  d => "translate("+this.width/2+","+this.newY(d.p)+") rotate("+((d.wD*RAD2DEG)-180)+") scale(0.75)" ) // Because of barb definition: 0 rotation == South wind, so subtract 180
+			// hr
 		this.hrline.append("path")
 			.data([s.data])
 			.attr("d", s3.line()
@@ -4551,7 +4555,8 @@ class Legend extends AbstractDiagram {
 		t += '<tr class="ri"><td data-param="CIZ">CIZ03     </td><td class="tdr" colspan="2">'+round(s, 'CIZ03', 1, MKNOT)+'</td></tr>'
 		t += '<tr class="ri"><td data-param="CIZ">CIZ01     </td><td class="tdr" colspan="2">'+round(s, 'CIZ01', 1, MKNOT)+'</td></tr>'
 		t += '<tr class="ri"><td>CIZE      </td><td class="tdr" colspan="2">'+round(s, 'CIZE',  1, MKNOT)+'</td></tr>'
-		t += '<tr class="ri"><td data-param="MEAN">MEAN W06  </td><td class="tdr" colspan="2">'+round(s, 'WSM06', 1, MKNOT)+'/'+rnd(math2met(s.WDM06),0)+'</td></tr>'
+		//t += '<tr class="ri"><td data-param="MEAN">MEAN W06  </td><td class="tdr" colspan="2">'+round(s, 'WSM06', 1, MKNOT)+'/'+rnd(math2met(s.WDM06),0)+'</td></tr>'
+		t += '<tr class="ri"><td data-param="MEAN">MEAN W06  </td><td class="tdr" colspan="2">'+round(s, 'WSM06', 1, MKNOT)+'/'+rnd((s.WDM06),0)+'</td></tr>'
 		t += '<tr class="ri"><td data-param="HEFF">HEFFTOP   </td><td class="tdr" colspan="2">'+round(s, 'HEFFTOP', 1)+'</td></tr>'
 		t += '<tr class="ri"><td data-param="HEFF">HEFFBAS   </td><td class="tdr" colspan="2">'+round(s, 'HEFFBAS', 1)+'</td></tr>'
 		
@@ -4560,7 +4565,8 @@ class Legend extends AbstractDiagram {
 		t += '<tr class="ri"><td>BRN   </td><td class="tdr" colspan="2">'+round(ad, 'BRNv',  1)+'</td></tr>'
 		t += '<tr class="ri"><td>VGP   </td><td class="tdr" colspan="2">'+round(ad, 'VGPv',  2)+'</td></tr>'		
 		t += '<tr><td>      </td><td class="tdr2">Izq.                    </td><td class="tdr2">Dch.                     </td></tr>'
-		t += '<tr class="ri"><td>BUNK  </td><td class="tdr2">'+round(s, 'BUNKERSLWS', 1, MKNOT)+'/'+rnd(math2met(s.BUNKERSLWD),0)+'<td class="tdr2">'+round(s, 'BUNKERSRWS', 1, MKNOT)+'/'+rnd(math2met(s.BUNKERSRWD),0)+'</td></tr>'
+		//t += '<tr class="ri"><td>BUNK  </td><td class="tdr2">'+round(s, 'BUNKERSLWS', 1, MKNOT)+'/'+rnd(math2met(s.BUNKERSLWD),0)+'<td class="tdr2">'+round(s, 'BUNKERSRWS', 1, MKNOT)+'/'+rnd(math2met(s.BUNKERSRWD),0)+'</td></tr>'
+		t += '<tr class="ri"><td>BUNK  </td><td class="tdr2">'+round(s, 'BUNKERSLWS', 1, MKNOT)+'/'+rnd((s.BUNKERSLWD),0)+'<td class="tdr2">'+round(s, 'BUNKERSRWS', 1, MKNOT)+'/'+rnd((s.BUNKERSRWD),0)+'</td></tr>'
 		t += '<tr class="ri"><td data-param="SRH">SRH 1 </td><td class="tdr2">'+round(s, 'SRHL1',   1)+'</td><td class="tdr2">'+round(s, 'SRHR1',   1)+'</td></tr>'
 		t += '<tr class="ri"><td data-param="SRH">SRH 3 </td><td class="tdr2">'+round(s, 'SRHL3',   1)+'</td><td class="tdr2">'+round(s, 'SRHR3',   1)+'</td></tr>'
 		t += '<tr class="ri"><td>ESRH  </td><td class="tdr2">'+round(s, 'ESRHL',   1)+'</td><td class="tdr2">'+round(s, 'ESRHR',   1)+'</td></tr>'

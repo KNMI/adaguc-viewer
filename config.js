@@ -254,6 +254,16 @@ var dataChooserConfigurationNWP = [ {title:'Ceiling_ground_00',
 }];
 
 //----------------------------------- CARPETA OBS -----------------------------------------------------
+//Contenido de subcarpeta SONDEOS
+var dataChooserConfigurationTEMP = [
+  {
+    title:'SONDEOS',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=TEMP&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,station_name&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=TEMP&&service=WMS&request=GetCapabilities',
+    layer:'station_name'
+  }
+]
+
 
 //Contenido de subcarpeta TAJO
 var dataChooserConfigurationTAJO = [
@@ -480,6 +490,10 @@ var dataChooserConfigurationFoldersOBS = [
     title:"BOYAS",
     thumbnail:'./img/open-file-folder.png',
     dataChooserConfiguration: dataChooserConfigurationBOYAS_E
+  },{
+    title:"SONDEOS",
+    thumbnail:'./img/open-file-folder.png',
+    dataChooserConfiguration: dataChooserConfigurationTEMP
   }
 ];
 

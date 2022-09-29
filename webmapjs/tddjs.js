@@ -12,11 +12,18 @@ class tddjs {
     var enabled = true;
     var currentOptions = [];
     currentOptions.set = false;
-    var data ="";
+    var openedSond = false;
+    var w=null;
 
     var pointOnMapClicked = function (options) {
-      console.log(s3.scaleLog());
+      //console.log(s3.scaleLog());
+
       html = ""
+      if (openedSond){
+        w.close();
+        openedSond=false;
+        //cerrrar
+      } 
       document.getElementById("info").innerHTML = html
       if (enabled == false)
         return;
@@ -62,16 +69,12 @@ class tddjs {
           document.getElementById("info").innerHTML = html; 
           getJSONdata(myLayer, webmapjs, currentOptions.x,currentOptions.y,"text/plain",function(iURL){
             if (iURL != null){ 
-              //console.log("JSON",iURL);
-              document.getElementById("mitdd").innerHTML = "";
-              var tdd = new TDD('mitdd');
-              //tdd.load("AIB",'510646','20211110','06','003');
-              //tdd.load_json("AEMET_IB_TEMPS_002Z.json")
-              try{ 
-                tdd.load_temp(iURL);
-              } catch (e){
-                window.alert('Exception occured:' + e);
-              }  
+              if(openedSond){
+                console.log("ABIERTO")
+              } 
+              w=window.open("sondTemp.html","Sondeo", 'itemId="sond",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600')
+              w.myvar=iURL
+              openedSond=true;
               html = "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
               html += " - Station:" + iURL.meta.name +"<br/>";
               document.getElementById("info").innerHTML = html;
@@ -104,6 +107,10 @@ class tddjs {
       enabled = false;
       webmapjs.enableInlineGetFeatureInfo(true);
       currentOptions.set = false;
+      if (openedSond){ 
+        w.close();
+        openedSond=false;
+      } 
     };
     this.resize = function (w, h) {
       //console.log("w=" + w);
@@ -194,7 +201,7 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
   let rm=request;
   
   let req_end=""
-  request += "&QUERY_LAYERS=" +'p,z,t,td,u,v' + "&INFO_FORMAT=" + "application/json";
+  request += "&QUERY_LAYERS=" +'p,z,t,td,windSpd,windDir' + "&INFO_FORMAT=" + "application/json";
   rm += "&QUERY_LAYERS=" +'station_name,ps,alt,station_cname' +"&INFO_FORMAT=" + "application/json";
   req_end += "&" + getBBOXandProjString(layer,webmapjs);
   req_end += "WIDTH=" + webmapjs.width;
@@ -227,18 +234,16 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
   
   let rl=layer.service+"&SERVICE=WMS&REQUEST=GetMetaData&VERSION=" + layer.version;
   rl += "&LAYERS=" + URLEncode(layer.name)
-  rl += "&LAYER=z"
+  rl += "&LAYER=station_name"
   rl += "&FORMAT=application/json"
 
   
 
   getMeta(rm,function(meta) {
     if (meta != null){
-      //console.log("META",meta)
-      //callBack(meta)
-      //console.log("META",meta);
-      getData(rl,request,function(dat) {
+      getData(rl,meta,request,function(dat) {
         if (dat != null ){
+          //console.log(meta,dat)
           let tJson={"meta":meta,"data":dat}; 
           callBack(tJson)
         } 
@@ -365,13 +370,25 @@ function getBBOXandProjString(layer,webmapjs) {
   return request;
 }
 
-function getLevels(request,callback){
- // console.log("GETLEVEL",request)
+function getLevels(request,meta,callback){
+  console.log("REQ LEVEL",request)
+  //Trampeo porque de alguna forma no lee los dataset -\o/-
+  /* 
+  if (!(request.includes("source")) ) {
+    let server=request.split("?")
+    let fields=server[1].split("&&")
+    //console.log("F",fields)
+    let fich=meta.file
+    let req_1=server[0];
+    let req_2=fields[1]; 
+    let mid="source=files/TEMP/"+fich 
+    request=(req_1+"?"+mid+"&"+req_2)
+  }*/
   MakeHTTPRequest(request,function(err,data){
 
       if (err != null) {
         console.error(err);
-      } else { 
+      } else {  
         let i=data.indexOf("lev");
         let subdata=data.slice(i)
         let j=subdata.indexOf(";")
@@ -386,6 +403,7 @@ function getLevels(request,callback){
 
 function getMeta(rm,callback){
   let request=rm;
+  console.log("REQ META",rm)
   MakeHTTPRequest(request,function(err,data){
 
       if (err != null) {
@@ -394,12 +412,17 @@ function getMeta(rm,callback){
         let meta=[]; 
         try {
           let dats=JSON.parse(data)   
+          //console.log(dats)
           let latlon=dats[0].point.coords
           latlon=latlon.split(',')
           let lon=parseFloat(latlon[0]);
           let lat=parseFloat(latlon[1]);
           //console.log(lat,lon)
           let key=Object.keys(dats[1].data)
+          /*let fecha=key[0].replaceAll("-","") 
+          fecha=fecha.replaceAll(":","")
+          let file="AEMET_IB_TEMP_"+fecha+".nc"
+          */
           let date=key.toString()
           date=date.split("T");
           let day=date[0].replaceAll("-","");
@@ -433,18 +456,32 @@ function getMeta(rm,callback){
 }
 
 
-function getData(rl,request,callback){
-    getLevels(rl,function(lev){
-      if (lev != null){
+function getData(rl,meta,request,callback){
+    getLevels(rl,meta,function(lev){
+      if (lev != null) {
           request += "&DIM_lev=0/" + lev;
-          //console.log("LEVEL REQ",request)
+      }
+      //Trampeo porque de alguna forma no lee los dataset -\o/- 
+      /*
+      if (!(request.includes("source")) ) {
+        let server=request.split("?")
+        let fields=server[1].split("&&")
+        let fich=meta.file
+        let req_1=server[0];
+        let req_2=fields[1]; 
+        let req_3=fields[2].replaceAll("%3A",":") 
+        let mid="source=files/TEMP/"+fich 
+        request=(req_1+"?"+mid+"&"+req_2+"&"+req_3)
       } 
+      */
 
+      console.log("REQ DATA",request)
         MakeHTTPRequest(request,function(err,data){
   
           if (err != null) {
             console.error(err);
           } else {  
+            let zs=meta.zs
             let datarr=[] 
             let dats=JSON.parse(data)
             let key=Object.keys(dats[0].data)
@@ -452,37 +489,80 @@ function getData(rl,request,callback){
             let zarr=dats[1].data 
             let tarr=dats[2].data
             let tdarr=dats[3].data
-            let uarr=dats[4].data
-            let varr=dats[5].data
-            //p,z,t,td,u,v
-
-            let keyd=Object.keys(parr[0]) 
+            let wsarr=dats[4].data
+            let wdarr=dats[5].data
+            //p,z,t,td,ws,wd
+            let cont=0
+            let fin=parr
+            //console.log("LONG",fin)
+            if (!isDefined(parr[cont])){
+              cont=cont+1
+            } 
+            let keyd=Object.keys(parr[cont]) 
+            let j=0
+            
             for (let i in parr) {
               let p=parr[i]
               let z=zarr[i]
               let t=tarr[i]
               let td=tdarr[i]
-              let u=uarr[i]
-              let v=varr[i]
+              let wS=wsarr[i]
+              let wD=wdarr[i]
               p=p[keyd] 
-              if (p >= 999999999999.0){
+              p=parseFloat(p)
+              if (p > 99999999999) {
+                //console.log("FIN EN", i)
                 break;
               } 
-              p=parseFloat(p)/100; 
-              z=parseFloat(z[keyd]);  
-              t=parseFloat(t[keyd])-273.15 
-              td=parseFloat(td[keyd])-273.15  
-              u=parseFloat(u[keyd])  
-              v=parseFloat(v[keyd])  
-              let j=parseInt(i)
-              let dat={"n":j,"p":p,"z":z,"t":t,"td":td,"u":u,"v":v} 
+              p=p/100; 
+              z=parseFloat(z[keyd]);
+              
+              if (isNaN(z)) {
+                //console.log(i,z)
+                continue;
+              } 
+              if (z < (zs)){
+                //console.log(z,"<",zs)
+                continue;
+              } 
+              t=parseFloat(t[keyd])
+              if (isNaN(t)){
+                console.log(i,"NIVEL SIGW")
+                continue;
+              } 
+              t=t-273.15
+              td=parseFloat(td[keyd])-273.15
+              if (td < -273.15){
+                continue;
+              } 
+              wS=parseFloat(wS[keyd])
+              //if (ws < 0.0){
+              //  continue;
+              //}               
+              wD=parseFloat(wD[keyd])
+              wD=wD*(Math.PI / 180)
+              wD=wD%(2*Math.PI)
+              //if (ws < 0.0){
+              //  continue;
+              //} 
+              //let u=(ws*Math.cos(wd/(Math.PI / 180)))*1.944
+              //let v=(ws*Math.sin(wd/(Math.PI / 180)))*1.944  
+              let dat={"n":j,"p":p,"z":z,"t":t,"td":td,"wD":wD,"wS":wS} 
+              j=j+1
               datarr.push(dat);
             };
-            //console.log("DATA",dataJson)
+            //console.log("DATA",datarr)
 
             callback(datarr)
           } 
       } );
     });
 }
+
+class wsond {
+
+  constructor(tdd) {
+    var TDD;
+  } 
+} 
  

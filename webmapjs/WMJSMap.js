@@ -3039,6 +3039,7 @@ export default class WMJSMap {
         } else {
           this.numGetFeatureInfoRequests++;
         }
+        console.log(layer.getFeatureInfoUrl)
       }
     }
     if (this.numGetFeatureInfoRequests === 0) {

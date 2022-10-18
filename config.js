@@ -254,16 +254,40 @@ var dataChooserConfigurationNWP = [ {title:'Ceiling_ground_00',
 }];
 
 //----------------------------------- CARPETA OBS -----------------------------------------------------
-//Contenido de subcarpeta SONDEOS
+//CONTENIDO de subcarpeta Sondeo
 var dataChooserConfigurationTEMP = [
   {
-    title:'SONDEOS',
-    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=TEMP&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,station_name&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-    service:'http://dorsal.aemet.es:8080/adaguc-services//adagucserver?dataset=TEMP&&service=WMS&request=GetCapabilities',
+    title:'SONDEOS-LXXX',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services/adagucserver?dataset=TEMP-LXXX&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,station_name&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,61,25&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services/adagucserver?dataset=TEMP-LXXX&&service=WMS&request=GetCapabilities',
+    layer:'station_name'
+  },{
+    title:'SONDEOS-EXXX',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services/adagucserver?dataset=TEMP-EXXX&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,station_name&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-10,61,35&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services/adagucserver?dataset=TEMP-EXXX&&service=WMS&request=GetCapabilities',
+    layer:'station_name'
+  },{
+    title:'SONDEOS-HXXX',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services/adagucserver?dataset=TEMP-HXXX&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,station_name&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-10,61,35&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services/adagucserver?dataset=TEMP-HXXX&&service=WMS&request=GetCapabilities',
+    layer:'station_name'
+  },{
+    title:'SONDEOS-CXXX',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services/adagucserver?dataset=TEMP-CXXX&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,station_name&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=05,-120,61,-65&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services/adagucserver?dataset=TEMP-CXXX&&service=WMS&request=GetCapabilities',
+    layer:'station_name'
+  },{
+    title:'SONDEOS-KXXX',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services/adagucserver?dataset=TEMP-KXXX&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,station_name&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=05,-120,61,-65&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services/adagucserver?dataset=TEMP-KXXX&&service=WMS&request=GetCapabilities',
+    layer:'station_name'
+  },{
+    title:'SONDEOS-MXXX',
+    thumbnail:'http://dorsal.aemet.es:8080/adaguc-services/adagucserver?dataset=TEMP-MXXX&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,station_name&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=05,-120,61,-65&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://dorsal.aemet.es:8080/adaguc-services/adagucserver?dataset=TEMP-MXXX&&service=WMS&request=GetCapabilities',
     layer:'station_name'
   }
 ]
-
 
 //Contenido de subcarpeta TAJO
 var dataChooserConfigurationTAJO = [
@@ -495,6 +519,7 @@ var dataChooserConfigurationFoldersOBS = [
     thumbnail:'./img/open-file-folder.png',
     dataChooserConfiguration: dataChooserConfigurationTEMP
   }
+
 ];
 
 //--------------------------------------- FIN CARPETA OBS -----------------------------------------------------------------

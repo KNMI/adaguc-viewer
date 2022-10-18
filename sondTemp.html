@@ -21,8 +21,9 @@
 <script type="text/javascript">
   console.log("QUERY",myvar);
   var tdd = new TDD('mitdd');
-  try{ 
-       tdd.load_temp(myvar);
+  console.log("TDD",tdd)
+  try{
+        tdd.load_temp(myvar);
      } catch (e){
        window.alert('Exception occured:' + e);
      }  

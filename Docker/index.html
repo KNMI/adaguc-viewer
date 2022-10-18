@@ -18,7 +18,14 @@
   <link rel="stylesheet" type="text/css" href="libs/d3/c3.css">
   <link rel="stylesheet" href="./apps/gfiapp_d3c3.css" />
   <link rel="stylesheet" href="./apps/autowms_app.css" />
+  <link rel="stylesheet" href="./apps/tddjs.css" />
 
+    <!-- ADAGUC viewer sounding app -->
+  <script type="module" src="webmapjs/tddjs.js"></script>
+  <script src="./sond/tddjs/dist/tdd.js"></script>
+
+  <link rel="stylesheet" href="./sond/tddjs/dist/tdd.css" />
+  <link rel="stylesheet" href="./apps/tddjs.css" />
   
   <!-- Configuration -->
   <script type="text/javascript" src="config.js"></script>
@@ -37,10 +44,6 @@
   <script type="text/javascript" src="./libs/extjs-4.2.1/ext-all.js"></script>
 
   <script type="text/javascript" src="./builds/WMJSExt.min.js"></script>
-  
-  <?php
-  echo "<script type=\"text/javascript\">var autowmsURL = '".getenv('ADAGUCSERVICES_AUTOWMS')."';</script>";
-  ?>
   
 </head>
 <body>

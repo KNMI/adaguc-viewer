@@ -52,41 +52,49 @@ class tddjs {
         html = "No layer: Load a valid sounding layer."
         document.getElementById("info").innerHTML = html
       } 
-      let myLayer=null;
+      let myLayers=[]; 
+      //let myLayer=null;
       for (let j = 0; j < webmapjs.layers.length; j++) {
         //let myLayer = webmapjs.layers[webmapjs.layers.length - j - 1];
         
         let servtxt=webmapjs.layers[webmapjs.layers.length - j - 1].service;
         if(servtxt.includes("TEMP")){
-          myLayer = webmapjs.layers[webmapjs.layers.length - j - 1];
+          myLayers.push(webmapjs.layers[webmapjs.layers.length - j - 1])
+          //myLayer = webmapjs.layers[webmapjs.layers.length - j - 1];
         } 
       } 
-      if (myLayer!= null && myLayer.getFeatureInfoUrl !== "") {
-        if (myLayer.queryable === false) {
-          webmapjs.featureInfoRequestReady("Layer is not queryable.", myLayer);
-        } else { 
-          html =  "<img src=\"./img/ajax-loader.gif\" alt=\"Loading...\"/>";  
-          document.getElementById("info").innerHTML = html; 
-          getJSONdata(myLayer, webmapjs, currentOptions.x,currentOptions.y,"text/plain",function(iURL){
-            if (iURL != null){ 
-              if(openedSond){
-                console.log("ABIERTO")
+      let myLayer=null;
+      for (let i in myLayers){
+      
+        myLayer=myLayers[i]; 
+        console.log("LAYER",myLayer) 
+        if (myLayer!= null && myLayer.getFeatureInfoUrl !== "") {
+          if (myLayer.queryable === false) {
+            webmapjs.featureInfoRequestReady("Layer is not queryable.", myLayer);
+          } else { 
+            html =  "<img src=\"./img/ajax-loader.gif\" alt=\"Loading...\"/>";  
+            document.getElementById("info").innerHTML = html; 
+            getJSONdata(myLayer, webmapjs, currentOptions.x,currentOptions.y,"text/plain",function(iURL){
+              if (iURL != null){  
+                w=window.open("sondTemp.html","Sondeo", 'itemId="sond",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600')
+                w.myvar=iURL 
+                openedSond=true;
+                html = "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
+                html += " - Station:" + iURL.meta.name +"<br/>";
+                document.getElementById("info").innerHTML = html;
+                //break;
+              } else {
+                //html = "No valid data: Click on the map to load a profile."
+                html = "No valid data"
+                document.getElementById("info").innerHTML = html;
               } 
-              w=window.open("sondTemp.html","Sondeo", 'itemId="sond",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600')
-              w.myvar=iURL
-              openedSond=true;
-              html = "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
-              html += " - Station:" + iURL.meta.name +"<br/>";
-              document.getElementById("info").innerHTML = html;
-            } else {
-              html = "No valid data: Click on the map to load a profile."
-              document.getElementById("info").innerHTML = html;
-              } 
-            });
-        }
-      } else {
-        html = "Wrong layer: Load a valid sounding layer."
-        document.getElementById("info").innerHTML = html
+              });
+          }
+        } else {
+          html = "Wrong layer: Load a valid sounding layer."
+          document.getElementById("info").innerHTML = html
+        } 
+
       } 
       //Fin capturar la estacion de sondeo 
     };
@@ -192,6 +200,7 @@ function MakeHTTPRequest(fname, callbackfunction,useredirect, requestProxy) {
 };
 
 function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
+  document.getElementById("info").innerHTML = "Procesando";
   let request = WMJScheckURL(layer.service);
   request += "&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=" + layer.version;
   request += "&LAYERS=" + URLEncode(layer.name);
@@ -201,7 +210,7 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
   let rm=request;
   
   let req_end=""
-  request += "&QUERY_LAYERS=" +'p,z,t,td,windSpd,windDir' + "&INFO_FORMAT=" + "application/json";
+  request += "&QUERY_LAYERS=" +'p,z,t,td,windSpd,windDir,eVSS' + "&INFO_FORMAT=" + "application/json";
   rm += "&QUERY_LAYERS=" +'station_name,ps,alt,station_cname' +"&INFO_FORMAT=" + "application/json";
   req_end += "&" + getBBOXandProjString(layer,webmapjs);
   req_end += "WIDTH=" + webmapjs.width;
@@ -246,7 +255,9 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
           //console.log(meta,dat)
           let tJson={"meta":meta,"data":dat}; 
           callBack(tJson)
-        } 
+        } else{
+          callBack(null)
+        }   
       } )
     } else{
       console.log("no valid data");
@@ -458,31 +469,83 @@ function getMeta(rm,callback){
 
 function getData(rl,meta,request,callback){
     getLevels(rl,meta,function(lev){
-      if (lev != null) {
-          request += "&DIM_lev=0/" + lev;
+      if (lev == null) {  
+          window.errorMessage("No hay niveles!")
+          callback(null)
       }
-      //Trampeo porque de alguna forma no lee los dataset -\o/- 
-      /*
-      if (!(request.includes("source")) ) {
-        let server=request.split("?")
-        let fields=server[1].split("&&")
-        let fich=meta.file
-        let req_1=server[0];
-        let req_2=fields[1]; 
-        let req_3=fields[2].replaceAll("%3A",":") 
-        let mid="source=files/TEMP/"+fich 
-        request=(req_1+"?"+mid+"&"+req_2+"&"+req_3)
+      let levf=parseInt(lev)
+      let numCenLev=Math.floor(levf/100)
+      let restoLev=levf%100
+      let lev0=0
+      let levn=0
+      let req=[] 
+      for (let i=0;i<numCenLev;i++){
+        levn=lev0+99
+        console.log("De",lev0,"a",levn)
+        let requestn =request + "&DIM_lev="+lev0+"/" + levn;
+        req.push(requestn);
+        lev0=levn+1;
       } 
-      */
+      levn=lev0+restoLev
+      console.log("De",lev0,"a",levn)
+      let requestn =request + "&DIM_lev="+lev0+"/" + levn;
+      req.push(requestn);
 
-      console.log("REQ DATA",request)
-        MakeHTTPRequest(request,function(err,data){
-  
-          if (err != null) {
-            console.error(err);
+      req=req.reverse();
+
+      //request += "&DIM_lev=0/" + lev;
+      let datarr=[]
+      //for (let requestn in req) { 
+      getDataN(req,lev,meta,datarr,function(data){
+        if (data == null) {  
+            window.errorMessage("No hay niveles!")
+            callback(null)
+        }
+        //datarr=datarr.concat(data) 
+        console.log(datarr)
+        if (datarr.length == 0){
+          window.alert("El sondeo no tiene datos validos para este diagrama")
+          callback(null)
+        } else { 
+          let l=datarr.length-1;
+          let plim=parseFloat(datarr[l].p)
+          let pini=parseFloat(datarr[0].p)
+          if (pini <= 100){
+            console.log("Ini",pini)
+            window.alert("El primer nivel esta demasiado alto! - Plev: " + pini +"hpa")
+            callback(null)
           } else {  
-            let zs=meta.zs
-            let datarr=[] 
+            if (plim >= 200.0){ 
+              console.log("Last",plim)
+              window.alert("Ultimo nivel demasiado bajo! - Plev: " + plim +"hpa")
+              callback(null)
+            } else{ 
+              callback(datarr)
+            }
+          } 
+        }  
+      })  
+    });
+}
+
+function getDataN(req,lev,meta,datarr,callback){
+  if (req.length != 0) {  
+    console.log(req) 
+    let request=req.pop()
+    let lindex=request.indexOf("lev")
+    let levstr=request.slice(lindex)
+    let iindex=levstr.indexOf("=")+1
+    let eindex=levstr.indexOf("/")
+    let lev0=levstr.slice(iindex,eindex)
+    console.log("Procesando nivles",lev0,"a",parseInt(lev0)+99,"de",lev)
+    document.getElementById("info").innerHTML = "Procesando niviles " + lev0 +" a "+(parseInt(lev0)+99)+" de " + lev ;
+    MakeHTTPRequest(request,function(err,data){  
+        if (err != null) {
+          console.error(err);
+        } else {  
+          console.log("REQ",request,"DATA",data)
+          if (!data.includes("ServiceException")){
+            let zs=meta.zs 
             let dats=JSON.parse(data)
             let key=Object.keys(dats[0].data)
             let parr=dats[0].data 
@@ -491,16 +554,16 @@ function getData(rl,meta,request,callback){
             let tdarr=dats[3].data
             let wsarr=dats[4].data
             let wdarr=dats[5].data
+            let eVarr=dats[6].data 
             //p,z,t,td,ws,wd
-            let cont=0
-            let fin=parr
-            //console.log("LONG",fin)
+            let cont=parseInt(lev0)
+            let fin=parr 
             if (!isDefined(parr[cont])){
               cont=cont+1
             } 
             let keyd=Object.keys(parr[cont]) 
-            let j=0
-            
+            let j=datarr.length
+          
             for (let i in parr) {
               let p=parr[i]
               let z=zarr[i]
@@ -508,15 +571,26 @@ function getData(rl,meta,request,callback){
               let td=tdarr[i]
               let wS=wsarr[i]
               let wD=wdarr[i]
+
+              let eVSS=eVarr[i]
+              eVSS=eVSS[keyd]
+              eVSS=parseFloat(eVSS) 
+
               p=p[keyd] 
               p=parseFloat(p)
               if (p > 99999999999) {
-                //console.log("FIN EN", i)
+                req=[]; 
                 break;
               } 
               p=p/100; 
+
+              if ((lev > 1000) & (eVSS < 20000)){
+              //  console.log(j,eVSS,p)
+                continue;
+              } 
+
               z=parseFloat(z[keyd]);
-              
+            
               if (isNaN(z)) {
                 //console.log(i,z)
                 continue;
@@ -552,13 +626,19 @@ function getData(rl,meta,request,callback){
               datarr.push(dat);
             };
             //console.log("DATA",datarr)
-
-            callback(datarr)
-          } 
-      } );
+            //callback(datarr)
+          }
+        } 
+    getDataN(req,lev,meta,datarr,callback)
+        //callback(datarr)
     });
+  } else { 
+    callback(datarr)
+  } 
 }
-
+ 
+     
+        
 class wsond {
 
   constructor(tdd) {

@@ -3516,7 +3516,7 @@ class TDD{
 	 * @returns
 	 */
 	constructor(id, options={}){
-		//console.log("======== TDD ========")
+		console.log("======== TDD ========")
 		
 		// HTML id attribute
 		this.id = "#" + id 

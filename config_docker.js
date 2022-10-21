@@ -36,9 +36,9 @@ var defaultProjection = {srs:'EPSG:3857',bbox:'-3900000,3000000,3500000,8300000'
 
 var hashLocationNotfiyAddLayer = false;
 
-var server = "http://dorsal.aemet.es:8080/adaguc-services/" 
+//var server = "http://dorsal.aemet.es:8080/adaguc-services/" 
 //Docker
-//var server = "https://dorsal.aemet.es/"
+var server = "https://dorsal.aemet.es/"
 
 var getFeatureInfoApplications = [
   {name:'Time series mode',iconCls:'button_getfeatureinfo',location:'apps/gfiapp_d3c3.html'}
@@ -2411,5 +2411,5 @@ var WMJSTileRendererTileSettings = {
 };
 
 xml2jsonrequestURL = '/adaguc-services/xml2json?'
-autowmsURL = '/adaguc-services/autowms?';
-//autowmsURL = '/autowms?';
+//autowmsURL = '/adaguc-services/autowms?';
+autowmsURL = '/autowms?';

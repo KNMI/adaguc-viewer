@@ -413,7 +413,7 @@ Ext.onReady(function () {
     header: false,
     hidden: true,
     width: 600,
-    autoScroll: false,
+    autoScroll: true,
     layout: "fit",
     title: "test",
 

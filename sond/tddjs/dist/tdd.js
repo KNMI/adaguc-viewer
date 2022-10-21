@@ -2070,14 +2070,12 @@ class Sounding extends Vertical{
         this.Thwvsm = 999 // minimum Thw DEBUG
         this.pThvwsm      // pressure of Thwm DEBUG 
         
-        
 		// data: complete sounding
 		this.data.forEach(function(d){ 
 			this.set(d)
 		}, this);
 		// instability
 		this._insThw()
-		
 	}
 	
 	
@@ -2299,6 +2297,7 @@ class Sounding extends Vertical{
         this.ISOW  = this.find_botz('Tw', 0)
         this.PW    = this.pw(p3,ps)
         this.PW5   = this.pw(p5,p7)
+		console.log("PLOT FIN")
         this.PW7   = this.pw(p7,p8)
         this.PW8   = this.pw(p8,ps)
         this.DTZ75 = (T7-T5)/(z7-z5) // gradiente 700-500 hPa
@@ -3516,7 +3515,7 @@ class TDD{
 	 * @returns
 	 */
 	constructor(id, options={}){
-		console.log("======== TDD ========")
+		//console.log("======== TDD ========")
 		
 		// HTML id attribute
 		this.id = "#" + id 

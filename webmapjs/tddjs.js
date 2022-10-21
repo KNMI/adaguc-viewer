@@ -4,6 +4,8 @@ const WMSVersion = {
   version130: '1.3.0'
 };
 
+var htmlTab=""
+
 class tddjs {
 
   constructor(element, webmapjs) {
@@ -34,7 +36,6 @@ class tddjs {
         x: options.x,
         y: options.y
       });
-      document.getElementById("mitdd").innerHTML = "";
       var layers = webmapjs.getLayers();
       if (!isDefined(layers)) {
         $("#info").html("No valid data received:<br/>" + data);
@@ -67,7 +68,7 @@ class tddjs {
       for (let i in myLayers){
       
         myLayer=myLayers[i]; 
-        console.log("LAYER",myLayer) 
+        //console.log("LAYER",myLayer) 
         if (myLayer!= null && myLayer.getFeatureInfoUrl !== "") {
           if (myLayer.queryable === false) {
             webmapjs.featureInfoRequestReady("Layer is not queryable.", myLayer);
@@ -76,13 +77,28 @@ class tddjs {
             document.getElementById("info").innerHTML = html; 
             getJSONdata(myLayer, webmapjs, currentOptions.x,currentOptions.y,"text/plain",function(iURL){
               if (iURL != null){  
-                w=window.open("sondTemp.html","Sondeo", 'itemId="sond",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600')
-                w.myvar=iURL 
-                openedSond=true;
-                html = "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
-                html += " - Station:" + iURL.meta.name +"<br/>";
-                document.getElementById("info").innerHTML = html;
-                //break;
+                if (iURL.data != null){  
+                  w=window.open("sondTemp.html","Sondeo", 'itemId="sond",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600')
+                  w.myvar=iURL 
+                  //console.log("DATOS",iURL)
+                  openedSond=true;
+                  html = "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
+                  html += " - Station:" + iURL.meta.name +"<br/>";
+                  document.getElementById("info").innerHTML = "";
+                  document.getElementById("info").innerHTML = html;
+                  document.getElementById("table").innerHTML = "";
+                  document.getElementById("table").innerHTML = htmlTab;
+                  //break;
+                } else {
+                  html = "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
+                  html += " - Station:" + iURL.meta.name +"<br/>";
+                  document.getElementById("info").innerHTML = "";
+                  document.getElementById("info").innerHTML = html;
+                  document.getElementById("table").innerHTML = "";
+                  htmlTab += "</TABLE>"
+                  document.getElementById("table").innerHTML = htmlTab;
+                  console.log(htmlTab)
+                }  
               } else {
                 //html = "No valid data: Click on the map to load a profile."
                 html = "No valid data"
@@ -101,7 +117,8 @@ class tddjs {
     webmapjs.addListener('mouseclicked', pointOnMapClicked, true);
 
     var init = function () {
-      element.html('<div id="info"></div><div id="mitdd"></div>');
+      //console.log("ALTO",element)
+      element.html('<div id="info"></div><div id="table"></div>');
       $("#info").html("Click on the map to load a profile.");
       //console.log('init sondeo');
       webmapjs.enableInlineGetFeatureInfo(false);
@@ -200,7 +217,8 @@ function MakeHTTPRequest(fname, callbackfunction,useredirect, requestProxy) {
 };
 
 function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
-  document.getElementById("info").innerHTML = "Procesando";
+  document.getElementById("info").innerHTML = "Procesando<br>";
+  document.getElementById("table").innerHTML = "";
   let request = WMJScheckURL(layer.service);
   request += "&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=" + layer.version;
   request += "&LAYERS=" + URLEncode(layer.name);
@@ -251,13 +269,8 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
   getMeta(rm,function(meta) {
     if (meta != null){
       getData(rl,meta,request,function(dat) {
-        if (dat != null ){
-          //console.log(meta,dat)
-          let tJson={"meta":meta,"data":dat}; 
-          callBack(tJson)
-        } else{
-          callBack(null)
-        }   
+        let tJson={"meta":meta,"data":dat}; 
+        callBack(tJson)  
       } )
     } else{
       console.log("no valid data");
@@ -382,7 +395,7 @@ function getBBOXandProjString(layer,webmapjs) {
 }
 
 function getLevels(request,meta,callback){
-  console.log("REQ LEVEL",request)
+  //console.log("REQ LEVEL",request)
   //Trampeo porque de alguna forma no lee los dataset -\o/-
   /* 
   if (!(request.includes("source")) ) {
@@ -414,7 +427,7 @@ function getLevels(request,meta,callback){
 
 function getMeta(rm,callback){
   let request=rm;
-  console.log("REQ META",rm)
+  //console.log("REQ META",rm)
   MakeHTTPRequest(request,function(err,data){
 
       if (err != null) {
@@ -450,6 +463,10 @@ function getMeta(rm,callback){
             key=Object.keys(dats[3].data)
             let zs=dats[3].data[key] 
             zs=parseFloat(zs);
+            if (isNaN(zs)){
+              zs=0.0
+              //console.log("SOY NAN")
+            } 
             //meta=[date,station,ps,zs] 
             meta={"model":"OBSERVACION","index":station,"date":day,
               "run":hour,"step":0,"lon":lon,"lat":lat,"ps":ps,"zs":zs,"name":station}
@@ -468,6 +485,9 @@ function getMeta(rm,callback){
 
 
 function getData(rl,meta,request,callback){
+    htmlTab="<TABLE BORDER>"
+    htmlTab+= "<TR> <TD>Nivel</TD> <TD>P</TD> <TD>Z</TD> <TD>T</TD> <TD>TD</TD> <TD>WD</TD> <TD>WS</TD> </TR>"
+
     getLevels(rl,meta,function(lev){
       if (lev == null) {  
           window.errorMessage("No hay niveles!")
@@ -481,13 +501,13 @@ function getData(rl,meta,request,callback){
       let req=[] 
       for (let i=0;i<numCenLev;i++){
         levn=lev0+99
-        console.log("De",lev0,"a",levn)
+        //console.log("De",lev0,"a",levn)
         let requestn =request + "&DIM_lev="+lev0+"/" + levn;
         req.push(requestn);
         lev0=levn+1;
       } 
       levn=lev0+restoLev
-      console.log("De",lev0,"a",levn)
+      //console.log("De",lev0,"a",levn)
       let requestn =request + "&DIM_lev="+lev0+"/" + levn;
       req.push(requestn);
 
@@ -502,7 +522,7 @@ function getData(rl,meta,request,callback){
             callback(null)
         }
         //datarr=datarr.concat(data) 
-        console.log(datarr)
+        //console.log(datarr)
         if (datarr.length == 0){
           window.alert("El sondeo no tiene datos validos para este diagrama")
           callback(null)
@@ -510,16 +530,17 @@ function getData(rl,meta,request,callback){
           let l=datarr.length-1;
           let plim=parseFloat(datarr[l].p)
           let pini=parseFloat(datarr[0].p)
-          if (pini <= 100){
-            console.log("Ini",pini)
-            window.alert("El primer nivel esta demasiado alto! - Plev: " + pini +"hpa")
+          if (pini <= 850){
+            //console.log("Ini",pini)
+            window.alert("El primer nivel esta demasiado alto! - P0: " + pini +"hpa\n\n "+"El primer nivel debe ser mayor de 850hPa")
             callback(null)
           } else {  
-            if (plim >= 200.0){ 
-              console.log("Last",plim)
-              window.alert("Ultimo nivel demasiado bajo! - Plev: " + plim +"hpa")
+            if (plim > 300.0){ 
+              //console.log("Last",plim)
+              window.alert("Ultimo nivel demasiado bajo! - Pn: " + plim +"hpa\n\n "+"El ultimo nivel debe ser menor de 300hPa")
               callback(null)
             } else{ 
+              htmlTab+="</TABLE>"
               callback(datarr)
             }
           } 
@@ -530,20 +551,20 @@ function getData(rl,meta,request,callback){
 
 function getDataN(req,lev,meta,datarr,callback){
   if (req.length != 0) {  
-    console.log(req) 
+    //console.log(req) 
     let request=req.pop()
     let lindex=request.indexOf("lev")
     let levstr=request.slice(lindex)
     let iindex=levstr.indexOf("=")+1
     let eindex=levstr.indexOf("/")
     let lev0=levstr.slice(iindex,eindex)
-    console.log("Procesando nivles",lev0,"a",parseInt(lev0)+99,"de",lev)
-    document.getElementById("info").innerHTML = "Procesando niviles " + lev0 +" a "+(parseInt(lev0)+99)+" de " + lev ;
+    //console.log("Procesando nivles",lev0,"a",parseInt(lev0)+99,"de",lev)
+    document.getElementById("info").innerHTML += "Procesando niviles " + lev0 +" a "+(parseInt(lev0)+99)+" de " + lev +"<br>";
     MakeHTTPRequest(request,function(err,data){  
         if (err != null) {
           console.error(err);
         } else {  
-          console.log("REQ",request,"DATA",data)
+          //console.log("REQ",request,"DATA",data)
           if (!data.includes("ServiceException")){
             let zs=meta.zs 
             let dats=JSON.parse(data)
@@ -578,7 +599,7 @@ function getDataN(req,lev,meta,datarr,callback){
 
               p=p[keyd] 
               p=parseFloat(p)
-              if (p > 99999999999) {
+              if ((p > 99999999999) || (p< 10000)){
                 req=[]; 
                 break;
               } 
@@ -606,7 +627,7 @@ function getDataN(req,lev,meta,datarr,callback){
               } 
               t=t-273.15
               td=parseFloat(td[keyd])-273.15
-              if (td < -273.15){
+              if (isNaN(td)){
                 continue;
               } 
               wS=parseFloat(wS[keyd])
@@ -614,13 +635,18 @@ function getDataN(req,lev,meta,datarr,callback){
               //  continue;
               //}               
               wD=parseFloat(wD[keyd])
+              let wDg=wD
+              if (wDg < 0){
+                continue;
+              }
               wD=wD*(Math.PI / 180)
               wD=wD%(2*Math.PI)
               //if (ws < 0.0){
               //  continue;
               //} 
               //let u=(ws*Math.cos(wd/(Math.PI / 180)))*1.944
-              //let v=(ws*Math.sin(wd/(Math.PI / 180)))*1.944  
+              //let v=(ws*Math.sin(wd/(Math.PI / 180)))*1.944 
+              htmlTab += "<TR><TD>"+j+"</TD> <TD>"+p+"</TD> <TD>"+z+"</TD> <TD>"+t.toFixed(2)+"</TD> <TD>"+td.toFixed(2)+"</TD> <TD>"+wDg.toFixed(0)+"</TD> <TD>"+wS.toFixed(2)+"</TD></TR>" 
               let dat={"n":j,"p":p,"z":z,"t":t,"td":td,"wD":wD,"wS":wS} 
               j=j+1
               datarr.push(dat);

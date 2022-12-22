@@ -1341,7 +1341,7 @@ var dataChooserConfigurationPPIW = [
 ]
 
 
-
+//Contenido carpeta OPERA
 var dataChooserConfigurationMSGOPE = [
   {
     title:'OPERA-RATE',
@@ -1360,6 +1360,23 @@ var dataChooserConfigurationMSGOPE = [
     thumbnail:server + '/adagucserver?dataset=OPERA&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,OPERA_accumulated_precipitation&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
     service:server + '/adagucserver?dataset=OPERA&&service=WMS&request=GetCapabilities',
     layer:'OPERA_accumulated_precipitation'
+  }
+]
+
+
+//Contenido carpeta SST
+var dataChooserConfigurationSST = [
+  {
+    title:'SST-CON',
+    thumbnail:server + '/adagucserver?dataset=SST&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,sea_surface_temperature_contour&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:server + '/adagucserver?dataset=SST&&service=WMS&request=GetCapabilities',
+    layer:'sea_surface_temperature_contour'
+  },
+  {
+    title:'SST',
+    thumbnail:server + '/adagucserver?dataset=SST&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,sea_surface_temperature&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:server + '/adagucserver?dataset=SST&&service=WMS&request=GetCapabilities',
+    layer:'sea_surface_temperature'
   }
 ]
 
@@ -1421,7 +1438,13 @@ var dataChooserConfigurationFoldersTEL = [
   title:"OPERA",
   thumbnail:'./img/open-file-folder.png',
   dataChooserConfiguration: dataChooserConfigurationMSGOPE
+  },
+  {
+  title:"SST",
+  thumbnail:'./img/open-file-folder.png',
+  dataChooserConfiguration: dataChooserConfigurationSST
   }
+
 
 ]
 

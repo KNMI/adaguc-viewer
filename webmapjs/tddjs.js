@@ -205,6 +205,7 @@ function MakeHTTPRequest(fname, callbackfunction,useredirect, requestProxy) {
           }
         } else {
           window.alert("ALLI")
+          console.log(fname)
           redirRequest();
         }
       }
@@ -485,6 +486,11 @@ function getMeta(rm,callback){
 
 
 function getData(rl,meta,request,callback){
+    let z_dim="&DIM_lev="
+    if(request.includes("files")){  
+      z_dim="&elevation="
+    }   
+    //console.log("ZLEV=",z_dim)
     htmlTab="<TABLE BORDER>"
     htmlTab+= "<TR> <TD>Nivel</TD> <TD>P</TD> <TD>Z</TD> <TD>T</TD> <TD>TD</TD> <TD>WD</TD> <TD>WS</TD> </TR>"
 
@@ -502,18 +508,17 @@ function getData(rl,meta,request,callback){
       for (let i=0;i<numCenLev;i++){
         levn=lev0+99
         //console.log("De",lev0,"a",levn)
-        let requestn =request + "&DIM_lev="+lev0+"/" + levn;
+        let requestn =request + z_dim +lev0+"/" + levn;
         req.push(requestn);
         lev0=levn+1;
       } 
       levn=lev0+restoLev
       //console.log("De",lev0,"a",levn)
-      let requestn =request + "&DIM_lev="+lev0+"/" + levn;
+      let requestn =request + z_dim +lev0+"/" + levn;
       req.push(requestn);
 
       req=req.reverse();
 
-      //request += "&DIM_lev=0/" + lev;
       let datarr=[]
       //for (let requestn in req) { 
       getDataN(req,lev,meta,datarr,function(data){
@@ -564,7 +569,7 @@ function getDataN(req,lev,meta,datarr,callback){
         if (err != null) {
           console.error(err);
         } else {  
-          //console.log("REQ",request,"DATA",data)
+          console.log("REQ",request,"DATA",data)
           if (!data.includes("ServiceException")){
             let zs=meta.zs 
             let dats=JSON.parse(data)
@@ -582,6 +587,7 @@ function getDataN(req,lev,meta,datarr,callback){
             if (!isDefined(parr[cont])){
               cont=cont+1
             } 
+            //console.log(parr)
             let keyd=Object.keys(parr[cont]) 
             let j=datarr.length
           

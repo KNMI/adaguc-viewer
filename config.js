@@ -1340,6 +1340,105 @@ var dataChooserConfigurationPPIW = [
   },
 ]
 
+//Contenido carpeta YRADAR
+var dataChooserConfigurationYRAD2D = [
+  {
+    title:'YRAD2D-ALM',
+    thumbnail:server + '/wms?DATASET=YRAD2D&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,YRAD2D_ALM&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:server + '/adagucserver?dataset=YRAD2D&',
+    layer:'YRAD2D_ALM',
+  },
+  {
+    title:'YRAD2D-BAD',
+    thumbnail:server + '/wms?DATASET=YRAD2D&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,YRAD2D_BAD&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:server + '/adagucserver?dataset=YRAD2D&',
+    layer:'YRAD2D_BAD',
+  },
+  {
+    title:'YRAD2D-BAR',
+    thumbnail:server + '/wms?DATASET=YRAD2D&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,YRAD2D_BAR&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:server + '/adagucserver?dataset=YRAD2D&',
+    layer:'YRAD2D_BAR',
+  },
+  {
+    title:'YRAD2D-COR',
+    thumbnail:server + '/wms?DATASET=YRAD2D&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,YRAD2D_COR&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:server + '/adagucserver?dataset=YRAD2D&',
+    layer:'YRAD2D_COR',
+  },
+   {
+    title:'YRAD2D-LID',
+    thumbnail:server + '/wms?DATASET=YRAD2D&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,YRAD2D_LID&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:server + '/adagucserver?dataset=YRAD2D&',
+    layer:'YRAD2D_LID',
+  },
+  {
+    title:'YRAD2D-MAD',
+    thumbnail:server + '/wms?DATASET=YRAD2D&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,YRAD2D_MAD&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:server + '/adagucserver?dataset=YRAD2D&',
+    layer:'YRAD2D_MAD',
+  },
+  {
+    title:'YRAD2D-MAL',
+    thumbnail:server + '/wms?DATASET=YRAD2D&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,YRAD2D_MAL&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:server + '/adagucserver?dataset=YRAD2D&',
+    layer:'YRAD2D_MAL',
+  },
+  {
+    title:'YRAD2D-MUR',
+    thumbnail:server + '/wms?DATASET=YRAD2D&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,YRAD2D_MUR&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:server + '/adagucserver?dataset=YRAD2D&',
+    layer:'YRAD2D_MUR',
+  },
+  {
+    title:'YRAD2D-PMA',
+    thumbnail:server + '/wms?DATASET=YRAD2D&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,YRAD2D_PMA&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:server + '/adagucserver?dataset=YRAD2D&',
+    layer:'YRAD2D_PMA',
+  },
+  {
+    title:'YRAD2D-SAN',
+    thumbnail:server + '/wms?DATASET=YRAD2D&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,YRAD2D_SAN&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:server + '/adagucserver?dataset=YRAD2D&',
+    layer:'YRAD2D_SAN',
+  },
+  {
+    title:'YRAD2D-SEV',
+    thumbnail:server + '/wms?DATASET=YRAD2D&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,YRAD2D_SEV&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:server + '/adagucserver?dataset=YRAD2D&',
+    layer:'YRAD2D_SEV',
+  },
+  {
+    title:'YRAD2D-SSE',
+    thumbnail:server + '/wms?DATASET=YRAD2D&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,YRAD2D_SSE&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:server + '/adagucserver?dataset=YRAD2D&',
+    layer:'YRAD2D_SSE',
+  },
+  {
+    title:'YRAD2D-VAL',
+    thumbnail:server + '/wms?DATASET=YRAD2D&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,YRAD2D_VAL&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:server + '/adagucserver?dataset=YRAD2D&',
+    layer:'YRAD2D_VAL',
+  },
+  {
+    title:'YRAD2D-ZAR',
+    thumbnail:server + '/wms?DATASET=YRAD2D&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,YRAD2D_ZAR&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:server + '/adagucserver?dataset=YRAD2D&',
+    layer:'YRAD2D_ZAR',
+  },
+  {
+    title:'YRAD2D-LPA',
+    thumbnail:server + '/wms?DATASET=YRAD2D&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,YRAD2D_LPA&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:server + '/adagucserver?dataset=YRAD2D&',
+    layer:'YRAD2D_LPA',
+  },{
+    title:'YRAD2D-NAC',
+    thumbnail:server + '/wms?DATASET=YRADN2D&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,YRAD2D_NAC&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
+    service:server + '/adagucserver?dataset=YRADN2D&',
+    layer:'YRAD2D_NAC',
+  }
+]
+
 
 //Contenido carpeta OPERA
 var dataChooserConfigurationMSGOPE = [
@@ -1443,8 +1542,12 @@ var dataChooserConfigurationFoldersTEL = [
   title:"SST",
   thumbnail:'./img/open-file-folder.png',
   dataChooserConfiguration: dataChooserConfigurationSST
+  },
+  {
+  title:"YRAD2D",
+  thumbnail:'./img/open-file-folder.png',
+  dataChooserConfiguration:dataChooserConfigurationYRAD2D
   }
-
 
 ]
 

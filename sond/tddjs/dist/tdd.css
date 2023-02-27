@@ -16,6 +16,8 @@
 
 .debug { stroke: red; stroke-width: 0.25px; fill: none; vector-effect: non-scaling-stroke;}
 
+.arrowline { stroke: black; stroke-width: 0.75; fill: none; vector-effect: non-scaling-stroke;}
+
 /*==== background ====*/
 
 .tempbg   { stroke: black;   stroke-width: 0.25; fill: none; vector-effect: non-scaling-stroke;}
@@ -30,10 +32,10 @@
 
 /*==== main lines ====*/
 
-.Tline  { stroke: #cc0000; stroke-width: 2.0; fill: none; vector-effect: non-scaling-stroke; }
+.Tline  { stroke: #cc0000; stroke-width: 1.5; fill: none; vector-effect: non-scaling-stroke; }
 .Tdline { stroke: #cc0000; stroke-width: 1.5; fill: none; vector-effect: non-scaling-stroke; stroke-dasharray: 3 }
 .Teline { stroke: orange;  stroke-width: 1.5; fill: none; vector-effect: non-scaling-stroke; }
-.Tvline { stroke: #FF0000; stroke-width: 1.5; fill: none; vector-effect: non-scaling-stroke; stroke-dasharray: 1,2 }
+.Tvline { stroke: #FF0000; stroke-width: 1.5; fill: none; vector-effect: non-scaling-stroke; stroke-dasharray: 3 }
 .Tpline { stroke: magenta; stroke-width: 1.5; fill: none; vector-effect: non-scaling-stroke; }
 .Twline { stroke: blue;    stroke-width: 1.5; fill: none; vector-effect: non-scaling-stroke; }
 .Tfline { stroke: #d94ad3; stroke-width: 1.5; fill: none; vector-effect: non-scaling-stroke; }
@@ -51,22 +53,32 @@
 .rlift  { stroke: blue;  stroke-width: 0.75px; fill: none; vector-effect: non-scaling-stroke; }
 .insthw { stroke: black; stroke-width: 3.00px; fill: none; vector-effect: non-scaling-stroke; }
 
+
 /*==== areas ====*/
 
 .capearea  { fill: #008000; fill-opacity: 0.5 }
 .capevarea { fill: #008000; fill-opacity: 0.5 }
 .cinarea   { fill: #808000; fill-opacity: 0.5 }
 .cinvarea  { fill: #808000; fill-opacity: 0.5 }
+.invtarea  { fill: #bebebe; fill-opacity: 0.4 }
+.dcapearea { fill: #adb8db; fill-opacity: 0.5 }
 
 .ground_soil { fill: #8D4925; fill-opacity: 0.5 }
 .ground_snow { fill: #F5E5F5; fill-opacity: 0.5 }
 .ground_sea  { fill: #4169E1; fill-opacity: 0.5 }
+
+.srhr3 { fill: gold;       fill-opacity: 0.3 }
+.srhl3 { fill: dodgerblue; fill-opacity: 0.3 }
+.esrhr { fill: orange;     fill-opacity: 0.3 }
+.esrhl { fill: royalblue;  fill-opacity: 0.3 }
+
 
 /*==== wind ====*/
 
 .windbarb { stroke: #000; stroke-width: 1.00px; fill: none;}
 .flag { fill: #000; }
 .hrline  { stroke: #729fcf; stroke-width: 2.0; fill: none; vector-effect: non-scaling-stroke; }
+
 
 /*==== hodo ====*/
 
@@ -106,6 +118,10 @@
    margin: 0;
 }
 
+#tableindexinstability {
+    padding-right: 5px;
+}
+
 #tableindexinstability .tdr {
 	padding-right: 20px;
 }
@@ -113,48 +129,95 @@
 
 /*==== controls ====*/
 
+
+
 #ctrlegend {
     position: absolute;
     bottom: 0px;
     margin-bottom: 3px;
 }
 
+
+#togglectrlegend {
+    width: 40%;
+    border-bottom: 0px;
+    height: 5px;
+    border-radius: 10px 10px 0px 0px;
+    border-color: rgba(0,0,0,.1);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}   
+#togglectrlegend:hover {
+	background: #ffa500;
+}
+ 
+ 
+#hrtogglectrlegend {
+    margin: 0 !important;
+    border-bottom: 1px;
+    border-color: rgba(0,0,0,.1); 
+    width: 100%;
+}
+
 .hrlegend {
-    margin-top: 0.2em;
-    margin-bottom: 0.2em;
+    margin-top: 0.1em;
+    margin-bottom: 0.1em;
     border: 0;
     border-top: 1px solid rgba(0,0,0,.1);
 }
 
 .tablectr {
-    line-height: 1.15;
-    width : 100%;
-    border-spacing : 1px; 
-    border-collapse: initial;
+	line-height: 1.15;
+	width : 100%;
+	border-spacing : 2px; 
+	border-collapse: initial;
 }
 
 .tablectr td {
-   padding: 1; 
-   margin: 0;
+	padding: 0px; 
+	margin: 0px;
 }
 
-.linebtn {
-   cursor: pointer;
-   padding: 0; 
-   margin: 0;
-   border-width: 4px;
-   border-radius: 4px;
-   border-style: solid;
-   font-size: 1em;
+.ctrbtn {
+	box-sizing: border-box;
 }
+
+.ctrbtn {
+box-sizing: border-box;
+	cursor: pointer;
+	padding: 0; 
+	margin: 0;
+	border-width: 2px;
+	border-radius: 4px;
+	border-style: solid;
+	font-size: 1em;	
+}
+
+
+/*==== line controls ====*/
+
+.linebtn {
+	cursor: pointer;
+	padding: 0; 
+	margin: 0;
+	border-width: 2px;
+	border-radius: 4px;
+	border-style: solid;
+	font-size: 1em;
+}
+
 .toolbtn {
-   cursor: pointer;
-   padding: 0; 
-   margin: 0;
-   border-width: 2px;
-   border-radius: 4px;
-   border-style: solid;
-   font-size: 1em;
+	cursor: pointer;
+	padding: 0; 
+	margin: 0;
+	border-width: 2px;
+	border-radius: 4px;
+	border-style: solid;
+	font-size: 1em;
+	line-height: 0.5;
+	inline-size: fit-content;
+	padding-bottom: 1px;
 }
 
 .Tbtn  { border-color: #cc0000; }
@@ -177,25 +240,37 @@
 /*==== parcel controls ====*/
 
 .parcelbtn {
-   cursor: pointer;
-   padding: 0; 
-   margin: 0;
-   border-radius: 4px;
-   border-style: solid;
-   border-color: #767676;
-   font-size: 1em;
+	box-sizing: border-box;
+	border-width: 1px;
+	border-radius: 4px;
+	border-style: solid;
+	border-color: #767676;
+	cursor: pointer;
+	padding: 0; 
+	margin: 0;
+	font-size: 1em;
 }
 .btnact  { background: #7fbf7f; }
 
 
+/*==== parcel input controls ====*/
+
+.parcelinputbtn {
+	box-sizing: border-box;
+	cursor: pointer;
+	padding: 0; 
+	margin: 0;
+	border-width: 1px;
+	border-radius: 2px;
+	border-style: solid;
+	border-color: #767676;
+	font-size: 1.2em;
+}
 
 /*==== html tooltip ====*/
 
 /* Tooltip container */
 .tooltip {
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
 }
 
 /* Tooltip text */

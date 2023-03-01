@@ -64,9 +64,15 @@ class tddjs {
           //myLayer = webmapjs.layers[webmapjs.layers.length - j - 1];
         } 
       } 
+
+      if (myLayers.length==0){
+        html = "No Sounding Layer: Load a valid sounding layer."
+        document.getElementById("info").innerHTML = html
+      } 
+      
       let myLayer=null;
       for (let i in myLayers){
-      
+        console.log(i,myLayers.length)
         myLayer=myLayers[i]; 
         //console.log("LAYER",myLayer) 
         if (myLayer!= null && myLayer.getFeatureInfoUrl !== "") {
@@ -88,6 +94,7 @@ class tddjs {
                   document.getElementById("info").innerHTML = html;
                   document.getElementById("table").innerHTML = "";
                   document.getElementById("table").innerHTML = htmlTab;
+                  //i=myLayers.length;
                   //break;
                 } else {
                   html = "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
@@ -97,7 +104,7 @@ class tddjs {
                   document.getElementById("table").innerHTML = "";
                   htmlTab += "</TABLE>"
                   document.getElementById("table").innerHTML = htmlTab;
-                  console.log(htmlTab)
+                  //console.log(htmlTab)
                 }  
               } else {
                 //html = "No valid data: Click on the map to load a profile."
@@ -205,7 +212,7 @@ function MakeHTTPRequest(fname, callbackfunction,useredirect, requestProxy) {
           }
         } else {
           window.alert("ALLI")
-          console.log(fname)
+          //console.log(fname)
           redirRequest();
         }
       }
@@ -253,6 +260,8 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
     request += req_end;
     rm += req_end;
   } catch (e) {
+    //window.errorMessage("Error al procesar una capa!")
+    //console.log(webmapjs)
     callback(null,undefined);
   }
   debug(
@@ -266,7 +275,8 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
   rl += "&FORMAT=application/json"
 
   
-
+  console.log("META",rm)
+  console.log("DATA",rl)
   getMeta(rm,function(meta) {
     if (meta != null){
       getData(rl,meta,request,function(dat) {
@@ -274,7 +284,7 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
         callBack(tJson)  
       } )
     } else{
-      console.log("no valid data");
+      //console.log("no valid data");
       callBack(null);
     }  
   } );
@@ -477,7 +487,7 @@ function getMeta(rm,callback){
             callback(null)
           }
         } catch(e){
-          console.log(e)
+          //console.log(e)
           callback(null)
         }  
       } 
@@ -545,8 +555,8 @@ function getData(rl,meta,request,callback){
               window.alert("Ultimo nivel demasiado bajo! - Pn: " + plim +"hpa\n\n "+"El ultimo nivel debe ser menor de 300hPa")
               callback(null)
             } else{ 
-              htmlTab+="</TABLE>"
-              callback(datarr)
+          htmlTab+="</TABLE>"
+          callback(datarr)
             }
           } 
         }  
@@ -569,9 +579,15 @@ function getDataN(req,lev,meta,datarr,callback){
         if (err != null) {
           console.error(err);
         } else {  
-          console.log("REQ",request,"DATA",data)
+          //console.log("REQ",request,"DATA",data)
           if (!data.includes("ServiceException")){
             let zs=meta.zs 
+            let ps=meta.ps
+            let div=100
+            if (ps<150){
+              div=100
+            } 
+            console.log("PRESION SF",ps)
             let dats=JSON.parse(data)
             let key=Object.keys(dats[0].data)
             let parr=dats[0].data 
@@ -605,36 +621,39 @@ function getDataN(req,lev,meta,datarr,callback){
 
               p=p[keyd] 
               p=parseFloat(p)
-              if ((p > 99999999999) || (p< 10000)){
-                req=[]; 
-                break;
+              p=p/div
+              if ((p > 999999999) || (p<0)){
+                //req=[]; 
+                //break;
+                continue
               } 
-              p=p/100; 
 
-              if ((lev > 1000) & (eVSS < 20000)){
+              //if ((lev > 1000) & (eVSS < 20000)){
               //  console.log(j,eVSS,p)
-                continue;
-              } 
+              //  continue;
+              //} 
 
               z=parseFloat(z[keyd]);
             
-              if (isNaN(z)) {
+              //if (isNaN(z)) {
                 //console.log(i,z)
-                continue;
-              } 
+              //  continue;
+              //} 
               if (z < (zs)){
                 //console.log(z,"<",zs)
                 continue;
               } 
+              
               t=parseFloat(t[keyd])
               if (isNaN(t)){
-                console.log(i,"NIVEL SIGW")
+              //  console.log(i,"NIVEL SIGW")
                 continue;
               } 
               t=t-273.15
+              
               td=parseFloat(td[keyd])-273.15
               if (isNaN(td)){
-                continue;
+               continue;
               } 
               wS=parseFloat(wS[keyd])
               //if (ws < 0.0){

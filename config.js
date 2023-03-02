@@ -2064,7 +2064,7 @@ var dataChooserConfigurationMSGSAF = [
 var dataChooserConfigurationFoldersMSG = [
   {
   title:"<body> <table><tr><td><a href='https://www.eumetsat.int/mfg-calibration' target='_blank' rel='noopener noreferrer'>info</a></td><td>&nbsp;&nbsp;</td><td><b>&nbsp;&nbsp;METEOSAT IMAGES BT /Refl.</b></td><td>&nbsp;&nbsp;</td><td><h1 ><img src='./img/folder-icon-transparent.png' width='30' height='30'></h1></td></tr></table></body>",
-  thumbnail:server + '/adagucserver?dataset=IR108-BT&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT_data,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+  thumbnail:server + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
   dataChooserConfiguration: dataChooserConfigurationMSGIMG
   },
   {

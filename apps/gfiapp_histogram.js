@@ -165,6 +165,7 @@ var gfiapp_histogram = function (element, webmapjs) {
     console.log("disable");
     enabled = false;
     webmapjs.enableInlineGetFeatureInfo(true);
+    webmapjs.setMapModePan();
     webmapjs.removeListener("beforezoomend");
     webmapjs.divZoomBox.style.display = "none";
     currentOptions.set = false;

@@ -306,6 +306,11 @@ getFeatureInfoApplications.push({
   name: "AutoWMS",
   iconCls: "button_getfeatureinfo",
 });
+getFeatureInfoApplications.push({
+  name: "Histogram mode",
+  iconCls: "button_getfeatureinfo",
+  location: "apps/gfiapp_histogram.html",
+});
 getFeatureInfoApplications.open = "AutoWMS";
 // getFeatureInfoApplications.open = 'EProfile';
 // xml2jsonrequestURL = 'http://localhost:8080/adaguc-services/xml2json?'

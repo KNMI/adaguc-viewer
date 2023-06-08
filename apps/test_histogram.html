@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+ 
+  <link rel="icon" type="image/png" href="../img/adaguc-logo-favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="../img/adaguc-logo-favicon-32x32.png" sizes="32x32">
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>ADAGUC Viewer</title>
+
+    <!-- Style sheets -->
+  <link rel="stylesheet" href="../libs/node_modules/jquery-ui-dist/jquery-ui.css" />
+  <link rel="stylesheet" type="text/css" href="../libs/extjs-4.2.1/resources/css/ext-all.css" />
+  <link rel="stylesheet" type="text/css" href="../webmapjsext/WMJSExtStyles.css" /> 
+  <link rel="stylesheet" type="text/css" href="../webmapjs/WMJSStyles.css" />
+  <link rel="stylesheet" type="text/css" href="../webmapjs_h/WMJSTimeSelector.css" />
+  <link rel="stylesheet" type="text/css" href="../webmapjs_h/WMJS_GFITimeElevation.css" />
+  <link rel="stylesheet" type="text/css" href="../libs/d3/c3.css">
+  
+
+  
+  <!-- Configuration -->
+  <script type="text/javascript" src="../config.js"></script>
+  
+  <script type="text/javascript" src="../libs/node_modules/moment/moment.js"></script>
+  <script type="text/javascript" src="../libs/node_modules/proj4/dist/proj4.js"></script>
+  <script type="text/javascript" src="../libs/node_modules/jquery/dist/jquery.min.js"></script>
+  <script type="text/javascript" src="../libs/node_modules/jquery-ui-dist/jquery-ui.min.js"></script>
+  <script src="../libs/d3/d3.v3.min.js" charset="utf-8"></script>
+  <script src="../libs/d3/c3.min.js"></script>
+
+  <script type="text/javascript" src="../builds/WMJS.min.js"></script>
+  
+  <script type="text/javascript" src="../webmapjs_h/WMJSDefineGlobals.js"></script>
+  
+  <script src="gfiapp_histogram.js"></script>
+  <link rel="stylesheet" href="gfiapp_histogram.css" />
+  
+  <script type="text/javascript">
+    
+    
+    
+    var enabledTrue_disabledFalse=false;
+    
+    $(document).ready(function(){
+      var webMapJS  = new WMJSMap(document.getElementById("webmapjs"));
+      webMapJS.setBaseURL("../webmapjs");
+      var baselayers = [];
+      for(var j=0;j<baseLayerConfiguration.length;j++){
+        baselayers.push(new WMJSLayer(baseLayerConfiguration[j]));
+      }
+      webMapJS.setBaseLayers(baselayers);
+      const layer = new WMJSLayer({name:'daily_temperature/INTER_OPER_R___TAVGD___L3__0005_prediction', service:'https://geoservices.knmi.nl/adaguc-server?DATASET=gridded_interpolations&SERVICE=WMS',onReady:(l)=>{l.zoomToLayer();}})
+      webMapJS.addLayer(layer)
+      webMapJS.draw();
+      var histogramApp = new gfiapp_histogram($("#app"),webMapJS);
+      //histogramApp.disable();
+      $("#app").html("");
+      
+       histogramApp.enable();
+      var b = $("#enable_disable").button().click(function(){
+        if(enabledTrue_disabledFalse==false){
+          enabledTrue_disabledFalse = true;
+           $("#enable_disable span").text("disable");
+          
+           histogramApp.enable();
+        }else{
+          enabledTrue_disabledFalse= false;
+           $("#enable_disable span").text("enable");
+          webMapJS.enableInlineGetFeatureInfo(true);
+          histogramApp.disable();
+          $("#app").html("");
+        }
+      });
+      
+      
+    });
+  </script>
+
+  <button id="enable_disable">enable</button>
+  
+  
+</head>
+<body>
+
+<div>
+<div id="webmapjs" style="width:850px;height:500px;position:relative;"></div>
+</div>
+<div id="app" style="width:850px;height:300px"></div>
+
+
+
+</body>
+</html>

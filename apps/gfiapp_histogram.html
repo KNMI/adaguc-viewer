@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <style>
+    body{
+      background: #a5ebff;
+    }
+    .chartstyle{
+      /*height:500px;*/
+      background: #a5ebff;
+      margin:10px;
+      padding:0px;
+      border:1px solid black;
+    }
+  </style>
+  
+  <link rel="icon" type="image/png" href="../img/adaguc-logo-favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="../img/adaguc-logo-favicon-32x32.png" sizes="32x32">
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>ADAGUC Viewer</title>
+
+    <!-- Style sheets -->
+  <link rel="stylesheet" href="../libs/node_modules/jquery-ui-dist/jquery-ui.css" />
+  <link rel="stylesheet" type="text/css" href="../libs/extjs-4.2.1/resources/css/ext-all.css" />
+  <link rel="stylesheet" type="text/css" href="../webmapjsext/WMJSExtStyles.css" /> 
+  <link rel="stylesheet" type="text/css" href="../webmapjs/WMJSStyles.css" />
+  <link rel="stylesheet" type="text/css" href="../webmapjs_h/WMJSTimeSelector.css" />
+  <link rel="stylesheet" type="text/css" href="../webmapjs_h/WMJS_GFITimeElevation.css" />
+  <link rel="stylesheet" type="text/css" href="../libs/d3/c3.css">
+  <link rel="stylesheet" href="../apps/gfiapp_d3c3.css" />
+  <link rel="stylesheet" href="../apps/autowms_app.css" />
+
+  
+  <!-- Configuration -->
+  <script type="text/javascript" src="../config.js"></script>
+  
+  <script type="text/javascript" src="../libs/node_modules/moment/moment.js"></script>
+  <script type="text/javascript" src="../libs/node_modules/proj4/dist/proj4.js"></script>
+  <script type="text/javascript" src="../libs/node_modules/jquery/dist/jquery.min.js"></script>
+  <script type="text/javascript" src="../libs/node_modules/jquery-ui-dist/jquery-ui.min.js"></script>
+
+  <script type="text/javascript" src="../builds/WMJS.min.js"></script>
+  
+  <script type="text/javascript" src="../webmapjs_h/WMJSDefineGlobals.js"></script>
+  
+
+  
+  <script type="text/javascript">
+    $(window).on("message", function(e) {
+     $("#chart").html("<img src=\"../img/ajax-loader.gif\" alt=\"Loading...\"/>");
+      var data = e.originalEvent.data;  // Should work.
+      if(!isDefined(data.layers)){
+        $("#info").html("No valid data received:<br/>"+data);
+        return;
+      }
+      var html = "";
+     
+      html+="timeseries graph for location ["+Math.round(data.lon*100)/100+","+Math.round(data.lat*100)/100+"]<br/>";
+      //html+="shift key: "+data.shiftKeyPressed+"<br/>";
+       $("#chart").empty();
+      for(var j=0;j<data.layers.length;j++){
+        //console.log(data.layers[j].gfiUrl);
+        var urlObject = composeUrlObjectFromURL(data.layers[j].gfiUrl);
+        //console.log("urlObject.location:"+urlObject.location);
+        //console.log("data.layers[j].gfiUrl:"+data.layers[j].gfiUrl);
+        var GFIURL = urlObject.location+"?";
+        
+        for(key in urlObject.kvp){
+          var value = urlObject.kvp[key];
+          //console.log("A"+key+"="+value);
+          if(key == 'info_format')value = 'application/json';
+          if(key == 'time')value = '1000-01-01T00:00:00Z/3000-01-01T00:00:00Z';
+          //console.log("B"+key+"="+value);
+          GFIURL+=(key + "="+URLEncode(value))+"&";
+        }
+       // console.log("GFIURL:"+GFIURL);
+        //GFIURL+="figwidth="+($( window ).width()-20)+"&";
+        //GFIURL+="figheight=200";
+        //html+='<img src="'+GFIURL+'"/><br/>';
+        $("#chart").append("<div class='chartstyle' id='chart"+j+"'></div>")
+        $("#chart"+j).html("<img src=\"../img/ajax-loader.gif\" alt=\"Loading...\"/>");
+        loadDataForURL(GFIURL,'chart'+j);
+      }
+      $("#info").html(html);
+    });
+    
+    $(document).ready(function(){
+     $("#info").html("Click on the map to create a timeseries graph.");
+    });
+     
+
+  
+  </script>
+
+</head>
+<body>
+
+<div id='info'></div>
+<div id="chart"></div>
+</body>
+</html>

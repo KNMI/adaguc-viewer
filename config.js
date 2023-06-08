@@ -69,6 +69,12 @@ var getFeatureInfoApplications = [
     location: "apps/gfiapp_d3c3.html",
   },
   {
+    name: "Histogram mode",
+    iconCls: "button_getfeatureinfo",
+    location: "apps/gfiapp_histogram.html",
+  },
+  
+  {
     name: "EProfile",
     iconCls: "button_getfeatureinfo",
     location: "apps/test_gfiapp_eprofile.html",

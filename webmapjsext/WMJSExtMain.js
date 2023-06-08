@@ -5,7 +5,7 @@ var error = function (e) {
 var debug = function (e) {
   console.log(e);
 };
-var versionInfo = "ADAGUC viewer version 4.1.0.";
+var versionInfo = "ADAGUC viewer version 4.2.0.";
 var mainWebmapJS;
 
 function decimalFormatter(input, width) {

@@ -296,14 +296,12 @@ export default class WMJSMap {
     this.setBaseURL = this.setBaseURL.bind(this);
     this.showDialogs = this.showDialogs.bind(this);
     this.setXML2JSONURL = this.setXML2JSONURL.bind(this);
-    this.setWMJSTileRendererTileSettings = this.setWMJSTileRendererTileSettings.bind(
-      this
-    );
+    this.setWMJSTileRendererTileSettings =
+      this.setWMJSTileRendererTileSettings.bind(this);
     this.getLegendStore = this.getLegendStore.bind(this);
     this.makeComponentId = this.makeComponentId.bind(this);
-    this.enableInlineGetFeatureInfo = this.enableInlineGetFeatureInfo.bind(
-      this
-    );
+    this.enableInlineGetFeatureInfo =
+      this.enableInlineGetFeatureInfo.bind(this);
     this.dialogClosed = this.dialogClosed.bind(this);
     this.closeAllGFIDialogs = this.closeAllGFIDialogs.bind(this);
     this.onLegendCallbackFunction = this.onLegendCallbackFunction.bind(this);
@@ -347,9 +345,8 @@ export default class WMJSMap {
     this.abort = this.abort.bind(this);
     this.isBusy = this.isBusy.bind(this);
     this._makeInfoHTML = this._makeInfoHTML.bind(this);
-    this.getLegendGraphicURLForLayer = this.getLegendGraphicURLForLayer.bind(
-      this
-    );
+    this.getLegendGraphicURLForLayer =
+      this.getLegendGraphicURLForLayer.bind(this);
     this.showScaleBar = this.showScaleBar.bind(this);
     this.hideScaleBar = this.hideScaleBar.bind(this);
     this.getMaxNumberOfAnimations = this.getMaxNumberOfAnimations.bind(this);
@@ -360,15 +357,12 @@ export default class WMJSMap {
     this._draw = this._draw.bind(this);
     this._drawAndLoad = this._drawAndLoad.bind(this);
     this._drawReady = this._drawReady.bind(this);
-    this._onLayersReadyCallbackFunction = this._onLayersReadyCallbackFunction.bind(
-      this
-    );
-    this._onMapReadyCallbackFunction = this._onMapReadyCallbackFunction.bind(
-      this
-    );
-    this._onResumeSuspendCallbackFunction = this._onResumeSuspendCallbackFunction.bind(
-      this
-    );
+    this._onLayersReadyCallbackFunction =
+      this._onLayersReadyCallbackFunction.bind(this);
+    this._onMapReadyCallbackFunction =
+      this._onMapReadyCallbackFunction.bind(this);
+    this._onResumeSuspendCallbackFunction =
+      this._onResumeSuspendCallbackFunction.bind(this);
     this._animFrameRedraw = this._animFrameRedraw.bind(this);
     this.getWMSRequests = this.getWMSRequests.bind(this);
     this.prefetch = this.prefetch.bind(this);
@@ -377,12 +371,10 @@ export default class WMJSMap {
     this._pdraw = this._pdraw.bind(this);
     this._updateBoundingBox = this._updateBoundingBox.bind(this);
     this.flipBuffers = this.flipBuffers.bind(this);
-    this.getBackBufferCanvasContext = this.getBackBufferCanvasContext.bind(
-      this
-    );
-    this.getFrontBufferCanvasContext = this.getFrontBufferCanvasContext.bind(
-      this
-    );
+    this.getBackBufferCanvasContext =
+      this.getBackBufferCanvasContext.bind(this);
+    this.getFrontBufferCanvasContext =
+      this.getFrontBufferCanvasContext.bind(this);
     this.redrawBuffer = this.redrawBuffer.bind(this);
     this.addBaseLayers = this.addBaseLayers.bind(this);
     this.setBaseLayers = this.setBaseLayers.bind(this);
@@ -405,17 +397,15 @@ export default class WMJSMap {
     this.getMapMode = this.getMapMode.bind(this);
     this.getWMSMetaDataRequestURL = this.getWMSMetaDataRequestURL.bind(this);
     this.getPointInfoRequestURL = this.getPointInfoRequestURL.bind(this);
-    this.getWMSGetFeatureInfoRequestURL = this.getWMSGetFeatureInfoRequestURL.bind(
-      this
-    );
+    this.getWMSGetFeatureInfoRequestURL =
+      this.getWMSGetFeatureInfoRequestURL.bind(this);
     this.featureInfoRequestReady = this.featureInfoRequestReady.bind(this);
     this.newGetPointInfo = this.newGetPointInfo.bind(this);
     this.getPointInfo = this.getPointInfo.bind(this);
     this.newGetFeatureInfo = this.newGetFeatureInfo.bind(this);
     this.getFeatureInfo = this.getFeatureInfo.bind(this);
-    this.getGetFeatureInfoObjectAsHTML = this.getGetFeatureInfoObjectAsHTML.bind(
-      this
-    );
+    this.getGetFeatureInfoObjectAsHTML =
+      this.getGetFeatureInfoObjectAsHTML.bind(this);
     this.getMapPinXY = this.getMapPinXY.bind(this);
     this.positionMapPinByLatLon = this.positionMapPinByLatLon.bind(this);
     this.repositionMapPin = this.repositionMapPin.bind(this);
@@ -429,17 +419,14 @@ export default class WMJSMap {
     this.setMapModePan = this.setMapModePan.bind(this);
     this.setMapModePoint = this.setMapModePoint.bind(this);
     this.setMapModeNone = this.setMapModeNone.bind(this);
-    this.getMouseCoordinatesForDocument = this.getMouseCoordinatesForDocument.bind(
-      this
-    );
-    this.getMouseCoordinatesForElement = this.getMouseCoordinatesForElement.bind(
-      this
-    );
+    this.getMouseCoordinatesForDocument =
+      this.getMouseCoordinatesForDocument.bind(this);
+    this.getMouseCoordinatesForElement =
+      this.getMouseCoordinatesForElement.bind(this);
     this.mouseDown = this.mouseDown.bind(this);
     this._checkInvalidMouseAction = this._checkInvalidMouseAction.bind(this);
-    this.updateMouseCursorCoordinates = this.updateMouseCursorCoordinates.bind(
-      this
-    );
+    this.updateMouseCursorCoordinates =
+      this.updateMouseCursorCoordinates.bind(this);
     this.mouseDownEvent = this.mouseDownEvent.bind(this);
     this.mouseMoveEvent = this.mouseMoveEvent.bind(this);
     this.mouseUpEvent = this.mouseUpEvent.bind(this);
@@ -463,9 +450,8 @@ export default class WMJSMap {
     this.getPixelCoordFromLatLong = this.getPixelCoordFromLatLong.bind(this);
     this.WCJSSearchRequest = this.WCJSSearchRequest.bind(this);
     this.WCJSSearchRequestGeoNames = this.WCJSSearchRequestGeoNames.bind(this);
-    this.calculateBoundingBoxAndZoom = this.calculateBoundingBoxAndZoom.bind(
-      this
-    );
+    this.calculateBoundingBoxAndZoom =
+      this.calculateBoundingBoxAndZoom.bind(this);
     this.getLatLongFromPixelCoord = this.getLatLongFromPixelCoord.bind(this);
     this.getPixelCoordFromGeoCoord = this.getPixelCoordFromGeoCoord.bind(this);
     this.addListener = this.addListener.bind(this);
@@ -2303,9 +2289,8 @@ export default class WMJSMap {
               { layer: this.layers[j] },
               this.layers[j].opacity
             );
-            this.layers[j].image = this.divBuffer[this.newSwapBuffer].layers[
-              currentLayerIndex
-            ];
+            this.layers[j].image =
+              this.divBuffer[this.newSwapBuffer].layers[currentLayerIndex];
             currentLayerIndex++;
           }
         }
@@ -3584,6 +3569,11 @@ export default class WMJSMap {
   mouseDragEnd(x, y) {
     if (this.mouseDragging === 0) return;
     this.mouseDragging = 0;
+    this.callBack.triggerEvent("beforemapdragend", {
+      map: this,
+      x: this.mouseUpX,
+      y: this.mouseUpY,
+    });
     if (this.mapMode === "pan") this._mapPanEnd(x, y);
     if (this.mapMode === "zoom") this._mapZoomEnd(x, y);
     this.callBack.triggerEvent("mapdragend", {
@@ -4236,9 +4226,8 @@ export default class WMJSMap {
         for (let j = 0; j <= this.UndoPointer; j++)
           this.WMJSProjection_tempundo[j] = this.WMJSProjection_undo[j];
         for (let j = 0; j <= this.UndoPointer; j++)
-          this.WMJSProjection_undo[j] = this.WMJSProjection_tempundo[
-            this.UndoPointer - j
-          ];
+          this.WMJSProjection_undo[j] =
+            this.WMJSProjection_tempundo[this.UndoPointer - j];
         this.UndoPointer = 0;
       }
       for (let j = this.MaxUndos - 1; j > 0; j--) {

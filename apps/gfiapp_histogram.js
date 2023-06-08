@@ -1,3 +1,5 @@
+var histograms = [];
+
 var gfiapp_histogram = function (element, webmapjs) {
   var plotData = function (datatoplot, elementid) {
     $("#" + elementid).empty();
@@ -6,10 +8,14 @@ var gfiapp_histogram = function (element, webmapjs) {
     );
     let graph = $("#" + elementid).find(".chart");
     graph.html("graph");
-    const columns = [
-      ["x", ...datatoplot.datatoplot["interval"]],
-      [datatoplot.ylabel, ...datatoplot.datatoplot["quantity"]],
-    ];
+
+    histograms.push([datatoplot.ylabel, ...datatoplot.datatoplot["quantity"]]);
+
+    const columns = [["x", ...datatoplot.datatoplot["interval"]]];
+    for (let j = 0; j < histograms.length; j++) {
+      columns.push(histograms[j]);
+    }
+    // console.log(columns);pointOnMapClicked
     var chart = c3.generate({
       bindto: graph.get(0),
       data: {
@@ -22,7 +28,7 @@ var gfiapp_histogram = function (element, webmapjs) {
     var timeFormat = "%Y-%m-%d %H:%M";
     const keys = Object.keys(gfidata);
     const firstkey = keys[0];
-    const label = firstkey;
+    const label = "layer" + "_" + histograms.length + "_" + firstkey;
     const datatoplot = gfidata[firstkey];
     plotData(
       { datatoplot: datatoplot, ylabel: label, timeFormat: timeFormat },
@@ -39,21 +45,34 @@ var gfiapp_histogram = function (element, webmapjs) {
       cache: false,
       success: function (dataWeGotViaJsonp) {
         try {
+          // console.log(dataWeGotViaJsonp);
           parseADAGUCGFIToPlotData(dataWeGotViaJsonp, elementid);
         } catch (e) {
           console.error(e);
-          $("#" + elementid).html(
-            "Sorry! An error occurred while parsing JSON data: [" + e + "]"
-          );
+
+          // parseADAGUCGFIToPlotData(
+          //   { error: { quantity: [], interval: [0] } },
+          //   elementid
+          // );
+          if (histograms.length === 0) {
+            $("#" + elementid).html("Error occured....");
+          }
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {
-        $("#" + elementid).html(
-          "Sorry! An error occurred while receiving JSON data from the server: [" +
-            errorThrown +
-            "]"
-        );
+        // $("#" + elementid).html(
+        //   "Sorry! An error occurred while receiving JSON data from the server: [" +
+        //     errorThrown +
+        //     "]"
+        // );
+        // parseADAGUCGFIToPlotData(
+        //   { error: { quantity: [0], interval: [0] } },
+        //   elementid
+        // );
         console.log("Error " + errorThrown);
+        if (histograms.length === 0) {
+          $("#" + elementid).html("Error occured....");
+        }
       },
     });
   };
@@ -64,12 +83,15 @@ var gfiapp_histogram = function (element, webmapjs) {
   var currentOptions = [];
   currentOptions.set = false;
   var pointOnMapClicked = function (options) {
+    // console.log("pointclickec");
+    histograms = [];
     if (enabled == false) return;
 
     currentOptions.set = true;
     var lalo = { x: 1, y: 1 };
 
     $("#chart").html('<img src="./img/ajax-loader.gif" alt="Loading..."/>');
+    histograms = [];
     var layers = webmapjs.getLayers();
     if (!isDefined(layers)) {
       $("#info").html("No valid data received:<br/>" + data);
@@ -89,50 +111,57 @@ var gfiapp_histogram = function (element, webmapjs) {
       "]<br/>";
     $("#chart").empty();
     for (var j = 0; j < layers.length; j++) {
-      var getMapURL = webmapjs.buildWMSGetMapRequest(layers[j]);
+      // console.log(j);
+      if (layers[j].enabled) {
+        var getMapURL = webmapjs.buildWMSGetMapRequest(layers[j]);
 
-      var urlObject = composeUrlObjectFromURL(getMapURL);
-      var GETMAPURL = urlObject.location + "?";
+        var urlObject = composeUrlObjectFromURL(getMapURL);
+        var GETMAPURL = urlObject.location + "?";
 
-      for (key in urlObject.kvp) {
-        var value = urlObject.kvp[key];
-        if (key == "request") value = "GetHistoGram";
+        for (key in urlObject.kvp) {
+          var value = urlObject.kvp[key];
+          if (key == "request") value = "GetHistoGram";
 
-        if (key == "bbox") {
-          const version = urlObject.kvp["version"];
-          const crs = urlObject.kvp["crs"];
-          let swapLatLon = false;
-          if (version === "1.3.0" && crs === "EPSG:4326") {
-            swapLatLon = true;
+          if (key == "bbox") {
+            const version = urlObject.kvp["version"];
+            const crs = urlObject.kvp["crs"];
+            let swapLatLon = false;
+            if (version === "1.3.0" && crs === "EPSG:4326") {
+              swapLatLon = true;
+            }
+            if (!swapLatLon) {
+              value =
+                options.left +
+                "," +
+                options.bottom +
+                "," +
+                options.right +
+                "," +
+                options.top;
+            } else {
+              value =
+                options.bottom +
+                "," +
+                options.left +
+                "," +
+                options.top +
+                "," +
+                options.right;
+            }
           }
-          if (!swapLatLon) {
-            value =
-              options.left +
-              "," +
-              options.bottom +
-              "," +
-              options.right +
-              "," +
-              options.top;
-          } else {
-            value =
-              options.bottom +
-              "," +
-              options.left +
-              "," +
-              options.top +
-              "," +
-              options.right;
-          }
+          GETMAPURL += key + "=" + URLEncode(value) + "&";
         }
-        GETMAPURL += key + "=" + URLEncode(value) + "&";
-      }
 
-      $("#chart").append("<div class='chartstyle' id='chart" + j + "'></div>");
-      $("#chart" + j).html(
-        '<img src="./img/ajax-loader.gif" alt="Loading..."/>'
-      );
-      loadDataForURL(GETMAPURL, "chart" + j);
+        const chartNumber = 0;
+        $("#chart").append(
+          "<div class='chartstyle' id='chart" + chartNumber + "'></div>"
+        );
+        $("#chart" + j).html(
+          '<img src="./img/ajax-loader.gif" alt="Loading..."/>'
+        );
+        // console.log("load");
+        loadDataForURL(GETMAPURL, "chart" + chartNumber);
+      }
     }
     $("#info").html(html);
   };
@@ -142,19 +171,21 @@ var gfiapp_histogram = function (element, webmapjs) {
       '<div id="info"></div><div id="chart" class="gfiapp_histogram"></div>'
     );
     $("#info").html("Click on the map to create a histogram graph.");
-    console.log("init");
+
     webmapjs.enableInlineGetFeatureInfo(false);
     webmapjs.setMapModeZoomBoxIn();
-
-    webmapjs.addListener(
-      "beforezoomend",
-      (args) => {
-        // console.log(args.left, args.bottom, args.right, args.top);
-        pointOnMapClicked(args);
-        return false;
-      },
-      true
-    );
+    if (_this.initialized !== true) {
+      webmapjs.addListener(
+        "beforezoomend",
+        (args) => {
+          // console.log(args.left, args.bottom, args.right, args.top);
+          pointOnMapClicked(args);
+          return false;
+        },
+        true
+      );
+    }
+    _this.initialized = true;
   };
 
   this.enable = function () {
@@ -162,7 +193,7 @@ var gfiapp_histogram = function (element, webmapjs) {
     enabled = true;
   };
   this.disable = function () {
-    console.log("disable");
+    // console.log("disable", _this.initialized);
     enabled = false;
     webmapjs.enableInlineGetFeatureInfo(true);
     webmapjs.setMapModePan();

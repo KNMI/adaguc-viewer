@@ -485,6 +485,12 @@ Ext.onReady(function () {
       },
     },
     setApplication: function (applicationSettings) {
+      try {
+        eastPanelGFI &&
+          eastPanelGFI.applicationSettings &&
+          eastPanelGFI.applicationSettings.app &&
+          eastPanelGFI.applicationSettings.app.disable();
+      } catch (e) {}
       eastPanelGFI.applicationSettings = applicationSettings;
     },
   });

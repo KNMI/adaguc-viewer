@@ -91,6 +91,7 @@ java -jar ../../closure/compiler.jar \
 --js ../apps/gfiapp_d3c3.js \
 --js ../apps/gfiapp_point_interest.js \
 --js ../apps/gfiapp_eprofile.js \
+--js ../apps/gfiapp_histogram.js \
 --js ../apps/autowms_app.js \
 --js_output_file  WMJSExt.min.js
 

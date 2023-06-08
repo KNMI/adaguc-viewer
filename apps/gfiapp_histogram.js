@@ -4,83 +4,25 @@ var gfiapp_histogram = function (element, webmapjs) {
     $("#" + elementid).append(
       "<div style='height=240px;border=2px solid blue;' class='chart'>a</div>"
     );
-    // $('#' + elementid).append("<div style='height=40px;border=2px solid red;' class='controls gfiapp_histogram_export_to_csv_button'>b</div>");
-
     let graph = $("#" + elementid).find(".chart");
-    // let controls = $('#' + elementid).find('.controls');
     graph.html("graph");
-    // controls.button({label:'Export to CSV'}).click(function(){
-    //   console.log('Export to CSV');
-    //   let csvExport = '';
-    //   let data = datatoplot.datatoplot;
-    //   for (let line=0;line<data[0].length;line++){
-    //     for (let j=0;j<data.length;j++) {
-    //       if (j > 0)csvExport+=';';
-    //       csvExport += JSON.stringify(data[j][line]);
-    //     }
-    //     csvExport += '\n\r';
-    //   }
-    //   const link = document.createElement('a');
-
-    //   link.setAttribute('download', `export.csv`);
-    //   link.setAttribute('href', encodeURI(`data:text/csv;charset=utf-8,${csvExport}`));
-    //   console.log('Clicking link');
-    //   document.body.appendChild(link);
-    //   link.click();
-    //   link.remove();
-    // });
-    console.log(datatoplot.datatoplot);
     const columns = [
       ["x", ...datatoplot.datatoplot["interval"]],
-      ["value", ...datatoplot.datatoplot["quantity"]],
+      [datatoplot.ylabel, ...datatoplot.datatoplot["quantity"]],
     ];
-    //   const columns =[
-    //     ['x', 30, 50, 100, 230, 300, 310],
-    //     ['data1', 30, 200, 100, 400, 150, 250],
-    //     ['data2', 130, 300, 200, 300, 250, 450]
-    // ]
-    console.log(columns);
     var chart = c3.generate({
       bindto: graph.get(0),
       data: {
         x: "x",
         columns: columns,
       },
-      bar: {
-        width: {
-          ratio: 0.5, // this makes bar width 50% of length between ticks
-        },
-        // or
-        //width: 100 // this makes bar width 100px
-      },
     });
   };
-
-  var date_sort_asc = function (date1, date2) {
-    if (date1 > date2) return 1;
-    if (date1 < date2) return -1;
-    return 0;
-  };
-
-  var containsSameDate = function (k, myarray) {
-    var i = 0;
-    for (i = 0; i < myarray.length; i++) {
-      try {
-        if (myarray[i].getTime() === k.getTime()) {
-          return i;
-        }
-      } catch (e) {}
-    }
-    return -1;
-  };
-
   var parseADAGUCGFIToPlotData = function (gfidata, elementid) {
-    console.log(gfidata);
-    const label = "";
     var timeFormat = "%Y-%m-%d %H:%M";
     const keys = Object.keys(gfidata);
-    console.log(keys);
     const firstkey = keys[0];
+    const label = firstkey;
     const datatoplot = gfidata[firstkey];
     plotData(
       { datatoplot: datatoplot, ylabel: label, timeFormat: timeFormat },
@@ -89,7 +31,6 @@ var gfiapp_histogram = function (element, webmapjs) {
   };
 
   var loadDataForURL = function (mURL, elementid) {
-    //console.log(mURL);
     mURL += "&JSONP=?";
     $.ajax({
       type: "GET",
@@ -124,13 +65,9 @@ var gfiapp_histogram = function (element, webmapjs) {
   currentOptions.set = false;
   var pointOnMapClicked = function (options) {
     if (enabled == false) return;
-    currentOptions.x = options.x;
-    currentOptions.y = options.y;
+
     currentOptions.set = true;
-    var lalo = webmapjs.getLatLongFromPixelCoord({
-      x: options.x,
-      y: options.y,
-    });
+    var lalo = { x: 1, y: 1 };
 
     $("#chart").html('<img src="./img/ajax-loader.gif" alt="Loading..."/>');
     var layers = webmapjs.getLayers();
@@ -141,13 +78,15 @@ var gfiapp_histogram = function (element, webmapjs) {
     var html = "";
 
     html +=
-      "timeseries graph for location [" +
-      Math.round(lalo.x * 100) / 100 +
+      "Histogram graph for area [" +
+      Math.round(options.left * 100) / 100 +
       "," +
-      Math.round(lalo.y * 100) / 100 +
+      Math.round(options.bottom * 100) / 100 +
+      "," +
+      Math.round(options.right * 100) / 100 +
+      "," +
+      Math.round(options.top * 100) / 100 +
       "]<br/>";
-    //html+="shift key: "+data.shiftKeyPressed+"<br/>";
-    //console.log("START");
     $("#chart").empty();
     for (var j = 0; j < layers.length; j++) {
       var getMapURL = webmapjs.buildWMSGetMapRequest(layers[j]);
@@ -157,16 +96,38 @@ var gfiapp_histogram = function (element, webmapjs) {
 
       for (key in urlObject.kvp) {
         var value = urlObject.kvp[key];
-        //console.log("A"+key+"="+value);
         if (key == "request") value = "GetHistoGram";
-        //console.log("B"+key+"="+value);
+
+        if (key == "bbox") {
+          const version = urlObject.kvp["version"];
+          const crs = urlObject.kvp["crs"];
+          let swapLatLon = false;
+          if (version === "1.3.0" && crs === "EPSG:4326") {
+            swapLatLon = true;
+          }
+          if (!swapLatLon) {
+            value =
+              options.left +
+              "," +
+              options.bottom +
+              "," +
+              options.right +
+              "," +
+              options.top;
+          } else {
+            value =
+              options.bottom +
+              "," +
+              options.left +
+              "," +
+              options.top +
+              "," +
+              options.right;
+          }
+        }
         GETMAPURL += key + "=" + URLEncode(value) + "&";
       }
 
-      console.log(GETMAPURL);
-      //GETMAPURL+="figwidth="+($( window ).width()-20)+"&";
-      //GETMAPURL+="figheight=200";
-      //html+='<img src="'+GETMAPURL+'"/><br/>';
       $("#chart").append("<div class='chartstyle' id='chart" + j + "'></div>");
       $("#chart" + j).html(
         '<img src="./img/ajax-loader.gif" alt="Loading..."/>'
@@ -175,7 +136,6 @@ var gfiapp_histogram = function (element, webmapjs) {
     }
     $("#info").html(html);
   };
-  webmapjs.addListener("mouseclicked", pointOnMapClicked, true);
 
   var init = function () {
     element.html(
@@ -187,9 +147,11 @@ var gfiapp_histogram = function (element, webmapjs) {
     webmapjs.setMapModeZoomBoxIn();
 
     webmapjs.addListener(
-      "beforemapdragend",
-      () => {
-        return true;
+      "beforezoomend",
+      (args) => {
+        // console.log(args.left, args.bottom, args.right, args.top);
+        pointOnMapClicked(args);
+        return false;
       },
       true
     );
@@ -200,12 +162,15 @@ var gfiapp_histogram = function (element, webmapjs) {
     enabled = true;
   };
   this.disable = function () {
+    console.log("disable");
     enabled = false;
     webmapjs.enableInlineGetFeatureInfo(true);
+    webmapjs.removeListener("beforezoomend");
+    webmapjs.divZoomBox.style.display = "none";
     currentOptions.set = false;
   };
   this.resize = function (w, h) {
-    console.log("w=" + w);
+    // console.log("w=" + w);
     $("#chart").width(w);
     if (currentOptions.set) {
       pointOnMapClicked(currentOptions);

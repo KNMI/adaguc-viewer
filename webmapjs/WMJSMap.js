@@ -3569,11 +3569,7 @@ export default class WMJSMap {
   mouseDragEnd(x, y) {
     if (this.mouseDragging === 0) return;
     this.mouseDragging = 0;
-    this.callBack.triggerEvent("beforemapdragend", {
-      map: this,
-      x: this.mouseUpX,
-      y: this.mouseUpY,
-    });
+
     if (this.mapMode === "pan") this._mapPanEnd(x, y);
     if (this.mapMode === "zoom") this._mapZoomEnd(x, y);
     this.callBack.triggerEvent("mapdragend", {
@@ -3719,6 +3715,20 @@ export default class WMJSMap {
     zoomBBOXPixels.bottom = p1.y;
     zoomBBOXPixels.right = p2.x;
     zoomBBOXPixels.top = p2.y;
+
+    const triggerResults = this.callBack.triggerEvent("beforezoomend", {
+      map: this,
+      left: zoomBBOXPixels.left,
+      right: zoomBBOXPixels.right,
+      top: zoomBBOXPixels.top,
+      bottom: zoomBBOXPixels.bottom,
+    });
+    for (let j = 0; j < triggerResults.length; j++) {
+      if (triggerResults[j] === false) {
+        return;
+      }
+    }
+
     this.zoomTo(zoomBBOXPixels);
     this.draw("mapZoomEnd");
   }

@@ -62,12 +62,13 @@ var autowms_app = function (element, webmapjs) {
   };
 
   var createLayer = function (data, wmsServiceURL) {
+    //console.log(data)
     // if(data.name == "baselayer" || data.name == "overlay")return "";
     var previewURL =
       wmsServiceURL +
       "&service=WMS&request=getmap&format=image/png&layers=" +
       data.name +
-      "&width=400&CRS=EPSG:4326&STYLES=&EXCEPTIONS=INIMAGE&showlegend=true&" +
+      "&width=400&CRS=EPSG:4326&STYLES=&EXCEPTIONS=INIMAGE&showlegend=true&dim_reference_time=*&" +
       Math.random();
     var html =
       "<span class='autowms_app_layeritem' title='Click to add to viewer' name='" +
@@ -122,7 +123,6 @@ var autowms_app = function (element, webmapjs) {
     var service = WMJSGetServiceFromStore(wmsServiceURL, xml2jsonrequestURL);
     var getcapabilitiesdone = function (layers) {
       // prevPath.push(path);
-
       var html = "";
 
       html += createReturnLink(data, path);
@@ -170,15 +170,17 @@ var autowms_app = function (element, webmapjs) {
 
       currentData = {};
       for (var j = 0; j < layers.length; j++) {
+        //console.log("CAP",cap)
         html += createLayer(layers[j], wmsServiceURL);
         currentData[layers[j].name] = layers[j];
       }
-
+      
       element.html(html);
       $(".autowms_app_layeritem")
         .attr("onclick", "")
         .click(function (t) {
           var layerObj = currentData[$(this).attr("name")];
+          //console.log(layerObj)
           window.location.hash =
             "addlayer('" + wmsServiceURL + "','" + layerObj.name + "')";
         });
@@ -213,6 +215,7 @@ var autowms_app = function (element, webmapjs) {
         }
       });
     };
+
     service.getLayerObjectsFlat(
       getcapabilitiesdone,
       (e) => {
@@ -265,7 +268,7 @@ var autowms_app = function (element, webmapjs) {
       var html = createReturnLink(data, path);
 
       element.html("... working ... ");
-
+      
       data.result.sort((a, b) => {
         if (a.name <= b.name) return -1;
         if (a.name > b.name) return 1;
@@ -364,6 +367,7 @@ var autowms_app = function (element, webmapjs) {
   };
   this.resize = function (w, h) {};
 };
+
 
 try {
   WMJSExtApplications["AutoWMS"] = autowms_app;

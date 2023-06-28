@@ -1587,6 +1587,7 @@ export default class WMJSMap {
     }
     this.layers.push(layer);
     let done = (layerCallback) => {
+      //console.log("LAYER",layerCallback)
       for (let j = 0; j < layerCallback.dimensions.length; j++) {
         let mapDim = this.getDimension(layerCallback.dimensions[j].name);
         if (isDefined(mapDim)) {
@@ -2628,6 +2629,7 @@ export default class WMJSMap {
     preventdefaultEvent(event);
     if (this.mouseWheelBusy === 1) return;
     let delta = -event.deltaY;
+    
     this.mouseWheelBusy = 1;
     let w = this.updateBBOX.right - this.updateBBOX.left;
     let h = this.updateBBOX.bottom - this.updateBBOX.top;
@@ -2665,12 +2667,14 @@ export default class WMJSMap {
     newRight -= panX;
     newTop -= panY;
     newBottom -= panY;
+    
     this.mouseWheelEventBBOXCurrent.copy(this.updateBBOX);
     this.mouseWheelEventBBOXNew.left = newLeft;
     this.mouseWheelEventBBOXNew.bottom = newBottom;
     this.mouseWheelEventBBOXNew.right = newRight;
     this.mouseWheelEventBBOXNew.top = newTop;
     this.mouseWheelBusy = 0;
+    //console.log("mwEBBXO",this.mouseWheelEventBBOXNew)
     this.flyZoomToBBOXStartZoom(
       this.mouseWheelEventBBOXCurrent,
       this.mouseWheelEventBBOXNew
@@ -4018,8 +4022,8 @@ export default class WMJSMap {
     });
   }
 
-  calculateBoundingBoxAndZoom(lat, lng) {
-    let lengthToBBOX = 500000;
+  calculateBoundingBoxAndZoom(lat, lng,lengthToBBOX=500000) {
+    //let lengthToBBOX = 50000;
     if (this.srs === "EPSG:4326" || this.srs === "EPSG:50001") {
       lengthToBBOX = 5;
     }

@@ -45,9 +45,8 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
     
     
     _this.setValue = function(value){
-      
       if(value === _this.currentValue && _this.dimension.size() === _this.currentSize){
-//         console.log('already set to ',value);
+        
         return;
       }
       

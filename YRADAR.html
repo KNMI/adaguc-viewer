@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Celulas</title>
+        <title>Sondeo</title>
   <link rel="stylesheet" href="./apps/tddjs.css" />
 
     <!-- ADAGUC viewer sounding app -->
@@ -14,19 +14,12 @@
 
   </head>
     <body>
-	<div id="mitdd"></div>
+      <div id="info"></div>
     </body>
 </html>
 
-<script type="text/javascript">
-  console.log("QUERY",myvar);
-  var tdd = new TDD('mitdd');
-  console.log("TDD",tdd)
-  try{
-        tdd.load_temp(myvar);
-     } catch (e){
-       window.alert('Exception occured:' + e);
-     }  
+<!--script type="text/javascript">
+  html =  "<img src=\"./webmapjs/img/ajax-loader.gif\" alt=\"Loading...\"/>";  
+  document.getElementById("info").innerHTML = html;
 
-
-</script>
+</script-->

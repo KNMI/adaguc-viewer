@@ -126,6 +126,7 @@ export default class WMJSImage {
   }
 
   _load () {
+    //console.log("LOADING")
     this._hasError = false;
     if (this._isLoaded === true) {
       this.loadEvent(this, false);

@@ -20,6 +20,63 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>ADAGUC Viewer</title>
 
+<!-- ADAGUC WebMapJS library -->
+<script type="module" src="../webmapjs/WMJSExternalDependencies.js"></script>
+<script type="module" src="../webmapjs/WMJSTools.js"></script>
+<script type="module" src="../webmapjs/WMJSTime.js"></script>
+<script type="module" src="../webmapjs/WMJSBBOX.js"></script>
+<script type="module" src="../webmapjs/WMJSDimension.js"></script>
+<script type="module" src="../webmapjs/WMJSXMLParser.js"></script>
+<script type="module" src="../webmapjs/WMJSService.js"></script>
+<script type="module" src="../webmapjs/WMJSLayer.js"></script>
+<script type="module" src="../webmapjs/WMJSListener.js"></script>
+<script type="module" src="../webmapjs/WMJSTimer.js"></script>
+<script type="module" src="../webmapjs/WMJSImage.js"></script>
+<script type="module" src="../webmapjs/WMJSImageStore.js"></script>
+<script type="module" src="../webmapjs/WMJSCanvasBuffer.js"></script>
+<script type="module" src="../webmapjs/WMJSAnimate.js"></script>
+<script type="module" src="../webmapjs/WMJSDialog.js"></script>
+<script type="module" src="../webmapjs/WMJSTileRenderer.js"></script>
+<script type="module" src="../webmapjs/WMJSDrawMarker.js"></script>
+
+<script type="module" src="../webmapjs/WMJSMap.js"></script>
+
+<!-- Global ADAGUC WebMapJS exporter for non ecmascript6 ExtJS user -->
+<script type="module" src="../webmapjs_h/WMJSImportsToGlobal.js"></script> 
+
+ <!-- WebMapJS helper files -->
+ <script type="text/javascript" src="../webmapjs_h/WMJSCoverage.js"></script>
+ <script type="text/javascript" src="../webmapjs_h/WMJSTimeSelector.js"></script>  
+ <script type="text/javascript" src="../webmapjs_h/WMJSTimeSlider.js"></script>
+ <script type="text/javascript" src="../webmapjs_h/WMJSProcessing.js"></script>
+ <script type="text/javascript" src="../webmapjs_h/WMJS_GFITimeElevation.js"></script>
+ <script type="text/javascript" src="../webmapjs_h/WMJSDefineGlobals.js"></script>
+
+  <!-- ExtJS main library -->
+  <link rel="stylesheet" type="text/css" href="../libs/extjs-4.2.1/resources/css/ext-all.css" />
+  <script type="text/javascript" src="../libs/extjs-4.2.1/ext-all.js"></script>
+
+  <!-- ADAGUC WebMapJSExt -->  
+  <script type="text/javascript" src="../webmapjsext/WMJSExt/ServicePanel.js"></script>
+  <script type="text/javascript" src="../webmapjsext/WMJSExt/DimensionPanel.js"></script>
+  <script type="text/javascript" src="../webmapjsext/WMJSExt/StylePanel.js"></script>
+  <script type="text/javascript" src="../webmapjsext/WMJSExt/LayerPropertiesPanel.js"></script>
+  <script type="text/javascript" src="../webmapjsext/WMJSExt/MapPanel.js"></script>
+  <script type="text/javascript" src="../webmapjsext/WMJSExt/LayerPanel.js"></script>
+  <script type="text/javascript" src="../webmapjsext/WMJSExt/MapTypeSelector.js"></script>
+  <script type="text/javascript" src="../webmapjsext/WMJSExt/AnimationPanel.js"></script>
+  <script type="text/javascript" src="../webmapjsext/WMJSExt/DataPanel.js"></script>
+  <script type="text/javascript" src="../webmapjsext/WMJSExt/PermaLinkPanel.js"></script>
+  <script type="text/javascript" src="../webmapjsext/WMJSExt/CheckColumn.js"></script>
+  <script type="text/javascript" src="../webmapjsext/WMJSExt/WCSPanel.js"></script>
+  <script type="text/javascript" src="../webmapjsext/WMJSExt/UxDateTimeForm.js"></script>
+  <script type="text/javascript" src="../webmapjsext/WMJSExtMain.js"></script>
+  
+  <!-- ADAGUC WebMapJSExt Stylesheets -->  
+  <link rel="stylesheet" type="text/css" href="../webmapjsext/WMJSExtStyles.css" />
+
+<!-- ADAGUC librarys end-->
+
     <!-- Style sheets -->
   <link rel="stylesheet" href="../libs/node_modules/jquery-ui-dist/jquery-ui.css" />
   <link rel="stylesheet" type="text/css" href="../libs/extjs-4.2.1/resources/css/ext-all.css" />
@@ -28,8 +85,7 @@
   <link rel="stylesheet" type="text/css" href="../webmapjs_h/WMJSTimeSelector.css" />
   <link rel="stylesheet" type="text/css" href="../webmapjs_h/WMJS_GFITimeElevation.css" />
   <link rel="stylesheet" type="text/css" href="../libs/d3/c3.css"/>
-  <link rel="stylesheet" type="text/css" href="../apps/tddjs.css" />
-  <link rel="stylesheet" type="text/css" href="../../sond/tddjs/dist/tdd.css" />
+  <link rel="stylesheet" type="text/css" href="../apps/yradar.css" />
 
   
   <!-- Configuration -->
@@ -40,60 +96,12 @@
   <script type="text/javascript" src="../libs/node_modules/jquery/dist/jquery.min.js"></script>
   <script type="text/javascript" src="../libs/node_modules/jquery-ui-dist/jquery-ui.min.js"></script>
 
-  <!--script type="text/javascript" src="../builds/WMJS.min.js"></script-->
+  <script type="text/javascript" src="../builds/WMJS.min.js"></script>
   
   <script type="text/javascript" src="../webmapjs_h/WMJSDefineGlobals.js"></script>
- 
-  <script type="text/javascript" src="../webmapjs/yradar.js"></script>
 
-<!--  
-  <script type="text/javascript">
-    $(window).on("message", function(e) {
-     $("#chart").html("<img src=\"../img/ajax-loader.gif\" alt=\"Loading...\"/>");
-      var data = e.originalEvent.data;  // Should work.
-      if(!isDefined(data.layers)){
-        $("#info").html("No valid data received:<br/>"+data);
-        return;
-      }
-      var html = "";
-     
-      html+="timeseries graph for location ["+Math.round(data.lon*100)/100+","+Math.round(data.lat*100)/100+"]<br/>";
-      //html+="shift key: "+data.shiftKeyPressed+"<br/>";
-       $("#chart").empty();
-      for(var j=0;j<data.layers.length;j++){
-        //console.log(data.layers[j].gfiUrl);
-        var urlObject = composeUrlObjectFromURL(data.layers[j].gfiUrl);
-        //console.log("urlObject.location:"+urlObject.location);
-        //console.log("data.layers[j].gfiUrl:"+data.layers[j].gfiUrl);
-        var GFIURL = urlObject.location+"?";
-        
-        for(key in urlObject.kvp){
-          var value = urlObject.kvp[key];
-          //console.log("A"+key+"="+value);
-          if(key == 'info_format')value = 'application/json';
-          if(key == 'time')value = '1000-01-01T00:00:00Z/3000-01-01T00:00:00Z';
-          //console.log("B"+key+"="+value);
-          GFIURL+=(key + "="+URLEncode(value))+"&";
-        }
-       // console.log("GFIURL:"+GFIURL);
-        //GFIURL+="figwidth="+($( window ).width()-20)+"&";
-        //GFIURL+="figheight=200";
-        //html+='<img src="'+GFIURL+'"/><br/>';
-        $("#chart").append("<div class='chartstyle' id='chart"+j+"'></div>")
-        $("#chart"+j).html("<img src=\"../img/ajax-loader.gif\" alt=\"Loading...\"/>");
-        //loadDataForURL(GFIURL,'chart'+j);
-      }
-      $("#info").html(html);
-    });
-    
-    $(document).ready(function(){
-     $("#info").html("Click on the map to load the profile");
-    });
-     
-
-  
-  </script>
-  -->
+  <!-- ADAGUC YRADAR -->
+  <script type="text/javascript" src="../webmapjs/yradar_app.js"></script>
 
 </head>
 <body>

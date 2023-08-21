@@ -1,11 +1,11 @@
 var table=""
-var wmjs
+var wmjsond
 
 class yradar {
 
   constructor(element, webmapjs) {
+    wmjsond=webmapjs
     var _this = this;
-
     var enabled = true;
     var load_time ="";  
     var currentOptions = [];
@@ -169,7 +169,7 @@ class yradar {
     */
     var init = function () {
    
-      wmjs=webmapjs
+      //wmjsond=webmapjs
       initLayers=getYRADLayers()
 
       
@@ -257,7 +257,7 @@ class yradar {
                           datarows=radrows;
                         }
                         
-                        var table_e=getTable(datarows,rad,dim)
+                        var table_e=getTable(datarows,rad,dim,webmapjs)
                         
                         $("#tableinfo").append(table+table_r+table_e);
                         $("#info").html("Click on the map to load a profile.<br>");
@@ -295,6 +295,8 @@ class yradar {
         pointOnMapClicked(currentOptions);
       }
     };
+  
+
   }
 
 }
@@ -539,6 +541,9 @@ function getJSONdata2D(layer, webmapjs, x, y, format = "text/html", callBack) {
       var vil_d
       var zmax_d
       var zmed_d
+      var rmax_d
+      var rmed_d
+      var rk_d
       var adv_d
 
       var ray_d
@@ -626,8 +631,8 @@ function getJSONdata2D(layer, webmapjs, x, y, format = "text/html", callBack) {
         var rayos={"RAY":ray,"POS":pos,"NEG":neg,"INT":int,"DISTMAX":rmax,"DISTMED":rmed,"RY/KM":rk,"LATCENR":latcenr,"LONCENR":loncenr}
 
         var mov={"DIRN":dirn,"VKMH":vkmh} 
-        var yradar={"ANA":analisis,"RAYOS":rayos,"MOV":mov}
-        callBack(yradar)
+        var yradar_l={"ANA":analisis,"RAYOS":rayos,"MOV":mov}
+        callBack(yradar_l)
       } catch (e) {
         callBack(null)
       }  
@@ -782,8 +787,8 @@ function getJSONdata3D(layer, webmapjs, x, y, format = "text/html", callBack) {
         granizo={"GRA":gra,"ORG":org,"PGR":pgr,"TAM":tam} 
 
         var mov={"DIRN":dirn,"VKMH":vkmh} 
-        var yradar={"ANA":analisis,"GRANIZO":granizo,"MOV":mov}
-        callBack(yradar)  
+        var yradar_l={"ANA":analisis,"GRANIZO":granizo,"MOV":mov}
+        callBack(yradar_l)  
       } catch  (e) {
         //console.log(e) 
         callBack(null)
@@ -913,7 +918,15 @@ function getBBOXandProjString(layer,webmapjs) {
   return request;
 }
 
-function getTable(datarows,rad,dim){
+function getnum(lat,lon){
+  //var webmapjs=wmjs
+  console.log(wmjsond)
+  console.log("PULSE!!",lat,lon,50000)
+  wmjsond.calculateBoundingBoxAndZoom(lat,-1*lon,100000)
+} 
+
+function getTable(datarows,rad,dim,wmjs){
+  //wmjs.calculateBoundingBoxAndZoom(0,-1*0,100000)
   var cab2D_REG=["NUM","RAD","NUPIX","ZMAX","ZMED","VIL","ZMXV","DIRN","V(KMH)","NEG","POS","RAYo","RAY","ADV"]
   var cab2D_NAC=["NUM","NUPIX","ZMAX","ZMED","VIL","DIRN","V(KMH)","NEG","POS","RAYo","RAY"] 
   var cab3D=["NUM","RAD","ZMAX","ESPE","ECTOP","DVIL","ADV","GRA"] 
@@ -974,14 +987,14 @@ function getTable(datarows,rad,dim){
     var laloCells = lalorows[singleRow]
     for (var rowCell = 0; rowCell < rowCells.length; rowCell++) {
       
-      //console.log(rowCells[lalo_index[1]] )
       if (singleRow === 0) {
         table_e += '<th>';
         table_e += rowCells[rowCell];
         table_e += '</th>';
       } else {
         if (rowCell === 0){
-          table_e += '<td style="cursor:pointer;color:#00f" onclick="getnum('+laloCells[0]+','+laloCells[1]+')">';     
+          table_e += '<td style="cursor:pointer;color:#00f" onclick="getnum('+laloCells[0]+','+laloCells[1]+')">';  
+          //table_e += '<td style="cursor:pointer;color:#00f" onclick="wmjs.calculateBoundingBoxAndZoom('+laloCells[0]+','+-1*laloCells[1]+','+100000+')">';   
           table_e += rowCells[rowCell];
           table_e += '</td>';
         } else { 
@@ -1006,9 +1019,7 @@ function getTable(datarows,rad,dim){
   return table_e 
 }
 
-function getnum(lat,lon){
-  var webmapjs=wmjs
-  webmapjs.calculateBoundingBoxAndZoom(lat,-1*lon,100000)
-  console.log(wmjs)
-  console.log("PULSE!!",lat,lon,50000)
-} 
+
+
+
+

@@ -4,7 +4,7 @@
 # Compiler should be available at ../../closure/compiler.jar relative to this build script.
 
 rm -rf WMJS.min.js
-java -jar ../../closure/compiler.jar --language_in=ECMASCRIPT6 --language_out ES5_STRICT --process_common_js_modules \
+java -jar ../../closure/compiler.jar \
 --module_resolution=NODE \
 --js ../webmapjs_h/WMJSPolyfills.js \
 --js ../webmapjs_h/WMJSProcessing.js \
@@ -91,6 +91,7 @@ java -jar ../../closure/compiler.jar \
 --js ../apps/gfiapp_d3c3.js \
 --js ../sond/tddjs/vendor/d3-6.7.js \
 --js ../webmapjs/tddjs.js \
+--js ../webmapjs/yradar_app.js \
 --js ../apps/gfiapp_point_interest.js \
 --js ../apps/gfiapp_eprofile.js \
 --js ../apps/autowms_app.js \

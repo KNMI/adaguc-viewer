@@ -782,10 +782,12 @@ class Th {
     static twc(t, p, r) {
         let ZE4 = 1.e-4
         let lvr = this.lvc(t) * r
+        
         let tw
         if (500. < p) { tw = this.twc_stull(t, p, r) }
         else { tw = this.twc_daviesjones(t, p, lvr) }
 
+        //console.log("TW",p,tw)
         let fb, fa
         for (var i = 0; i < 3; i++) {
             fb = this.twc_newton_f(p, t, lvr, tw + ZE4)
@@ -2981,34 +2983,42 @@ class Sounding extends Vertical {
      * @param {Obecjt} d - data level
      */
     set(d) {
-        d.T = d.T || d.t
+    d.T = d.T || d.t
         //d.r = Th.r_from_q(d.q)
 	if (this.model == "OBSERVACION") {
-          d.Td = d.td
+      d.Td = d.td
 	  d.r = Th.rwc(d.Td,d.p)
-	} else {
+	} else if (this.model.includes("ECMWF")) {
+      d.rh = d.RH
+      d.r = d.rh * Th.rwc(d.T, d.p) / 100.
+      d.q=Th.q_from_r(d.r)
+      d.Td = Th.tdc(d.p, d.r)
+      d.wS = Math.sqrt(d.u * d.u + d.v * d.v)
+      d.wD = Math.atan2(d.v, d.u)
+    } else {  
 	  d.r = Th.r_from_q(d.q)
 	  d.Td = Th.tdc(d.p, d.r)
-        }
-        d.rw = Th.rwc(d.T, d.p)
-        d.h = d.r / d.rw
-        d.Tv = Th.tvc(d.T, d.r)
-        d.rwv = Th.rwc(d.Tv, d.p)
-        d.Te = Th.tec(d.T, d.r)
-        d.Tw = Th.twc(d.T, d.p, d.r)
-        d.Th = Th.thc(d.T, d.p)
-        d.The = Th.thec(d.T, d.p, d.r)
-        d.Thw = Th.thwc(d.T, d.p, d.r)
+    }
+    console.log(d.p,d.T,d.RH,d.Td)
+    d.rw = Th.rwc(d.T, d.p)
+    d.h = d.r / d.rw
+    d.Tv = Th.tvc(d.T, d.r)
+    d.rwv = Th.rwc(d.Tv, d.p)
+    d.Te = Th.tec(d.T, d.r)
+    d.Tw = Th.twc(d.T, d.p, d.r)
+    //console.log("TW",d.T,d.p,d.r,d.Tw)
+    d.Th = Th.thc(d.T, d.p)
+    d.The = Th.thec(d.T, d.p, d.r)
+    d.Thw = Th.thwc(d.T, d.p, d.r)
         // cota
-        d.TSn = Th.tsneF0(d.T, d.h, d.p)
-        d.Twsn = d.TSn * Math.pow((d.p * Th.c0) / ((Th.c0 + d.T) * Th.PSEA), 0.54)
-        if (d.Twsn < 0) d.Twsn = 0.
+    d.TSn = Th.tsneF0(d.T, d.h, d.p)
+    d.Twsn = d.TSn * Math.pow((d.p * Th.c0) / ((Th.c0 + d.T) * Th.PSEA), 0.54)
+    if (d.Twsn < 0) d.Twsn = 0.
         // wind speed and math direction
         //d.wS = Math.sqrt(d.u * d.u + d.v * d.v)
         //d.wD = Math.atan2(d.v, d.u)
- 	d.u=d.wS*Math.cos(d.wD)
-	d.v=d.wS*Math.sin(d.wD)
-
+    d.u=d.wS*Math.cos(d.wD)
+    d.v=d.wS*Math.sin(d.wD)
 	//d.zg = d.z - this.zs // height from ground
         // clean
         delete d.t
@@ -3042,7 +3052,7 @@ class Sounding extends Vertical {
         let d
         for (let i = this.data.length - 1; i >= 0; i--) {
             d = this.data[i]
-	    //console.log(d)
+	    //console.log("D",d)
             Tv_half = (d.Tv + Tv) / 2.
             z += Th.hypsometric_ec(Tv_half, d.p, p)
             d.z = z
@@ -4746,6 +4756,8 @@ class TDD {
 
         // sounding
         let t0 = performance.now()
+        console.log("DATA",sond.data)
+        console.log("META",sond.meta)
         this.s = new Sounding(sond.data, sond.meta, this.low_level_parcels)
         this.s.start()
         this.s.COTA = this.s.COTANIE[this.cota]

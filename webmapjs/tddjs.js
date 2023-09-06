@@ -4,7 +4,8 @@ const WMSVersion = {
   version130: '1.3.0'
 };
 
-var htmlTab=""
+var htmlTabS=""
+var htmlTabM=""
 
 class tddjs {
 
@@ -14,16 +15,23 @@ class tddjs {
     var enabled = true;
     var currentOptions = [];
     currentOptions.set = false;
-    var openedSond = false;
-    var w=null;
+    var openedSondM = false;
+    var openedSondS = false;
+    var wm=null;
+    var ws=null;
 
-    var pointOnMapClicked = function (options) {
+    var pointOnMapClicked = async function (options) {
       //console.log(s3.scaleLog());
 
       html = ""
-      if (openedSond){
-        w.close();
-        openedSond=false;
+      if (openedSondM){
+        wm.close();
+        openedSondM=false;
+        //cerrrar
+      } 
+      if (openedSondS){
+        ws.close();
+        openedSondS=false;
         //cerrrar
       } 
       document.getElementById("info").innerHTML = html
@@ -50,74 +58,98 @@ class tddjs {
 
       //Comprobamos que hay alguna capa cargada.
       if (webmapjs.layers.length == 0){
-        html = "No layer: Load a valid sounding layer."
+        html = "No layer: Load a valid layer."
         document.getElementById("info").innerHTML = html
-      } 
+      } else { document.getElementById("info").innerHTML = "";} 
       let myLayers=[]; 
+      let sondType=""
       //let myLayer=null;
       for (let j = 0; j < webmapjs.layers.length; j++) {
         //let myLayer = webmapjs.layers[webmapjs.layers.length - j - 1];
         
         let servtxt=webmapjs.layers[webmapjs.layers.length - j - 1].service;
-        if(servtxt.includes("TEMP")){
+        if(servtxt.includes("TEMP") ){
           myLayers.push(webmapjs.layers[webmapjs.layers.length - j - 1])
           //myLayer = webmapjs.layers[webmapjs.layers.length - j - 1];
+        } else if (servtxt.includes("ECMWF")){
+          myLayers.push(webmapjs.layers[webmapjs.layers.length - j - 1])
         } 
       } 
 
       if (myLayers.length==0){
-        html = "No Sounding Layer: Load a valid sounding layer."
+        html = "No Sounding or Model Layer: Load a valid layer."
         document.getElementById("info").innerHTML = html
-      } 
+      } else { document.getElementById("info").innerHTML = "";} 
+
       
-      let myLayer=null;
       for (let i in myLayers){
         console.log(i,myLayers.length)
-        myLayer=myLayers[i]; 
-        //console.log("LAYER",myLayer) 
-        if (myLayer!= null && myLayer.getFeatureInfoUrl !== "") {
-          if (myLayer.queryable === false) {
-            webmapjs.featureInfoRequestReady("Layer is not queryable.", myLayer);
-          } else { 
-            html =  "<img src=\"./img/ajax-loader.gif\" alt=\"Loading...\"/>";  
-            document.getElementById("info").innerHTML = html; 
-            getJSONdata(myLayer, webmapjs, currentOptions.x,currentOptions.y,"text/plain",function(iURL){
-              if (iURL != null){  
-                if (iURL.data != null){  
-                  w=window.open("sondTemp.html","Sondeo", 'itemId="sond",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600')
-                  w.myvar=iURL 
-                  //console.log("DATOS",iURL)
-                  openedSond=true;
-                  html = "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
-                  html += " - Station:" + iURL.meta.name +"<br/>";
-                  document.getElementById("info").innerHTML = "";
-                  document.getElementById("info").innerHTML = html;
-                  document.getElementById("table").innerHTML = "";
-                  document.getElementById("table").innerHTML = htmlTab;
-                  //i=myLayers.length;
-                  //break;
-                } else {
-                  html = "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
-                  html += " - Station:" + iURL.meta.name +"<br/>";
-                  document.getElementById("info").innerHTML = "";
-                  document.getElementById("info").innerHTML = html;
-                  document.getElementById("table").innerHTML = "";
-                  htmlTab += "</TABLE>"
-                  document.getElementById("table").innerHTML = htmlTab;
-                  //console.log(htmlTab)
-                }  
-              } else {
-                //html = "No valid data: Click on the map to load a profile."
-                html = "No valid data"
+        if (myLayers[i].service.includes("ECMWF")){
+          let tempLayer=myLayers[i] ;
+          getJSONModel(tempLayer,webmapjs,currentOptions.x,currentOptions.y,"text/plain",function(iURL){
+            if (iURL != null){ 
+              console.log(iURL) 
+              if (iURL.data != null){  
+                let meta=iURL.meta
+                meta.lat=Math.round(lalo.y * 100) / 100
+                meta.lon=Math.round(lalo.x * 100) / 100
+                wm=window.open("sondModel.html","Sondeo MODEL", 'itemId="sondM",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600')
+                wm.myvarM=iURL
+                openedSondM=true;
+                html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
+                html += " - Model:" + iURL.meta.model +"<br/>";
+                //document.getElementById("info").innerHTML = "";
                 document.getElementById("info").innerHTML = html;
-              } 
-              });
-          }
-        } else {
-          html = "Wrong layer: Load a valid sounding layer."
-          document.getElementById("info").innerHTML = html
-        } 
-
+                //document.getElementById("table").innerHTML = "";
+                //document.getElementById("table").innerHTML = htmlTabM;
+              } else {
+                html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
+                html += " - Station:" + iURL.meta.name +"<br/>";
+                //document.getElementById("info").innerHTML = "";
+                document.getElementById("info").innerHTML = html;
+                //document.getElementById("table").innerHTML = "";
+                htmlTabM += "</TABLE>"
+                //document.getElementById("table").innerHTML = htmlTabM;
+                //console.log(htmlTab)
+              }  
+            } else {
+              html +="MOD:No valid data<br/>"
+              document.getElementById("info").innerHTML = html;
+            }      
+          } );
+        } else if (myLayers[i].service.includes("TEMP")) {
+          let myLayer=myLayers[i]; 
+          //console.log("LAYER",myLayer)    
+          getJSONdata(myLayer, webmapjs, currentOptions.x,currentOptions.y,"text/plain",function(iURL){
+            if (iURL != null){ 
+              console.log(iURL) 
+              if (iURL.data != null){  
+                ws=window.open("sondTemp.html","Sondeo", 'itemId="sond",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600')
+                ws.myvar=iURL 
+                //console.log("DATOS",iURL)
+                openedSondS=true;
+                html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
+                html += " - Station:" + iURL.meta.name +"<br/>";
+                //document.getElementById("info").innerHTML = "";
+                document.getElementById("info").innerHTML = html;
+                //document.getElementById("table").innerHTML = "";
+                //document.getElementById("table").innerHTML = htmlTabS;
+              } else {
+                html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
+                html += " - Station:" + iURL.meta.name +"<br/>";
+                //document.getElementById("info").innerHTML = "";
+                document.getElementById("info").innerHTML = html;
+                document.getElementById("table").innerHTML = "";
+                htmlTabS += "</TABLE>"
+                document.getElementById("table").innerHTML = htmlTabS;
+                //console.log(htmlTabS)
+              }  
+            } else {
+              html +="OBS: No valid data<br/>"
+              document.getElementById("info").innerHTML = html;
+            }  
+          });
+        }  
       } 
       //Fin capturar la estacion de sondeo 
     };
@@ -126,7 +158,8 @@ class tddjs {
     var init = function () {
       //console.log("ALTO",element)
       element.html('<div id="info"></div><div id="table"></div>');
-      $("#info").html("Click on the map to load a profile.");
+      $("#info").html("Click on the map to load a profile.<br/> A Sounding or ECMWF Model layer loaded is necessary");
+
       //console.log('init sondeo');
       webmapjs.enableInlineGetFeatureInfo(false);
     };
@@ -139,10 +172,14 @@ class tddjs {
       enabled = false;
       webmapjs.enableInlineGetFeatureInfo(true);
       currentOptions.set = false;
-      if (openedSond){ 
-        w.close();
-        openedSond=false;
+      if (openedSondM){ 
+        wm.close();
+        openedSondM=false;
       } 
+      if (openedSondS){ 
+        ws.close();
+        openedSondS=false;
+      }
     };
     this.resize = function (w, h) {
       //console.log("w=" + w);
@@ -224,6 +261,78 @@ function MakeHTTPRequest(fname, callbackfunction,useredirect, requestProxy) {
   }
 };
 
+async function getJSONModel(layer,webmapjs,x,y,format = "text/html", callback){
+  let serv=layer.service.split("=")[1]
+  serv=serv.replace("&","") 
+  let levels=[]
+  if (serv=="ECMWF") { levels=[1000,925,850,700,500,400,300,250,200,150,100]}
+  if (serv=="ECMWF-HRES") { levels=[1000,925,900,850,800,700,600,500,400,300,250,200,150,100]}  
+  document.getElementById("info").innerHTML = "Procesando<br>";
+  document.getElementById("table").innerHTML = "";
+
+  let request = WMJScheckURL(layer.service);
+  request += "&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=" + layer.version;
+  request += "&LAYERS=" + URLEncode(layer.name);
+
+  //let req_meta=WMJScheckURL(layer.service)+"&SERVICE=WMS&REQUEST=getmetadata&VERSION=" + layer.version+"&LAYER=" + URLEncode(layer.name);
+  let rm=request;
+  let req_end=""
+  request += "&QUERY_LAYERS=" +'mean_sea_level_pressure' + "&INFO_FORMAT=" + "application/json";
+  //req_meta += "&FORMAT=" + "application/json"+"&" + webmapjs._getMapDimURL(layer);;
+  rm += "&QUERY_LAYERS=" +'geopotential_height,temperature,relative_humidity,wind_barb'+"&INFO_FORMAT=" + "application/json";
+  req_end += "&" + getBBOXandProjString(layer,webmapjs);
+  req_end += "WIDTH=" + webmapjs.width;
+  req_end += "&HEIGHT=" + webmapjs.height;
+  
+  if (
+    layer.version === WMSVersion.version100 ||
+    layer.version === WMSVersion.version111
+  ) {
+    req_end += "&X=" + x;
+    req_end += "&Y=" + y;
+  }
+  if (layer.version === WMSVersion.version130) {
+    req_end += "&I=" + x;
+    req_end += "&J=" + y;
+  }
+  req_end += "&FORMAT=image/gif";
+  req_end += "&STYLES=";
+  
+  console.log("SERV",serv)
+  try {
+    req_end += "&" + webmapjs._getMapDimURL(layer);
+    request += req_end;
+    rm += req_end; 
+  }  catch (e) {
+    //window.errorMessage("Error al procesar una capa!")
+    //console.log(webmapjs)
+    callback(null,undefined);
+  }
+  req_list=[] 
+  for (let i = 0; i < levels.length; i++) { 
+    let lev=levels[i]       
+    let rml = rm + "&DIM_lev=" + lev 
+    req_list.push(rml)
+  }
+  req_list.reverse() 
+  htmlTabM="<TABLE BORDER>"
+  htmlTabM+= "<TR> <TD>Nivel</TD> <TD>P</TD> <TD>Z</TD> <TD>T</TD> <TD>RH</TD> <TD>U</TD> <TD>V</TD> </TR>"
+  let datarr=[] 
+  getMeta_Model(request,function(meta)  {
+    if (meta!=null){    
+      meta.model=serv   
+      getDataN_Model(req_list,datarr,0,function(dat){
+        let tJson={"meta":meta,"data":dat}; 
+        callback(tJson) 
+      })         
+    } else {
+      callback(null)
+    }       
+  });
+    //console.log("DATA",sond)
+  
+} 
+
 function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
   document.getElementById("info").innerHTML = "Procesando<br>";
   document.getElementById("table").innerHTML = "";
@@ -275,8 +384,6 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
   rl += "&FORMAT=application/json"
 
   
-  console.log("META",rm)
-  console.log("DATA",rl)
   getMeta(rm,function(meta) {
     if (meta != null){
       getData(rl,meta,request,function(dat) {
@@ -501,8 +608,8 @@ function getData(rl,meta,request,callback){
       z_dim="&elevation="
     }   
     //console.log("ZLEV=",z_dim)
-    htmlTab="<TABLE BORDER>"
-    htmlTab+= "<TR> <TD>Nivel</TD> <TD>P</TD> <TD>Z</TD> <TD>T</TD> <TD>TD</TD> <TD>WD</TD> <TD>WS</TD> </TR>"
+    htmlTabS="<TABLE BORDER>"
+    htmlTabS+= "<TR> <TD>Nivel</TD> <TD>P</TD> <TD>Z</TD> <TD>T</TD> <TD>TD</TD> <TD>WD</TD> <TD>WS</TD> </TR>"
 
     getLevels(rl,meta,function(lev){
       if (lev == null) {  
@@ -555,7 +662,7 @@ function getData(rl,meta,request,callback){
               window.alert("Ultimo nivel demasiado bajo! - Pn: " + plim +"hpa\n\n "+"El ultimo nivel debe ser menor de 300hPa")
               callback(null)
             } else{ 
-          htmlTab+="</TABLE>"
+          htmlTabS+="</TABLE>"
           callback(datarr)
             }
           } 
@@ -574,7 +681,15 @@ function getDataN(req,lev,meta,datarr,callback){
     let eindex=levstr.indexOf("/")
     let lev0=levstr.slice(iindex,eindex)
     //console.log("Procesando nivles",lev0,"a",parseInt(lev0)+99,"de",lev)
-    document.getElementById("info").innerHTML += "Procesando niviles " + lev0 +" a "+(parseInt(lev0)+99)+" de " + lev +"<br>";
+    $("#tableinfo").html("") 
+    $("#info").html("")
+    $("#table").html("")
+    $("#tableM").html("")
+    $("#tableS").html("")
+    document.getElementById("info").innerHTML = "";
+    var htmlTime =  "<img src=\"./img/ajax-loader.gif\" alt=\"Loading...\"/>";  
+    document.getElementById("info").innerHTML = htmlTime;
+    //document.getElementById("info").innerHTML += "Procesando niviles " + lev0 +" a "+(parseInt(lev0)+99)+" de " + lev +"<br>";
     MakeHTTPRequest(request,function(err,data){  
         if (err != null) {
           console.error(err);
@@ -587,7 +702,7 @@ function getDataN(req,lev,meta,datarr,callback){
             if (ps<150){
               div=100
             } 
-            console.log("PRESION SF",ps)
+            //console.log("PRESION SF",ps)
             let dats=JSON.parse(data)
             let key=Object.keys(dats[0].data)
             let parr=dats[0].data 
@@ -671,7 +786,7 @@ function getDataN(req,lev,meta,datarr,callback){
               //} 
               //let u=(ws*Math.cos(wd/(Math.PI / 180)))*1.944
               //let v=(ws*Math.sin(wd/(Math.PI / 180)))*1.944 
-              htmlTab += "<TR><TD>"+j+"</TD> <TD>"+p+"</TD> <TD>"+z+"</TD> <TD>"+t.toFixed(2)+"</TD> <TD>"+td.toFixed(2)+"</TD> <TD>"+wDg.toFixed(0)+"</TD> <TD>"+wS.toFixed(2)+"</TD></TR>" 
+              htmlTabS += "<TR><TD>"+j+"</TD> <TD>"+p+"</TD> <TD>"+z+"</TD> <TD>"+t.toFixed(2)+"</TD> <TD>"+td.toFixed(2)+"</TD> <TD>"+wDg.toFixed(0)+"</TD> <TD>"+wS.toFixed(2)+"</TD></TR>" 
               let dat={"n":j,"p":p,"z":z,"t":t,"td":td,"wD":wD,"wS":wS} 
               j=j+1
               datarr.push(dat);
@@ -688,7 +803,79 @@ function getDataN(req,lev,meta,datarr,callback){
   } 
 }
  
-     
+
+function getMeta_Model(req,callback){ 
+  let rml = req
+  console.log(rml)
+    MakeHTTPRequest(rml,function(err,data){
+      if (err != null) {
+        console.error(err);
+      } else {
+        try { 
+          let dats=JSON.parse(data) 
+          let timePas=Object.keys(dats[0].data)[0]
+          fi=new Date(timePas).getTime();
+          date=timePas.split("T");
+          let day=date[0].replaceAll("-","");
+          day=parseInt(day)
+          let hour=parseInt(date[1].substring(0,2));  
+          let ref_time=Object.keys(dats[0].data[timePas])[0]
+          let ff=new Date(ref_time).getTime();
+          let step=(ff-fi)/(1000*60*60)
+          let ps=dats[0].data[timePas][ref_time]  
+          ps=parseFloat(ps)
+          //let meta={"model":"ECMWF","run":timePas,"step":ref_time} 
+          meta={"model":"ECMWF","index":"MODEL","date":day,
+              "run":hour,"step":step,"lon":0,"lat":0,"ps":ps,"zs":0.0,"name":"MODEL"}
+          callback(meta)
+        } catch(e){
+          //console.log(e)
+          callback(null)
+        }
+      }
+    } ); 
+}
+
+function getDataN_Model(req_ls,datarr,i,callback){ 
+  if (req_ls.length > 0) {
+    rml=req_ls.pop() 
+    $("#tableinfo").html("") 
+    $("#info").html("")
+    $("#table").html("")
+    $("#tableM").html("")
+    $("#tableS").html("")
+    document.getElementById("info").innerHTML = "";
+    var htmlTime =  "<img src=\"./img/ajax-loader.gif\" alt=\"Loading...\"/>";  
+    document.getElementById("info").innerHTML = htmlTime;
+    //document.getElementById("info").innerHTML += "Procesando capas del modelo "+i+"<br>";
+    MakeHTTPRequest(rml,function(err,data){
+      if (err != null) {
+        console.error(err);
+      } else {
+        let dats=JSON.parse(data) 
+        let timePas=Object.keys(dats[0].data)[0] 
+        let lev= Object.keys(dats[0].data[timePas])[0] 
+        let ref_time=Object.keys(dats[0].data[timePas][lev])[0]  
+        let z=parseFloat(dats[0].data[timePas][lev][ref_time])  
+        let t=parseFloat(dats[1].data[timePas][lev][ref_time]    )
+        let RH=parseFloat(dats[2].data[timePas][lev][ref_time]  )
+        let v=-1*parseFloat(dats[3].data[timePas][lev][ref_time] )
+        let u=-1*parseFloat(dats[4].data[timePas][lev][ref_time])
+        let p=parseFloat(lev)
+        htmlTabM += "<TR><TD>"+i+"</TD> <TD>"+p+"</TD> <TD>"+z+"</TD> <TD>"+t.toFixed(2)+"</TD> <TD>"+RH.toFixed(2)+"</TD> <TD>"+u.toFixed(2)+"</TD> <TD>"+v.toFixed(2)+"</TD></TR>" 
+        let dat={"n":i,"p":p,"z":z,"t":t,"RH":RH,"u":u,"v":v}
+        datarr.push(dat)
+        datarr.sort((a,b) => a.p - b.p)     
+      }
+      i++
+      getDataN_Model(req_ls,datarr,i,callback)  
+    });
+  } else {  
+    htmlTabM+="</TABLE>"
+    callback(datarr)
+  }  
+}   
+ 
         
 class wsond {
 

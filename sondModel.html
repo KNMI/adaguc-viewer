@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>SONDEO OBSERVADO</title>
+        <title>SONDEO MODEL</title>
   <link rel="stylesheet" href="./apps/tddjs.css" />
 
     <!-- ADAGUC viewer sounding app -->
@@ -19,11 +19,11 @@
 </html>
 
 <script type="text/javascript">
-  console.log("QUERY",myvar);
+  console.log("QUERY",myvarM);
   var tdd = new TDD('mitdd');
   console.log("TDD",tdd)
   try{
-        tdd.load_temp(myvar);
+        tdd.load_temp(myvarM);
      } catch (e){
        window.alert('Exception occured:' + e);
      }  

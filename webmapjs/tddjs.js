@@ -830,12 +830,29 @@ function getDataN_Model(req_ls,datarr,i,callback){
         let dats=JSON.parse(data) 
         let timePas=Object.keys(dats[0].data)[0] 
         let lev= Object.keys(dats[0].data[timePas])[0] 
-        let ref_time=Object.keys(dats[0].data[timePas][lev])[0]  
-        let z=parseFloat(dats[0].data[timePas][lev][ref_time])  
-        let t=parseFloat(dats[1].data[timePas][lev][ref_time]    )
-        let RH=parseFloat(dats[2].data[timePas][lev][ref_time]  )
-        let v=-1*parseFloat(dats[3].data[timePas][lev][ref_time] )
-        let u=-1*parseFloat(dats[4].data[timePas][lev][ref_time])
+        let ref_time=Object.keys(dats[0].data[timePas][lev])[0] 
+        let z=null
+        let t=null
+        let RH=null
+        let u=null
+        let v=null
+        for (let j=0;j < dats.length;j++) {
+          if (dats[j].standard_name=='air_temperature'){
+            t=parseFloat(dats[j].data[timePas][lev][ref_time])
+          } 
+          if (dats[j].standard_name=='geopotential_height'){
+            z=parseFloat(dats[j].data[timePas][lev][ref_time])
+          }
+          if (dats[j].standard_name=='relative_humidity'){
+            RH=parseFloat(dats[j].data[timePas][lev][ref_time])
+          }
+          if (dats[j].standard_name =='eastward_wind'){
+            v=-1*parseFloat(dats[j].data[timePas][lev][ref_time])
+          }
+          if (dats[j].standard_name =='northward_wind'){
+            u=-1*parseFloat(dats[j].data[timePas][lev][ref_time])
+          }
+        } 
         let p=parseFloat(lev)
         htmlTabM += "<TR><TD>"+i+"</TD> <TD>"+p+"</TD> <TD>"+z+"</TD> <TD>"+t.toFixed(2)+"</TD> <TD>"+RH.toFixed(2)+"</TD> <TD>"+u.toFixed(2)+"</TD> <TD>"+v.toFixed(2)+"</TD></TR>" 
         let dat={"n":i,"p":p,"z":z,"t":t,"RH":RH,"u":u,"v":v}

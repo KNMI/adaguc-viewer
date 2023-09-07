@@ -100,16 +100,16 @@ class tddjs {
                 html += " - Model:" + iURL.meta.model +"<br/>";
                 //document.getElementById("info").innerHTML = "";
                 document.getElementById("info").innerHTML = html;
-                //document.getElementById("table").innerHTML = "";
-                //document.getElementById("table").innerHTML = htmlTabM;
+                document.getElementById("table").innerHTML = "";
+                document.getElementById("table").innerHTML = htmlTabM;
               } else {
                 html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
                 html += " - Station:" + iURL.meta.name +"<br/>";
                 //document.getElementById("info").innerHTML = "";
                 document.getElementById("info").innerHTML = html;
-                //document.getElementById("table").innerHTML = "";
+                document.getElementById("table").innerHTML = "";
                 htmlTabM += "</TABLE>"
-                //document.getElementById("table").innerHTML = htmlTabM;
+                document.getElementById("table").innerHTML = htmlTabM;
                 //console.log(htmlTab)
               }  
             } else {
@@ -132,8 +132,8 @@ class tddjs {
                 html += " - Station:" + iURL.meta.name +"<br/>";
                 //document.getElementById("info").innerHTML = "";
                 document.getElementById("info").innerHTML = html;
-                //document.getElementById("table").innerHTML = "";
-                //document.getElementById("table").innerHTML = htmlTabS;
+                document.getElementById("table").innerHTML = "";
+                document.getElementById("table").innerHTML = htmlTabS;
               } else {
                 html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
                 html += " - Station:" + iURL.meta.name +"<br/>";
@@ -741,52 +741,27 @@ function getDataN(req,lev,meta,datarr,callback){
                 //req=[]; 
                 //break;
                 continue
-              } 
-
-              //if ((lev > 1000) & (eVSS < 20000)){
-              //  console.log(j,eVSS,p)
-              //  continue;
-              //} 
-
-              z=parseFloat(z[keyd]);
-            
-              //if (isNaN(z)) {
-                //console.log(i,z)
-              //  continue;
-              //} 
-              if (z < (zs)){
-                //console.log(z,"<",zs)
-                continue;
-              } 
-              
-              t=parseFloat(t[keyd])
-              if (isNaN(t)){
-              //  console.log(i,"NIVEL SIGW")
-                continue;
-              } 
-              t=t-273.15
-              
-              td=parseFloat(td[keyd])-273.15
-              if (isNaN(td)){
-               continue;
-              } 
-              wS=parseFloat(wS[keyd])
-              //if (ws < 0.0){
-              //  continue;
-              //}               
+              }  
+              z=parseFloat(z[keyd]);              
+              t=parseFloat(t[keyd])-273.15                            
+              td=parseFloat(td[keyd])-273.15               
+              wS=parseFloat(wS[keyd])              
               wD=parseFloat(wD[keyd])
               let wDg=wD
-              if (wDg < 0){
-                continue;
-              }
+              //if (wDg < 0){
+              //  wDg=NaN
+              //  continue;
+              //}
               wD=wD*(Math.PI / 180)
               wD=wD%(2*Math.PI)
-              //if (ws < 0.0){
+              //if (wS > 100000.0){
+              //  wS=NaN
               //  continue;
               //} 
               //let u=(ws*Math.cos(wd/(Math.PI / 180)))*1.944
-              //let v=(ws*Math.sin(wd/(Math.PI / 180)))*1.944 
+              //let v=(ws*Math.sin(wd/(Math.PI / 180)))*1.944               
               htmlTabS += "<TR><TD>"+j+"</TD> <TD>"+p+"</TD> <TD>"+z+"</TD> <TD>"+t.toFixed(2)+"</TD> <TD>"+td.toFixed(2)+"</TD> <TD>"+wDg.toFixed(0)+"</TD> <TD>"+wS.toFixed(2)+"</TD></TR>" 
+              if ( (z < zs) || isNaN(t) || isNaN(td) ){ continue}               
               let dat={"n":j,"p":p,"z":z,"t":t,"td":td,"wD":wD,"wS":wS} 
               j=j+1
               datarr.push(dat);

@@ -2966,7 +2966,7 @@ class Sounding extends Vertical {
 
         // data: complete sounding
         this.data.forEach(function(d, i) {
-	    console.log(this.name)
+	    //console.log(this.name)
             this.set(d)
         }, this);
         this.set_z()
@@ -2999,7 +2999,7 @@ class Sounding extends Vertical {
 	  d.r = Th.r_from_q(d.q)
 	  d.Td = Th.tdc(d.p, d.r)
     }
-    console.log(d.p,d.T,d.RH,d.Td)
+    //console.log(d.p,d.T,d.RH,d.Td)
     d.rw = Th.rwc(d.T, d.p)
     d.h = d.r / d.rw
     d.Tv = Th.tvc(d.T, d.r)

@@ -81,43 +81,54 @@ class tddjs {
         document.getElementById("info").innerHTML = html
       } else { document.getElementById("info").innerHTML = "";} 
 
-      
+      //Con los modelos solo sera necesario una unica capa.
+      let m=null
       for (let i in myLayers){
         console.log(i,myLayers.length)
         if (myLayers[i].service.includes("ECMWF")){
-          let tempLayer=myLayers[i] ;
-          getJSONModel(tempLayer,webmapjs,currentOptions.x,currentOptions.y,"text/plain",function(iURL){
-            if (iURL != null){ 
-              console.log(iURL) 
-              if (iURL.data != null){  
-                let meta=iURL.meta
-                meta.lat=Math.round(lalo.y * 100) / 100
-                meta.lon=Math.round(lalo.x * 100) / 100
-                wm=window.open("sondModel.html","Sondeo MODEL", 'itemId="sondM",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600')
-                wm.myvarM=iURL
-                openedSondM=true;
-                html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
-                html += " - Model:" + iURL.meta.model +"<br/>";
-                //document.getElementById("info").innerHTML = "";
-                document.getElementById("info").innerHTML = html;
-                document.getElementById("table").innerHTML = "";
-                document.getElementById("table").innerHTML = htmlTabM;
-              } else {
-                html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
-                html += " - Station:" + iURL.meta.name +"<br/>";
-                //document.getElementById("info").innerHTML = "";
-                document.getElementById("info").innerHTML = html;
-                document.getElementById("table").innerHTML = "";
-                htmlTabM += "</TABLE>"
-                document.getElementById("table").innerHTML = htmlTabM;
-                //console.log(htmlTab)
-              }  
-            } else {
-              html +="MOD:No valid data<br/>"
+          m=i
+        } 
+      }
+
+      if (m != null) {   
+        console.log("M",m)
+        let tempLayer=myLayers[m] ;
+        getJSONModel(tempLayer,webmapjs,currentOptions.x,currentOptions.y,"text/plain",function(iURL){
+          if (iURL != null){ 
+            console.log(iURL) 
+            if (iURL.data != null){  
+              let meta=iURL.meta
+              meta.lat=Math.round(lalo.y * 100) / 100
+              meta.lon=Math.round(lalo.x * 100) / 100
+              wm=window.open("sondModel.html","Sondeo MODEL", 'itemId="sondM",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600')
+              wm.myvarM=iURL
+              openedSondM=true;
+              html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
+              html += " - Model:" + iURL.meta.model +"<br/>";
+              //document.getElementById("info").innerHTML = "";
               document.getElementById("info").innerHTML = html;
-            }      
-          } );
-        } else if (myLayers[i].service.includes("TEMP")) {
+              document.getElementById("table").innerHTML = "";
+              document.getElementById("table").innerHTML = htmlTabM;
+            } else {
+              html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
+              html += " - Station:" + iURL.meta.name +"<br/>";
+              //document.getElementById("info").innerHTML = "";
+              document.getElementById("info").innerHTML = html;
+              document.getElementById("table").innerHTML = "";
+              htmlTabM += "</TABLE>"
+              document.getElementById("table").innerHTML = htmlTabM;
+              //console.log(htmlTab)
+            }  
+          } else {
+            html +="MOD:No valid data<br/>"
+            document.getElementById("info").innerHTML = html;
+          }      
+        } );
+      }
+      
+      for (let i in myLayers){
+        console.log(i,myLayers.length)
+        if (myLayers[i].service.includes("TEMP")) {
           let myLayer=myLayers[i]; 
           //console.log("LAYER",myLayer)    
           getJSONdata(myLayer, webmapjs, currentOptions.x,currentOptions.y,"text/plain",function(iURL){

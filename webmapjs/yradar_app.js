@@ -598,10 +598,10 @@ function getJSONdata2D(layer, webmapjs, x, y, format = "text/html", callBack) {
       try { 
         var radioe=radioe_d[Object.keys(radioe_d)] 
         var nupix=nupix_d[Object.keys(nupix_d)]  
-        var latcen=latcen_d[Object.keys(latcen_d)] 
-        var loncen=loncen_d[Object.keys(loncen_d)] 
-        var ectop=ectop_d[Object.keys(ectop_d)] 
-        var vil=vil_d[Object.keys(vil_d)] 
+        if (isDefined(latcen_d)) { var latcen=latcen_d[Object.keys(latcen_d)] } 
+        if (isDefined(loncen_d)) {var loncen=loncen_d[Object.keys(loncen_d)] }  
+        if (isDefined(ectop_d)) {var ectop=ectop_d[Object.keys(ectop_d)] } 
+        if (isDefined(vil_d)) {var vil=vil_d[Object.keys(vil_d)] } 
         var zmax=zmax_d[Object.keys(zmax_d)]  
         var zmed=zmed_d[Object.keys(zmed_d)]
       
@@ -613,12 +613,12 @@ function getJSONdata2D(layer, webmapjs, x, y, format = "text/html", callBack) {
         var rmax=rmax_d[Object.keys(rmax_d)]  
         var rmed=rmed_d[Object.keys(rmed_d)] 
         var rk=rk_d[Object.keys(rk_d)]
-        var latcenr=latcenr_d[Object.keys(latcenr_d)]
-        var loncenr=loncenr_d[Object.keys(loncenr_d)]
+        if (isDefined(latcenr_d)) {var latcenr=latcenr_d[Object.keys(latcenr_d)]} 
+        if (isDefined(loncenr_d)) {var loncenr=loncenr_d[Object.keys(loncenr_d)]} 
       
         //Movimiento
-        var dirn=dirn_d[Object.keys(dirn_d)] 
-        var vkmh=vkmh_d[Object.keys(vkmh_d)]
+        if (isDefined(dirn_d)) {var dirn=dirn_d[Object.keys(dirn_d)]} 
+          if (isDefined(vkmh_d)) {var vkmh=vkmh_d[Object.keys(vkmh_d)]} 
 
         var id=id_d[Object.keys(id_d)] 
         var analisis
@@ -634,6 +634,7 @@ function getJSONdata2D(layer, webmapjs, x, y, format = "text/html", callBack) {
         var yradar_l={"ANA":analisis,"RAYOS":rayos,"MOV":mov}
         callBack(yradar_l)
       } catch (e) {
+        console.log(e)
         callBack(null)
       }  
     } 

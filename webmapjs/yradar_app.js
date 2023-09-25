@@ -214,18 +214,22 @@ class yradar {
               
               if (mylayer.name.includes("3D") ){dim="3D"} 
               
-              path="http://brisa.aemet.es/webtools/visor/prod/data/"
+              var serv = WMJScheckURL(mylayer.service).split("/");
+              var ht=serv[0]
+              serv=serv[2]  
+              path=ht+"//"+serv+"/"
+
               getJSONdate(mylayer, webmapjs,"text/plain",function(date) { 
                 let day=date.substring(0,date.indexOf("T"))
                 let time=date.substring(date.indexOf("T")+1,date.indexOf("Z")-2)
                 if (load_time != day+time){load_time = day+time}  
                 if (dim=="3D"){
-                  path+=day+"/yradar/"+day+time+"REG3D"
+                  path+="yradar/"+day+time+"REG3D"
                 } else {
                   if (mylayer.name.includes("NAC")){
-                    path+=day+"/yradar/"+day+time+"NAC2D"
+                    path+="yradar/"+day+time+"NAC2D"
                   } else {  
-                    path+=day+"/yradar/"+day+time+"REG2D"
+                    path+="yradar/"+day+time+"REG2D"
                   }
                 }
                  

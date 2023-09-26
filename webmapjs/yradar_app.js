@@ -224,12 +224,12 @@ class yradar {
                 let time=date.substring(date.indexOf("T")+1,date.indexOf("Z")-2)
                 if (load_time != day+time){load_time = day+time}  
                 if (dim=="3D"){
-                  path+="adaguc-viewer/yradar/"+day+time+"REG3D"
+                  path+="yradar/"+day+time+"REG3D"
                 } else {
                   if (mylayer.name.includes("NAC")){
-                    path+="adaguc-viewer/yradar/"+day+time+"NAC2D"
+                    path+="yradar/"+day+time+"NAC2D"
                   } else {  
-                    path+="adaguc-viewer/yradar/"+day+time+"REG2D"
+                    path+="yradar/"+day+time+"REG2D"
                   }
                 }
                  

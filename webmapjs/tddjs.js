@@ -81,54 +81,44 @@ class tddjs {
         document.getElementById("info").innerHTML = html
       } else { document.getElementById("info").innerHTML = "";} 
 
-      //Con los modelos solo sera necesario una unica capa.
-      let m=null
-      for (let i in myLayers){
-        console.log(i,myLayers.length)
-        if (myLayers[i].service.includes("ECMWF")){
-          m=i
-        } 
-      }
-
-      if (m != null) {   
-        console.log("M",m)
-        let tempLayer=myLayers[m] ;
-        getJSONModel(tempLayer,webmapjs,currentOptions.x,currentOptions.y,"text/plain",function(iURL){
-          if (iURL != null){ 
-            console.log(iURL) 
-            if (iURL.data != null){  
-              let meta=iURL.meta
-              meta.lat=Math.round(lalo.y * 100) / 100
-              meta.lon=Math.round(lalo.x * 100) / 100
-              wm=window.open("sondModel.html","Sondeo MODEL", 'itemId="sondM",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600')
-              wm.myvarM=iURL
-              openedSondM=true;
-              html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
-              html += " - Model:" + iURL.meta.model +"<br/>";
-              //document.getElementById("info").innerHTML = "";
-              document.getElementById("info").innerHTML = html;
-              document.getElementById("table").innerHTML = "";
-              document.getElementById("table").innerHTML = htmlTabM;
-            } else {
-              html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
-              html += " - Station:" + iURL.meta.name +"<br/>";
-              //document.getElementById("info").innerHTML = "";
-              document.getElementById("info").innerHTML = html;
-              document.getElementById("table").innerHTML = "";
-              htmlTabM += "</TABLE>"
-              document.getElementById("table").innerHTML = htmlTabM;
-              //console.log(htmlTab)
-            }  
-          } else {
-            html +="MOD:No valid data<br/>"
-            document.getElementById("info").innerHTML = html;
-          }      
-        } );
-      }
       
       for (let i in myLayers){
         console.log(i,myLayers.length)
-        if (myLayers[i].service.includes("TEMP")) {
+        if (myLayers[i].service.includes("ECMWF")){
+          let tempLayer=myLayers[i] ;
+          getJSONModel(tempLayer,webmapjs,currentOptions.x,currentOptions.y,"text/plain",function(iURL){
+            if (iURL != null){ 
+              console.log(iURL) 
+              if (iURL.data != null){  
+                let meta=iURL.meta
+                meta.lat=Math.round(lalo.y * 100) / 100
+                meta.lon=Math.round(lalo.x * 100) / 100
+                wm=window.open("sondModel.html","Sondeo MODEL", 'itemId="sondM",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600')
+                console.log("WINDIW",wm)
+                wm.myvarM=iURL
+                openedSondM=true;
+                html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
+                html += " - Model:" + iURL.meta.model +"<br/>";
+                //document.getElementById("info").innerHTML = "";
+                document.getElementById("info").innerHTML = html;
+                document.getElementById("table").innerHTML = "";
+                document.getElementById("table").innerHTML = htmlTabM;
+              } else {
+                html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
+                html += " - Station:" + iURL.meta.name +"<br/>";
+                //document.getElementById("info").innerHTML = "";
+                document.getElementById("info").innerHTML = html;
+                document.getElementById("table").innerHTML = "";
+                htmlTabM += "</TABLE>"
+                document.getElementById("table").innerHTML = htmlTabM;
+                //console.log(htmlTab)
+              }  
+            } else {
+              html +="MOD:No valid data<br/>"
+              document.getElementById("info").innerHTML = html;
+            }      
+          } );
+        } else if (myLayers[i].service.includes("TEMP")) {
           let myLayer=myLayers[i]; 
           //console.log("LAYER",myLayer)    
           getJSONdata(myLayer, webmapjs, currentOptions.x,currentOptions.y,"text/plain",function(iURL){
@@ -139,6 +129,7 @@ class tddjs {
                 ws.myvar=iURL 
                 //console.log("DATOS",iURL)
                 openedSondS=true;
+                html= ""
                 html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
                 html += " - Station:" + iURL.meta.name +"<br/>";
                 //document.getElementById("info").innerHTML = "";
@@ -322,7 +313,7 @@ async function getJSONModel(layer,webmapjs,x,y,format = "text/html", callback){
   req_list=[] 
   for (let i = 0; i < levels.length; i++) { 
     let lev=levels[i]       
-    let rml = rm + "&DIM_lev=" + lev 
+    let rml = rm + "&elevation=" + lev 
     req_list.push(rml)
   }
   req_list.reverse() 
@@ -374,7 +365,7 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
   }
   req_end += "&FORMAT=image/gif";
   req_end += "&STYLES=";
-
+  
   try {
     req_end += "&" + webmapjs._getMapDimURL(layer);
     request += req_end;
@@ -389,14 +380,16 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
     false
   );
   
-  let rl=layer.service+"&SERVICE=WMS&REQUEST=GetMetaData&VERSION=" + layer.version;
+  /*let rl=layer.service+"&SERVICE=WMS&REQUEST=GetMetaData&VERSION=" + layer.version;
   rl += "&LAYERS=" + URLEncode(layer.name)
   rl += "&LAYER=station_name"
   rl += "&FORMAT=application/json"
-
-  
+  */
+  let rl=layer.service+"&SERVICE=WMS&REQUEST=getCapabilities&VERSION=" + layer.version; 
+ 
   getMeta(rm,function(meta) {
     if (meta != null){
+      console.log("META",meta)
       getData(rl,meta,request,function(dat) {
         let tJson={"meta":meta,"data":dat}; 
         callBack(tJson)  
@@ -523,42 +516,31 @@ function getBBOXandProjString(layer,webmapjs) {
   return request;
 }
 
-function getLevels(request,meta,callback){
-  //console.log("REQ LEVEL",request)
-  //Trampeo porque de alguna forma no lee los dataset -\o/-
-  /* 
-  if (!(request.includes("source")) ) {
-    let server=request.split("?")
-    let fields=server[1].split("&&")
-    //console.log("F",fields)
-    let fich=meta.file
-    let req_1=server[0];
-    let req_2=fields[1]; 
-    let mid="source=files/TEMP/"+fich 
-    request=(req_1+"?"+mid+"&"+req_2)
-  }*/
-  MakeHTTPRequest(request,function(err,data){
-
-      if (err != null) {
-        console.error(err);
-      } else {  
-        let i=data.indexOf("lev");
-        let subdata=data.slice(i)
-        let j=subdata.indexOf(";")
-        subdata=subdata.slice(0,j)
-        let arr=subdata.split("=");
-        let lev=parseInt(arr[1])-1;
-        //console.log("LEV",lev) 
-        callback(lev)
+function getLevels(request,callback){
+  
+  var parser = new ol.format.WMSCapabilities()
+  fetch(request).then(function(response) {
+    return response.text();
+  }).then(function(text) {
+    const result = parser.read(text);
+    var capLayers = result.Capability.Layer.Layer
+    for (let layer of capLayers) {
+      if (layer.Name=='p'){
+        for (let dim of layer.Dimension){
+          if (dim.name=="elevation" ){
+            callback(dim.default)
+          } 
+        }  
       } 
-  } );
+    } 
+  })
 } 
 
 function getMeta(rm,callback){
   let request=rm;
-  //console.log("REQ META",rm)
+  console.log("REQ META",rm)
   MakeHTTPRequest(request,function(err,data){
-
+      //console.log("AQUI",data)
       if (err != null) {
         console.error(err);
       } else {  
@@ -571,7 +553,7 @@ function getMeta(rm,callback){
           let lon=parseFloat(latlon[0]);
           let lat=parseFloat(latlon[1]);
           //console.log(lat,lon)
-          let key=Object.keys(dats[1].data)
+          let key=Object.keys(dats[0].data)
           /*let fecha=key[0].replaceAll("-","") 
           fecha=fecha.replaceAll(":","")
           let file="AEMET_IB_TEMP_"+fecha+".nc"
@@ -581,24 +563,43 @@ function getMeta(rm,callback){
           let day=date[0].replaceAll("-","");
           day=parseInt(day)
           let hour=parseInt(date[1].substring(0,2));
-          let station=dats[1].data[key] 
-          if (station != "nodata"){
-            let station_c=dats[5].data[key]  
-            station += " " + station_c;
-            key=Object.keys(dats[2].data)
-            let ps=dats[2].data[key] 
-            ps=ps/100;
-
-            key=Object.keys(dats[3].data)
-            let zs=dats[3].data[key] 
-            zs=parseFloat(zs);
+          let station
+          let ps
+          let zs
+          let station_c
+          
+          for (let i=0;i<dats.length;i++){
+            //console.log(dats[i])
+            if (dats[i].name=="station_name_backup" ){ 
+              if (isDefined(station)) continue
+              station=dats[i].data[key];   
+            } 
+            if (dats[i].name=="ps" ){
+              if (isDefined(ps)) continue
+              ps=dats[i].data[key]/100
+              if (isNaN(ps)) ps=dats[i].data[0]/100
+               
+            } 
+            if (dats[i].name=="alt" ){ 
+              if (isDefined(zs)) continue 
+              zs=parseFloat(dats[i].data[key])
+              if (isNaN(zs)) zs=parseFloat(dats[i].data[0])
+              
+             }
+            if (dats[i].name=="station_cname_backup" ){ 
+              if (isDefined(station_c)) continue
+              station_c=dats[i].data[key]} 
+          } 
+          
+          if (isDefined(station) && (station != "nodata") ){         
             if (isNaN(zs)){
               zs=0.0
               //console.log("SOY NAN")
             } 
             //meta=[date,station,ps,zs] 
+            station_c=station+" "+station_c
             meta={"model":"OBSERVACION","index":station,"date":day,
-              "run":hour,"step":0,"lon":lon,"lat":lat,"ps":ps,"zs":zs,"name":station}
+              "run":hour,"step":0,"lon":lon,"lat":lat,"ps":ps,"zs":zs,"name":station_c}
             //console.log("META",meta)
             callback(meta)
           } else {
@@ -614,15 +615,14 @@ function getMeta(rm,callback){
 
 
 function getData(rl,meta,request,callback){
-    let z_dim="&DIM_lev="
-    if(request.includes("files")){  
-      z_dim="&elevation="
-    }   
+    let  z_dim="&elevation="
+      
     //console.log("ZLEV=",z_dim)
     htmlTabS="<TABLE BORDER>"
     htmlTabS+= "<TR> <TD>Nivel</TD> <TD>P</TD> <TD>Z</TD> <TD>T</TD> <TD>TD</TD> <TD>WD</TD> <TD>WS</TD> </TR>"
 
-    getLevels(rl,meta,function(lev){
+    getLevels(rl,function(lev){
+     // console.log("LEV",lev)
       if (lev == null) {  
           window.errorMessage("No hay niveles!")
           callback(null)
@@ -683,15 +683,16 @@ function getData(rl,meta,request,callback){
 }
 
 function getDataN(req,lev,meta,datarr,callback){
+  //console.log(req)
   if (req.length != 0) {  
     //console.log(req) 
     let request=req.pop()
-    let lindex=request.indexOf("lev")
+    let lindex=request.indexOf("elevation")
     let levstr=request.slice(lindex)
     let iindex=levstr.indexOf("=")+1
     let eindex=levstr.indexOf("/")
     let lev0=levstr.slice(iindex,eindex)
-    //console.log("Procesando nivles",lev0,"a",parseInt(lev0)+99,"de",lev)
+    console.log("Procesando nivles",lev0,"a",parseInt(lev0)+99,"de",lev)
     $("#tableinfo").html("") 
     $("#info").html("")
     $("#table").html("")
@@ -715,14 +716,22 @@ function getDataN(req,lev,meta,datarr,callback){
             } 
             //console.log("PRESION SF",ps)
             let dats=JSON.parse(data)
-            let key=Object.keys(dats[0].data)
-            let parr=dats[0].data 
-            let zarr=dats[1].data 
-            let tarr=dats[2].data
-            let tdarr=dats[3].data
-            let wsarr=dats[4].data
-            let wdarr=dats[5].data
-            let eVarr=dats[6].data 
+            let parr
+            let zarr
+            let tarr
+            let tdarr
+            let wsarr
+            let wdarr
+            let eVarr
+            for (dat of dats){
+              if (dat.name=="p"){parr=dat.data } 
+              if (dat.name=="z"){zarr=dat.data } 
+              if (dat.name=="t"){tarr=dat.data } 
+              if (dat.name=="td"){tdarr=dat.data } 
+              if (dat.name=="windSpd"){wsarr=dat.data } 
+              if (dat.name=="windDir"){wdarr=dat.data } 
+              if (dat.name=="eVSS"){eVarr=dat.data }  
+            } 
             //p,z,t,td,ws,wd
             let cont=parseInt(lev0)
             let fin=parr 
@@ -752,27 +761,55 @@ function getDataN(req,lev,meta,datarr,callback){
                 //req=[]; 
                 //break;
                 continue
-              }  
-              z=parseFloat(z[keyd]);              
-              t=parseFloat(t[keyd])-273.15                            
-              td=parseFloat(td[keyd])-273.15               
-              wS=parseFloat(wS[keyd])              
+              } 
+
+              //if ((lev > 1000) & (eVSS < 20000)){
+              //  console.log(j,eVSS,p)
+              //  continue;
+              //} 
+
+              z=parseFloat(z[keyd]);
+            
+              //if (isNaN(z)) {
+                //console.log(i,z)
+              //  continue;
+              //} 
+              //if (z < (zs)){
+                //console.log(z,"<",zs)
+              //  continue;
+              //} 
+              
+              t=parseFloat(t[keyd])
+              //if (isNaN(t)){
+              //  console.log(i,"NIVEL SIGW")
+              //  continue;
+              //} 
+              t=t-273.15
+              
+              td=parseFloat(td[keyd])-273.15
+              //if (isNaN(td)){
+              // continue;
+              //} 
+              wS=parseFloat(wS[keyd])
+              //if (ws < 0.0){
+              //  continue;
+              //}               
               wD=parseFloat(wD[keyd])
               let wDg=wD
               //if (wDg < 0){
-              //  wDg=NaN
               //  continue;
               //}
               wD=wD*(Math.PI / 180)
               wD=wD%(2*Math.PI)
-              //if (wS > 100000.0){
-              //  wS=NaN
+              //if (ws < 0.0){
               //  continue;
               //} 
               //let u=(ws*Math.cos(wd/(Math.PI / 180)))*1.944
-              //let v=(ws*Math.sin(wd/(Math.PI / 180)))*1.944               
+              //let v=(ws*Math.sin(wd/(Math.PI / 180)))*1.944 
+              
               htmlTabS += "<TR><TD>"+j+"</TD> <TD>"+p+"</TD> <TD>"+z+"</TD> <TD>"+t.toFixed(2)+"</TD> <TD>"+td.toFixed(2)+"</TD> <TD>"+wDg.toFixed(0)+"</TD> <TD>"+wS.toFixed(2)+"</TD></TR>" 
-              if ( (z < zs) || isNaN(t) || isNaN(td) ){ continue}               
+              if ( (z < zs) || isNaN(t)|| isNaN(td)|| (wDg < 0) ){ continue} 
+              
               let dat={"n":j,"p":p,"z":z,"t":t,"td":td,"wD":wD,"wS":wS} 
               j=j+1
               datarr.push(dat);
@@ -841,29 +878,12 @@ function getDataN_Model(req_ls,datarr,i,callback){
         let dats=JSON.parse(data) 
         let timePas=Object.keys(dats[0].data)[0] 
         let lev= Object.keys(dats[0].data[timePas])[0] 
-        let ref_time=Object.keys(dats[0].data[timePas][lev])[0] 
-        let z=null
-        let t=null
-        let RH=null
-        let u=null
-        let v=null
-        for (let j=0;j < dats.length;j++) {
-          if (dats[j].standard_name=='air_temperature'){
-            t=parseFloat(dats[j].data[timePas][lev][ref_time])
-          } 
-          if (dats[j].standard_name=='geopotential_height'){
-            z=parseFloat(dats[j].data[timePas][lev][ref_time])
-          }
-          if (dats[j].standard_name=='relative_humidity'){
-            RH=parseFloat(dats[j].data[timePas][lev][ref_time])
-          }
-          if (dats[j].standard_name =='eastward_wind'){
-            v=-1*parseFloat(dats[j].data[timePas][lev][ref_time])
-          }
-          if (dats[j].standard_name =='northward_wind'){
-            u=-1*parseFloat(dats[j].data[timePas][lev][ref_time])
-          }
-        } 
+        let ref_time=Object.keys(dats[0].data[timePas][lev])[0]  
+        let z=parseFloat(dats[0].data[timePas][lev][ref_time])  
+        let t=parseFloat(dats[1].data[timePas][lev][ref_time]    )
+        let RH=parseFloat(dats[2].data[timePas][lev][ref_time]  )
+        let v=-1*parseFloat(dats[3].data[timePas][lev][ref_time] )
+        let u=-1*parseFloat(dats[4].data[timePas][lev][ref_time])
         let p=parseFloat(lev)
         htmlTabM += "<TR><TD>"+i+"</TD> <TD>"+p+"</TD> <TD>"+z+"</TD> <TD>"+t.toFixed(2)+"</TD> <TD>"+RH.toFixed(2)+"</TD> <TD>"+u.toFixed(2)+"</TD> <TD>"+v.toFixed(2)+"</TD></TR>" 
         let dat={"n":i,"p":p,"z":z,"t":t,"RH":RH,"u":u,"v":v}

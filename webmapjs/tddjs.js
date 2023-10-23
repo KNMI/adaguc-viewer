@@ -208,7 +208,7 @@ function createXHR (){
   return false;
 }
 
-function MakeHTTPRequest(fname, callbackfunction,useredirect, requestProxy) {
+function MakeHTTPRequest_s(fname, callbackfunction,useredirect, requestProxy) {
   if (fname.indexOf('?') === -1) {
     fname += '?';
   } else {
@@ -225,7 +225,7 @@ function MakeHTTPRequest(fname, callbackfunction,useredirect, requestProxy) {
       // alert(fname);
       fname = requestProxy + 'REQUEST=' + URLEncode(fname);
       // alert(fname);
-      MakeHTTPRequest(fname, callbackfunction, errorfunction, pointer, true, requestProxy);
+      MakeHTTPRequest_s(fname, callbackfunction, errorfunction, pointer, true, requestProxy);
     } else {
       requestError('status(' + xhr.status + ') to ' + fname);
     }
@@ -250,9 +250,10 @@ function MakeHTTPRequest(fname, callbackfunction,useredirect, requestProxy) {
             callbackfunction(null, xhr.response);
           }
         } else {
-          window.alert("ALLI")
-          //console.log(fname)
-          redirRequest();
+          //window.alert("ALLI")
+          console.log("ERROR",fname)
+          callbackfunction(null, xhr.response);
+          //redirRequest();
         }
       }
     };
@@ -525,7 +526,7 @@ function getLevels(request,callback){
     const result = parser.read(text);
     var capLayers = result.Capability.Layer.Layer
     for (let layer of capLayers) {
-      if (layer.Name=='p'){
+      if (layer.Name=='t') {
         for (let dim of layer.Dimension){
           if (dim.name=="elevation" ){
             callback(dim.default)
@@ -539,7 +540,7 @@ function getLevels(request,callback){
 function getMeta(rm,callback){
   let request=rm;
   console.log("REQ META",rm)
-  MakeHTTPRequest(request,function(err,data){
+  MakeHTTPRequest_s(request,function(err,data){
       //console.log("AQUI",data)
       if (err != null) {
         console.error(err);
@@ -702,7 +703,7 @@ function getDataN(req,lev,meta,datarr,callback){
     var htmlTime =  "<img src=\"./img/ajax-loader.gif\" alt=\"Loading...\"/>";  
     document.getElementById("info").innerHTML = htmlTime;
     //document.getElementById("info").innerHTML += "Procesando niviles " + lev0 +" a "+(parseInt(lev0)+99)+" de " + lev +"<br>";
-    MakeHTTPRequest(request,function(err,data){  
+    MakeHTTPRequest_s(request,function(err,data){  
         if (err != null) {
           console.error(err);
         } else {  
@@ -830,7 +831,7 @@ function getDataN(req,lev,meta,datarr,callback){
 function getMeta_Model(req,callback){ 
   let rml = req
   console.log(rml)
-    MakeHTTPRequest(rml,function(err,data){
+    MakeHTTPRequest_s(rml,function(err,data){
       if (err != null) {
         console.error(err);
       } else {
@@ -871,7 +872,7 @@ function getDataN_Model(req_ls,datarr,i,callback){
     var htmlTime =  "<img src=\"./img/ajax-loader.gif\" alt=\"Loading...\"/>";  
     document.getElementById("info").innerHTML = htmlTime;
     //document.getElementById("info").innerHTML += "Procesando capas del modelo "+i+"<br>";
-    MakeHTTPRequest(rml,function(err,data){
+    MakeHTTPRequest_s(rml,function(err,data){
       if (err != null) {
         console.error(err);
       } else {

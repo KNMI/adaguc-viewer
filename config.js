@@ -37,8 +37,9 @@ var defaultProjection = {srs:'EPSG:3857',bbox:'-3900000,3000000,3500000,8300000'
 var hashLocationNotfiyAddLayer = false;
 
 var server = "http://dorsal.aemet.es:8080/adaguc-services/" 
+var server1 = "http://dorsal.aemet.es:8080/adaguc-services/" 
 //Docker
-//var server = "https://dorsal.aemet.es/"
+//var server = "https://oberon.aemet.es/"
 
 var getFeatureInfoApplications = [
   {name:'Time series mode',iconCls:'button_getfeatureinfo',location:'apps/gfiapp_d3c3.html'}
@@ -51,29 +52,29 @@ var dataChooserConfigurationFolder =[];
 var dataChooserConfigurationAdd = [
   {
     title:'VIS ALTA RES',
-        thumbnail:server + '/adagucserver?dataset=SEVIRI-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HRV,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-        service:server + '/adagucserver?dataset=SEVIRI-HRV&',
+        thumbnail:server1 + '/adagucserver?dataset=SEVIRI-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HRV,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+        service:server1 + '/adagucserver?dataset=SEVIRI-HRV&',
         layer:'HRV'
   },{
     title:'VIS006',
-        thumbnail:server + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS006-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-        service:server + '/adagucserver?dataset=SEVIRI-3Km&',
+        thumbnail:server1 + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS006-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+        service:server1 + '/adagucserver?dataset=SEVIRI-3Km&',
         layer:'VIS006-REF'
   },{
     title:'WV062',
-        thumbnail:server + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV062-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-        service:server + '/adagucserver?dataset=SEVIRI-3Km&',
+        thumbnail:server1 + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV062-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+        service:server1 + '/adagucserver?dataset=SEVIRI-3Km&',
         layer:'WV062-BT'
   },{
     title:'IR108',
-        thumbnail:server + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-        service:server + '/adagucserver?dataset=SEVIRI-3Km&',
+        thumbnail:server1 + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+        service:server1 + '/adagucserver?dataset=SEVIRI-3Km&',
         layer:'IR108-BT'
   },{
     title:'LIGHTNING',
     thumbnail:server + '/wms?DATASET=LIGHTNING&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,LIGHTNING_lightningAddLayers&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
     service:server + '/adagucserver?dataset=LIGHTNING&',
-    layer:'LIGHTNING_lightningTimePeriod',
+    layer:'LIGHTNING',
   },{ 
     title:'METAR',
     thumbnail:server + '/adagucserver?dataset=METAR&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,T_Td_Vis&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
@@ -156,8 +157,8 @@ var dataChooserConfigurationAdd = [
         layer:'EXIM_CT_ct'
   },{
     title:'EMAS',
-    thumbnail:'http://vortice2.aemet.es/adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multiLayer&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-    service:'http://vortice2.aemet.es/adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    thumbnail:'http://oberon.aemet.es/adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,multiLayer&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:'http://oberon.aemet.es/adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
     layer:'multiLayer'
   }
   
@@ -182,9 +183,9 @@ var dataChooserConfigurationECMWF = [
       abs:'Geopotential Height in meters ',
 },{
       title:'Temperature',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=temperature_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=temperature,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'temperature_atap',
+      layer:'temperature',
       abs:'Presion Level Temperature',
 },{
       title:'Relative humidity',
@@ -212,9 +213,9 @@ var dataChooserConfigurationECMWF = [
       abs:'Pressure Level Wind in m/s',
 },{
       title:'Wind barbs',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=wind_barb,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=wind_barbs,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'wind_barb',
+      layer:'wind_barbs',
       abs:'Pressure Level Wind barbs',
 },{
       title:'Wind_kt',
@@ -224,9 +225,9 @@ var dataChooserConfigurationECMWF = [
       abs:'Pressure Level Wind in Knots',
 },{
       title:'Wind vectors',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=wind_vector,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=wind_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'wind_vector',
+      layer:'wind_vectors',
       abs:'Pressure Level Wind vectors',
 },{
       title:'10m Wind',
@@ -236,9 +237,9 @@ var dataChooserConfigurationECMWF = [
       abs:'10meters wind in m/s',
 },{
       title:'10m Wind barbs',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_barb,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_barbs,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'10_meter_wind_barb',
+      layer:'10_meter_wind_barbs',
       abs:'10meters wind barbs',
 },{
       title:'10m Wind_kt',
@@ -248,9 +249,9 @@ var dataChooserConfigurationECMWF = [
       abs:'10meters wind in Knots',
 },{
       title:'10m Wind vectors',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_vector,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'10_meter_wind_vector',
+      layer:'10_meter_wind_vectors',
       abs:'10meters wind vectors',
 },{
       title:'2m Temperature',
@@ -305,145 +306,109 @@ var dataChooserConfigurationECMWF = [
       thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_accumulated_precipitation_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
       layer:'convective_accumulated_precipitation_atap',
-      abs:'ATAP Convective Accumulated Prec',
+      abs:'ATAP Convective Accumulated Precipitation',
 },{
-      title:'ATAP convective accumulated precipitation contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_accumulated_precipitation_contour_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      title:'Convective accumulated precipitation contour',
+      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_accumulated_precipitation_contour,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'convective_accumulated_precipitation_contour_atap',
-      abs:'ATAP Convective Accumulated Preci Contour',
+      layer:'convective_accumulated_precipitation_contour',
+      abs:'Convective Accumulated Precipitation Contour',
 },{
       title:'ecCharts convective accumulated precipitation',
       thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_accumulated_precipitation_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
       layer:'convective_accumulated_precipitation_ecch',
-      abs:'ecCharts Convective Accumulated Prec',
-},{
-      title:'ecCharts convective accumulated precipitation contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_accumulated_precipitation_contour_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
-      service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'convective_accumulated_precipitation_contour_eccharts',
-      abs:'ecCharts Convective Accumulated Preci Contour',
+      abs:'ecCharts Convective Accumulated Precipitation',
 },{
       title:'ATAP convective precipitation last 6H',
       thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_precipitation_during_last_6_hours_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
       layer:'convective_precipitation_during_last_6_hours_atap',
-      abs:'ATAP Convective Accumulated Prec in last 6 hours',
+      abs:'ATAP Convective Accumulated Precipitation in last 6 hours',
 },{
-      title:'ATAP convective precipitation last 6H contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_precipitation_during_last_6_hours_contour_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      title:'Convective precipitation last 6H contour',
+      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_precipitation_during_last_6_hours_contour,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'convective_precipitation_during_last_6_hours_contour_atap',
-      abs:'ATAP Convective Accumulated Prec in last 6 hours contour',
+      layer:'convective_precipitation_during_last_6_hours_contour',
+      abs:'Convective Accumulated Precipitation in last 6 hours Contour',
 },{
       title:'ecCharts convective precipitation last 6H',
       thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_precipitation_during_last_6_hours_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
       layer:'convective_precipitation_during_last_6_hours_eccharts',
-      abs:'ecCharts Convective Accumulated Prec in last 6 hours',
-},{
-      title:'ecCharts convective precipitation last 6H contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_precipitation_during_last_6_hours_contour_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
-      service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'convective_precipitation_during_last_6_hours_contour_eccharts',
-      abs:'ecCharts Convective Accumulated Prec in last 6 hours contour',
+      abs:'ecCharts Convective Accumulated Precipitation in last 6 hours',
 },{
       title:'ATAP large scale accumulated precipitation',
       thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_accumulated_precipitation_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
       layer:'large-scale_accumulated_precipitation_atap',
-      abs:'',
+      abs:'ATAP Large Scale Accumulated Precipitation',
 },{
-      title:'ATAP large scale accumulated precipitation contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_accumulated_precipitation_contour_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      title:'Large scale accumulated precipitation contour',
+      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_accumulated_precipitation_contour,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'large-scale_accumulated_precipitation_contour_atap',
-      abs:'',
+      layer:'large-scale_accumulated_precipitation_contour',
+      abs:'Large Scale Accumulated Precipitation Contour',
 },{
       title:'ecCharts large scale accumulated precipitation',
       thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_accumulated_precipitation_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
       layer:'large-scale_accumulated_precipitation_eccharts',
-      abs:'',
-},{
-      title:'ecCharts large scale accumulated precipitation contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_accumulated_precipitation_contour_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
-      service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'large-scale_accumulated_precipitation_contour_eccharts',
-      abs:'',
+      abs:'ecCharts Large Scale Accumulated Precipitation',
 },{
       title:'ATAP large scale accumulated predipitation last 6H',
       thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_precipitation_during_last_6_hours_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
       layer:'large-scale_precipitation_during_last_6_hours_atap',
-      abs:'',
+      abs:'ATAP Large Scale Accumulated Precipitation in last 6 hours',
 },{
-      title:'ATAP large scale accumulated precipitation last 6H contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_precipitation_during_last_6_hours_contour_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      title:'Large scale accumulated precipitation last 6H contour',
+      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_precipitation_during_last_6_hours_contour,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'large-scale_precipitation_during_last_6_hours_contour_atap',
-      abs:'',
+      layer:'large-scale_precipitation_during_last_6_hours_contour',
+      abs:'Large Scale Accumulated Precipitation in last 6 hours Contour',
 },{
       title:'ecCharts large scale accumulated precipitation last 6H',
       thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_precipitation_during_last_6_hours_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
       layer:'large-scale_precipitation_during_last_6_hours_eccharts',
-      abs:'',
-},{
-      title:'ecCharts large scale accumulated precipitation last 6H contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_precipitation_during_last_6_hours_contour_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
-      service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'large-scale_precipitation_during_last_6_hours_contour_eccharts',
-      abs:'',
+      abs:'ecCharts Large Scale Accumulated Precipitation in last 6 hours',
 },{
       title:'ATAP total accumulated precipitation',
       thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_accumulated_precipitation_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
       layer:'total_accumulated_precipitation_atap',
-      abs:'TOTAL Acumulated Precipitation',
+      abs:'ATAP Total Acumulated Precipitation',
 },{
-      title:'ATAP total accumulated precipitation contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_accumulated_precipitation_contour_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      title:'Total accumulated precipitation contour',
+      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_accumulated_precipitation_contour,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'total_accumulated_precipitation_contour_atap',
-      abs:'TOTAL Acumulated Precipitation',
+      layer:'total_accumulated_precipitation_contour',
+      abs:'Total Acumulated Precipitation Contour',
 },{
       title:'ecCharts total accumulated precipitation',
       thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_accumulated_precipitation_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
       layer:'total_accumulated_precipitation_eccharts',
-      abs:'TOTAL Acumulated Precipitation',
-},{
-      title:'ecCharts total accumulated precipitation contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_accumulated_precipitation_contour_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
-      service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'total_accumulated_precipitation_contour_eccharts',
-      abs:'TOTAL Acumulated Precipitation',
+      abs:'ecCharts Total Acumulated Precipitation',
 },{
       title:'ATAP total accumulated precipitation last 6H',
       thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_precipitation_during_last_6_hours_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
       layer:'total_precipitation_during_last_6_hours_atap',
-      abs:'TOTAL Acumulated Precipitation 6h',
+      abs:'ATAP Total Acumulated Precipitation in last 6 hours',
 },{
-      title:'ATAP total accumulated precipitation last 6H contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_precipitation_during_last_6_hours_contour_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      title:'Total accumulated precipitation last 6H contour',
+      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_precipitation_during_last_6_hours_contour,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'total_precipitation_during_last_6_hours_contour_atap',
-      abs:'TOTAL Acumulated Precipitation 6h',
+      layer:'total_precipitation_during_last_6_hours_contour',
+      abs:'Total Acumulated Precipitation in last 6 hours Contour',
 },{
       title:'ecCharts total accumulated precipitation last 6H',
       thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_precipitation_during_last_6_hours_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF&',
       layer:'total_precipitation_during_last_6_hours_eccharts',
-      abs:'TOTAL Acumulated Precipitation 6h',
-},{
-      title:'ecCharts total accumulated precipitation last 6H contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_precipitation_during_last_6_hours_contour_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
-      service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'total_precipitation_during_last_6_hours_contour_eccharts',
-      abs:'TOTAL Acumulated Precipitation 6h',
+      abs:'ecCharts Total Acumulated Precipitation in last 6 hours',
 }
 
 ];
@@ -462,9 +427,9 @@ var dataChooserConfigurationECMWFHRES = [
       layer:'geopotential_height',
       abs:'Geopotential Height in meters ',
 },{
-      title:'Temperature', thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=temperature_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      title:'Temperature', thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=temperature,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'temperature_atap',
+      layer:'temperature',
       abs:'Presion Level Temperature',
 },{
       title:'Relative humidity',
@@ -492,9 +457,9 @@ var dataChooserConfigurationECMWFHRES = [
       abs:'Pressure Level Wind in m/s',
 },{
       title:'Wind barbs',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=wind_barb,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=wind_barbs,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'wind_barb',
+      layer:'wind_barbs',
       abs:'Pressure Level Wind barbs',
 },{
       title:'Wind_kt',
@@ -504,9 +469,9 @@ var dataChooserConfigurationECMWFHRES = [
       abs:'Pressure Level Wind in Knots',
 },{
       title:'Wind vectors',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=wind_vector,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=wind_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'wind_vector',
+      layer:'wind_vectors',
       abs:'Pressure Level Wind vectors',
 },{
       title:'10m Wind',
@@ -516,9 +481,9 @@ var dataChooserConfigurationECMWFHRES = [
       abs:'10meters wind in m/s',
 },{
       title:'10m Wind barbs',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_barb,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_barbs,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'10_meter_wind_barb',
+      layer:'10_meter_wind_barbs',
       abs:'10meters wind barbs',
 },{
       title:'10m Wind_kt',
@@ -528,9 +493,9 @@ var dataChooserConfigurationECMWFHRES = [
       abs:'10meters wind in Knots',
 },{
       title:'10m Wind vectors',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_vector,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'10_meter_wind_vector',
+      layer:'10_meter_wind_vectors',
       abs:'10meters wind vectors',
 },{
       title:'Maximum 10m gust during last 6H',
@@ -603,121 +568,109 @@ var dataChooserConfigurationECMWFHRES = [
       thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_accumulated_precipitation_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
       layer:'convective_accumulated_precipitation_atap',
-      abs:'ATAP Convective Accumulated Prec',
+      abs:'ATAP Convective Accumulated Precipitation',
 },{
-      title:'ATAP convective accumulated precipitation contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_accumulated_precipitation_contour_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      title:'Convective accumulated precipitation contour',
+      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_accumulated_precipitation_contour,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'convective_accumulated_precipitation_contour_atap',
-      abs:'ATAP Convective Accumulated Preci Contour',
+      layer:'convective_accumulated_precipitation_contour',
+      abs:'Convective Accumulated Precipitation Contour',
 },{
       title:'ecCharts convective accumulated precipitation',
       thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_accumulated_precipitation_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
       layer:'convective_accumulated_precipitation_eccharts',
-      abs:'ecCharts Convective Accumulated Prec',
-},{
-      title:'ecCharts convective accumulated precipitation contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_accumulated_precipitation_contour_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
-      service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'convective_accumulated_precipitation_contour_eccharts',
-      abs:'ecCharts Convective Accumulated Preci Contour',
+      abs:'ecCharts Convective Accumulated Precipitation',
 },{
       title:'ATAP convective precipitation last 6H',
       thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_precipitation_during_last_6_hours_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
       layer:'convective_precipitation_during_last_6_hours_atap',
-      abs:'ATAP Convective Accumulated Prec in last 6 hours',
+      abs:'ATAP Convective Accumulated Precipitation in last 6 hours',
 },{
-      title:'ATAP convective precipitation last 6H contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_precipitation_during_last_6_hours_contour_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      title:'Convective precipitation last 6H contour',
+      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_precipitation_during_last_6_hours_contour,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'convective_precipitation_during_last_6_hours_contour_atap',
-      abs:'ATAP Convective Accumulated Prec in last 6 hours contour',
+      layer:'convective_precipitation_during_last_6_hours_contour',
+      abs:'Convective Accumulated Precipitation in last 6 hours Contour',
 },{
       title:'ecCharts convective precipitation last 6H',
       thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_precipitation_during_last_6_hours_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
       layer:'convective_precipitation_during_last_6_hours_eccharts',
-      abs:'ecCharts Convective Accumulated Prec in last 6 hours',
-},{
-      title:'ecCharts convective precipitation last 6H contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=convective_precipitation_during_last_6_hours_contour_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
-      service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'convective_precipitation_during_last_6_hours_contour_eccharts',
-      abs:'ecCharts Convective Accumulated Prec in last 6 hours contour',
+      abs:'ecCharts Convective Accumulated Precipitation in last 6 hours',
 },{
       title:'ATAP large scale accumulated precipitation',
       thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_accumulated_precipitation_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
       layer:'large-scale_accumulated_precipitation_atap',
-      abs:'',
+      abs:'ATAP Large Scale Accumulated Precipitation',
 },{
-      title:'ATAP large scale accumulated precipitation contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_accumulated_precipitation_contour_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      title:'Large scale accumulated precipitation contour',
+      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_accumulated_precipitation_contour,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'large-scale_accumulated_precipitation_contour_atap',
-      abs:'',
+      layer:'large-scale_accumulated_precipitation_contour',
+      abs:'Large Scale Accumulated Precipitation Contour',
 },{
       title:'ecCharts large scale accumulated precipitation',
       thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_accumulated_precipitation_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
       layer:'large-scale_accumulated_precipitation_eccharts',
-      abs:'',
+      abs:'ecCharts Large Scale Accumulated Precipitation',
 },{
-      title:'ecCharts large scale accumulated precipitation contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_accumulated_precipitation_contour_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      title:'ATAP large scale accumulated predipitation last 6H',
+      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_precipitation_during_last_6_hours_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'large-scale_accumulated_precipitation_contour_eccharts',
-      abs:'',
+      layer:'large-scale_precipitation_during_last_6_hours_atap',
+      abs:'ATAP Large Scale Accumulated Precipitation in last 6 hours',
+},{
+      title:'Large scale accumulated precipitation last 6H contour',
+      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_precipitation_during_last_6_hours_contour,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      service:server + '/adagucserver?dataset=ECMWF-HRES&',
+      layer:'large-scale_precipitation_during_last_6_hours_contour',
+      abs:'Large Scale Accumulated Precipitation in last 6 hours Contour',
+},{
+      title:'ecCharts large scale accumulated precipitation last 6H',
+      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=large-scale_precipitation_during_last_6_hours_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      service:server + '/adagucserver?dataset=ECMWF-HRES&',
+      layer:'large-scale_precipitation_during_last_6_hours_eccharts',
+      abs:'ecCharts Large Scale Accumulated Precipitation in last 6 hours',
 },{
       title:'ATAP total accumulated precipitation',
       thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_accumulated_precipitation_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
       layer:'total_accumulated_precipitation_atap',
-      abs:'TOTAL Acumulated Precipitation',
+      abs:'ATAP Total Acumulated Precipitation',
 },{
-      title:'ATAP total accumulated precipitation contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_accumulated_precipitation_contour_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      title:'Total accumulated precipitation contour',
+      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_accumulated_precipitation_contour,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'total_accumulated_precipitation_contour_atap',
-      abs:'TOTAL Acumulated Precipitation',
+      layer:'total_accumulated_precipitation_contour',
+      abs:'Total Acumulated Precipitation Contour',
 },{
       title:'ecCharts total accumulated precipitation',
       thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_accumulated_precipitation_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
       layer:'total_accumulated_precipitation_eccharts',
-      abs:'TOTAL Acumulated Precipitation',
-},{
-      title:'ecCharts total accumulated precipitation contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_accumulated_precipitation_contour_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
-      service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'total_accumulated_precipitation_contour_eccharts',
-      abs:'TOTAL Acumulated Precipitation',
+      abs:'ecCharts Total Acumulated Precipitation',
 },{
       title:'ATAP total accumulated precipitation last 6H',
       thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_precipitation_during_last_6_hours_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
       layer:'total_precipitation_during_last_6_hours_atap',
-      abs:'TOTAL Acumulated Precipitation 6h',
+      abs:'ATAP Total Acumulated Precipitation in last 6 hours',
 },{
-      title:'ATAP total accumulated precipitation last 6H contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_precipitation_during_last_6_hours_contour_atap,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
+      title:'Total accumulated precipitation last 6H contour',
+      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_precipitation_during_last_6_hours_contour,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'total_precipitation_during_last_6_hours_contour_atap',
-      abs:'TOTAL Acumulated Precipitation 6h',
+      layer:'total_precipitation_during_last_6_hours_contour',
+      abs:'Total Acumulated Precipitation in last 6 hours Contour',
 },{
       title:'ecCharts total accumulated precipitation last 6H',
       thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_precipitation_during_last_6_hours_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
       layer:'total_precipitation_during_last_6_hours_eccharts',
-      abs:'TOTAL Acumulated Precipitation 6h',
-},{
-      title:'ecCharts total accumulated precipitation last 6H contour',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_precipitation_during_last_6_hours_contour_eccharts,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&dim_reference_time=*',
-      service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'total_precipitation_during_last_6_hours_contour_eccharts',
-      abs:'TOTAL Acumulated Precipitation 6h',
+      abs:'ecCharts Total Acumulated Precipitation in last 6 hours',
 }
 
 ];
@@ -1189,7 +1142,7 @@ var dataChooserConfigurationRAY = [
 title:'RAYOS',
     thumbnail:server + '/wms?DATASET=LIGHTNING&SERVICE=WMS&REQUEST=GetMap&&VERSION=1.1.1&SRS=EPSG:4326&LAYERS=overlay,LIGHTNING_lightningAddLayers&&BBOX=-20,25,10,50WIDTH=900&HEIGHT=800&FORMAT=image/png&TRANSPARENT=TRUE',
     service:server + '/adagucserver?dataset=LIGHTNING&',
-    layer:'LIGHTNING_lightningTimePeriod',
+    layer:'LIGHTNING',
   }
 ]
 
@@ -2312,12 +2265,12 @@ var dataChooserConfigurationMSGOPE = [
 
 //Contenido carpeta SST
 var dataChooserConfigurationSST = [
-  /*{
+  {
     title:'SST-CON',
     thumbnail:server + '/adagucserver?dataset=SST&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,sea_surface_temperature_contour&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
     service:server + '/adagucserver?dataset=SST&&service=WMS&request=GetCapabilities',
     layer:'sea_surface_temperature_contour'
-  },*/
+  },
   {
     title:'SST',
     thumbnail:server + '/adagucserver?dataset=SST&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,sea_surface_temperature&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
@@ -2416,63 +2369,63 @@ var dataChooserConfigurationFoldersTEL = [
 var dataChooserConfigurationMSGIMG = [
 {
   title:'HIGH RES',
-      thumbnail:server + '/adagucserver?dataset=SEVIRI-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HRV,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=SEVIRI-HRV&',
+      thumbnail:server1 + '/adagucserver?dataset=SEVIRI-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HRV,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=SEVIRI-HRV&',
       layer:'HRV'
 },{
   title:'VIS006',
-      thumbnail:server + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS006-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=SEVIRI-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS006-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=SEVIRI-3Km&',
       layer:'VIS006-REF'
 },{
   title:'VIS008',
-      thumbnail:server + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS008-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=SEVIRI-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS008-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=SEVIRI-3Km&',
       layer:'VIS008-REF'
 },{
   title:'IR016-REF',
-      thumbnail:server + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR016-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=SEVIRI-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR016-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=SEVIRI-3Km&',
       layer:'IR016-REF'
 },{
   title:'IR039-BT',
-      thumbnail:server + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR039-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=SEVIRI-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR039-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=SEVIRI-3Km&',
       layer:'IR039-BT'
 },{
   title:'IR087-BT',
-      thumbnail:server + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR087-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=SEVIRI-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR087-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=SEVIRI-3Km&',
       layer:'IR087-BT'
 },{
   title:'IR097-BT',
-      thumbnail:server + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR097-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=SEVIRI-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR097-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=SEVIRI-3Km&',
       layer:'IR097-BT'
 },{
   title:'IR108-BT',
-      thumbnail:server + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=SEVIRI-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=SEVIRI-3Km&',
       layer:'IR108-BT'
 },{
   title:'IR120-BT',
-      thumbnail:server + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR120-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=SEVIRI-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR120-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=SEVIRI-3Km&',
       layer:'IR120-BT'
 },{
   title:'IR134-BT',
-      thumbnail:server + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR134-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=SEVIRI-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR134-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=SEVIRI-3Km&',
       layer:'IR134-BT'
 },{
   title:'WV062-BT',
-      thumbnail:server + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV062-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=SEVIRI-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV062-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=SEVIRI-3Km&',
       layer:'WV062-BT'
 },{
   title:'WV073-BT',
-      thumbnail:server + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV073-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=SEVIRI-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV073-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=SEVIRI-3Km&',
       layer:'WV073-BT'
 }
 ]
@@ -2481,63 +2434,63 @@ var dataChooserConfigurationMSGIMG = [
 var dataChooserConfigurationMSGRSS = [
 {
   title:'HIGH RES',
-      thumbnail:server + '/adagucserver?dataset=RSS-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HRV,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RSS-HRV&',
+      thumbnail:server1 + '/adagucserver?dataset=RSS-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HRV,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RSS-HRV&',
       layer:'HRV'
 },{
   title:'VIS006',
-      thumbnail:server + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS006-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RSS-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS006-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RSS-3Km&',
       layer:'VIS006-REF'
 },{
   title:'VIS008',
-      thumbnail:server + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS008-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RSS-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS008-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RSS-3Km&',
       layer:'VIS008-REF'
 },{
   title:'IR016-REF',
-      thumbnail:server + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR016-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RSS-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR016-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RSS-3Km&',
       layer:'IR016-REF'
 },{
   title:'IR039-BT',
-      thumbnail:server + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR039-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RSS-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR039-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RSS-3Km&',
       layer:'IR039-BT'
 },{
   title:'IR087-BT',
-      thumbnail:server + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR087-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RSS-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR087-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RSS-3Km&',
       layer:'IR087-BT'
 },{
   title:'IR097-BT',
-      thumbnail:server + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR097-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RSS-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR097-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RSS-3Km&',
       layer:'IR097-BT'
 },{
   title:'IR108-BT',
-      thumbnail:server + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RSS-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RSS-3Km&',
       layer:'IR108-BT'
 },{
   title:'IR120-BT',
-      thumbnail:server + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR120-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RSS-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR120-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RSS-3Km&',
       layer:'IR120-BT'
 },{
   title:'IR134-BT',
-      thumbnail:server + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR134-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RSS-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR134-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RSS-3Km&',
       layer:'IR134-BT'
 },{
   title:'WV062-BT',
-      thumbnail:server + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV062-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RSS-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV062-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RSS-3Km&',
       layer:'WV062-BT'
 },{
   title:'WV073-BT',
-      thumbnail:server + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV073-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RSS-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV073-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RSS-3Km&',
       layer:'WV073-BT'
 }
 ]
@@ -2546,63 +2499,63 @@ var dataChooserConfigurationMSGRSS = [
 var dataChooserConfigurationMSGIODC = [
 {
   title:'HIGH RES',
-      thumbnail:server + '/adagucserver?dataset=IODC-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HRV,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=IODC-HRV&',
+      thumbnail:server1 + '/adagucserver?dataset=IODC-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HRV,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=IODC-HRV&',
       layer:'HRV'
 },{
   title:'VIS006',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS006-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=IODC-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS006-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=IODC-3Km&',
       layer:'VIS006-REF'
 },{
   title:'VIS008',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS008-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=IODC-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS008-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=IODC-3Km&',
       layer:'VIS008-REF'
 },{
   title:'IR016-REF',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR016-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=IODC-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR016-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=IODC-3Km&',
       layer:'IR016-REF'
 },{
   title:'IR039-BT',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR039-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=IODC-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR039-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=IODC-3Km&',
       layer:'IR039-BT'
 },{
   title:'IR087-BT',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR087-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=IODC-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR087-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=IODC-3Km&',
       layer:'IR087-BT'
 },{
   title:'IR097-BT',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR097-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=IODC-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR097-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=IODC-3Km&',
       layer:'IR097-BT'
 },{
   title:'IR108-BT',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=IODC-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=IODC-3Km&',
       layer:'IR108-BT'
 },{
   title:'IR120-BT',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR120-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=IODC-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR120-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=IODC-3Km&',
       layer:'IR120-BT'
 },{
   title:'IR134-BT',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR134-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=IODC-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR134-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=IODC-3Km&',
       layer:'IR134-BT'
 },{
   title:'WV062-BT',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV062-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=IODC-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV062-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=IODC-3Km&',
       layer:'WV062-BT'
 },{
   title:'WV073-BT',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV073-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=IODC-3Km&',
+      thumbnail:server1 + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV073-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=IODC-3Km&',
       layer:'WV073-BT'
 }
 ]
@@ -2611,148 +2564,148 @@ var dataChooserConfigurationMSGIODC = [
 //Contenido carpeta MSG-RGB
 var dataChooserConfigurationMSGRGB = [
   {title:'Airmass',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Airmass,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Airmass,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'Airmass'
 },{
   title:'Ash',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Ash,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Ash,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'Ash'
 },{
   title:'CloudtopDaytime',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CloudtopDaytime,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CloudtopDaytime,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'CloudtopDaytime'
 },{
   title:'Cloudtop',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Cloudtop,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Cloudtop,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'Cloudtop'
 },{
   title:'ColorizedIrClouds',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=ColorizedIrClouds,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=ColorizedIrClouds,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'ColorizedIrClouds'
 },{
   title:'Convection',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Convection,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Convection,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'Convection'
 },{
   title:'DayMicrophysics',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=DayMicrophysics,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=DayMicrophysics,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'DayMicrophysics'
 },{
   title:'DayMicrophysicsWinter',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=DayMicrophysicsWinter,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=DayMicrophysicsWinter,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=RGB&',
       layer:'DayMicrophysicsWinter'
 },{
   title:'Dust',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Dust,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Dust,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'Dust'
 },{
   title:'Fog',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Fog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Fog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'Fog'
 },{
   title:'Snow',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Snow,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Snow,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'Snow'
 },{
   title:'NaturalColor',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalColor,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalColor,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'NaturalColor'
 },{
   title:'NaturalWithNightFog',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalWithNightFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalWithNightFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'NaturalWithNightFog'
 },{
   title:'NightFog',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NightFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NightFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'NightFog'
 },{
   title:'NightMicrophysics',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NightMicrophysics,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NightMicrophysics,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'NightMicrophysics'
 },{
   title:'Dust',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Dust,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Dust,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'Dust'
 },{
   title:'Fog',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Fog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Fog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'Fog'
 },{
   title:'IrOverview',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IrOverview,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IrOverview,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'IrOverview'
 },{
   title:'NaturalColorNoCorr',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalColorNocorr,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalColorNocorr,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'NaturalColorNocorr'
 },{
   title:'NaturalColorRaw',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalColorRaw,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalColorRaw,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'NaturalColorRaw'
 },{
   title:'NaturalColor',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalColor,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalColor,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'NaturalColor'
 },{
   title:'NaturalEnh',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalEnh,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalEnh,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'NaturalEnh'
 },{
   title:'NaturalWithNightFog',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalWithNightFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NaturalWithNightFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'NaturalWithNightFog'
 },{
   title:'NightFog',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NightFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NightFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'NightFog'
 },{
   title:'NightIrAlpha',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NightIrAlpha,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=NightIrAlpha,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'NightIrAlpha'
 },{
   title:'Overview',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Overview,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Overview,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'Overview'
 },{
   title:'Snow',
-      thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Snow,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Snow,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB&',
       layer:'Snow'
 },{
   title:'Sandwich',
-      thumbnail:server + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IrSandwich,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB-HRV&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IrSandwich,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB-HRV&',
       layer:'IrSandwich'
 },{
   title:'HrvFog',
-      thumbnail:server + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HrvFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB-HRV&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HrvFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB-HRV&',
       layer:'HrvFog'
 }
 
@@ -2762,43 +2715,43 @@ var dataChooserConfigurationMSGRGB = [
 var dataChooserConfigurationMSGHRGB = [
 {
   title:'GreenSnow',
-      thumbnail:server + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=GreenSnow,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB-HRV&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=GreenSnow,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB-HRV&',
       layer:'GreenSnow'
 },{
   title:'HrvClouds',
-      thumbnail:server + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HrvClouds,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB-HRV&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HrvClouds,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB-HRV&',
       layer:'HrvClouds'
 },{
   title:'HrvFog',
-      thumbnail:server + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HrvFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB-HRV&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HrvFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB-HRV&',
       layer:'HrvFog'
 },{
   title:'HrvSevereStormsMasked',
-      thumbnail:server + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HrvSevereStormsMasked,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB-HRV&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HrvSevereStormsMasked,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB-HRV&',
       layer:'HrvSevereStormsMasked'
 },{
   title:'HrvSevereStorms',
-      thumbnail:server + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HrvSevereStorms,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB-HRV&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HrvSevereStorms,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB-HRV&',
       layer:'HrvSevereStorms'
 },{
   title:'Sandwich',
-      thumbnail:server + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IrSandwich,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB-HRV&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IrSandwich,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB-HRV&',
       layer:'IrSandwich'
 },{
   title:'RealisticColors',
-      thumbnail:server + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=RealisticColors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB-HRV&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=RealisticColors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB-HRV&',
       layer:'RealisticColors'
 },{
   title:'VisSharpenedIr',
-      thumbnail:server + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VisSharpenedIr,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=RGB-HRV&',
+      thumbnail:server1 + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VisSharpenedIr,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server1 + '/adagucserver?dataset=RGB-HRV&',
       layer:'VisSharpenedIr'
 }
 
@@ -2959,27 +2912,27 @@ var dataChooserConfigurationMSGSAF = [
 var dataChooserConfigurationFoldersMSG = [
   {
   title:"<body> <table><tr><td><a href='https://www.eumetsat.int/mfg-calibration' target='_blank' rel='noopener noreferrer'>info</a></td><td>&nbsp;&nbsp;</td><td><b>&nbsp;&nbsp;METEOSAT 0DEG IMAGES /Refl.</b></td><td>&nbsp;&nbsp;</td><td><h1 ><img src='./img/folder-icon-transparent.png' width='30' height='30'></h1></td></tr></table></body>",
-  thumbnail:server + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+  thumbnail:server1 + '/adagucserver?dataset=SEVIRI-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
   dataChooserConfiguration: dataChooserConfigurationMSGIMG
   },
   {
   title:"<body> <table><tr><td><a href='https://www.eumetsat.int/mfg-calibration' target='_blank' rel='noopener noreferrer'>info</a></td><td>&nbsp;&nbsp;</td><td><b>&nbsp;&nbsp;METEOSAT RSS IMAGES /Refl.</b></td><td>&nbsp;&nbsp;</td><td><h1 ><img src='./img/folder-icon-transparent.png' width='30' height='30'></h1></td></tr></table></body>",
-  thumbnail:server + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+  thumbnail:server1 + '/adagucserver?dataset=RSS-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
   dataChooserConfiguration: dataChooserConfigurationMSGRSS
   },
   {
   title:"<body> <table><tr><td><a href='https://www.eumetsat.int/mfg-calibration' target='_blank' rel='noopener noreferrer'>info</a></td><td>&nbsp;&nbsp;</td><td><b>&nbsp;&nbsp;METEOSAT IODC IMAGES /Refl.</b></td><td>&nbsp;&nbsp;</td><td><h1 ><img src='./img/folder-icon-transparent.png' width='30' height='30'></h1></td></tr></table></body>",
-  thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+  thumbnail:server1 + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
   dataChooserConfiguration: dataChooserConfigurationMSGIODC
   },
   {
   title:"<body> <table><tr><td><a href='http://www.eumetrain.org/RGBguide/rgbs.html' target='_blank' rel='noopener noreferrer'>info</a></td><td>&nbsp;&nbsp;</td><td><b>&nbsp;&nbsp;     METEOSAT RGB</b></td><td>&nbsp;&nbsp;</td><td><h1 ><img src='./img/folder-icon-transparent.png' width='30' height='30'></h1></td></tr></table></body>",
-  thumbnail:server + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Ash,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=26,-20,30,-13&FORMAT=image/png&TRANSPARENT=TRUE&',
+  thumbnail:server1 + '/adagucserver?dataset=RGB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Ash,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=26,-20,30,-13&FORMAT=image/png&TRANSPARENT=TRUE&',
   dataChooserConfiguration: dataChooserConfigurationMSGRGB
   },
   {
   title:"<body> <table><tr><td><a href='http://www.eumetrain.org/RGBguide/rgbs.html'  target='_blank' rel='noopener noreferrer'>info</a></td><td>&nbsp;&nbsp;</td><td><b>&nbsp;&nbsp;METEOSAT hight Resolution RGB</b></td><td>&nbsp;&nbsp;</td><td><h1 ><img src='./img/folder-icon-transparent.png' width='30' height='30'></h1></td></tr></table></body>",
-  thumbnail:server + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HrvFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+  thumbnail:server1 + '/adagucserver?dataset=RGB-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HrvFog,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
   dataChooserConfiguration: dataChooserConfigurationMSGHRGB
   },
   {

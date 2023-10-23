@@ -360,7 +360,7 @@ function MakeHTTPRequest(fname, callbackfunction,useredirect, requestProxy) {
             callbackfunction(null, xhr.response);
           }
         } else {
-          window.alert("ALLI")
+          //window.alert("ALLI")
           //console.log(fname)
           redirRequest();
         }

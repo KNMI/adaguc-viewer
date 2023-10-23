@@ -68,7 +68,8 @@ var autowms_app = function (element, webmapjs) {
       wmsServiceURL +
       "&service=WMS&request=getmap&format=image/png&layers=" +
       data.name +
-      "&width=400&CRS=EPSG:4326&STYLES=&EXCEPTIONS=INIMAGE&showlegend=true&dim_reference_time=*&" +
+      "&width=400&CRS=EPSG:4326&STYLES=&EXCEPTIONS=INIMAGE&showlegend=true&" +
+      //"&width=400&CRS=EPSG:4326&STYLES=&EXCEPTIONS=INIMAGE&showlegend=true&dim_reference_time=*&" +
       Math.random();
     var html =
       "<span class='autowms_app_layeritem' title='Click to add to viewer' name='" +

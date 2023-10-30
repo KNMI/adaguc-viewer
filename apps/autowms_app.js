@@ -148,7 +148,7 @@ var autowms_app = function (element, webmapjs) {
             .split("?")[0]
             .replace("adagucserver", "adagucopendap/");
           dapURL = dapURL.replace(/([^:]\/)\/+/g, "$1");
-          console.log("dapURL",dapURL)
+          //console.log("dapURL",dapURL)
           if (kvps.source) {
             dapURL += kvps.source;
           }

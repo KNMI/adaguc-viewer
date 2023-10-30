@@ -114,6 +114,9 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
         if(dim.name=="reference_time" && dim.units=="ISO8601"){
           hasReferenceTime = j;
         }
+        if(dim.name=="forecast_reference_time" && dim.units=="ISO8601"){
+          hasReferenceTime = j;
+        }
       }
       _this.dimSlider.suspendEvents();
       if(hasTime != -1 && hasReferenceTime != -1){
@@ -383,3 +386,4 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
     this.superclass.initComponent.apply(this, arguments);
   }
 }); 
+

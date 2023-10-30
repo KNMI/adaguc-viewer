@@ -209,6 +209,7 @@ export default class WMJSLayer {
 
   draw (e) {
     for (let j = 0; j < this.parentMaps.length; j++) {
+      //console.log(this.parentMaps[j],'WMJSLayer::draw::' + e)
       this.parentMaps[j].draw('WMJSLayer::draw::' + e);
     }
   }

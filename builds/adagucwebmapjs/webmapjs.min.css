@@ -30,6 +30,11 @@
     margin: 0;
     z-index:3000;
 }
+.webmapjs_logoAEMET {
+    position: relative;
+    z-index:4000;
+    margin: 0;
+}
 .webmapjs_locationfield {
     border: 1px solid grey;
     line-height: 19px;
@@ -278,6 +283,20 @@
   width:16px;
   height:16px;
   background-position: -48px -48px !important;
+}
+
+.button_update_on {
+  background-image:url(./img/adagucviewerlogos2.png) !important;
+  width:16px;
+  height:16px;
+  background-position: -80px -48px !important;
+}
+ 
+.button_update_off {
+  background-image:url(./img/adagucviewerlogos2.png) !important;
+  width:16px;
+  height:16px;
+  background-position: -64px -48px !important;
 }
 
 .button_adddata32 {

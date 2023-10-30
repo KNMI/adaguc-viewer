@@ -19,7 +19,15 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
     
     var legendcanvasheight = 250;
     var legendcanvaswidth = 90;
+    var autoupdate = true;
+    var timeupdate = 60000 //1 minuto
     
+    
+    //var timer = setInterval(_this.reload, timeupdate,60000);
+    var timer=null
+
+    console.log("setTimeout() Ejemplo...",timer);
+
     if(!isDefined(_this.opacity)){
       _this.opacity = 1.0;
     }
@@ -29,8 +37,80 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
       style:_this.style,
       opacity:_this.opacity,
       transparent:_this.transparent,
-      enabled:_this.enabled
+      enabled:_this.enabled,
+      updatetime: _this.updatetime
     }); 
+    
+    _this.reload = function(tm){
+     
+      var timeDim=_this.getDimensionPanel("time").dimension
+      var dimMaxValue=timeDim.dimMaxValue
+      var currentValue=timeDim.currentValue
+      var req=_this.WMJSLayer.service+"&service=WMS&request=GetCapabilities"
+      var parser = new ol.format.WMSCapabilities()
+      
+      var ready = function(lasttime,linked){
+        console.log("linked?",linked)
+        if (autoupdate) { 
+          var webmapjs=_this.WMJSLayer.parentMaps[0] 
+          console.log("Reload ON",timer,tm,_this.name,new Date(Date.now()).getHours()+":"+new Date(Date.now()).getMinutes());
+          webmapjs.suspendEvent('ondimchange');
+          webmapjs.suspendEvent('ondimupdate');
+          
+          //webmapjs.setDimension('time', currentValue);
+          //webmapjs.setDimension('time', lasttime);
+          
+          webmapjs.resumeEvent('ondimchange');
+          webmapjs.resumeEvent('ondimupdate');
+
+          //_this.getDimensionPanel("time").dimSlider.setValue(timeDim.getIndexForValue(dimMaxValue))
+          //_this.getDimensionPanel("time").sliderChanged(timeDim.getIndexForValue(dimMaxValue))
+          //_this.WMJSLayer.draw("DimensionPanel::sliderChanged");
+        } else {
+          console.log("Reload OFF",timer,tm,_this.name,new Date(Date.now()).getHours()+":"+new Date(Date.now()).getMinutes());
+        }  
+        //console.log("HEY",af)
+      }
+      
+      fetch(req).then(function(response) {
+        return response.text();
+      }).then(function(text) {
+      const result = parser.read(text);
+      var capLayers = result.Capability.Layer.Layer
+      for (let layer of capLayers) {
+        if (layer.Name==_this.name) {
+          for (let dim of layer.Dimension){
+            if (dim.name=="time" ){
+              var timeLastValue=dim.default
+              var linked=_this.getDimensionPanel("time").dimension.linked
+              if(dimMaxValue!=timeLastValue){
+                ready(timeLastValue,linked)
+                 //_this.parseLayer(true,ready(linked))
+              } else {
+                if (autoupdate && currentValue!=timeLastValue){
+                   //_this.parseLayer(true,ready(linked))
+                    ready(timeLastValue,linked)
+                  } 
+              }  ;  
+            }
+          }
+        }
+      }    
+      })    
+    }  
+
+    _this.getUpdateTime = function(pt) {
+      //return 10000
+      if (pt=="PT6H") {return 3*60*60*1000} 
+      if (pt=="PT3H") {return 1*60*60*1000} 
+      if (pt=="PT1H30M") {return 45*60*1000} 
+      if (pt=="PT1H") {return 30*60*1000} 
+      if (pt=="PT30M") {return 15*60*1000} 
+      if (pt=="PT15M") {return 8*60*1000} 
+      if (pt=="PT10M") {return 5*60*1000} 
+      if (pt=="PT5M") {return 3*60*1000} 
+      if (pt=="PT1M") {return 60*1000} 
+    } 
     
     _this.opacitySliderChanged = function(value){
       if(_this.WMJSLayer){
@@ -93,6 +173,22 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
       }
     });
 
+    _this.hideShowAutoButton = Ext.create("Ext.button.Button",{
+      xtype:'button',tooltip: I18n.auto_update_layer.tooltip,
+      iconCls:autoupdate===true?'button_update_on':'button_update_off',handler:function(o,c){
+        console.log(autoupdate)
+        autoupdate = !autoupdate
+        console.log(autoupdate)
+        //_this.WMJSLayer.displayLegendInMap(!_this.WMJSLayer.displayLegendInMapEnable);
+        if(autoupdate==false){
+          this.setIconCls('button_update_off');
+        }else {
+          this.setIconCls('button_update_on');
+        }
+        _this.WMJSLayer.draw("LayerPanel::HideShow");
+      }
+    });
+
     /**
      * selects this layer panel and colors the borders
      */
@@ -150,8 +246,9 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
       for(var j=0;j<_this.WMJSLayer.dimensions.length;j++){
 
         dimBackup.push(this.WMJSLayer.dimensions[j].clone());
+        
       }
-      
+
       _this.dimensionPanels = [];
       
       /**
@@ -162,7 +259,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         
         for(var j=0;j<_this.dimensionPanels.length;j++){
           //if(_this.dimensionPanels[j].dimension.linked == true){
-            var dim=_this.WMJSLayer.getDimension(_this.dimensionPanels[j].dimension.name);
+            var dim=_this.WMJSLayer.getDimension(_this.dimensionPanels[j].dimension.name); 
             _this.dimensionPanels[j].setValue(dim.getValue());
           //}
         }
@@ -185,7 +282,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         _this.WMJSLayer.setDimension(name,value);
         dimPanel.setValue(value);
       };
-      
+
       /**
        * Gets the WMJSExtDimensionPanel of this layer by dimensionname
        * 
@@ -211,6 +308,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         error(msg);
       };
       
+            
       var layerParsedCallback = function(parsedLayer){
         if(_this.WMJSLayer.parentMaps[0] == undefined)return;
         if(_this.WMJSLayer != parsedLayer){
@@ -223,6 +321,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
           return;
         };
         
+
         if(_this.WMJSLayer.hasError){
           _this.setLoading(false);
           
@@ -266,11 +365,15 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         _this.dimensionPanels = [];
         _this.dimensionPanelContainer.removeAll();
 
+
+
         var dimensionPanelContainerTitle = "";
         for(var j=0;j<_this.WMJSLayer.dimensions.length;j++){
           for(var i=0;i<dimBackup.length;i++){
             if(dimBackup[i].name == _this.WMJSLayer.dimensions[j].name){
               _this.WMJSLayer.dimensions[j].currentValue = dimBackup[i].currentValue;
+              //console.log("BACK",dimBackup[i].currentValue,dimBackup[i].linked)
+              //console.log("CURR",_this.WMJSLayer.dimensions[j].currentValue,_this.WMJSLayer.dimensions[j].linked)
             }
           }
           var dimPanel = Ext.create('WMJSExtDimensionPanel',{dimension:_this.WMJSLayer.dimensions[j],layer:_this.WMJSLayer,dimensionPanels:_this.dimensionPanels});
@@ -279,6 +382,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
           if(dimensionPanelContainerTitle.length>0)dimensionPanelContainerTitle+=", ";
           dimensionPanelContainerTitle +=_this.WMJSLayer.dimensions[j].name;
         }
+
 //         if(_this.WMJSLayer.dimensions.length == 1){
 //           _this.dimensionPanelContainer.setTitle(dimensionPanelContainerTitle);
 //         }else{
@@ -392,9 +496,27 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
        
        _this.WMJSLayer.parentMaps[0].getListener().addToCallback("onlegendready",setLegendForLayer,true);
        setLegendForLayer();
-       
+      
+      if (_this.updatetime==undefined){
+        console.log("TIME UNDEFINED")
+        var dim=_this.WMJSLayer.getDimension("time").values
+        var pt=getUpdateTime(dim.slice(dim.lastIndexOf("/")+1))
+        console.log(pt)
+        _this.updatetime=pt
+      }  
+      //Pongo el timer
+      if (timeupdate){
+        if(timer==null){
+        console.log("Pongo el timer")
+        timer=setInterval(_this.reload,_this.updatetime,_this.updatetime)
+        console.log(timer,_this.updatetime)
+        } 
+      } 
+      //clearInterval(timer)
+
       };//layerParsedCallback
       
+
       try{
         _this.WMJSLayer.parseLayer(layerParsedCallback,forceReload,"LayerPanel::parseLayer", xml2jsonrequestURL);
         if (forceReload === true) {
@@ -422,7 +544,6 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
       createNewLayerPanel(_this.parentWebMapJS,_this.WMJSLayer);
     };
     
-   
     
 
     _this.productButton = Ext.create('Ext.button.Button',{
@@ -893,6 +1014,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         _this.opacitySlider,
         _this.hideShowButton,
         _this.hideShowLegendButton,
+        _this.hideShowAutoButton,
         {scale:'small',iconCls:'button_zoomfullextent',tooltip: I18n.zoom_to_this_layer.tooltip,handler:function(){_this.WMJSLayer.zoomToLayer()}}
       ],
       listeners:{
@@ -914,6 +1036,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         beforeclose:function(p){
           _this.WMJSLayer.parentMaps[0].stopAnimating();
           _this.WMJSLayer.remove();
+          clearInterval(timer)
         }
       }
     });
@@ -921,4 +1044,6 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
     this.callParent(arguments);
    _this.parseLayer();
   }
+ 
 });
+

@@ -166,14 +166,17 @@ function WMJSTimeSelector (element, callback, _defaultLength) {
   /** Control and logic part **/
 
   this.loadingComplete = function (webmapjs) {
+    //console.log("A")
     this.generate(webmapjs, false, true);
   };
 
   this.dimensionUpdate = function (webmapjs) {
+    //console.log("U")
     this.generate(webmapjs, true, true);
   };
 
   this.dimensionChange = function (webmapjs) {
+    //console.log("C")
     this.generate(webmapjs, false, false);
   };
 

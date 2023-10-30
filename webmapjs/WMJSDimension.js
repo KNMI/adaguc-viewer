@@ -399,11 +399,12 @@ export default class WMJSDimension {
     dim.name = this.name;
     dim.units = this.units;
     dim.values = this.values;
+    dim.linked = this.linked;
     dim.initialize();
     dim.currentValue = this.currentValue;
     dim.defaultValue = this.defaultValue;
     dim.parentLayer = this.parentLayer;
-    dim.linked = this.linked;
+    
     return dim;
   }
 };

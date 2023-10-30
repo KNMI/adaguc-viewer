@@ -49,6 +49,24 @@ export const isDefined = (variable) => {
 };
 
 /**
+ * 
+ * @param pt The PT format of time 
+ * @returns The time of update
+ */
+export const getUpdateTime = (pt) => {
+  if (pt=="PT6H") {return 3*60*60*1000} 
+  if (pt=="PT3H") {return 1*60*60*1000} 
+  if (pt=="PT1H30M") {return 45*60*1000} 
+  if (pt=="PT1H") {return 30*60*1000} 
+  if (pt=="PT30M") {return 15*60*1000} 
+  if (pt=="PT15M") {return 8*60*1000} 
+  if (pt=="PT10M") {return 5*60*1000} 
+  if (pt=="PT5M") {return 3*60*1000} 
+  if (pt=="PT1M") {return 30*1000} 
+  return 60000
+} 
+
+/**
  * Checks if a variable is null or not
  * @param variable The variable to check
  * @returns true if variable is indeed null, otherwise false.

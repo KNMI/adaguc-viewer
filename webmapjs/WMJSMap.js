@@ -765,6 +765,17 @@ export default class WMJSMap {
         )
         .appendTo(this.baseDiv);
 
+      //LOGO AEMET
+      jquery("<div/>", {
+        id: this.makeComponentId("logoAEMET"),
+      })
+        .addClass("webmapjs_logoAEMET")
+        .html(
+          "<img class='webmapjs_logoAEMET' align='right' src='./logo_AEMET.png' name='Logo'" +
+            " id='logoAEMET'/>"
+        )
+        .appendTo(this.baseDiv);
+
       jquery("<button/>", {
         id: this.makeComponentId("searchboxbutton"),
         mousedown: (event) => {
@@ -828,6 +839,7 @@ export default class WMJSMap {
       this.draw("bgMapImageStore loaded");
     });
     let adagucBeforeDraw = (ctx) => {
+      //console.log("CTX",ctx)
       if (this.baseLayers) {
         for (let l = 0; l < this.baseLayers.length; l++) {
           if (this.baseLayers[l].enabled) {
@@ -960,14 +972,13 @@ export default class WMJSMap {
             let legendUrl = this.getLegendGraphicURLForLayer(imgArray[j]);
             if (isDefined(legendUrl)) {
               let image = legendImageStore.getImage(legendUrl);
-              //console.log(image);
+              //console.log(legendUrl);
               if (image.hasError() === false) {
                 if (image.isLoaded() === false && image.isLoading() === false) {
                   image.load();
                 } else {
 
                   let el = image.getElement()[0];
-                  //console.log(el.src);
                   
                   
                   var img = document.createElement("img");
@@ -1585,9 +1596,10 @@ export default class WMJSMap {
     if (!layer.parentMaps.includes(this)) {
       layer.parentMaps.push(this);
     }
+    //console.log(layer)
     this.layers.push(layer);
     let done = (layerCallback) => {
-      //console.log("LAYER",layerCallback)
+      console.log("LAYER",layerCallback)
       for (let j = 0; j < layerCallback.dimensions.length; j++) {
         let mapDim = this.getDimension(layerCallback.dimensions[j].name);
         if (isDefined(mapDim)) {
@@ -1913,12 +1925,12 @@ export default class WMJSMap {
     request += "HEIGHT=" + this.height + "&";
 
     request += this.getBBOXandProjString(layer);
-
     if (layer.sldURL) {
       request += "SLD=" + URLEncode(layer.sldURL) + "&";
     }
     request += "STYLES=" + URLEncode(layer.currentStyle) + "&";
     request += "FORMAT=" + layer.format + "&";
+    
     if (layer.transparent === true) {
       request += "TRANSPARENT=TRUE&";
     } else {
@@ -1926,6 +1938,7 @@ export default class WMJSMap {
     }
     // Handle dimensions
     try {
+      //console.log("GET",request)
       request += this._getMapDimURL(layer);
     } catch (e) {
       return undefined;
@@ -2171,7 +2184,7 @@ export default class WMJSMap {
     this._draw(this._animationList);
   }
   draw(animationList) {
-    // console.log('**************** draw', animationList);
+    //console.log('**************** draw', animationList);
     if (typeof animationList === "object") {
       if (animationList.length > 0) {
         this._animationList = animationList;
@@ -2188,6 +2201,7 @@ export default class WMJSMap {
     }
     this.drawPending = true;
     // window.requestAnimationFrame();
+    //console.log('**************** draw', animationList);
     this._animFrameRedraw();
   }
   /**
@@ -2826,6 +2840,7 @@ export default class WMJSMap {
       let currentValue = layer.dimensions[j].getValue();
       request += "&" + this._getCorrectWMSDimName(layer.dimensions[j].name);
       request += "=" + URLEncode(currentValue);
+      //console.log("FALLOS",WMJSDateOutSideRange,WMJSDateTooEarlyString,WMJSDateTooLateString)
       if (
         currentValue === WMJSDateOutSideRange ||
         currentValue === WMJSDateTooEarlyString ||
@@ -4132,9 +4147,10 @@ export default class WMJSMap {
 
     if (isDefined(this.mainTimeSlider)) {
       this.mainTimeSlider.setValue(name, value);
-    }
-
-    if (dim.currentValue !== value) {
+    } 
+    console.log("CUR",dim.currentValue)
+    console.log("NEW",value)
+    if (dim.currentValue !== value) {  
       dim.currentValue = value;
       this._buildLayerDims();
       if (triggerEvent !== false) {

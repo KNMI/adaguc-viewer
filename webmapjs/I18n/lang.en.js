@@ -108,6 +108,7 @@ export default {
   layer_properties: { tooltip: 'Layer properties' },
   hide_or_display_layer: { tooltip: 'Hide or display layer' },
   hide_or_display_legend: {tooltip: 'on/off legend' },
+  auto_update_layer: {tooltip: 'Auto update on/off'},
   select_layer_product_from_service: { tooltip: 'Select a layer or product from the service' },
   change_style_layer: { tooltip: 'Change the style of this layer' },
   available_styles: { text: 'Available styles' },

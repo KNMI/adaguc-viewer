@@ -285,6 +285,10 @@ export default class WMJSMap {
     this.knmiGeoNamesURL = undefined;
     this.geoNamesURL = undefined;
     this.defaultUsernameSearch = "adaguc";
+
+    //Se definira el logo aqui
+    this.logo = logo;
+
     this.setDebugFunction = (debugFunction) => {
       debug = debugFunction;
     };
@@ -293,6 +297,7 @@ export default class WMJSMap {
     };
 
     /* Binds */
+    this.setLogo = this.setLogo.bind(this);
     this.setBaseURL = this.setBaseURL.bind(this);
     this.showDialogs = this.showDialogs.bind(this);
     this.setXML2JSONURL = this.setXML2JSONURL.bind(this);
@@ -497,6 +502,10 @@ export default class WMJSMap {
     this.loadingDiv = jquery('<div class="WMJSDivBuffer-loading"/>', {});
     this.init();
   }
+
+  setLogo(logoPath){
+    this.logo=logoPath;
+  } 
 
   setBaseURL(_baseURL) {
     this.base = _baseURL;
@@ -766,15 +775,17 @@ export default class WMJSMap {
         .appendTo(this.baseDiv);
 
       //LOGO AEMET
-      jquery("<div/>", {
-        id: this.makeComponentId("logoAEMET"),
-      })
-        .addClass("webmapjs_logoAEMET")
-        .html(
-          "<img class='webmapjs_logoAEMET' align='right' src='./logo_AEMET.png' name='Logo'" +
-            " id='logoAEMET'/>"
-        )
-        .appendTo(this.baseDiv);
+      if (isDefined(this.logo)){ 
+        var htmlLogo="<img class='webmapjs_logoAEMET' align='right' src='"+this.logo+"' name='Logo' id='logoAEMET'/>"
+        jquery("<div/>", {
+          id: this.makeComponentId("logoAEMET"),
+        })
+          .addClass("webmapjs_logoAEMET")
+          .html(
+            htmlLogo
+          )
+          .appendTo(this.baseDiv);
+        } 
 
       jquery("<button/>", {
         id: this.makeComponentId("searchboxbutton"),

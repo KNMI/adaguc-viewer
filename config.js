@@ -36,6 +36,9 @@ var defaultProjection = {srs:'EPSG:3857',bbox:'-3900000,3000000,3500000,8300000'
 
 var hashLocationNotfiyAddLayer = false;
 
+var logo ="./logo_AEMET.png"
+//var logo =""
+
 var server = "http://dorsal.aemet.es:8080/adaguc-services/" 
 var server1 = "http://dorsal.aemet.es:8080/adaguc-services/" 
 //Docker

@@ -38,6 +38,7 @@ var hashLocationNotfiyAddLayer = false;
 
 var logo ="./logo_AEMET.png"
 //var logo =""
+//var logo="./calabaza.png"
 
 var server = "http://dorsal.aemet.es:8080/adaguc-services/" 
 var server1 = "http://dorsal.aemet.es:8080/adaguc-services/" 

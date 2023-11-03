@@ -264,8 +264,18 @@ class yradar {
                         var table_e=getTable(datarows,rad,dim,webmapjs)
                         
                         $("#tableinfo").append(table+table_r+table_e);
-                        $("#info").html("Click on the map to load a profile.<br>");
-			                }
+                        $("#info").html("Click on cell num to zoom it.<br>");
+			                },
+                      error: function(xhr, status, error) {
+                        //var err = eval("(" + xhr.responseText + ")");
+                        console.log(xhr,status,error)
+                        if (error=="No encontrado" || error=="Not find" ){ 
+                          window.alert("No esta disponible el fichero: "+path);
+                        } else{
+                          window.alert("Se ha producido un error al cargar" + path);
+                        }  
+                          document.getElementById("info").innerHTML = "Error al cargar las caracteristicas de las celulas."; 
+                      }
 		            });
                 
               });  

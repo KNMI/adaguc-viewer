@@ -161,6 +161,16 @@ var updateLayers = function () {
   }
 };
 
+var updateLayer = function(name){
+  var llp = Ext.getCmp("layerlistpanel");
+  var items = llp.items;
+  for (var i = 0; i < items.getCount(); i++) {
+    if (items.get(i).name === name){ 
+      items.get(i).parseLayer(true,undefined);
+    } 
+  }
+} 
+
 var getLayerObjects = function () {
   var layerObjects = [];
   var llp = Ext.getCmp("layerlistpanel");
@@ -282,15 +292,14 @@ var createNewLayerPanel = function (webMapJS, config) {
 };
 
 function getUpdateTime(pt) {
-  //return 10000
-  if (pt=="PT6H") {return 3*60*60*1000} 
+  if (pt=="PT6H") {return 2*60*60*1000} 
   if (pt=="PT3H") {return 1*60*60*1000} 
-  if (pt=="PT1H30M") {return 45*60*1000} 
-  if (pt=="PT1H") {return 30*60*1000} 
-  if (pt=="PT30M") {return 15*60*1000} 
-  if (pt=="PT15M") {return 8*60*1000} 
-  if (pt=="PT10M") {return 5*60*1000} 
-  if (pt=="PT5M") {return 3*60*1000} 
+  if (pt=="PT1H30M") {return 30*60*1000} 
+  if (pt=="PT1H") {return 20*60*1000} 
+  if (pt=="PT30M") {return 10*60*1000} 
+  if (pt=="PT15M") {return 5*60*1000} 
+  if (pt=="PT10M") {return 3*60*1000} 
+  if (pt=="PT5M") {return 2*60*1000} 
   if (pt=="PT1M") {return 60*1000} 
 } 
 

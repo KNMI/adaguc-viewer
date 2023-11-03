@@ -3,9 +3,9 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
   extend   : 'Ext.panel.Panel',
   alias    : 'WMJSExtDimensionPanel',
   initComponent: function(s) {
-    
     var _this = this;
-    
+    _this.dimension.linked=this.Linked
+    console.log("DIM",_this.dimension.linked)
     _this.currentValue = undefined;
     _this.currentSize = undefined
     var defaultIndex=0;
@@ -17,7 +17,6 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
         defaultIndex = this.dimension.getIndexForValue(_this.dimension.currentValue);
       }catch(e){}
     }
-    
     if(defaultIndex == -1){
       defaultIndex = (_this.dimension.size() - 1);
     }
@@ -42,6 +41,20 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
       }
     });
     
+  
+    _this.dimCheck = Ext.create('Ext.form.Checkbox',{
+      margin:'0 0 0 0',
+      bodyStyle:{"background-color":"white"},
+      frame:false,
+      border:false,
+      plain:true,
+      checked:_this.dimension.linked,
+      handler:function(o,c){
+        _this.dimension.linked=c;}
+      //listeners:{
+      //  drag:{fn:function(t){_this.sliderChanged(t.getValue());}},
+      //                           change:{fn:function(t){_this.sliderChanged(t.getValue());}}
+      });
     
     
     _this.setValue = function(value){
@@ -356,8 +369,11 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
         bodyStyle:{"background-color":"white"}, 
         items:[
         {
-          xtype:'panel',region:'west',width:13,frame:false,border:false,
-          layout: 'border',items:[{margin:'0 0 0 0',xtype:'checkbox',bodyStyle:{"background-color":"white"}, frame:false,border:false,plain:true,checked:_this.dimension.linked,handler:function(o,c){_this.dimension.linked=c;}}]
+          xtype:'panel',region:'west',width:13,frame:false,border:false,layout: 'border',
+          //items:[{margin:'0 0 0 0',xtype:'checkbox',bodyStyle:{"background-color":"white"}, frame:false,border:false,plain:true,checked:_this.dimension.linked,handler:function(o,c){
+          //  console.log("CHECK",c)
+          //  _this.dimension.linked=c;}}]
+          items:[_this.dimCheck] 
         },
         {xtype:'panel',region:'center',frame:false,border:false,plain:true,layout: 'border',
           items:[

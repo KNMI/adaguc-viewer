@@ -49,66 +49,46 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
       var req=_this.WMJSLayer.service+"&service=WMS&request=GetCapabilities"
       var parser = new ol.format.WMSCapabilities()
       
-      var ready = function(lasttime,linked){
-        console.log("linked?",linked)
-        if (autoupdate) { 
-          var webmapjs=_this.WMJSLayer.parentMaps[0] 
-          console.log("Reload ON",timer,tm,_this.name,new Date(Date.now()).getHours()+":"+new Date(Date.now()).getMinutes());
-          webmapjs.suspendEvent('ondimchange');
-          webmapjs.suspendEvent('ondimupdate');
-          
-          //webmapjs.setDimension('time', currentValue);
-          //webmapjs.setDimension('time', lasttime);
-          
-          webmapjs.resumeEvent('ondimchange');
-          webmapjs.resumeEvent('ondimupdate');
-
-          //_this.getDimensionPanel("time").dimSlider.setValue(timeDim.getIndexForValue(dimMaxValue))
-          //_this.getDimensionPanel("time").sliderChanged(timeDim.getIndexForValue(dimMaxValue))
-          //_this.WMJSLayer.draw("DimensionPanel::sliderChanged");
-        } else {
-          console.log("Reload OFF",timer,tm,_this.name,new Date(Date.now()).getHours()+":"+new Date(Date.now()).getMinutes());
-        }  
-        //console.log("HEY",af)
+      var ready = function(lasttime){
+        var webmapjs=_this.WMJSLayer.parentMaps[0] 
+        console.log("Reload ON",timer,tm,_this.name,new Date(Date.now()).getHours()+":"+new Date(Date.now()).getMinutes());
+        console.log(lasttime)
+        webmapjs.setDimension('time', lasttime, true); 
       }
       
-      fetch(req).then(function(response) {
-        return response.text();
-      }).then(function(text) {
-      const result = parser.read(text);
-      var capLayers = result.Capability.Layer.Layer
-      for (let layer of capLayers) {
-        if (layer.Name==_this.name) {
-          for (let dim of layer.Dimension){
-            if (dim.name=="time" ){
-              var timeLastValue=dim.default
-              var linked=_this.getDimensionPanel("time").dimension.linked
-              if(dimMaxValue!=timeLastValue){
-                ready(timeLastValue,linked)
-                 //_this.parseLayer(true,ready(linked))
-              } else {
-                if (autoupdate && currentValue!=timeLastValue){
-                   //_this.parseLayer(true,ready(linked))
-                    ready(timeLastValue,linked)
-                  } 
-              }  ;  
-            }
-          }
-        }
-      }    
-      })    
+      if (autoupdate){ 
+        fetch(req).then(function(response) {
+          return response.text();
+        }).then(function(text) {
+          const result = parser.read(text);
+          var capLayers = result.Capability.Layer.Layer
+          for (let layer of capLayers) {
+            if (layer.Name==_this.name) {
+              for (let dim of layer.Dimension){
+                if (dim.name=="time" ){
+                  var timeLastValue=dim.default
+                    if (currentValue!=timeLastValue){
+                        console.log("Update")
+                        //console.log(_this.getDimensionPanel("time").dimSlider)
+                        _this.parseLayer(true,ready(timeLastValue)) 
+                    }    
+                }
+              }
+            }      
+          } 
+        })   
+      } 
     }  
 
     _this.getUpdateTime = function(pt) {
-      //return 10000
-      if (pt=="PT6H") {return 3*60*60*1000} 
+      if (pt=="PT6H") {return 2*60*60*1000} 
       if (pt=="PT3H") {return 1*60*60*1000} 
-      if (pt=="PT1H30M") {return 45*60*1000} 
-      if (pt=="PT1H") {return 30*60*1000} 
-      if (pt=="PT30M") {return 15*60*1000} 
-      if (pt=="PT15M") {return 8*60*1000} 
-      if (pt=="PT10M") {return 5*60*1000} 
-      if (pt=="PT5M") {return 3*60*1000} 
+      if (pt=="PT1H30M") {return 30*60*1000} 
+      if (pt=="PT1H") {return 20*60*1000} 
+      if (pt=="PT30M") {return 10*60*1000} 
+      if (pt=="PT15M") {return 5*60*1000} 
+      if (pt=="PT10M") {return 3*60*1000} 
+      if (pt=="PT5M") {return 2*60*1000} 
       if (pt=="PT1M") {return 60*1000} 
     } 
     
@@ -184,6 +164,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
           this.setIconCls('button_update_off');
         }else {
           this.setIconCls('button_update_on');
+          _this.reload()
         }
         _this.WMJSLayer.draw("LayerPanel::HideShow");
       }
@@ -235,7 +216,6 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
      * @param forceReload Set to true if getcapabilities should be reloaded and not taken from local store
      */
     _this.parseLayer = function(forceReload,afterlayerready){
-      
       if(isDefined(this.WMJSLayer.service)==false){
         return;
       }
@@ -256,12 +236,9 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
        */
       _this.dimUpdate = function(){
 
-        
         for(var j=0;j<_this.dimensionPanels.length;j++){
-          //if(_this.dimensionPanels[j].dimension.linked == true){
             var dim=_this.WMJSLayer.getDimension(_this.dimensionPanels[j].dimension.name); 
             _this.dimensionPanels[j].setValue(dim.getValue());
-          //}
         }
         
       };
@@ -273,7 +250,6 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
        * @param value
        */
       _this.setDimension = function(name,value){
-        
         var dimPanel = _this.getDimensionPanel(name);
         if(!isDefined(dimPanel)){
           error("WMJSExtLayerPanel::Dimension "+name+" not found");
@@ -362,21 +338,26 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         
         _this.setStyleText(_this.WMJSLayer.getStyleObject(_this.WMJSLayer.currentStyle));
         
+        
         _this.dimensionPanels = [];
         _this.dimensionPanelContainer.removeAll();
 
 
-
+        var linked=true
         var dimensionPanelContainerTitle = "";
         for(var j=0;j<_this.WMJSLayer.dimensions.length;j++){
           for(var i=0;i<dimBackup.length;i++){
             if(dimBackup[i].name == _this.WMJSLayer.dimensions[j].name){
               _this.WMJSLayer.dimensions[j].currentValue = dimBackup[i].currentValue;
+              if (dimBackup[i].name == "time"){
+                linked=dimBackup[i].linked;
+              } 
               //console.log("BACK",dimBackup[i].currentValue,dimBackup[i].linked)
               //console.log("CURR",_this.WMJSLayer.dimensions[j].currentValue,_this.WMJSLayer.dimensions[j].linked)
             }
           }
-          var dimPanel = Ext.create('WMJSExtDimensionPanel',{dimension:_this.WMJSLayer.dimensions[j],layer:_this.WMJSLayer,dimensionPanels:_this.dimensionPanels});
+
+          var dimPanel = Ext.create('WMJSExtDimensionPanel',{dimension:_this.WMJSLayer.dimensions[j],layer:_this.WMJSLayer,dimensionPanels:_this.dimensionPanels,Linked:linked});
           _this.dimensionPanels.push(dimPanel);
           _this.dimensionPanelContainer.add(dimPanel);
           if(dimensionPanelContainerTitle.length>0)dimensionPanelContainerTitle+=", ";
@@ -462,9 +443,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
             
             "</table>"+
             "</span>"
-            
-            
-            
+                        
           
           );
         }else{
@@ -501,7 +480,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         console.log("TIME UNDEFINED")
         var dim=_this.WMJSLayer.getDimension("time").values
         var pt=getUpdateTime(dim.slice(dim.lastIndexOf("/")+1))
-        console.log(pt)
+        console.log("PT",pt)
         _this.updatetime=pt
       }  
       //Pongo el timer
@@ -536,6 +515,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
       
     
     };
+
     
     /**
      * Duplicates/clones this layer and adds a new layer to the list
@@ -569,7 +549,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
                 }
                 
               }
-              _this.parseLayer (true,afterlayerready );
+              _this.parseLayer (true,afterlayerready,true );
               
               
               return _this;
@@ -736,7 +716,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
             _this.WMJSLayer.service=serviceName;
           }
           
-          _this.parseLayer();
+          _this.parseLayer(undefined,undefined,true);
           _this.WMJSLayer.draw("LayerPanel::setLayer");
           if(_this.servicePanelWindow){
             _this.servicePanelWindow.hide();
@@ -976,7 +956,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
             if(isDefined(_this.servicePanelWindow)){
               _this.servicePanelWindow.refresh(true);
             }
-            _this.parseLayer(true);
+            _this.parseLayer(true,undefined,true);
           }
         },
         _this.animationButton,
@@ -1029,7 +1009,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         afterrender:{
           fn:function(){
             
-             _this.parseLayer();
+             _this.parseLayer(undefined,undefined,true);
      
           }
         },
@@ -1042,7 +1022,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
     });
     
     this.callParent(arguments);
-   _this.parseLayer();
+   _this.parseLayer(undefined,undefined,true);
   }
  
 });

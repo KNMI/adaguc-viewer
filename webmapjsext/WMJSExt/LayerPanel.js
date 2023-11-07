@@ -55,8 +55,8 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         console.log(lasttime)
         webmapjs.setDimension('time', lasttime, true); 
       }
-      
-      if (autoupdate){ 
+      if (!req.includes("files") && autoupdate){ 
+        try {  
         fetch(req).then(function(response) {
           return response.text();
         }).then(function(text) {
@@ -76,8 +76,12 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
               }
             }      
           } 
-        })   
+        })
+        } catch (error) {
+          console.log(e)
+        }     
       } 
+       
     }  
 
     _this.getUpdateTime = function(pt) {

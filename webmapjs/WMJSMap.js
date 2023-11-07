@@ -2357,7 +2357,7 @@ export default class WMJSMap {
       this._drawReady();
       return;
     }
-
+    
     let loadLayers = () => {
       if (enableConsoleDebugging) console.log("loadLayers");
       let request;

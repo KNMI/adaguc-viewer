@@ -301,6 +301,7 @@ function getUpdateTime(pt) {
   if (pt=="PT10M") {return 3*60*1000} 
   if (pt=="PT5M") {return 2*60*1000} 
   if (pt=="PT1M") {return 60*1000} 
+  return null
 } 
 
 var timeselectorWindow = Ext.create("Ext.window.Window", {

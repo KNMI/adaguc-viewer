@@ -94,6 +94,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
       if (pt=="PT10M") {return 3*60*1000} 
       if (pt=="PT5M") {return 2*60*1000} 
       if (pt=="PT1M") {return 60*1000} 
+      return null
     } 
     
     _this.opacitySliderChanged = function(value){

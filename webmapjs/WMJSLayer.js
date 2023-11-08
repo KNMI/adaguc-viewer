@@ -115,6 +115,7 @@ export default class WMJSLayer {
       if (options.parentMaps) { this.parentMaps = options.parentMaps; }
       if (options.dimensions && options.dimensions.length) {
         for (let d = 0; d < options.dimensions.length; d++) {
+          //console.log("OPTIONS",options.dimensions[d] )
           this.dimensions.push(new WMJSDimension(options.dimensions[d]));
         }
       }
@@ -292,7 +293,7 @@ export default class WMJSLayer {
         hasRefTimeDimension = true;
         dim = new WMJSDimension({ linked: false });
       } else {
-        dim = new WMJSDimension();
+        dim = new WMJSDimension({ linked: false });
       }
       dim.name = dimensions[j].attr.name.toLowerCase();
       dim.units = dimensions[j].attr.units;

@@ -5,7 +5,7 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
   initComponent: function(s) {
     var _this = this;
     _this.dimension.linked=this.Linked
-    console.log("DIM",_this.dimension.linked)
+    //console.log("DIM",_this.dimension.linked)
     _this.currentValue = undefined;
     _this.currentSize = undefined
     var defaultIndex=0;

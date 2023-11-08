@@ -348,7 +348,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         _this.dimensionPanelContainer.removeAll();
 
 
-        var linked=true
+        var linked=false
         var dimensionPanelContainerTitle = "";
         for(var j=0;j<_this.WMJSLayer.dimensions.length;j++){
           for(var i=0;i<dimBackup.length;i++){
@@ -361,7 +361,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
               //console.log("CURR",_this.WMJSLayer.dimensions[j].currentValue,_this.WMJSLayer.dimensions[j].linked)
             }
           }
-
+          //console.log("LINKED",linked)
           var dimPanel = Ext.create('WMJSExtDimensionPanel',{dimension:_this.WMJSLayer.dimensions[j],layer:_this.WMJSLayer,dimensionPanels:_this.dimensionPanels,Linked:linked});
           _this.dimensionPanels.push(dimPanel);
           _this.dimensionPanelContainer.add(dimPanel);

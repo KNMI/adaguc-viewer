@@ -95,10 +95,10 @@ var dataChooserConfigurationAdd = [
         service:server + '/adagucserver?dataset=CRR&',
         layer:'CRR_crr_intensity'
   },{
-    title:'CRR-Ph',
-        thumbnail:server + '/adagucserver?dataset=CRR-Ph&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CRR-Ph_crrph_intensity,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
-        service:server + '/adagucserver?dataset=CRR-Ph&',
-        layer:'CRR-Ph_crrph_intensity'
+    title:'CRRPh',
+        thumbnail:server + '/adagucserver?dataset=CRRPh&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CRRPh_crrph_intensity,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:server + '/adagucserver?dataset=CRRPh&',
+        layer:'CRRPh_crrph_intensity'
   },{
     title:'PC',
         thumbnail:server + '/adagucserver?dataset=PC&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=PC_pc,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
@@ -2855,9 +2855,9 @@ var dataChooserConfigurationMSGSAF = [
         layer:'CRR_crr_intensity'
   },{
     title:"<body> <table><tr><td><a href='https://www.nwcsaf.org/crr-ph_description' target='_blank' rel='noopener noreferrer'>info</a></td><td>&nbsp;&nbsp;</td><td>CRR Ph</td><td>&nbsp;&nbsp;</td><td></td></tr></table></body>",
-        thumbnail:server + '/adagucserver?dataset=CRR-Ph&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CRR-Ph_crrph_intensity,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
-        service:server + '/adagucserver?dataset=CRR-Ph&',
-        layer:'CRR-Ph_crrph_intensity'
+        thumbnail:server + '/adagucserver?dataset=CRRPh&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=CRRPh_crrph_intensity,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
+        service:server + '/adagucserver?dataset=CRRPh&',
+        layer:'CRRPh_crrph_intensity'
   },{
     title:"<body> <table><tr><td><a href='https://www.nwcsaf.org/pc_description' target='_blank' rel='noopener noreferrer'>info</a></td><td>&nbsp;&nbsp;</td><td>PC</td><td>&nbsp;&nbsp;</td><td></td></tr></table></body>",
         thumbnail:server + '/adagucserver?dataset=PC&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=PC_pc,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',

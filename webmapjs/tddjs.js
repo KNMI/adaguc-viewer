@@ -267,9 +267,7 @@ function MakeHTTPRequest_s(fname, callbackfunction,useredirect, requestProxy) {
 async function getJSONModel(layer,webmapjs,x,y,format = "text/html", callback){
   let serv=layer.service.split("=")[1]
   serv=serv.replace("&","") 
-  let levels=[]
-  if (serv=="ECMWF") { levels=[1000,925,850,700,500,400,300,250,200,150,100]}
-  if (serv=="ECMWF-HRES") { levels=[1000,925,900,850,800,700,600,500,400,300,250,200,150,100]}  
+   
   document.getElementById("info").innerHTML = "Procesando<br>";
   document.getElementById("table").innerHTML = "";
 
@@ -282,7 +280,7 @@ async function getJSONModel(layer,webmapjs,x,y,format = "text/html", callback){
   let req_end=""
   request += "&QUERY_LAYERS=" +'mean_sea_level_pressure' + "&INFO_FORMAT=" + "application/json";
   //req_meta += "&FORMAT=" + "application/json"+"&" + webmapjs._getMapDimURL(layer);;
-  rm += "&QUERY_LAYERS=" +'geopotential_height,temperature,relative_humidity,wind_barb'+"&INFO_FORMAT=" + "application/json";
+  rm += "&QUERY_LAYERS=" +'geopotential_height,temperature,relative_humidity,wind_barbs'+"&INFO_FORMAT=" + "application/json";
   req_end += "&" + getBBOXandProjString(layer,webmapjs);
   req_end += "WIDTH=" + webmapjs.width;
   req_end += "&HEIGHT=" + webmapjs.height;
@@ -311,29 +309,38 @@ async function getJSONModel(layer,webmapjs,x,y,format = "text/html", callback){
     //console.log(webmapjs)
     callback(null,undefined);
   }
+  let rl=layer.service+"&SERVICE=WMS&REQUEST=getCapabilities&VERSION=" + layer.version; 
   req_list=[] 
-  for (let i = 0; i < levels.length; i++) { 
-    let lev=levels[i]       
-    let rml = rm + "&elevation=" + lev 
-    req_list.push(rml)
-  }
-  req_list.reverse() 
-  htmlTabM="<TABLE BORDER>"
-  htmlTabM+= "<TR> <TD>Nivel</TD> <TD>P</TD> <TD>Z</TD> <TD>T</TD> <TD>RH</TD> <TD>U</TD> <TD>V</TD> </TR>"
-  let datarr=[] 
-  getMeta_Model(request,function(meta)  {
-    if (meta!=null){    
-      meta.model=serv   
-      getDataN_Model(req_list,datarr,0,function(dat){
-        let tJson={"meta":meta,"data":dat}; 
-        callback(tJson) 
-      })         
-    } else {
-      callback(null)
-    }       
-  });
-    //console.log("DATA",sond)
-  
+  getAllLevels(rl,function(levels){
+     
+     if (levels == null) {  
+         window.errorMessage("No hay niveles!")
+         callback(null)
+     } else {
+      levels=levels.split(",")
+      //console.log("LEV",levels)
+      for (let i = 0; i < levels.length; i++) { 
+        let lev=levels[i]  
+        let rml = rm + "&elevation=" + lev 
+        req_list.push(rml)
+      }
+      req_list.reverse() 
+      htmlTabM="<TABLE BORDER>"
+      htmlTabM+= "<TR> <TD>Nivel</TD> <TD>P</TD> <TD>Z</TD> <TD>T</TD> <TD>RH</TD> <TD>U</TD> <TD>V</TD> </TR>"
+      let datarr=[] 
+      getMeta_Model(request,function(meta)  {
+        if (meta!=null){    
+          meta.model=serv   
+          getDataN_Model(req_list,datarr,0,function(dat){
+            let tJson={"meta":meta,"data":dat}; 
+            callback(tJson) 
+          })         
+        } else {
+          callback(null)
+        }       
+      });
+     } 
+  })  
 } 
 
 function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
@@ -518,7 +525,6 @@ function getBBOXandProjString(layer,webmapjs) {
 }
 
 function getLevels(request,callback){
-  
   var parser = new ol.format.WMSCapabilities()
   fetch(request).then(function(response) {
     return response.text();
@@ -526,10 +532,29 @@ function getLevels(request,callback){
     const result = parser.read(text);
     var capLayers = result.Capability.Layer.Layer
     for (let layer of capLayers) {
-      if (layer.Name=='t') {
+      if (layer.Name=='t'|| layer.Name=='temperature' ) {
         for (let dim of layer.Dimension){
           if (dim.name=="elevation" ){
             callback(dim.default)
+          } 
+        }  
+      } 
+    } 
+  })
+} 
+
+function getAllLevels(request,callback){
+  var parser = new ol.format.WMSCapabilities()
+  fetch(request).then(function(response) {
+    return response.text();
+  }).then(function(text) {
+    const result = parser.read(text);
+    var capLayers = result.Capability.Layer.Layer
+    for (let layer of capLayers) {
+      if (layer.Name=='t'|| layer.Name=='temperature' ) {
+        for (let dim of layer.Dimension){
+          if (dim.name=="elevation" ){
+            callback(dim.values)
           } 
         }  
       } 

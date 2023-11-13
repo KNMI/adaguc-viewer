@@ -903,6 +903,28 @@ var dataChooserConfigurationTEMP = [
 
 ]
 
+//Contenido de OBS ALTURA.
+var dataChooserConfigurationMAND = [
+  {
+    title:'Temperature',
+    thumbnail:server + 'adagucserver?dataset=SOND&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,Temperature&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,61,25&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:server + 'adagucserver?dataset=SOND&&service=WMS&request=GetCapabilities',
+    abs:'Temperature',
+    layer:'Temperature'
+  },{
+    title:'Z Geopotencial',
+    thumbnail:server + 'adagucserver?dataset=SOND&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,Z&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,61,25&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:server + 'adagucserver?dataset=SOND&&service=WMS&request=GetCapabilities',
+    abs:'Altura del Geopotencial',
+    layer:'Z'
+  },{
+    title:'Viento',
+    thumbnail:server + 'adagucserver?dataset=SOND&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,Wind&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,61,25&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:server + 'adagucserver?dataset=SOND&&service=WMS&request=GetCapabilities',
+    abs:'Barbas de viento',
+    layer:'Wind'
+  }
+]
 //Contenido de subcarpeta TAJO
 var dataChooserConfigurationTAJO = [
   {
@@ -1132,6 +1154,11 @@ var dataChooserConfigurationFoldersOBS = [
     title:"SONDEOS",
     thumbnail:'./img/open-file-folder.png',
     dataChooserConfiguration: dataChooserConfigurationTEMP
+  },{
+    title:"OBS ALTURA",
+    abs:"T,Z,humedad y viento en niveles mandatory de sondeos",
+    thumbnail:'./img/open-file-folder.png',
+    dataChooserConfiguration: dataChooserConfigurationMAND
   }
 
 ];

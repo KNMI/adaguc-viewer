@@ -292,6 +292,8 @@ var createNewLayerPanel = function (webMapJS, config) {
 };
 
 function getUpdateTime(pt) {
+  if (pt=="PT1D") {return 6*60*60*1000}
+  if (pt=="PT12H") {return 3*60*60*1000}
   if (pt=="PT6H") {return 2*60*60*1000} 
   if (pt=="PT3H") {return 1*60*60*1000} 
   if (pt=="PT1H30M") {return 30*60*1000} 
@@ -301,7 +303,8 @@ function getUpdateTime(pt) {
   if (pt=="PT10M") {return 3*60*1000} 
   if (pt=="PT5M") {return 2*60*1000} 
   if (pt=="PT1M") {return 60*1000} 
-  return null
+  return 24*60*60*1000
+  //return null
 } 
 
 var timeselectorWindow = Ext.create("Ext.window.Window", {

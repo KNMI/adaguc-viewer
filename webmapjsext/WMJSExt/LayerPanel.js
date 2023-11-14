@@ -85,6 +85,8 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
     }  
 
     _this.getUpdateTime = function(pt) {
+      if (pt=="PT1D") {return 6*60*60*1000}
+      if (pt=="PT12H") {return 3*60*60*1000}
       if (pt=="PT6H") {return 2*60*60*1000} 
       if (pt=="PT3H") {return 1*60*60*1000} 
       if (pt=="PT1H30M") {return 30*60*1000} 

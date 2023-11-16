@@ -358,18 +358,6 @@ var dataChooserConfigurationECMWFHRES = [
       layer:'relative_humidity',
       abs:'Presion Level Relative Humedity',
 },{
-      title:'TZ-300',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=TZ_300,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'TZ_300',
-      abs:'Composed layer of T and Z in 300hpa',
-},{
-      title:'TZ-500',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=TZ_500,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'TZ_500',
-      abs:'Composed layer of T and Z in 500hpa',
-},{
       title:'Wind',
       thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=wind,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',

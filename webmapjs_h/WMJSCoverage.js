@@ -32,7 +32,6 @@ var WCJSRequest = function (service, name, succes, fail) {
   }
   debug('GetCapabilities:');
   var url = service + '&service=WCS&REQUEST=DescribeCoverage&COVERAGE=' + name;
-  // alert(url);
   debug("<a target=\'_blank\' href='" + url + "'>" + url + '</a>', false);
   getcapreq += URLEncode(url);
   // Error message in case the request goes wrong
@@ -46,11 +45,33 @@ var WCJSRequest = function (service, name, succes, fail) {
     succes(obj);
   }
 
+  function _error (obj) {
+    $.ajax({
+      url: url,
+      method: "GET",
+      success: _semi_succes,
+      error: function(){
+        errormessage(obj)
+      }
+    }); 
+    
+  } 
+
+  function _semi_succes(obj){
+    js=xmlToJson(obj)
+    var stringified = JSON.stringify(js);
+    stringified = stringified.replaceAll('#text', 'value');
+    stringified = stringified.replaceAll('@attributes','attr');
+    js=JSON.parse(stringified);
+    _succes(js)
+  } 
+
+
   $.ajax({
     dataType: 'jsonp',
     url: getcapreq,
     success: _succes,
-    error:errormessage
+    error:_error,
   });
 //   MakeJSONRequest(getcapreq,succes,errormessage);
 };
@@ -114,4 +135,42 @@ var parseDescribeCoverage = function (jsonDoc, _coverage) {
   }
 
   return coverage;
+};
+
+function xmlToJson( xml ) {
+ 
+  // Create the return object
+  var obj = {};
+ 
+  if ( xml.nodeType == 1 ) { // element
+    // do attributes
+    if ( xml.attributes.length > 0 ) {
+    obj["@attributes"] = {};
+      for ( var j = 0; j < xml.attributes.length; j++ ) {
+        var attribute = xml.attributes.item( j );
+        obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+      }
+    }
+  } else if ( xml.nodeType == 3 ) { // text
+    obj = xml.nodeValue;
+  }
+ 
+  // do children
+  if ( xml.hasChildNodes() ) {
+    for( var i = 0; i < xml.childNodes.length; i++ ) {
+      var item = xml.childNodes.item(i);
+      var nodeName = item.nodeName;
+      if ( typeof(obj[nodeName] ) == "undefined" ) {
+        obj[nodeName] = xmlToJson( item );
+      } else {
+        if ( typeof( obj[nodeName].push ) == "undefined" ) {
+          var old = obj[nodeName];
+          obj[nodeName] = [];
+          obj[nodeName].push( old );
+        }
+        obj[nodeName].push( xmlToJson( item ) );
+      }
+    }
+  }
+  return obj;
 };

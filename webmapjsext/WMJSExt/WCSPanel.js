@@ -309,7 +309,6 @@ Ext.define('webmapjsext.WMJSExt.WCSPanel', {
         
         
         
-        
         var url = service+"SERVICE=WCS&REQUEST=GetCoverage&COVERAGE="+coverage+"&CRS="+URLEncode(selectedProjection)+"&FORMAT="+selectedFormat+"&BBOX="+bbox;
         
         if(midPanel.getComponent('column2').getComponent('gridproperties').getComponent('field').getComponent('radioselectcellsize').getValue() == true){
@@ -337,6 +336,7 @@ Ext.define('webmapjsext.WMJSExt.WCSPanel', {
         linkPanel .update('<a target="_blank" href="'+url+'">'+url+'</a>');
         return selectedProjection;
       };
+
       WCJSRequest(linkProperties.coverages[0].service,linkProperties.coverages[0].name,function(jsonDoc){
         linkProperties.coverages[0] = parseDescribeCoverage(jsonDoc,coverage);
         

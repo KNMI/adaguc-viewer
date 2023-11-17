@@ -27,6 +27,7 @@ Ext.define('webmapjsext.WMJSExt.AnimationPanel',{
     });
 
     var loadLayersInStore = function(){
+      //console.log(_this)
       var layers = _this.mappanel.webMapJS.getLayers();
       layerStore.removeAll();
       for(var j=0;j<layers.length;j++){

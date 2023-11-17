@@ -617,6 +617,7 @@ Ext.onReady(function () {
     //mainWebmapJS.webMapJS.draw("maptypeclicked");
   };
 
+
   var showAnimationWindow = function (webmapJS) {
     var animationWindow;
     //if(!isDefined(animationWindow))
@@ -632,36 +633,13 @@ Ext.onReady(function () {
         collapsible: true,
         items: [
           Ext.create("webmapjsext.WMJSExt.AnimationPanel", {
-            mappanel: webmapJS,
+            mappanel: mainWebmapJS,
           }),
         ],
       });
     }
     animationWindow.show();
   };
-
-  /*var showPhotoWindow = function (webmapJS) {
-    var photoWindow;
-    //if(!isDefined(animationWindow))
-    {
-      photoWindow = Ext.create("Ext.window.Window", {
-        title: "Photo Capture",
-        width: 700,
-        height: 700,
-        layout: "form",
-        autoDestroy: true,
-        closeAction: "destroy",
-        autoScroll: true,
-        collapsible: true,
-        items: [
-          Ext.create("webmapjsext.WMJSExt.PhotoPanel", {
-            mappanel: mainWebmapJS,
-          }),
-        ],
-      });
-    }
-    photoWindow.show();
-  };*/
 
   var permaLinkWindow;
   var showPermaLinkWindow = function (webmapJS) {
@@ -732,13 +710,6 @@ Ext.onReady(function () {
         showAnimationWindow(maptypeclicked);
       },
     },
-    /*{
-      text: "Photo" + "&hellip;",
-      iconCls: "button_settings_icon",
-      handler: function () {
-        showPhotoWindow(maptypeclicked);
-      },
-    },*/
     {
       text: I18n.create_link.text,
       iconCls: "button_makeLink",

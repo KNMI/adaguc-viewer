@@ -62,7 +62,7 @@ var autowms_app = function (element, webmapjs) {
   };
 
   var createLayer = function (data, wmsServiceURL) {
-    //console.log(data)
+    console.log("WMS",wmsServiceURL)
     // if(data.name == "baselayer" || data.name == "overlay")return "";
     var previewURL =
       wmsServiceURL +

@@ -801,6 +801,11 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
               alert(I18n.no_time_dimension_in_layer.text);
               return;
             }
+            if (_this.WMJSLayer.getDimension('time').linked === false){ 
+              _this.WMJSLayer.getDimension('time').linked=true;
+              _this.parseLayer(false,undefined);
+
+            } 
             
             var dates = [];
             

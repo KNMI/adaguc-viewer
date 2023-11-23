@@ -236,6 +236,9 @@ Ext.define('webmapjsext.WMJSExt.AnimationPanel',{
           dates.push({name:_this.dimension.name, value:_this.dimension.getValueForIndex(j)});
         }
         if(_this.mappanel.webMapJS.isAnimating == false){
+          if (_this.dimension.linked === false){
+            alert("La capa debe estar sincronizada para crear la animación")
+          } 
           _this.dimensionName = _this.dimension.name;
           _this.currentValue = _this.dimension.currentValue;
         }

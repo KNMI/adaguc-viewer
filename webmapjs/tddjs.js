@@ -331,7 +331,7 @@ async function getJSONModel(layer,webmapjs,x,y,format = "text/html", callback){
       getMeta_Model(request,function(meta)  {
         if (meta!=null){    
           meta.model=serv   
-          getDataN_Model(req_list,datarr,0,function(dat){
+          getDataN_Model(req_list,datarr,0,function(dat){ 
             let tJson={"meta":meta,"data":dat}; 
             callback(tJson) 
           })         
@@ -832,9 +832,9 @@ function getDataN(req,lev,meta,datarr,callback){
               //} 
               //let u=(ws*Math.cos(wd/(Math.PI / 180)))*1.944
               //let v=(ws*Math.sin(wd/(Math.PI / 180)))*1.944 
-              
-              htmlTabS += "<TR><TD>"+j+"</TD> <TD>"+p+"</TD> <TD>"+z+"</TD> <TD>"+t.toFixed(2)+"</TD> <TD>"+td.toFixed(2)+"</TD> <TD>"+wDg.toFixed(0)+"</TD> <TD>"+wS.toFixed(2)+"</TD></TR>" 
               if ( (z < zs) || isNaN(t)|| isNaN(td)|| (wDg < 0) ){ continue} 
+              htmlTabS += "<TR><TD>"+j+"</TD> <TD>"+p+"</TD> <TD>"+z+"</TD> <TD>"+t.toFixed(2)+"</TD> <TD>"+td.toFixed(2)+"</TD> <TD>"+wDg.toFixed(0)+"</TD> <TD>"+wS.toFixed(2)+"</TD></TR>" 
+              //if ( (z < zs) || isNaN(t)|| isNaN(td)|| (wDg < 0) ){ continue} 
               
               let dat={"n":j,"p":p,"z":z,"t":t,"td":td,"wD":wD,"wS":wS} 
               j=j+1

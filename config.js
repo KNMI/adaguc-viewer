@@ -40,10 +40,10 @@ var logo ="./logo_AEMET.png"
 //var logo =""
 //var logo="./calabaza.png"
 
-var server = "http://dorsal.aemet.es:8080/adaguc-services/" 
+//var server = "http://dorsal.aemet.es:8080/adaguc-services/" 
 //var server1 = "http://dorsal.aemet.es:8080/adaguc-services/" 
 //Docker
-//var server = "https://dorsal.aemet.es/"
+var server = "https://dorsal.aemet.es/"
 
 var getFeatureInfoApplications = [
   {name:'Time series mode',iconCls:'button_getfeatureinfo',location:'apps/gfiapp_d3c3.html'}
@@ -3433,5 +3433,5 @@ var WMJSTileRendererTileSettings = {
 };
 
 xml2jsonrequestURL = '/adaguc-services/xml2json?'
-autowmsURL = '/adaguc-services/autowms?';
-//autowmsURL = '/autowms?';
+//autowmsURL = '/adaguc-services/autowms?';
+autowmsURL = server+'/autowms?';

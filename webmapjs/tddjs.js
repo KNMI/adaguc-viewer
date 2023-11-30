@@ -280,7 +280,7 @@ async function getJSONModel(layer,webmapjs,x,y,format = "text/html", callback){
   let req_end=""
   request += "&QUERY_LAYERS=" +'mean_sea_level_pressure' + "&INFO_FORMAT=" + "application/json";
   //req_meta += "&FORMAT=" + "application/json"+"&" + webmapjs._getMapDimURL(layer);;
-  rm += "&QUERY_LAYERS=" +'geopotential_height,temperature,relative_humidity,wind_barbs'+"&INFO_FORMAT=" + "application/json";
+  rm += "&QUERY_LAYERS=" +'geopotential_height,temperature,relative_humidity,wind_barbs_vectors'+"&INFO_FORMAT=" + "application/json";
   req_end += "&" + getBBOXandProjString(layer,webmapjs);
   req_end += "WIDTH=" + webmapjs.width;
   req_end += "&HEIGHT=" + webmapjs.height;

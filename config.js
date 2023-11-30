@@ -40,10 +40,9 @@ var logo ="./logo_AEMET.png"
 //var logo =""
 //var logo="./calabaza.png"
 
-//var server = "http://dorsal.aemet.es:8080/adaguc-services/" 
 //var server1 = "http://dorsal.aemet.es:8080/adaguc-services/" 
 //Docker
-var server = "https://dorsal.aemet.es/"
+var server = "https://vortice.aemet.es/"
 
 var getFeatureInfoApplications = [
   {name:'Time series mode',iconCls:'button_getfeatureinfo',location:'apps/gfiapp_d3c3.html'}
@@ -204,11 +203,11 @@ var dataChooserConfigurationECMWF = [
       layer:'wind',
       abs:'Pressure Level Wind in m/s',
 },{
-      title:'Wind barbs',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=wind_barbs,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      title:'Wind barbs & vectors',
+      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=wind_barbs_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'wind_barbs',
-      abs:'Pressure Level Wind barbs',
+      layer:'wind_barbs_vectors',
+      abs:'Pressure Level Wind barbs & vectors',
 },{
       title:'Wind_kt',
       thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=wind_kt,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
@@ -216,35 +215,23 @@ var dataChooserConfigurationECMWF = [
       layer:'wind_kt',
       abs:'Pressure Level Wind in Knots',
 },{
-      title:'Wind vectors',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=wind_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'wind_vectors',
-      abs:'Pressure Level Wind vectors',
-},{
       title:'10m Wind',
       thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=ECMWF&',
       layer:'10_meter_wind',
-      abs:'10meters wind in m/s',
+      abs:'10meters Wind in m/s',
 },{
-      title:'10m Wind barbs',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_barbs,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      title:'10m Wind barbs & vectors',
+      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_barbs_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'10_meter_wind_barbs',
-      abs:'10meters wind barbs',
+      layer:'10_meter_wind_barbs_vectors',
+      abs:'10meters Wind barbs & vectors',
 },{
       title:'10m Wind_kt',
       thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_kt,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=ECMWF&',
       layer:'10_meter_wind_kt',
-      abs:'10meters wind in Knots',
-},{
-      title:'10m Wind vectors',
-      thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=ECMWF&',
-      layer:'10_meter_wind_vectors',
-      abs:'10meters wind vectors',
+      abs:'10meters Wind in Knots',
 },{
       title:'2m Temperature',
       thumbnail:server + '/adagucserver?dataset=ECMWF&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=2_meter_temperature,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
@@ -364,11 +351,11 @@ var dataChooserConfigurationECMWFHRES = [
       layer:'wind',
       abs:'Pressure Level Wind in m/s',
 },{
-      title:'Wind barbs',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=wind_barbs,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      title:'Wind barbs & vectors',
+      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=wind_barbs_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'wind_barbs',
-      abs:'Pressure Level Wind barbs',
+      layer:'wind_barbs_vectors',
+      abs:'Pressure Level Wind barbs & vectors',
 },{
       title:'Wind_kt',
       thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=wind_kt,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
@@ -376,35 +363,23 @@ var dataChooserConfigurationECMWFHRES = [
       layer:'wind_kt',
       abs:'Pressure Level Wind in Knots',
 },{
-      title:'Wind vectors',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=wind_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'wind_vectors',
-      abs:'Pressure Level Wind vectors',
-},{
       title:'10m Wind',
       thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
       layer:'10_meter_wind',
-      abs:'10meters wind in m/s',
+      abs:'10meters Wind in m/s',
 },{
-      title:'10m Wind barbs',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_barbs,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      title:'10m Wind barbs & vectors',
+      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_barbs_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'10_meter_wind_barbs',
-      abs:'10meters wind barbs',
+      layer:'10_meter_wind_barbs_vectors',
+      abs:'10meters Wind barbs & vectors',
 },{
       title:'10m Wind_kt',
       thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_kt,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=ECMWF-HRES&',
       layer:'10_meter_wind_kt',
       abs:'10meters wind in Knots',
-},{
-      title:'10m Wind vectors',
-      thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
-      service:server + '/adagucserver?dataset=ECMWF-HRES&',
-      layer:'10_meter_wind_vectors',
-      abs:'10meters wind vectors',
 },{
       title:'Maximum 10m gust during last 6H',
       thumbnail:server + '/adagucserver?dataset=ECMWF-HRES&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_gust_during_last_6_hours_kt,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
@@ -2723,7 +2698,7 @@ var dataChooserConfigurationMSGSAF = [
         service:server + '/adagucserver?dataset=PC&',
         layer:'PC_pc'
   },{
-    title:"<body> <table><tr><td><a href='https://www.nwcsaf.org/pc-ph_description' target='_blank' rel='noopener noreferrer'>info</a></td><td>&nbsp;&nbsp;</td><td>PC Ph</td><td>&nbsp;&nbsp;</td><td></td></tr></table></body>",
+    title:"<body> <table><tr><td><a href='https://www.nwcsaf.org/pc-ph_description' target='_blank' rel='noopener noreferrer'>info</a></td><td>&nbsp;&nbsp;</td><td>PCPh</td><td>&nbsp;&nbsp;</td><td></td></tr></table></body>",
         thumbnail:server + '/adagucserver?dataset=PC-Ph&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=PC-Ph_pcph,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE',
         service:server + '/adagucserver?dataset=PC-Ph&',
         layer:'PC-Ph_pcph'

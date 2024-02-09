@@ -94,7 +94,7 @@ class tddjs {
                 meta.lat=Math.round(lalo.y * 100) / 100
                 meta.lon=Math.round(lalo.x * 100) / 100
                 wm=window.open("sondModel.html","Sondeo MODEL", 'itemId="sondM",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600')
-                console.log("WINDIW",wm)
+                //console.log("WINDIW",wm)
                 wm.myvarM=iURL
                 openedSondM=true;
                 html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
@@ -118,7 +118,8 @@ class tddjs {
               document.getElementById("info").innerHTML = html;
             }      
           } );
-        } else if (myLayers[i].service.includes("TEMP")) {
+        } else if (myLayers[i].service.includes("TEMP") || myLayers[i].name == "sond_station" ) {
+          //console.log("MYLAYER_TEXT",myLayers[i] )
           let myLayer=myLayers[i]; 
           //console.log("LAYER",myLayer)    
           getJSONdata(myLayer, webmapjs, currentOptions.x,currentOptions.y,"text/plain",function(iURL){

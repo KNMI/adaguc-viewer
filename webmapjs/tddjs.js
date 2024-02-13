@@ -68,10 +68,11 @@ class tddjs {
         //let myLayer = webmapjs.layers[webmapjs.layers.length - j - 1];
         
         let servtxt=webmapjs.layers[webmapjs.layers.length - j - 1].service;
-        if(servtxt.includes("TEMP") ){
+        let layername=webmapjs.layers[webmapjs.layers.length - j - 1].name
+        if(servtxt.includes("TEMP") || layername == "sond_station" ){
           myLayers.push(webmapjs.layers[webmapjs.layers.length - j - 1])
           //myLayer = webmapjs.layers[webmapjs.layers.length - j - 1];
-        } else if (servtxt.includes("ECMWF")){
+        } else if (servtxt.includes("ECMWF") ){
           myLayers.push(webmapjs.layers[webmapjs.layers.length - j - 1])
         } 
       } 
@@ -119,7 +120,7 @@ class tddjs {
             }      
           } );
         } else if (myLayers[i].service.includes("TEMP") || myLayers[i].name == "sond_station" ) {
-          //console.log("MYLAYER_TEXT",myLayers[i] )
+          console.log("MYLAYER_TEXT",myLayers[i].name )
           let myLayer=myLayers[i]; 
           //console.log("LAYER",myLayer)    
           getJSONdata(myLayer, webmapjs, currentOptions.x,currentOptions.y,"text/plain",function(iURL){

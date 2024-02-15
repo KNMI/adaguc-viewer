@@ -11,7 +11,6 @@ var hipatia_app = function (element, webmapjs) {
   }
 
   var _this = this;
-  var baseProj = "/adaguc::autowms/files/"
   var currentData = {};
   var fold_list = [] 
   var proj_list = [] 
@@ -44,7 +43,7 @@ var hipatia_app = function (element, webmapjs) {
           if (! hipatiaURL || hipatiaURL === "") {
             hipatiaURL = proj_list[0] ;
           }
-          makeFileListRequest(baseProj+hipatiaURL);
+          makeFileListRequest("");
       },
       error: function(xhr, status, error){
         console.log(error)
@@ -148,7 +147,6 @@ var hipatia_app = function (element, webmapjs) {
       '<span class="autowms_app_fileitem_header"><span class="autowms_app_fileitem_return">&#128193;&nbsp;<b>../ (&#8679;)</b></span><span class="autowms_app_fileitem_refresh" name="' +
       path +
       '">&#8635;&nbsp;<b>Refresh</b></span></span>';
-    console.log(html)
     return html;
   };
 
@@ -164,7 +162,7 @@ var hipatia_app = function (element, webmapjs) {
     var service = WMJSGetServiceFromStore(wmsServiceURL, xml2jsonrequestURL);
     let arr_=[] 
     
-    createListXML(hipatiaURL+".xml",path,arr_)
+    createListXML("hipatia/"+hipatiaURL+".xml",path,arr_)
     console.log("path",path)
     var getcapabilitiesdone = function (layers) {
       var html = "";
@@ -243,12 +241,11 @@ var hipatia_app = function (element, webmapjs) {
   };
 
   var makeFileListRequest = function (path) {
-    console.log("HACIENDO",path)
     if (!path || path === "undefined") {
       path = proj_list[0] ;
     }
     let customInput = $(".autowms_app_request_input").first().val();
-    console.log("CUSTOMInput",customInput)
+
     if (customInput && customInput.length > 0) {
       hipatiaURL = customInput
     }
@@ -268,7 +265,6 @@ var hipatia_app = function (element, webmapjs) {
             fold_list.push(folder) 
             } 
         }  
-      console.log("Folders", fold_list)
       var html = createReturnLink(path);
 
       element.html("... working ... ");
@@ -288,12 +284,7 @@ var hipatia_app = function (element, webmapjs) {
       $(".autowms_app_fileitem_return")
         .attr("onclick", "")
         .click(function (t) {
-          if (prevPath[prevPath.length - 1] === baseProj ){
-            makeFileListRequest(baseProj)
-          } else { 
-            prevPath.pop();
-            makeFileListRequest(prevPath[prevPath.length - 1]);
-          } 
+            makeFileListRequest("");
         });
 
       $(".autowms_app_fileitem_refresh")
@@ -347,7 +338,7 @@ var hipatia_app = function (element, webmapjs) {
 
     let url = requestURL + "request=getfiles&path=" + path;
 
-    let xml = hipatiaURL+".xml"
+    let xml = "hipatia/"+hipatiaURL+".xml"
     element.html('... Reading <a href="' + url + '">' + url + "</a> ... ");
 
     

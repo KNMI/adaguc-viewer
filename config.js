@@ -2966,7 +2966,9 @@ var xml2jsonrequestURL = "./webmapjs_php/xml2jsonrequest.php?"
 
 //getFeatureInfoApplications.push({name:'EProfile',iconCls:'button_getfeatureinfo'});
 getFeatureInfoApplications.push({name:'AutoWMS',iconCls:'button_getfeatureinfo'});
+//getFeatureInfoApplications.push({name:'Hipatia',iconCls:'button_getfeatureinfo'});
 getFeatureInfoApplications.open = "AutoWMS";
+//getFeatureInfoApplications.open = "Hipatia";
 getFeatureInfoApplications.push({name:'Sondeo',iconCls:'button_getfeatureinfo',location:'apps/tddjs.html'});
 getFeatureInfoApplications.push({name:'Yradar',iconCls:'button_getfeatureinfo',location:'apps/yradar.html'});
 //getFeatureInfoApplications.open = 'EProfile';

@@ -122,20 +122,20 @@ var hipatia_app = function (element, webmapjs) {
 
   var createReturnLink = function (path) {
     var html = "";
-    html +=
-      "<span class='autowms_app_currentpath'>" +
+    html +="<span class='autowms_app_currentpath'>" +
       "Project: " +
       "<span class='autowms_app_request_container'>" +
-      '<input class=\'autowms_app_request_input\' type="text" value="' +
-      hipatiaURL +
-      '"></input>' +
-      '<span class=\'dropdown\'>  <button class=\'dropbtn\'>Search</button> '+
-      '<span id="myDropdown" class="dropdown-content">'
+    '<span class=\'dropdown\'>  <button class=\'dropbtn\'>Search</button> '+
+    '<span id="myDropdown" class="dropdown-content">'
     for(var j=0; j<proj_list.length;j++) {
       //html += '<a type="button" href="./index.'+proj_list[j]+'.html" onclick="myfunciton()">'+proj_list[j] +'</a>'
       html += '<a href="index.'+proj_list[j]+'.html">'+proj_list[j] +'</a>'
     }   
       html +='</span></span>'
+      
+      html += '<input class=\'autowms_app_request_input\' type="text" value="' +
+      hipatiaURL +
+      '"></input>' 
       html +="  <span class='autowms_app_request_button'>-></span>" +
       "</span>";
     //     html+="<span class='autowms_app_currentpath'>Current folder: /"+prevPath[prevPath.length-1]+"</span>";

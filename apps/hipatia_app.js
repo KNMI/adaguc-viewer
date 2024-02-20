@@ -122,7 +122,7 @@ var hipatia_app = function (element, webmapjs) {
 
   var createReturnLink = function (path) {
     var html = "";
-    html +="<span class='autowms_app_currentpath'>" +
+    html +="<span class='autowms_app_currentpath_hipa'>" +
       "Project: " +
       "<span class='autowms_app_request_container'>" +
     '<span class=\'dropdown\'>  <button class=\'dropbtn\'>Search</button> '+

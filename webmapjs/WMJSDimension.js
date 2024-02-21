@@ -16,7 +16,7 @@ export default class WMJSDimension {
     this.defaultValue = undefined;
     this.parentLayer = undefined;
     this.timeRangeDuration = undefined;
-    this.linked = true;
+    this.linked = sync_layer;
 
     /* Private starts with _ */
     this._initialized = false;
@@ -51,7 +51,7 @@ export default class WMJSDimension {
       if (isDefined(config.currentValue)) { this.currentValue = config.currentValue; }
       if (isDefined(config.defaultValue)) { this.defaultValue = config.defaultValue; }
       if (isDefined(config.parentLayer)) { this.parentLayer = config.parentLayer; }
-      if (isDefined(config.linked)) { this.linked = config.linked; }
+      if (isDefined(config.linked)) {this.linked = config.linked; }
     }
   }
 

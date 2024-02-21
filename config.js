@@ -3408,6 +3408,10 @@ var WMJSTileRendererTileSettings = {
   },
   
 };
+//Default of sinc of layers
+sync_layer=false
+//Default of Auto reload of layers
+auto_load=true
 
 xml2jsonrequestURL = '/adaguc-services/xml2json?'
 //autowmsURL = '/adaguc-services/autowms?';

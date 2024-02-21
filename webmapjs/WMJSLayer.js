@@ -7,7 +7,7 @@ import WMJSBBOX from './WMJSBBOX.js';
 import WMJSGetServiceFromStore from './WMJSGetServiceFromStore.js';
 export default class WMJSLayer {
   init () {
-    this.autoupdate = false;
+    this.autoupdate = auto_load;
     this.timer = undefined;
     // options.failure is called when failed.
     this.service = undefined; // URL of the WMS Service
@@ -291,9 +291,9 @@ export default class WMJSLayer {
       let dim;
       if (dimensions[j].attr.name.toLowerCase() === 'reference_time') {
         hasRefTimeDimension = true;
-        dim = new WMJSDimension({ linked: false });
+        dim = new WMJSDimension({ linked: sync_layer });
       } else {
-        dim = new WMJSDimension({ linked: false });
+        dim = new WMJSDimension({ linked: sync_layer });
       }
       dim.name = dimensions[j].attr.name.toLowerCase();
       dim.units = dimensions[j].attr.units;

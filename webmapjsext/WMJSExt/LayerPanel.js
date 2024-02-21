@@ -19,7 +19,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
     
     var legendcanvasheight = 250;
     var legendcanvaswidth = 90;
-    var autoupdate = true;
+    var autoupdate = auto_load;
     var timeupdate = 60000 //1 minuto
     
     
@@ -51,8 +51,8 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
       
       var ready = function(lasttime){
         var webmapjs=_this.WMJSLayer.parentMaps[0] 
-        console.log("Reload ON",timer,tm,_this.name,new Date(Date.now()).getHours()+":"+new Date(Date.now()).getMinutes());
-        console.log(lasttime)
+        //console.log("Reload ON",timer,tm,_this.name,new Date(Date.now()).getHours()+":"+new Date(Date.now()).getMinutes());
+        //console.log(lasttime)
         webmapjs.setDimension('time', lasttime, true); 
       }
       if (!req.includes("files") && autoupdate){ 
@@ -163,9 +163,9 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
     _this.hideShowAutoButton = Ext.create("Ext.button.Button",{
       xtype:'button',tooltip: I18n.auto_update_layer.tooltip,
       iconCls:autoupdate===true?'button_update_on':'button_update_off',handler:function(o,c){
-        console.log(autoupdate)
+        //console.log("AUTOUPDATE",autoupdate)
         autoupdate = !autoupdate
-        console.log(autoupdate)
+        //console.log(autoupdate)
         //_this.WMJSLayer.displayLegendInMap(!_this.WMJSLayer.displayLegendInMapEnable);
         if(autoupdate==false){
           this.setIconCls('button_update_off');
@@ -350,7 +350,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
         _this.dimensionPanelContainer.removeAll();
 
 
-        var linked=false
+        var linked=sync_layer
         var dimensionPanelContainerTitle = "";
         for(var j=0;j<_this.WMJSLayer.dimensions.length;j++){
           for(var i=0;i<dimBackup.length;i++){

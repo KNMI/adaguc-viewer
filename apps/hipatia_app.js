@@ -121,6 +121,7 @@ var hipatia_app = function (element, webmapjs) {
   };
 
   var createReturnLink = function (path) {
+    //console.log("PATH Create Link",path)
     var html = "";
     html +="<span class='autowms_app_currentpath_hipa'>" +
       "Project: " +
@@ -136,12 +137,14 @@ var hipatia_app = function (element, webmapjs) {
       html += '<input class=\'autowms_app_request_input\' type="text" value="' +
       hipatiaURL +
       '"></input>' 
-      html +="  <span class='autowms_app_request_button'>-></span>" +
-      "</span>";
+      //html +="  <span class='autowms_app_request_button'>-></span>" +
+      html +="</span>";
     //     html+="<span class='autowms_app_currentpath'>Current folder: /"+prevPath[prevPath.length-1]+"</span>";
-    html +=
-      "<hr/><span class='autowms_app_currentpath'> Current Data: ./" +
-      path +
+    html += "<hr/><span class='autowms_app_currentpath'> Current Data: ./" 
+    if (!path || path=="" ||  path === "undefined" ){
+      path=hipatiaURL
+    } 
+    html +=  path +
       "</span>";
     html +=
       '<span class="autowms_app_fileitem_header"><span class="autowms_app_fileitem_return">&#128193;&nbsp;<b>../ (&#8679;)</b></span><span class="autowms_app_fileitem_refresh" name="' +
@@ -163,11 +166,11 @@ var hipatia_app = function (element, webmapjs) {
     let arr_=[] 
     
     createListXML("hipatia/"+hipatiaURL+".xml",path,arr_)
-    console.log("path",path)
+    //console.log("path",path)
     var getcapabilitiesdone = function (layers) {
       var html = "";
 
-      html += createReturnLink(path);
+      html += createReturnLink(hipatiaURL+"/"+path);
 
       html += "</span>";
 
@@ -195,7 +198,7 @@ var hipatia_app = function (element, webmapjs) {
       $(".autowms_app_fileitem_return")
         .attr("onclick", "")
         .click(function (t) {
-          makeFileListRequest(prevPath.pop());
+          makeFileListRequest("");
         });
 
       $(".autowms_app_request_button")
@@ -242,7 +245,11 @@ var hipatia_app = function (element, webmapjs) {
 
   var makeFileListRequest = function (path) {
     if (!path || path === "undefined") {
-      path = proj_list[0] ;
+      if (!hipatiaURL|| hipatiaURL === "undefined" ){ 
+        path = proj_list[0] ;
+      } else {
+        path = hipatiaURL
+      } 
     }
     let customInput = $(".autowms_app_request_input").first().val();
 

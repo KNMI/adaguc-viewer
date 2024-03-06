@@ -62,6 +62,7 @@ export const getUpdateTime = (pt) => {
   if (pt=="PT15M") {return 8*60*1000} 
   if (pt=="PT10M") {return 5*60*1000} 
   if (pt=="PT5M") {return 3*60*1000} 
+  if (pt=="PT3M") {return 60*1000}
   if (pt=="PT1M") {return 30*1000} 
   return 60000
 } 

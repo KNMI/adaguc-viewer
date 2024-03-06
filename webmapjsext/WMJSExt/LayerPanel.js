@@ -485,8 +485,11 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
       
       if (_this.updatetime==undefined){
         console.log("TIME UNDEFINED")
-        var dim=_this.WMJSLayer.getDimension("time").values
-        var pt=getUpdateTime(dim.slice(dim.lastIndexOf("/")+1))
+        var pt=24*60*60*1000; //Si no tiene dimension tiempo se refrescara cada 24H
+        if (_this.WMJSLayer.getDimension("time") != undefined) { 
+          var dim=_this.WMJSLayer.getDimension("time").values
+          var pt=getUpdateTime(dim.slice(dim.lastIndexOf("/")+1))
+        } 
         console.log("PT",pt)
         _this.updatetime=pt
       }  

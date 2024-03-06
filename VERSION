@@ -1,3 +1,8 @@
 Detached from: ADAGUC viewer version 4.0.1 2021-04-14
+ADAGUC-viewer version AEMET
 
 http://adaguc.knmi.nl.
+
+Fichero de Control de version y cambios.
+AEMET 1.0.1
+06-03-2024: pluciag: Se corrige el bug, si la capa no tiene dimension tiempo se establece como tiempo de refresco 24H.

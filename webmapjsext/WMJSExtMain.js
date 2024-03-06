@@ -5,7 +5,7 @@ var error = function (e) {
 var debug = function (e) {
   console.log(e);
 };
-var versionInfo = "ADAGUC viewer version AEMET 1.0.0";
+var versionInfo = "ADAGUC viewer version AEMET 1.0.1";
 var mainWebmapJS;
 
 function decimalFormatter(input, width) {
@@ -270,8 +270,11 @@ var createNewLayerPanel = function (webMapJS, config) {
           );
         }
         //alert(173);
-        var dim=layerPanel.WMJSLayer.getDimension("time").values
-        var pt=getUpdateTime(dim.slice(dim.lastIndexOf("/")+1))
+        var pt=24*60*60*1000; //Si no tiene dimension tiempo se refrescara cada 24H
+        if (layerPanel.WMJSLayer.getDimension("time") != undefined){  
+          var dim=layerPanel.WMJSLayer.getDimension("time").values 
+          var pt=getUpdateTime(dim.slice(dim.lastIndexOf("/")+1))
+        } 
         //console.log("Update Time",pt)
         layerPanel.updatetime=pt
 

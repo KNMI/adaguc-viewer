@@ -6,3 +6,4 @@ http://adaguc.knmi.nl.
 Fichero de Control de version y cambios.
 AEMET 1.0.1
 06-03-2024: pluciag: Se corrige el bug, si la capa no tiene dimension tiempo se establece como tiempo de refresco 24H.
+                     Se añade PT3M para el autorefresco.

@@ -7,3 +7,4 @@ Fichero de Control de version y cambios.
 AEMET 1.0.1
 06-03-2024: pluciag: Se corrige el bug, si la capa no tiene dimension tiempo se establece como tiempo de refresco 24H.
                      Se añade PT3M para el autorefresco.
+13-03-2024: pluciag: Se añade que se desactive el update al pulsar el boton de avanzar y retroceder en la capa que aveces daba problemas.

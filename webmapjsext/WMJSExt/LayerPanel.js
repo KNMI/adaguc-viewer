@@ -100,6 +100,14 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
       return null
     } 
     
+    _this.getUpdateStatus = function() {
+      return autoupdate
+    } 
+
+    _this.setUpdateStatus = function(status) {
+      autoupdate=status
+    } 
+
     _this.opacitySliderChanged = function(value){
       if(_this.WMJSLayer){
         _this.WMJSLayer.setOpacity(value/100);
@@ -365,7 +373,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
             }
           }
           //console.log("LINKED",linked)
-          var dimPanel = Ext.create('WMJSExtDimensionPanel',{dimension:_this.WMJSLayer.dimensions[j],layer:_this.WMJSLayer,dimensionPanels:_this.dimensionPanels,Linked:linked});
+          var dimPanel = Ext.create('WMJSExtDimensionPanel',{dimension:_this.WMJSLayer.dimensions[j],layer:_this.WMJSLayer,dimensionPanels:_this.dimensionPanels,Linked:linked,Parent:_this});
           _this.dimensionPanels.push(dimPanel);
           _this.dimensionPanelContainer.add(dimPanel);
           if(dimensionPanelContainerTitle.length>0)dimensionPanelContainerTitle+=", ";

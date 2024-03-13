@@ -387,8 +387,20 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
             border:false,frame:false,
             bodyStyle:{"background-color":"white"},
             items:[
-            {xtype:'button',text:'&lt;',width:20,height:22,handler:function(){_this.dimSlider.setValue(_this.dimSlider.getValue()-1);}},
-              {xtype:'button',text:'&gt;',width:20,height:22,handler:function(){_this.dimSlider.setValue(_this.dimSlider.getValue()+1);}}
+            {xtype:'button',text:'&lt;',width:20,height:22,handler:function(){
+              var preAuto=_this.Parent.getUpdateStatus();
+              _this.Parent.setUpdateStatus(false);
+              _this.dimSlider.setValue(_this.dimSlider.getValue()-1);
+              _this.Parent.setUpdateStatus(preAuto);
+              }
+            },
+              {xtype:'button',text:'&gt;',width:20,height:22,handler:function(){
+              var preAuto=_this.Parent.getUpdateStatus();
+              _this.Parent.setUpdateStatus(false);
+              _this.dimSlider.setValue(_this.dimSlider.getValue()+1);
+              _this.Parent.setUpdateStatus(preAuto);
+              }
+            }
             ]
           }
           ]

@@ -158,9 +158,12 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
     };
     
     _this.sliderChanged = function(indexValue){
+      var preAuto=_this.Parent.getUpdateStatus();
+      _this.Parent.setUpdateStatus(false);
       try{
         _this.layer.parentMaps[0].stopAnimating();
       }catch(e){
+        _this.Parent.setUpdateStatus(preAuto);
       }
       
       _this.currentIndex = indexValue;
@@ -175,6 +178,7 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
         _this.dateTimeWindow.setDimension(this.dimension);
       }
 //       _this.checkReferenceTime(_this.dimension);
+      _this.Parent.setUpdateStatus(preAuto);
     };
     
     _this.getValue = function(){

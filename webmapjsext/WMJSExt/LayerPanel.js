@@ -67,7 +67,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
               for (let dim of layer.Dimension){
                 if (dim.name=="time" ){
                   var timeLastValue=dim.default
-                    if (currentValue!=timeLastValue){
+                    if (dimMaxValue!=timeLastValue){
                         console.log("Update")
                         //console.log(_this.getDimensionPanel("time").dimSlider)
                         _this.parseLayer(true,ready(timeLastValue)) 

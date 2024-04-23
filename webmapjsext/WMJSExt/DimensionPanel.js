@@ -50,7 +50,10 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
       plain:true,
       checked:_this.dimension.linked,
       handler:function(o,c){
-        _this.dimension.linked=c;}
+        console.log("CHECKBOX",dimensionValuePanelItems[1].disabled )
+        dimensionValuePanelItems[1].setDisabled(!c) 
+        _this.dimension.linked=c;
+      }
       //listeners:{
       //  drag:{fn:function(t){_this.sliderChanged(t.getValue());}},
       //                           change:{fn:function(t){_this.sliderChanged(t.getValue());}}
@@ -220,7 +223,8 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
       var dateTimeButton = Ext.create(Ext.button.Button,{
         xtype:'button',
         text:'Set time',
-        
+        disabled: !(this.Linked),
+        tooltip:'Only enabled if checkbox ticked',
         
         
         region:'east',

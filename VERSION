@@ -4,9 +4,12 @@ ADAGUC-viewer version AEMET
 http://adaguc.knmi.nl.
 
 Fichero de Control de version y cambios.
-AEMET 1.0.1
+AEMET 1.0.3
 06-03-2024: pluciag: Se corrige el bug, si la capa no tiene dimension tiempo se establece como tiempo de refresco 24H.
                      Se añade PT3M para el autorefresco.
-13-03-2024: pluciag: Se añade que se desactive el update al pulsar el boton de avanzar y retroceder en la capa que aveces daba problemas.
+13-03-2024: pluciag: Se añade que se desactive el update al pulsar el boton de avanzar y retroceder en la capa que a veces daba problemas.
                      Se añade que se desactive el update al mover el slider de la capa.
 		     Se hace que la actualizacion ocurra cuando el tiempo mayor de la capa sea diferente al default del WS (antes comparaba el tiempo cargado)
+23-04-2024: pluciag: Se añade al config.js las opciones de sync y auto_load
+                     Se activa/desactiva el boton "Set time" de la capa si el checkbox de sincronizacion de tiempo se activa/desactiva
+                     Se añade un "warning" en la herramienta de timeSelectorWindow para avisar que solo funciona sobre las capas con el checkbox activado.

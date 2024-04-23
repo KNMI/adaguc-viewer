@@ -23,10 +23,13 @@ function WMJSTimeSelector (element, callback, _defaultLength) {
 
   var controlElementBottom = $('<div class=""WMJSTimeSelector-controlElementBottom WMJSTimeSelector-noselect"/>', {});
 
+  var adviseElementBottom = $('<div class="Advise" <p><b>WARNING</b>: Only run on checkboxed layers</p> </div>');
+
   this.element.append(timeInformationElement);
   this.element.append(controlElement);
   this.element.append(timeChooserElement);
   this.element.append(controlElementBottom);
+  this.element.append(adviseElementBottom);
 
   /** Control elements, buttons and spinners **/
   var fastBackward = $('<button>&lt;&lt;</button>').button().click(function () {

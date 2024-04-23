@@ -889,6 +889,55 @@ var dataChooserConfigurationAEMET = [
 
 ]
 
+//Contenido subcarpeta VISOR
+var dataChooserConfigurationVISOR = [
+    {
+    title:'PREC_ACUM_10m',
+    abs: "Precipitacion Acumulada en 10 minutos",
+    thumbnail:server + 'adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,Prec_V&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:server + '/adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'Prec_V'
+    },{
+    title:'PREC_ACUM_1H',
+    abs: "Precipitacion Acumulada en 1 Hora",
+    thumbnail:server + 'adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,P1H_V&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:server + '/adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'P1H_V'
+    },{
+    title:'PREC_ACUM_3H',
+    abs: "Precipitacion Acumulada en 3 Horas",
+    thumbnail:server + 'adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,P3H_V&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:server + '/adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'P3H_V'
+    },{
+    title:'PREC_ACUM_6H',
+    abs: "Precipitacion Acumulada en 6 Horas",
+    thumbnail:server + 'adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,P6H_V&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:server + '/adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'P6H_V'
+    },{
+    title:'PREC_ACUM_12H',
+    abs: "Precipitacion Acumulada en 12 Horas",
+    thumbnail:server + 'adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,P12H_V&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:server + '/adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'P12H_V'
+    },{
+    title:'PREC_ACUM_24H',
+    abs: "Precipitacion Acumulada en 24 Horas",
+    thumbnail:server + 'adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,P24H_V&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:server + '/adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'P24H_V'
+    },{
+    title:'VIENTO',
+    abs: "Viento medio 10m",
+    thumbnail:server + '/adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,Wind_V&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:server + '/adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'Wind_V'
+    },
+
+]
+
+
 //Contenido subcarpeta METAR
 var dataChooserConfigurationMETAR = [
   {
@@ -933,6 +982,11 @@ var dataChooserConfigurationBOYAS_E = [
 
 //Contenido carpeta del menu OBS
 var dataChooserConfigurationFoldersOBS = [
+  { title:"VISOR",
+    thumbnail:'./img/open-file-folder.png',
+    abs:"Estaciones Automaticas de la aplicación VISOR",
+    dataChooserConfiguration: dataChooserConfigurationVISOR
+  },
   {
     title:"AEMET",
     thumbnail:'./img/open-file-folder.png',
@@ -2337,62 +2391,62 @@ var dataChooserConfigurationMSGRSS = [
 var dataChooserConfigurationMSGIODC = [
 {
   title:'HIGH RES',
-      thumbnail:server + '/adagucserver?dataset=IODC-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HRV,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      thumbnail:server + '/adagucserver?dataset=IODC-HRV&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=HRV,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=15,40,36,70&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IODC-HRV&',
       layer:'HRV'
 },{
   title:'VIS006',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS006-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS006-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=15,40,36,70&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IODC-3Km&',
       layer:'VIS006-REF'
 },{
   title:'VIS008',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS008-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=VIS008-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=15,40,36,70&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IODC-3Km&',
       layer:'VIS008-REF'
 },{
   title:'IR016-REF',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR016-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR016-REF,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=15,40,36,70&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IODC-3Km&',
       layer:'IR016-REF'
 },{
   title:'IR039-BT',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR039-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR039-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=15,40,36,70&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IODC-3Km&',
       layer:'IR039-BT'
 },{
   title:'IR087-BT',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR087-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR087-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=15,40,36,70&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IODC-3Km&',
       layer:'IR087-BT'
 },{
   title:'IR097-BT',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR097-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR097-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=15,40,36,70&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IODC-3Km&',
       layer:'IR097-BT'
 },{
   title:'IR108-BT',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=15,40,36,70&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IODC-3Km&',
       layer:'IR108-BT'
 },{
   title:'IR120-BT',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR120-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR120-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=15,40,36,70&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IODC-3Km&',
       layer:'IR120-BT'
 },{
   title:'IR134-BT',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR134-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR134-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=15,40,36,70&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IODC-3Km&',
       layer:'IR134-BT'
 },{
   title:'WV062-BT',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV062-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV062-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=15,40,36,70&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IODC-3Km&',
       layer:'WV062-BT'
 },{
   title:'WV073-BT',
-      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV073-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV073-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=15,40,36,70&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IODC-3Km&',
       layer:'WV073-BT'
 }
@@ -2760,7 +2814,7 @@ var dataChooserConfigurationFoldersMSG = [
   },
   {
   title:"<body> <table><tr><td><a href='https://www.eumetsat.int/mfg-calibration' target='_blank' rel='noopener noreferrer'>info</a></td><td>&nbsp;&nbsp;</td><td><b>&nbsp;&nbsp;METEOSAT IODC IMAGES /Refl.</b></td><td>&nbsp;&nbsp;</td><td><h1 ><img src='./img/folder-icon-transparent.png' width='30' height='30'></h1></td></tr></table></body>",
-  thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+  thumbnail:server + '/adagucserver?dataset=IODC-3Km&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108-BT,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=15,40,36,70&FORMAT=image/png&TRANSPARENT=TRUE&',
   dataChooserConfiguration: dataChooserConfigurationMSGIODC
   },
   {

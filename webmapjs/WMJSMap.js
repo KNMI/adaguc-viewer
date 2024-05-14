@@ -772,20 +772,7 @@ export default class WMJSMap {
             },
           }
         )
-        .appendTo(this.baseDiv);
-
-      //LOGO AEMET
-      if (isDefined(this.logo)){ 
-        var htmlLogo="<img class='webmapjs_logoAEMET' align='right' src='"+this.logo+"' name='Logo' id='logoAEMET'/>"
-        jquery("<div/>", {
-          id: this.makeComponentId("logoAEMET"),
-        })
-          .addClass("webmapjs_logoAEMET")
-          .html(
-            htmlLogo
-          )
-          .appendTo(this.baseDiv);
-        } 
+        .appendTo(this.baseDiv); 
 
       jquery("<button/>", {
         id: this.makeComponentId("searchboxbutton"),
@@ -809,6 +796,20 @@ export default class WMJSMap {
         }
       });
     }
+
+    //LOGO AEMET
+    if (isDefined(this.logo)){ 
+      var htmlLogo="<img class='webmapjs_logoAEMET' align='right' src='"+this.logo+"' name='Logo' id='logoAEMET'/>"
+      jquery("<div/>", {
+        id: this.makeComponentId("logoAEMET"),
+      })
+        .addClass("webmapjs_logoAEMET")
+        .html(
+          htmlLogo
+        )
+        .appendTo(this.baseDiv);
+    } 
+
     /* Attach events */
     this.attachEvents();
 
@@ -3347,13 +3348,18 @@ export default class WMJSMap {
     this.display("updateMouseCursorCoordinates");
   }
 
-  mouseDownEvent(e) {
-    preventdefaultEvent(e);
-    let mouseCoords = this.getMouseCoordinatesForDocument(e);
-    if (this.mapHeader.cursorSet && mouseCoords.y < this.mapHeader.height) {
-      return;
-    }
-    this.mouseDown(mouseCoords.x, mouseCoords.y, e);
+  mouseDownEvent(e) {  
+      preventdefaultEvent(e);
+      if (e.button===0){ 
+        let mouseCoords = this.getMouseCoordinatesForDocument(e);
+        if (this.mapHeader.cursorSet && mouseCoords.y < this.mapHeader.height) {
+          return;
+        }
+        this.mouseDown(mouseCoords.x, mouseCoords.y, e);
+      } 
+      if (e.button===2){
+        e.preventDefault()
+      } 
   }
 
   mouseMoveEvent(e) {

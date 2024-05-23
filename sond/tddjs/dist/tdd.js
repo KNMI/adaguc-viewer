@@ -2988,7 +2988,7 @@ class Sounding extends Vertical {
 	if (this.model == "OBSERVACION") {
       d.Td = d.td
 	  d.r = Th.rwc(d.Td,d.p)
-	} else if (this.model.includes("ECMWF")) {
+	} else if (this.model.includes("ECMWF") || this.model.includes("HARMONIE") ) {
       d.rh = d.RH
       d.r = d.rh * Th.rwc(d.T, d.p) / 100.
       d.q=Th.q_from_r(d.r)

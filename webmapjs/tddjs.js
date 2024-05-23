@@ -72,7 +72,7 @@ class tddjs {
         if(servtxt.includes("TEMP") || layername == "sond_station" ){
           myLayers.push(webmapjs.layers[webmapjs.layers.length - j - 1])
           //myLayer = webmapjs.layers[webmapjs.layers.length - j - 1];
-        } else if (servtxt.includes("ECMWF") ){
+        } else if (servtxt.includes("ECMWF") || servtxt.includes("HARMONIE") ) {
           myLayers.push(webmapjs.layers[webmapjs.layers.length - j - 1])
         } 
       } 
@@ -85,16 +85,20 @@ class tddjs {
       
       for (let i in myLayers){
         console.log(i,myLayers.length)
-        if (myLayers[i].service.includes("ECMWF")){
+        if (myLayers[i].service.includes("ECMWF") || myLayers[i].service.includes("HARMONIE") ){ 
           let tempLayer=myLayers[i] ;
           getJSONModel(tempLayer,webmapjs,currentOptions.x,currentOptions.y,"text/plain",function(iURL){
             if (iURL != null){ 
               console.log(iURL) 
-              if (iURL.data != null){  
+              if (iURL.data != null){
+                let model=tempLayer.service.split("=")[1]
+                model=model.replace("&","")  
                 let meta=iURL.meta
+                meta.model=model
                 meta.lat=Math.round(lalo.y * 100) / 100
                 meta.lon=Math.round(lalo.x * 100) / 100
-                wm=window.open("sondModel.html","Sondeo MODEL", 'itemId="sondM",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600')
+                let atr='itemId="sondM",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600'
+                wm=window.open("sondModel.html","Sondeo MODEL", atr)
                 //console.log("WINDIW",wm)
                 wm.myvarM=iURL
                 openedSondM=true;
@@ -282,8 +286,14 @@ async function getJSONModel(layer,webmapjs,x,y,format = "text/html", callback){
   let req_end=""
   request += "&QUERY_LAYERS=" +'mean_sea_level_pressure' + "&INFO_FORMAT=" + "application/json";
   //req_meta += "&FORMAT=" + "application/json"+"&" + webmapjs._getMapDimURL(layer);;
-  rm += "&QUERY_LAYERS=" +'geopotential_height,temperature,relative_humidity,wind_barbs_vectors'+"&INFO_FORMAT=" + "application/json";
-  req_end += "&" + getBBOXandProjString(layer,webmapjs);
+  if (serv.includes("ECMWF") ){ 
+    request += "&QUERY_LAYERS=" +'mean_sea_level_pressure' + "&INFO_FORMAT=" + "application/json";
+    rm += "&QUERY_LAYERS=" +'geopotential_height,temperature,relative_humidity,wind_barbs_vectors'+"&INFO_FORMAT=" + "application/json";
+  } else if (serv.includes("HARMONIE")){
+    request += "&QUERY_LAYERS=" +'medium_sea_level_pressure' + "&INFO_FORMAT=" + "application/json";
+    rm += "&QUERY_LAYERS=" +'geopotential_height,air_temperature,relative_humidity,wind_barbs_vectors'+"&INFO_FORMAT=" + "application/json";
+  } 
+    req_end += "&" + getBBOXandProjString(layer,webmapjs);
   req_end += "WIDTH=" + webmapjs.width;
   req_end += "&HEIGHT=" + webmapjs.height;
   
@@ -314,7 +324,6 @@ async function getJSONModel(layer,webmapjs,x,y,format = "text/html", callback){
   let rl=layer.service+"&SERVICE=WMS&REQUEST=getCapabilities&VERSION=" + layer.version; 
   req_list=[] 
   getAllLevels(rl,function(levels){
-     
      if (levels == null) {  
          window.errorMessage("No hay niveles!")
          callback(null)
@@ -553,7 +562,7 @@ function getAllLevels(request,callback){
     const result = parser.read(text);
     var capLayers = result.Capability.Layer.Layer
     for (let layer of capLayers) {
-      if (layer.Name=='t'|| layer.Name=='temperature' ) {
+      if (layer.Name=='t'|| layer.Name=='temperature' || layer.Name=='air_temperature') {
         for (let dim of layer.Dimension){
           if (dim.name=="elevation" ){
             callback(dim.values)
@@ -857,7 +866,6 @@ function getDataN(req,lev,meta,datarr,callback){
 
 function getMeta_Model(req,callback){ 
   let rml = req
-  console.log(rml)
     MakeHTTPRequest_s(rml,function(err,data){
       if (err != null) {
         console.error(err);

@@ -69,7 +69,7 @@ class tddjs {
         
         let servtxt=webmapjs.layers[webmapjs.layers.length - j - 1].service;
         let layername=webmapjs.layers[webmapjs.layers.length - j - 1].name
-        if(servtxt.includes("TEMP") || layername == "sond_station" ){
+        if(servtxt.includes("TEMP") || servtxt.includes("IASI_KRR") || layername == "sond_station" ){
           myLayers.push(webmapjs.layers[webmapjs.layers.length - j - 1])
           //myLayer = webmapjs.layers[webmapjs.layers.length - j - 1];
         } else if (servtxt.includes("ECMWF") || servtxt.includes("HARMONIE") ) {
@@ -123,7 +123,7 @@ class tddjs {
               document.getElementById("info").innerHTML = html;
             }      
           } );
-        } else if (myLayers[i].service.includes("TEMP") || myLayers[i].name == "sond_station" ) {
+        } else if (myLayers[i].service.includes("TEMP") || myLayers[i].service.includes("IASI_KRR") || myLayers[i].name == "sond_station" ) {
           console.log("MYLAYER_TEXT",myLayers[i].name )
           let myLayer=myLayers[i]; 
           //console.log("LAYER",myLayer)    
@@ -355,6 +355,9 @@ async function getJSONModel(layer,webmapjs,x,y,format = "text/html", callback){
 } 
 
 function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
+  let serv=layer.service.split("=")[1]
+  serv=serv.replace("&","") 
+
   document.getElementById("info").innerHTML = "Procesando<br>";
   document.getElementById("table").innerHTML = "";
   let request = WMJScheckURL(layer.service);
@@ -366,8 +369,14 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
   let rm=request;
   
   let req_end=""
-  request += "&QUERY_LAYERS=" +'p,z,t,td,windSpd,windDir,eVSS' + "&INFO_FORMAT=" + "application/json";
-  rm += "&QUERY_LAYERS=" +'station_name,ps,alt,station_cname' +"&INFO_FORMAT=" + "application/json";
+  if (serv.includes("TEMP") ){ 
+    request += "&QUERY_LAYERS=" +'p,z,t,td,windSpd,windDir,eVSS' + "&INFO_FORMAT=" + "application/json";
+    rm += "&QUERY_LAYERS=" +'station_name,ps,alt,station_cname' +"&INFO_FORMAT=" + "application/json";
+  } 
+  else if (serv.includes("IASI_KRR")){
+    request += "&QUERY_LAYERS=" +'air_temperature,dew_point_temperature' + "&INFO_FORMAT=" + "application/json";
+    rm += "&QUERY_LAYERS=" +'surface_air_pressure,surface_air_temperature,surface_dew_point_temperature' +"&INFO_FORMAT=" + "application/json";
+  } 
   req_end += "&" + getBBOXandProjString(layer,webmapjs);
   req_end += "WIDTH=" + webmapjs.width;
   req_end += "&HEIGHT=" + webmapjs.height;
@@ -409,10 +418,19 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
   getMeta(rm,function(meta) {
     if (meta != null){
       console.log("META",meta)
-      getData(rl,meta,request,function(dat) {
-        let tJson={"meta":meta,"data":dat}; 
-        callBack(tJson)  
-      } )
+      if (rm.includes("TEMP")){ 
+        getData(rl,meta,request,function(dat) {
+          let tJson={"meta":meta,"data":dat}; 
+          callBack(tJson)   
+        } )
+      } 
+      else if (rm.includes("IASI-KRR")){
+        getData_IASI(rl,meta,request,function(dat) {
+          console.log(dat)
+          let tJson={"meta":meta,"data":dat}; 
+          callBack(tJson)   
+        } )
+      } 
     } else{
       //console.log("no valid data");
       callBack(null);
@@ -543,7 +561,7 @@ function getLevels(request,callback){
     const result = parser.read(text);
     var capLayers = result.Capability.Layer.Layer
     for (let layer of capLayers) {
-      if (layer.Name=='t'|| layer.Name=='temperature' ) {
+      if (layer.Name=='t'|| layer.Name=='temperature' || layer.Name=='air_temperature_profile' || layer.Name=='air_temperature' ) {
         for (let dim of layer.Dimension){
           if (dim.name=="elevation" ){
             callback(dim.default)
@@ -562,7 +580,7 @@ function getAllLevels(request,callback){
     const result = parser.read(text);
     var capLayers = result.Capability.Layer.Layer
     for (let layer of capLayers) {
-      if (layer.Name=='t'|| layer.Name=='temperature' || layer.Name=='air_temperature') {
+      if (layer.Name=='t'|| layer.Name=='temperature' || layer.Name=='air_temperature' || layer.Name=='air_temperature_profile' ) {
         for (let dim of layer.Dimension){
           if (dim.name=="elevation" ){
             callback(dim.values)
@@ -584,26 +602,36 @@ function getMeta(rm,callback){
         let meta=[]; 
         try {
           let dats=JSON.parse(data)   
-          //console.log(dats)
+          //console.log("DATAS",dats)
           let latlon=dats[0].point.coords
           latlon=latlon.split(',')
           let lon=parseFloat(latlon[0]);
           let lat=parseFloat(latlon[1]);
           //console.log(lat,lon)
-          let key=Object.keys(dats[0].data)
-          /*let fecha=key[0].replaceAll("-","") 
-          fecha=fecha.replaceAll(":","")
-          let file="AEMET_IB_TEMP_"+fecha+".nc"
-          */
+          let key
+          for (let i=0;i<dats.length;i++){
+            key=Object.keys(dats[i].data).toString()
+            //console.log("KEY",key )
+            if (key.includes("T") && key.includes("-") && key.includes(":")){
+              break;
+            } 
+          } 
+          //let key=Object.keys(dats[0].data)
+          //console.log("KEY",dats[0] )
           let date=key.toString()
           date=date.split("T");
           let day=date[0].replaceAll("-","");
           day=parseInt(day)
           let hour=parseInt(date[1].substring(0,2));
+          //console.log(day,hour)
           let station
+          let station_c
+          let model="OBSERVACION"
+          if (rm.includes("IASI-KRR")) { station="IASI-KRR";station_c="";model="SAT-PROFILE"} 
           let ps
           let zs
-          let station_c
+          let ts
+          let tds
           
           for (let i=0;i<dats.length;i++){
             //console.log(dats[i])
@@ -617,12 +645,32 @@ function getMeta(rm,callback){
               if (isNaN(ps)) ps=dats[i].data[0]/100
                
             } 
+            if (dats[i].name=="surface_air_pressure" ){
+              if (isDefined(ps)) continue
+              ps=dats[i].data[key]/100
+              if (isNaN(ps)) ps=dats[i].data[0]/100
+              //console.log("PS",ps) 
+            }
+
+            if (dats[i].standard_name=="surface_air_temperature" ){
+              if (isDefined(ts)) continue
+              ts=dats[i].data[2][key] -273.15
+              if (isNaN(ts)) ts=dats[i].data[2][key]-273.15
+            }
+
+            if (dats[i].standard_name=="surface_dew_point_temperature" ){
+              if (isDefined(tds)) continue
+              tds=dats[i].data[2][key] -273.15
+              if (isNaN(tds)) tds=dats[i].data[2][key]-273.15
+            }
+
             if (dats[i].name=="alt" ){ 
               if (isDefined(zs)) continue 
               zs=parseFloat(dats[i].data[key])
               if (isNaN(zs)) zs=parseFloat(dats[i].data[0])
-              
-             }
+              //console.log("ZS",zs) 
+            }
+
             if (dats[i].name=="station_cname_backup" ){ 
               if (isDefined(station_c)) continue
               station_c=dats[i].data[key]} 
@@ -631,12 +679,12 @@ function getMeta(rm,callback){
           if (isDefined(station) && (station != "nodata") ){         
             if (isNaN(zs)){
               zs=0.0
-              //console.log("SOY NAN")
+              console.log("SOY NAN")
             } 
             //meta=[date,station,ps,zs] 
             station_c=station+" "+station_c
-            meta={"model":"OBSERVACION","index":station,"date":day,
-              "run":hour,"step":0,"lon":lon,"lat":lat,"ps":ps,"zs":zs,"name":station_c}
+            meta={"model":model,"index":station,"date":day,
+              "run":hour,"step":0,"lon":lon,"lat":lat,"ps":ps,"zs":zs,"name":station_c,"ts":ts,"tds":tds}
             //console.log("META",meta)
             callback(meta)
           } else {
@@ -650,6 +698,77 @@ function getMeta(rm,callback){
   } );
 }
 
+function getData_IASI(rl,meta,request,callback){
+  let  z_dim="&elevation="
+    
+  htmlTabS="<TABLE BORDER>"
+  htmlTabS+= "<TR> <TD>Nivel</TD> <TD>P</TD> <TD>Z</TD> <TD>T</TD> <TD>TD</TD> <TD>WD</TD> <TD>WS</TD> </TR>"
+
+  getAllLevels(rl,function(lev){
+    let levels=lev.split(",")
+    let vlev=[]
+    for (let i=0;i<levels.length;i++){
+      let l=parseFloat(levels[i])/100
+      if (l>=100 && l<=parseFloat(meta.ps) ) vlev.push(levels[i])
+    }     
+    //console.log("LEV",vlev)
+    let requestn =request + z_dim +vlev[0] +"/" + vlev[vlev.length-1] ;
+    console.log(requestn)
+    let NaN=parseFloat("NaN")
+    let datarr=[] 
+    let dat={"n":0,"p":meta.ps,"z":0,"t":meta.ts,"td":meta.tds,"wD":NaN,"wS":NaN} 
+    datarr.push(dat)
+    //console.log("Procesando nivles",vlev[0],"a",vlev[vlev.length-1])
+    $("#tableinfo").html("") 
+    $("#info").html("")
+    $("#table").html("")
+    $("#tableM").html("")
+    $("#tableS").html("")
+    MakeHTTPRequest_s(requestn,function(err,data){  
+      if (err != null) {
+        console.error(err);
+      } else {  
+        //console.log("REQ",request,"DATA",data)
+        if (!data.includes("ServiceException")){
+          //console.log("PRESION SF",ps)
+          let dats=JSON.parse(data)
+          let zarr=[] 
+          let tarr
+          let tdarr
+          let wsarr=[] 
+          let wdarr=[] 
+          for (dat of dats){
+            console.log(dat)
+            if (dat.standard_name=="air_temperature"){tarr=dat.data } 
+            if (dat.standard_name=="dew_point_temperature"){tdarr=dat.data } 
+            //if (dat.name=="windSpd"){wsarr=dat.data } 
+            //if (dat.name=="windDir"){wdarr=dat.data } 
+            //if (dat.name=="eVSS"){eVarr=dat.data }  
+          } 
+          for (let i in vlev) {
+            ind=vlev[i] 
+            let p=parseFloat(ind)/100
+            let keyd=Object.keys(tarr[ind]) 
+            let t=parseFloat(tarr[ind][keyd])
+            t=t-273.15
+            let td=parseFloat(tdarr[ind][keyd])
+            td=td-273.15
+            let z=parseFloat("NaN")
+            htmlTabS += "<TR><TD>"+i+"</TD><TD>"+p+"</TD> <TD>"+z+"</TD> <TD>"+t.toFixed(2)+"</TD> <TD>"+td.toFixed(2)+"</TD> <TD>NAN</TD> <TD>NAN</TD></TR>" 
+              //if ( (z < zs) || isNaN(t)|| isNaN(td)|| (wDg < 0) ){ continue} 
+            let dat
+            //if (i==vlev.length-1) dat={"n":i,"p":p,"z":0,"t":t,"td":td,"wD":0,"wS":0}
+            dat={"n":i,"p":p,"z":NaN,"t":t,"td":td,"wD":NaN,"wS":NaN} 
+            //console.log(dat)
+            datarr.push(dat)
+          }
+        } 
+        callback(datarr)
+      }
+    })  
+  })
+}
+ 
 
 function getData(rl,meta,request,callback){
     let  z_dim="&elevation="
@@ -659,12 +778,13 @@ function getData(rl,meta,request,callback){
     htmlTabS+= "<TR> <TD>Nivel</TD> <TD>P</TD> <TD>Z</TD> <TD>T</TD> <TD>TD</TD> <TD>WD</TD> <TD>WS</TD> </TR>"
 
     getLevels(rl,function(lev){
-     // console.log("LEV",lev)
+      console.log("LEV",lev)
       if (lev == null) {  
           window.errorMessage("No hay niveles!")
           callback(null)
       }
       let levf=parseInt(lev)
+      console.log("LEVEL",levf)
       let numCenLev=Math.floor(levf/100)
       let restoLev=levf%100
       let lev0=0

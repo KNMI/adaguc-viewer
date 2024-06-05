@@ -2985,7 +2985,8 @@ class Sounding extends Vertical {
     set(d) {
     d.T = d.T || d.t
         //d.r = Th.r_from_q(d.q)
-	if (this.model == "OBSERVACION") {
+	if ( (this.model == "OBSERVACION") || (this.model == "SAT-PROFILE") )  {
+      //console.log("MODEL",d.p,d.z,d.t,d.td)
       d.Td = d.td
 	  d.r = Th.rwc(d.Td,d.p)
 	} else if (this.model.includes("ECMWF") || this.model.includes("HARMONIE") ) {

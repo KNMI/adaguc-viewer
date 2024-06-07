@@ -4327,7 +4327,7 @@ var tddscript = scripts[scripts.length - 1].src
 class TDDConfig {
     default_height = 580 // default height
     height = 580
-    width = 940
+    width = 980
 
     //==== wind diagram ====
     barbsize = 25
@@ -4395,7 +4395,7 @@ class TDD {
     // default dimensions
     default_height = 580 // default height
     height = 580
-    width = 940
+    width = 980
     aratio = this.width / this.height
     scale = 1
     dims = {
@@ -5018,10 +5018,11 @@ class InfoWindow extends AbstractDiagram {
                     .style("font-size", this.fontsize + "px")
                     .html(response);
 
-                MathJax.typeset()
+                //MathJax.typeset()
 
                 s3.select(".closetdd").on("click", (function() { this.clear() }).bind(this))
 
+                //s3.select(".closetdd").on("click", (function() { console.log("CLOSE")} ))
                 // change path to img
                 if (s3.select(".infowindowimg").empty() == false) {
                     s3.select(".infowindowimg").attr('src', img)

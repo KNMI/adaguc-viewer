@@ -4,8 +4,34 @@ const WMSVersion = {
   version130: '1.3.0'
 };
 
-var htmlTabS=""
-var htmlTabM=""
+var js="<!DOCTYPE html>"
+                  +"<html>"
+                  +    "<head>"
+                  +        "<title>SONDEO</title>"
+                  +  '<link rel="stylesheet" href="./apps/tddjs.css" />'
+                  +  "<!-- ADAGUC viewer sounding app -->"
+                  +  '<script type="module" src="webmapjs/tddjs.js"></script>'
+                  +  '<script src="./sond/tddjs/dist/tdd.js"></script>'
+                  +  '<script src="./sond/tddjs/vendor/d3-6.7.js"></script>'
+                  +  '<script src="./sond/tddjs/vendor/moment-with-locales.min.js"></script>'
+                  +  '<link rel="stylesheet" href="./sond/tddjs/dist/tdd.css" />'
+                  +  '<link rel="stylesheet" href="./apps/tddjs.css" />'
+                  +  '</head>'
+                  +  '<body>'
+                  +	'<div id="mitdd"></div>'
+                  +  '</body>'
+                  +'</html>'
+                  +"\n"
+                  +   '<script type="text/javascript">'
+                  +  'console.log("QUERY",myvar);'
+                  +  'var tdd = new TDD("mitdd");'
+                  +  'console.log("TDD",tdd);'
+                  +  'try{'
+                  +        'tdd.load_temp(myvar);'
+                  +     '} catch (e){'
+                  +      'window.alert("Exception occured:" + e);'
+                  +     '}  '
+                  +'</script>'
 
 class tddjs {
 
@@ -15,25 +41,16 @@ class tddjs {
     var enabled = true;
     var currentOptions = [];
     currentOptions.set = false;
-    var openedSondM = false;
-    var openedSondS = false;
-    var wm=null;
-    var ws=null;
+    var openedSond = false;
+    var warr=[]; 
+    var interval;
+    var cont=0;
 
     var pointOnMapClicked = async function (options) {
       //console.log(s3.scaleLog());
-
-      html = ""
-      if (openedSondM){
-        wm.close();
-        openedSondM=false;
-        //cerrrar
-      } 
-      if (openedSondS){
-        ws.close();
-        openedSondS=false;
-        //cerrrar
-      } 
+      console.log("TAC",interval)
+      if (warr.length == 0) html = ""
+      else html=document.getElementById("info").innerHTML
       document.getElementById("info").innerHTML = html
       if (enabled == false)
         return;
@@ -60,9 +77,8 @@ class tddjs {
       if (webmapjs.layers.length == 0){
         html = "No layer: Load a valid layer."
         document.getElementById("info").innerHTML = html
-      } else { document.getElementById("info").innerHTML = "";} 
+      } 
       let myLayers=[]; 
-      let sondType=""
       //let myLayer=null;
       for (let j = 0; j < webmapjs.layers.length; j++) {
         //let myLayer = webmapjs.layers[webmapjs.layers.length - j - 1];
@@ -78,83 +94,55 @@ class tddjs {
       } 
 
       if (myLayers.length==0){
-        html = "No Sounding or Model Layer: Load a valid layer."
+        html = "No Sounding valid Layer: Load a valid layer."
         document.getElementById("info").innerHTML = html
-      } else { document.getElementById("info").innerHTML = "";} 
-
-      
+      } 
+       
       for (let i in myLayers){
         console.log(i,myLayers.length)
-        if (myLayers[i].service.includes("ECMWF") || myLayers[i].service.includes("HARMONIE") ){ 
-          let tempLayer=myLayers[i] ;
-          getJSONModel(tempLayer,webmapjs,currentOptions.x,currentOptions.y,"text/plain",function(iURL){
-            if (iURL != null){ 
-              console.log(iURL) 
-              if (iURL.data != null){
-                let model=tempLayer.service.split("=")[1]
-                model=model.replace("&","")  
-                let meta=iURL.meta
-                meta.model=model
-                meta.lat=Math.round(lalo.y * 100) / 100
-                meta.lon=Math.round(lalo.x * 100) / 100
-                let atr='itemId="sondM",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600'
-                wm=window.open("sondModel.html","Sondeo MODEL", atr)
-                //console.log("WINDIW",wm)
-                wm.myvarM=iURL
-                openedSondM=true;
-                html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
-                html += " - Model:" + iURL.meta.model +"<br/>";
-                //document.getElementById("info").innerHTML = "";
-                document.getElementById("info").innerHTML = html;
-                document.getElementById("table").innerHTML = "";
-                document.getElementById("table").innerHTML = htmlTabM;
-              } else {
-                html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
-                html += " - Station:" + iURL.meta.name +"<br/>";
-                //document.getElementById("info").innerHTML = "";
-                document.getElementById("info").innerHTML = html;
-                document.getElementById("table").innerHTML = "";
-                htmlTabM += "</TABLE>"
-                document.getElementById("table").innerHTML = htmlTabM;
-                //console.log(htmlTab)
-              }  
-            } else {
-              html +="MOD:No valid data<br/>"
-              document.getElementById("info").innerHTML = html;
-            }      
-          } );
-        } else if (myLayers[i].service.includes("TEMP") || myLayers[i].service.includes("IASI_KRR") || myLayers[i].name == "sond_station" ) {
+        if (myLayers[i].service.includes("HARMONIE") ||  myLayers[i].service.includes("ECMWF") || myLayers[i].service.includes("TEMP") || myLayers[i].service.includes("IASI_KRR") || myLayers[i].name == "sond_station" ) {
           console.log("MYLAYER_TEXT",myLayers[i].name )
           let myLayer=myLayers[i]; 
           //console.log("LAYER",myLayer)    
           getJSONdata(myLayer, webmapjs, currentOptions.x,currentOptions.y,"text/plain",function(iURL){
             if (iURL != null){ 
               console.log(iURL) 
-              if (iURL.data != null){  
-                ws=window.open("sondTemp.html","Sondeo", 'itemId="sond",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600')
+              if (iURL.data != null){ 
+                document.getElementById("load").innerHTML = ""; 
+                let station=""
+                let meta=iURL.meta
+                if (myLayer.service.includes("TEMP") || myLayer.name == "sond_station" ){
+                  station="Station"
+                } else if (myLayer.service.includes("ECMWF") ||myLayer.service.includes("HARMONIE") ){
+                  let model=myLayer.service.split("=")[1]
+                  model=model.replace("&","")
+                  meta.model=model
+                  meta.name=model
+                  station="MODEL"
+                } else {  
+                  station="SAT-PROFILE"
+                } 
+                let idnr=cont;
+                cont++;
+                let ws=window.open(idnr,"SOND"+idnr, 'itemId="sonda'+idnr+'",toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=1,width=1040,height=600')
                 ws.myvar=iURL 
-                //console.log("DATOS",iURL)
-                openedSondS=true;
-                html= ""
-                html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
-                html += " - Station:" + iURL.meta.name +"<br/>";
-                //document.getElementById("info").innerHTML = "";
-                document.getElementById("info").innerHTML = html;
-                document.getElementById("table").innerHTML = "";
-                document.getElementById("table").innerHTML = htmlTabS;
-              } else {
-                html += "Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
-                html += " - Station:" + iURL.meta.name +"<br/>";
-                //document.getElementById("info").innerHTML = "";
-                document.getElementById("info").innerHTML = html;
-                document.getElementById("table").innerHTML = "";
-                htmlTabS += "</TABLE>"
-                document.getElementById("table").innerHTML = htmlTabS;
-                //console.log(htmlTabS)
-              }  
+                let doc = ws.document;
+                doc.write(js)
+                doc.close()
+                warr.push([ws,"SOND"+idnr])
+                let html=""
+                let loc=station + " : " + iURL.meta.name 
+                loc+="Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]"
+                html += '<div id="SOND'+idnr+'"class="sonding">'+"Profile for location [" + Math.round(lalo.x * 100) / 100 + "," + Math.round(lalo.y * 100) / 100 + "]";
+                html += " - "+ station + " : " + iURL.meta.name +"</div>";
+                ws.document.title=loc
+                document.getElementById("info").innerHTML += html; 
+              }   
             } else {
-              html +="OBS: No valid data<br/>"
-              document.getElementById("info").innerHTML = html;
+              document.getElementById("load").innerHTML = ""; 
+              let msg ="SOND: No valid data"
+              window.alert(msg)
+              //document.getElementById("info").innerHTML += html;
             }  
           });
         }  
@@ -163,14 +151,44 @@ class tddjs {
     };
     webmapjs.addListener('mouseclicked', pointOnMapClicked, true);
 
+
     var init = function () {
       //console.log("ALTO",element)
-      element.html('<div id="info"></div><div id="table"></div>');
-      $("#info").html("Click on the map to load a profile.<br/> A Sounding or ECMWF Model layer loaded is necessary");
-
+      element.html('<div id="load"></div><div id="info"></div><div id="table"></div>');
+      $("#info").html("Click on the map to load a profile.<br/> A Sounding,ECMWF Model or IASI-KRR layer loaded is necessary");
       //console.log('init sondeo');
+      
+      document.getElementById("info").addEventListener("click", function(ev) {
+        let id=ev.target.getAttribute("id")
+        console.log(id)
+        for (let i=0;i<warr.length;i++){
+          if(warr[i][1] == id){
+            if (!warr[i][0].closed){
+              warr[i][0].focus()
+              break;
+            } 
+          } 
+        } 
+      }, false);
+      
+      if (!isDefined(interval) || interval==null ){ 
+        interval=window.setInterval(function(){
+          for (let i=0;i<warr.length;i++) {
+            if (warr[i][0].closed ){ 
+             const element = document.getElementById(warr[i][1]);
+             console.log(element)
+             warr.splice(i,1)
+             element.remove();
+             if (warr.length==0){
+              $("#info").html("Click on the map to load a profile.<br/> A Sounding,ECMWF Model or IASI-KRR layer loaded is necessary");
+           } 
+            } 
+          } 
+        },1000);
+        console.log(interval)
+      } 
       webmapjs.enableInlineGetFeatureInfo(false);
-    };
+    }; 
 
     this.enable = function () {
       init();
@@ -180,15 +198,16 @@ class tddjs {
       enabled = false;
       webmapjs.enableInlineGetFeatureInfo(true);
       currentOptions.set = false;
-      if (openedSondM){ 
-        wm.close();
-        openedSondM=false;
+      for (let i=0;i<warr.length;i++){
+        console.log("CLOSE")
+        let wm=warr[i]
+        wm.close() 
       } 
-      if (openedSondS){ 
-        ws.close();
-        openedSondS=false;
-      }
+      window.clearInterval(interval)
+      warr=[] 
+      cont=0;
     };
+
     this.resize = function (w, h) {
       //console.log("w=" + w);
       $("#mitdd").width(w);
@@ -270,95 +289,12 @@ function MakeHTTPRequest_s(fname, callbackfunction,useredirect, requestProxy) {
   }
 };
 
-async function getJSONModel(layer,webmapjs,x,y,format = "text/html", callback){
-  let serv=layer.service.split("=")[1]
-  serv=serv.replace("&","") 
-   
-  document.getElementById("info").innerHTML = "Procesando<br>";
-  document.getElementById("table").innerHTML = "";
-
-  let request = WMJScheckURL(layer.service);
-  request += "&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=" + layer.version;
-  request += "&LAYERS=" + URLEncode(layer.name);
-
-  //let req_meta=WMJScheckURL(layer.service)+"&SERVICE=WMS&REQUEST=getmetadata&VERSION=" + layer.version+"&LAYER=" + URLEncode(layer.name);
-  let rm=request;
-  let req_end=""
-  request += "&QUERY_LAYERS=" +'mean_sea_level_pressure' + "&INFO_FORMAT=" + "application/json";
-  //req_meta += "&FORMAT=" + "application/json"+"&" + webmapjs._getMapDimURL(layer);;
-  if (serv.includes("ECMWF") ){ 
-    request += "&QUERY_LAYERS=" +'mean_sea_level_pressure' + "&INFO_FORMAT=" + "application/json";
-    rm += "&QUERY_LAYERS=" +'geopotential_height,temperature,relative_humidity,wind_barbs_vectors'+"&INFO_FORMAT=" + "application/json";
-  } else if (serv.includes("HARMONIE")){
-    request += "&QUERY_LAYERS=" +'medium_sea_level_pressure' + "&INFO_FORMAT=" + "application/json";
-    rm += "&QUERY_LAYERS=" +'geopotential_height,air_temperature,relative_humidity,wind_barbs_vectors'+"&INFO_FORMAT=" + "application/json";
-  } 
-    req_end += "&" + getBBOXandProjString(layer,webmapjs);
-  req_end += "WIDTH=" + webmapjs.width;
-  req_end += "&HEIGHT=" + webmapjs.height;
-  
-  if (
-    layer.version === WMSVersion.version100 ||
-    layer.version === WMSVersion.version111
-  ) {
-    req_end += "&X=" + x;
-    req_end += "&Y=" + y;
-  }
-  if (layer.version === WMSVersion.version130) {
-    req_end += "&I=" + x;
-    req_end += "&J=" + y;
-  }
-  req_end += "&FORMAT=image/gif";
-  req_end += "&STYLES=";
-  
-  console.log("SERV",serv)
-  try {
-    req_end += "&" + webmapjs._getMapDimURL(layer);
-    request += req_end;
-    rm += req_end; 
-  }  catch (e) {
-    //window.errorMessage("Error al procesar una capa!")
-    //console.log(webmapjs)
-    callback(null,undefined);
-  }
-  let rl=layer.service+"&SERVICE=WMS&REQUEST=getCapabilities&VERSION=" + layer.version; 
-  req_list=[] 
-  getAllLevels(rl,function(levels){
-     if (levels == null) {  
-         window.errorMessage("No hay niveles!")
-         callback(null)
-     } else {
-      levels=levels.split(",")
-      //console.log("LEV",levels)
-      for (let i = 0; i < levels.length; i++) { 
-        let lev=levels[i]  
-        let rml = rm + "&elevation=" + lev 
-        req_list.push(rml)
-      }
-      req_list.reverse() 
-      htmlTabM="<TABLE BORDER>"
-      htmlTabM+= "<TR> <TD>Nivel</TD> <TD>P</TD> <TD>Z</TD> <TD>T</TD> <TD>RH</TD> <TD>U</TD> <TD>V</TD> </TR>"
-      let datarr=[] 
-      getMeta_Model(request,function(meta)  {
-        if (meta!=null){    
-          meta.model=serv   
-          getDataN_Model(req_list,datarr,0,function(dat){ 
-            let tJson={"meta":meta,"data":dat}; 
-            callback(tJson) 
-          })         
-        } else {
-          callback(null)
-        }       
-      });
-     } 
-  })  
-} 
-
-function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
+function getJSONdata(layer, webmapjs, x, y, format = "text/html", callback) {
   let serv=layer.service.split("=")[1]
   serv=serv.replace("&","") 
 
-  document.getElementById("info").innerHTML = "Procesando<br>";
+  document.getElementById("load").innerHTML += "Procesando<br>";
+  document.getElementById("load").innerHTML +="<img src=\"./img/ajax-loader.gif\" alt=\"Loading...\"/>";  
   document.getElementById("table").innerHTML = "";
   let request = WMJScheckURL(layer.service);
   request += "&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=" + layer.version;
@@ -369,13 +305,21 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
   let rm=request;
   
   let req_end=""
+  if (serv.includes("ECMWF") ){ 
+    rm += "&QUERY_LAYERS=" +'mean_sea_level_pressure' + "&INFO_FORMAT=" + "application/json";
+    request += "&QUERY_LAYERS=" +'geopotential_height,temperature,relative_humidity,wind_barbs_vectors'+"&INFO_FORMAT=" + "application/json";
+  } 
   if (serv.includes("TEMP") ){ 
     request += "&QUERY_LAYERS=" +'p,z,t,td,windSpd,windDir,eVSS' + "&INFO_FORMAT=" + "application/json";
     rm += "&QUERY_LAYERS=" +'station_name,ps,alt,station_cname' +"&INFO_FORMAT=" + "application/json";
   } 
-  else if (serv.includes("IASI_KRR")){
+  if (serv.includes("IASI_KRR")){
     request += "&QUERY_LAYERS=" +'air_temperature,dew_point_temperature' + "&INFO_FORMAT=" + "application/json";
     rm += "&QUERY_LAYERS=" +'surface_air_pressure,surface_air_temperature,surface_dew_point_temperature' +"&INFO_FORMAT=" + "application/json";
+  } 
+  if (serv.includes("HARMONIE")){
+    rm += "&QUERY_LAYERS=" +'medium_sea_level_pressure' + "&INFO_FORMAT=" + "application/json";
+    request += "&QUERY_LAYERS=" +'geopotential_height,air_temperature,relative_humidity,wind_barbs_vectors'+"&INFO_FORMAT=" + "application/json";
   } 
   req_end += "&" + getBBOXandProjString(layer,webmapjs);
   req_end += "WIDTH=" + webmapjs.width;
@@ -414,26 +358,58 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callBack) {
   rl += "&FORMAT=application/json"
   */
   let rl=layer.service+"&SERVICE=WMS&REQUEST=getCapabilities&VERSION=" + layer.version; 
- 
   getMeta(rm,function(meta) {
     if (meta != null){
       console.log("META",meta)
       if (rm.includes("TEMP")){ 
         getData(rl,meta,request,function(dat) {
-          let tJson={"meta":meta,"data":dat}; 
-          callBack(tJson)   
+          if (dat!=null){  
+            let tJson={"meta":meta,"data":dat}; 
+            callback(tJson)
+          } else{ 
+            callback(null)
+          }     
         } )
-      } 
-      else if (rm.includes("IASI-KRR")){
+      } else if (rm.includes("IASI-KRR")){
         getData_IASI(rl,meta,request,function(dat) {
-          console.log(dat)
-          let tJson={"meta":meta,"data":dat}; 
-          callBack(tJson)   
+          if (dat!=null){ 
+            let tJson={"meta":meta,"data":dat}; 
+            callback(tJson)
+          } else{
+            callback(null)
+          }     
         } )
+      } else if (rm.includes("ECMWF")||rm.includes("HARMONIE") ){  
+        req_list=[] 
+        getAllLevels(rl,function(levels){
+          if (levels == null) {  
+              window.errorMessage("No hay niveles!")
+              callback(null)
+          } else {
+           levels=levels.split(",")
+           //console.log("LEV",levels)
+           for (let i = 0; i < levels.length; i++) { 
+             let lev=levels[i]  
+             let rml = request + "&elevation=" + lev 
+             req_list.push(rml)
+           }
+           req_list.reverse() 
+           let datarr=[] 
+           meta.model=serv   
+           getDataN_Model(req_list,datarr,0,function(dat){ 
+             if(dat!=null){ 
+               let tJson={"meta":meta,"data":dat}; 
+               callback(tJson)
+             } else{
+               callback(null)
+             }   
+            })
+          } 
+        })                  
       } 
     } else{
       //console.log("no valid data");
-      callBack(null);
+      callback(null);
     }  
   } );
   //return request;
@@ -616,9 +592,24 @@ function getMeta(rm,callback){
               break;
             } 
           } 
+          let fecha
+          let run
+          let step
+          let index
+          let timePas
+          if (rm.includes("ECMWF")|| rm.includes("HARMONIE") ){
+            timePas=key;
+            let fi=new Date(timePas).getTime();
+            fecha=dats[0].data[key]
+            key=Object.keys(fecha).toString()
+            ff=new Date(key).getTime();
+            step=(ff-fi)/(1000*60*60)
+            key=Object.keys(fecha).toString()
+          } 
           //let key=Object.keys(dats[0].data)
-          //console.log("KEY",dats[0] )
-          let date=key.toString()
+          let date
+          if (rm.includes("ECMWF")|| rm.includes("HARMONIE") ) date=timePas.toString();
+          else date=key.toString();
           date=date.split("T");
           let day=date[0].replaceAll("-","");
           day=parseInt(day)
@@ -628,28 +619,35 @@ function getMeta(rm,callback){
           let station_c
           let model="OBSERVACION"
           if (rm.includes("IASI-KRR")) { station="IASI-KRR";station_c="";model="SAT-PROFILE"} 
+          if (rm.includes("ECMWF")) {station="ECMWF";station_c="";model="MODEL";}
+          if (rm.includes("HARMONIE")) {station="HARMONIE";station_c="";model="MODEL";}
           let ps
           let zs
           let ts
           let tds
-          
+
           for (let i=0;i<dats.length;i++){
-            //console.log(dats[i])
+            //console.log(dats[i].standard_name )
             if (dats[i].name=="station_name_backup" ){ 
               if (isDefined(station)) continue
               station=dats[i].data[key];   
             } 
-            if (dats[i].name=="ps" ){
+            if (dats[i].name=="ps"){
               if (isDefined(ps)) continue
               ps=dats[i].data[key]/100
               if (isNaN(ps)) ps=dats[i].data[0]/100
-               
-            } 
+            }
+
+            if (dats[i].standard_name=="air_pressure_at_mean_sea_level" || dats[i].standard_name=="medium_sea_level_pressure"){
+              if (isDefined(ps)) continue
+              ps=parseFloat(fecha[key])
+              if (isNaN(ps)) ps=parseFloat(fecha[key])
+            }
+
             if (dats[i].name=="surface_air_pressure" ){
               if (isDefined(ps)) continue
               ps=dats[i].data[key]/100
               if (isNaN(ps)) ps=dats[i].data[0]/100
-              //console.log("PS",ps) 
             }
 
             if (dats[i].standard_name=="surface_air_temperature" ){
@@ -675,16 +673,20 @@ function getMeta(rm,callback){
               if (isDefined(station_c)) continue
               station_c=dats[i].data[key]} 
           } 
-          
+          console.log(station)
           if (isDefined(station) && (station != "nodata") ){         
             if (isNaN(zs)){
               zs=0.0
-              console.log("SOY NAN")
+              //console.log("SOY NAN")
             } 
             //meta=[date,station,ps,zs] 
             station_c=station+" "+station_c
             meta={"model":model,"index":station,"date":day,
               "run":hour,"step":0,"lon":lon,"lat":lat,"ps":ps,"zs":zs,"name":station_c,"ts":ts,"tds":tds}
+            if (rm.includes("ECMWF") || rm.includes("HARMONIE") ){
+              meta={"model":"ECMWF","index":"MODEL","date":day,
+              "run":hour,"step":step,"lon":lon,"lat":lat,"ps":ps,"zs":0.0,"name":"MODEL"}
+            } 
             //console.log("META",meta)
             callback(meta)
           } else {
@@ -698,11 +700,42 @@ function getMeta(rm,callback){
   } );
 }
 
+function getDataN_Model(req_ls,datarr,i,callback){ 
+  if (req_ls.length > 0) {
+    rml=req_ls.pop() 
+    $("#tableinfo").html("") 
+    //$("#info").html("")
+    $("#table").html("")
+    $("#tableM").html("")
+    $("#tableS").html("")
+    MakeHTTPRequest_s(rml,function(err,data){
+      if (err != null) {
+        console.error(err);
+      } else {
+        let dats=JSON.parse(data) 
+        let timePas=Object.keys(dats[0].data)[0] 
+        let lev= Object.keys(dats[0].data[timePas])[0] 
+        let ref_time=Object.keys(dats[0].data[timePas][lev])[0]  
+        let z=parseFloat(dats[0].data[timePas][lev][ref_time])  
+        let t=parseFloat(dats[1].data[timePas][lev][ref_time]    )
+        let RH=parseFloat(dats[2].data[timePas][lev][ref_time]  )
+        let v=-1*parseFloat(dats[3].data[timePas][lev][ref_time] )
+        let u=-1*parseFloat(dats[4].data[timePas][lev][ref_time])
+        let p=parseFloat(lev)
+        let dat={"n":i,"p":p,"z":z,"t":t,"RH":RH,"u":u,"v":v}
+        datarr.push(dat)
+        datarr.sort((a,b) => a.p - b.p)     
+      }
+      i++
+      getDataN_Model(req_ls,datarr,i,callback)  
+    });
+  } else {  
+    callback(datarr)
+  }  
+}
+
 function getData_IASI(rl,meta,request,callback){
   let  z_dim="&elevation="
-    
-  htmlTabS="<TABLE BORDER>"
-  htmlTabS+= "<TR> <TD>Nivel</TD> <TD>P</TD> <TD>Z</TD> <TD>T</TD> <TD>TD</TD> <TD>WD</TD> <TD>WS</TD> </TR>"
 
   getAllLevels(rl,function(lev){
     let levels=lev.split(",")
@@ -713,14 +746,14 @@ function getData_IASI(rl,meta,request,callback){
     }     
     //console.log("LEV",vlev)
     let requestn =request + z_dim +vlev[0] +"/" + vlev[vlev.length-1] ;
-    console.log(requestn)
+    //console.log(requestn)
     let NaN=parseFloat("NaN")
     let datarr=[] 
     let dat={"n":0,"p":meta.ps,"z":0,"t":meta.ts,"td":meta.tds,"wD":NaN,"wS":NaN} 
     datarr.push(dat)
     //console.log("Procesando nivles",vlev[0],"a",vlev[vlev.length-1])
     $("#tableinfo").html("") 
-    $("#info").html("")
+    //$("#info").html("")
     $("#table").html("")
     $("#tableM").html("")
     $("#tableS").html("")
@@ -740,10 +773,7 @@ function getData_IASI(rl,meta,request,callback){
           for (dat of dats){
             console.log(dat)
             if (dat.standard_name=="air_temperature"){tarr=dat.data } 
-            if (dat.standard_name=="dew_point_temperature"){tdarr=dat.data } 
-            //if (dat.name=="windSpd"){wsarr=dat.data } 
-            //if (dat.name=="windDir"){wdarr=dat.data } 
-            //if (dat.name=="eVSS"){eVarr=dat.data }  
+            if (dat.standard_name=="dew_point_temperature"){tdarr=dat.data }  
           } 
           for (let i in vlev) {
             ind=vlev[i] 
@@ -753,11 +783,8 @@ function getData_IASI(rl,meta,request,callback){
             t=t-273.15
             let td=parseFloat(tdarr[ind][keyd])
             td=td-273.15
-            let z=parseFloat("NaN")
-            htmlTabS += "<TR><TD>"+i+"</TD><TD>"+p+"</TD> <TD>"+z+"</TD> <TD>"+t.toFixed(2)+"</TD> <TD>"+td.toFixed(2)+"</TD> <TD>NAN</TD> <TD>NAN</TD></TR>" 
-              //if ( (z < zs) || isNaN(t)|| isNaN(td)|| (wDg < 0) ){ continue} 
+            let z=parseFloat("NaN") 
             let dat
-            //if (i==vlev.length-1) dat={"n":i,"p":p,"z":0,"t":t,"td":td,"wD":0,"wS":0}
             dat={"n":i,"p":p,"z":NaN,"t":t,"td":td,"wD":NaN,"wS":NaN} 
             //console.log(dat)
             datarr.push(dat)
@@ -774,9 +801,6 @@ function getData(rl,meta,request,callback){
     let  z_dim="&elevation="
       
     //console.log("ZLEV=",z_dim)
-    htmlTabS="<TABLE BORDER>"
-    htmlTabS+= "<TR> <TD>Nivel</TD> <TD>P</TD> <TD>Z</TD> <TD>T</TD> <TD>TD</TD> <TD>WD</TD> <TD>WS</TD> </TR>"
-
     getLevels(rl,function(lev){
       console.log("LEV",lev)
       if (lev == null) {  
@@ -830,7 +854,6 @@ function getData(rl,meta,request,callback){
               window.alert("Ultimo nivel demasiado bajo! - Pn: " + plim +"hpa\n\n "+"El ultimo nivel debe ser menor de 300hPa")
               callback(null)
             } else{ 
-          htmlTabS+="</TABLE>"
           callback(datarr)
             }
           } 
@@ -851,14 +874,10 @@ function getDataN(req,lev,meta,datarr,callback){
     let lev0=levstr.slice(iindex,eindex)
     console.log("Procesando nivles",lev0,"a",parseInt(lev0)+99,"de",lev)
     $("#tableinfo").html("") 
-    $("#info").html("")
+    //$("#info").html("")
     $("#table").html("")
     $("#tableM").html("")
     $("#tableS").html("")
-    document.getElementById("info").innerHTML = "";
-    var htmlTime =  "<img src=\"./img/ajax-loader.gif\" alt=\"Loading...\"/>";  
-    document.getElementById("info").innerHTML = htmlTime;
-    //document.getElementById("info").innerHTML += "Procesando niviles " + lev0 +" a "+(parseInt(lev0)+99)+" de " + lev +"<br>";
     MakeHTTPRequest_s(request,function(err,data){  
         if (err != null) {
           console.error(err);
@@ -906,156 +925,42 @@ function getDataN(req,lev,meta,datarr,callback){
               let td=tdarr[i]
               let wS=wsarr[i]
               let wD=wdarr[i]
-
               let eVSS=eVarr[i]
               eVSS=eVSS[keyd]
               eVSS=parseFloat(eVSS) 
-
               p=p[keyd] 
               p=parseFloat(p)
               p=p/div
+
               if ((p > 999999999) || (p<0)){
-                //req=[]; 
-                //break;
                 continue
               } 
 
-              //if ((lev > 1000) & (eVSS < 20000)){
-              //  console.log(j,eVSS,p)
-              //  continue;
-              //} 
-
-              z=parseFloat(z[keyd]);
-            
-              //if (isNaN(z)) {
-                //console.log(i,z)
-              //  continue;
-              //} 
-              //if (z < (zs)){
-                //console.log(z,"<",zs)
-              //  continue;
-              //} 
-              
+              z=parseFloat(z[keyd]);              
               t=parseFloat(t[keyd])
-              //if (isNaN(t)){
-              //  console.log(i,"NIVEL SIGW")
-              //  continue;
-              //} 
               t=t-273.15
-              
               td=parseFloat(td[keyd])-273.15
-              //if (isNaN(td)){
-              // continue;
-              //} 
               wS=parseFloat(wS[keyd])
-              //if (ws < 0.0){
-              //  continue;
-              //}               
               wD=parseFloat(wD[keyd])
               let wDg=wD
-              //if (wDg < 0){
-              //  continue;
-              //}
               wD=wD*(Math.PI / 180)
               wD=wD%(2*Math.PI)
-              //if (ws < 0.0){
-              //  continue;
-              //} 
-              //let u=(ws*Math.cos(wd/(Math.PI / 180)))*1.944
-              //let v=(ws*Math.sin(wd/(Math.PI / 180)))*1.944 
+
               if ( (z < zs) || isNaN(t)|| isNaN(td)|| (wDg < 0) ){ continue} 
-              htmlTabS += "<TR><TD>"+j+"</TD> <TD>"+p+"</TD> <TD>"+z+"</TD> <TD>"+t.toFixed(2)+"</TD> <TD>"+td.toFixed(2)+"</TD> <TD>"+wDg.toFixed(0)+"</TD> <TD>"+wS.toFixed(2)+"</TD></TR>" 
-              //if ( (z < zs) || isNaN(t)|| isNaN(td)|| (wDg < 0) ){ continue} 
               
               let dat={"n":j,"p":p,"z":z,"t":t,"td":td,"wD":wD,"wS":wS} 
               j=j+1
               datarr.push(dat);
             };
-            //console.log("DATA",datarr)
-            //callback(datarr)
           }
         } 
     getDataN(req,lev,meta,datarr,callback)
-        //callback(datarr)
     });
   } else { 
     callback(datarr)
   } 
 }
- 
-
-function getMeta_Model(req,callback){ 
-  let rml = req
-    MakeHTTPRequest_s(rml,function(err,data){
-      if (err != null) {
-        console.error(err);
-      } else {
-        try { 
-          let dats=JSON.parse(data) 
-          let timePas=Object.keys(dats[0].data)[0]
-          fi=new Date(timePas).getTime();
-          date=timePas.split("T");
-          let day=date[0].replaceAll("-","");
-          day=parseInt(day)
-          let hour=parseInt(date[1].substring(0,2));  
-          let ref_time=Object.keys(dats[0].data[timePas])[0]
-          let ff=new Date(ref_time).getTime();
-          let step=(ff-fi)/(1000*60*60)
-          let ps=dats[0].data[timePas][ref_time]  
-          ps=parseFloat(ps)
-          //let meta={"model":"ECMWF","run":timePas,"step":ref_time} 
-          meta={"model":"ECMWF","index":"MODEL","date":day,
-              "run":hour,"step":step,"lon":0,"lat":0,"ps":ps,"zs":0.0,"name":"MODEL"}
-          callback(meta)
-        } catch(e){
-          //console.log(e)
-          callback(null)
-        }
-      }
-    } ); 
-}
-
-function getDataN_Model(req_ls,datarr,i,callback){ 
-  if (req_ls.length > 0) {
-    rml=req_ls.pop() 
-    $("#tableinfo").html("") 
-    $("#info").html("")
-    $("#table").html("")
-    $("#tableM").html("")
-    $("#tableS").html("")
-    document.getElementById("info").innerHTML = "";
-    var htmlTime =  "<img src=\"./img/ajax-loader.gif\" alt=\"Loading...\"/>";  
-    document.getElementById("info").innerHTML = htmlTime;
-    //document.getElementById("info").innerHTML += "Procesando capas del modelo "+i+"<br>";
-    MakeHTTPRequest_s(rml,function(err,data){
-      if (err != null) {
-        console.error(err);
-      } else {
-        let dats=JSON.parse(data) 
-        let timePas=Object.keys(dats[0].data)[0] 
-        let lev= Object.keys(dats[0].data[timePas])[0] 
-        let ref_time=Object.keys(dats[0].data[timePas][lev])[0]  
-        let z=parseFloat(dats[0].data[timePas][lev][ref_time])  
-        let t=parseFloat(dats[1].data[timePas][lev][ref_time]    )
-        let RH=parseFloat(dats[2].data[timePas][lev][ref_time]  )
-        let v=-1*parseFloat(dats[3].data[timePas][lev][ref_time] )
-        let u=-1*parseFloat(dats[4].data[timePas][lev][ref_time])
-        let p=parseFloat(lev)
-        htmlTabM += "<TR><TD>"+i+"</TD> <TD>"+p+"</TD> <TD>"+z+"</TD> <TD>"+t.toFixed(2)+"</TD> <TD>"+RH.toFixed(2)+"</TD> <TD>"+u.toFixed(2)+"</TD> <TD>"+v.toFixed(2)+"</TD></TR>" 
-        let dat={"n":i,"p":p,"z":z,"t":t,"RH":RH,"u":u,"v":v}
-        datarr.push(dat)
-        datarr.sort((a,b) => a.p - b.p)     
-      }
-      i++
-      getDataN_Model(req_ls,datarr,i,callback)  
-    });
-  } else {  
-    htmlTabM+="</TABLE>"
-    callback(datarr)
-  }  
-}   
- 
-        
+          
 class wsond {
 
   constructor(tdd) {

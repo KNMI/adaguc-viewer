@@ -4,7 +4,7 @@ ADAGUC-viewer version AEMET
 http://adaguc.knmi.nl.
 
 Fichero de Control de version y cambios.
-AEMET 1.0.6
+AEMET 1.1.0
 06-03-2024: pluciag: Se corrige el bug, si la capa no tiene dimension tiempo se establece como tiempo de refresco 24H.
                      Se añade PT3M para el autorefresco.
 13-03-2024: pluciag: Se añade que se desactive el update al pulsar el boton de avanzar y retroceder en la capa que a veces daba problemas.
@@ -17,3 +17,7 @@ AEMET 1.0.6
                      Se modifica el lugar en el codigo del logo.
 23-05-2024: pluciag: Se añade el modelo HARMONIE a la herramienta de sondeos.
 05-06-2024: pluciag: Se añade el sensor IASI-KRR a la herramienta de sondeos.
+07-06-2024: pluciag: Se mejora la herramienta de sondeos.
+			-Se quita la tabla y se sustituye por un enlace a las ventanas de los sondeos.
+			-Se mejora el codigo interno.
+			-Se permiten varias ventanas de sondeos simultaneas.

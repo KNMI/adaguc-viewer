@@ -2984,18 +2984,20 @@ class Sounding extends Vertical {
      */
     set(d) {
     d.T = d.T || d.t
-        //d.r = Th.r_from_q(d.q)
-	if ( (this.model == "OBSERVACION") || (this.model == "SAT-PROFILE") )  {
-      //console.log("MODEL",d.p,d.z,d.t,d.td)
-      d.Td = d.td
-	  d.r = Th.rwc(d.Td,d.p)
-	} else if (this.model.includes("ECMWF") || this.model.includes("HARMONIE") ) {
+    //Si no tenemos q, ni td (modelos numericos)
+    if ((d.q == undefined) && (d.td==undefined) ) {  
+      //console.log("MODEL",d.p,d.z,d.t,d.td,d.q)
       d.rh = d.RH
       d.r = d.rh * Th.rwc(d.T, d.p) / 100.
       d.q=Th.q_from_r(d.r)
       d.Td = Th.tdc(d.p, d.r)
       d.wS = Math.sqrt(d.u * d.u + d.v * d.v)
       d.wD = Math.atan2(d.v, d.u)
+	//Si no tenemos q, pero si td (observaciones o sat)
+    } else if (d.q == undefined) {  
+      //console.log("OBS or SAT",d.p,d.z,d.t,d.td,d.q)
+      d.Td = d.td
+      d.r = Th.rwc(d.Td,d.p)
     } else {  
 	  d.r = Th.r_from_q(d.q)
 	  d.Td = Th.tdc(d.p, d.r)

@@ -4,7 +4,7 @@ ADAGUC-viewer version AEMET
 http://adaguc.knmi.nl.
 
 Fichero de Control de version y cambios.
-AEMET 1.1.0
+AEMET 1.1.1
 06-03-2024: pluciag: Se corrige el bug, si la capa no tiene dimension tiempo se establece como tiempo de refresco 24H.
                      Se añade PT3M para el autorefresco.
 13-03-2024: pluciag: Se añade que se desactive el update al pulsar el boton de avanzar y retroceder en la capa que a veces daba problemas.
@@ -21,3 +21,4 @@ AEMET 1.1.0
 			-Se quita la tabla y se sustituye por un enlace a las ventanas de los sondeos.
 			-Se mejora el codigo interno.
 			-Se permiten varias ventanas de sondeos simultaneas.
+24-06-2024: pluciag: Se modifica la libreria tdd.js para quitar las cabeceras OBSERVACION o Nombre del modelo y que calcule a r en funcion de si se lee q o no.

@@ -5,7 +5,7 @@
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-/* Last merge : mié feb 1 12:09:00 CET 2023  */
+/* Last merge : mar jun 18 10:05:09 CEST 2024  */
 
 /* Merging order :
 
@@ -75,6 +75,7 @@ Ts:  Temperatura de saturación
 Ts < Td < Taw < Tw < T < Tv < Te < Tae
 */
 
+//Mod pluciag: Se cambia d3 por s3 por imcopatibilidad de las series temporales de adaguc
 
 //********************************************************************
 // CALSS TH **********************************************************
@@ -1010,7 +1011,7 @@ class Th {
      * @returns {number} interpolated y value
      */
     static line_interp(X, Y, x) {
-        let i = d3.bisect(X, x) // left index 
+        let i = s3.bisect(X, x) // left index 
         let x0 = X[i - 1]
         let x1 = X[i]
         let y0 = Y[i - 1]
@@ -1631,7 +1632,7 @@ class Thlines {
 * Vertical
 * */
 
-//import * as d3 from './d3.js';
+//import * as s3.from './s3.js';
 
 
 /**
@@ -1659,9 +1660,9 @@ class Vertical {
 
 
     // bisectors: return the bottom level index for the given value
-    bisectp = d3.bisector(d => d.p).left
-    bisectz = d3.bisector((d, x) => x - d.z).left
-    bisectzg = d3.bisector((d, x) => x - d.zg).left
+    bisectp = s3.bisector(d => d.p).left
+    bisectz = s3.bisector((d, x) => x - d.z).left
+    bisectzg = s3.bisector((d, x) => x - d.zg).left
 
 
     /**
@@ -3606,7 +3607,8 @@ class Sounding extends Vertical {
             ad.CCTv = this.interp(ad.CCLv, 'Tv')
             ad.TCCLv = ad.CCTv // duplicated
             ad.zCCLv = this.interp(ad.CCLv, 'zg')
-            ad.CTv = (ad.CCTv + Th.c0) * Math.pow(this.bot.p / ad.CCLv, Th.XI) - Th.c0
+            // ad.CTv = (ad.CCTv + Th.c0) * Math.pow(this.bot.p / ad.CCLv, Th.XI) - Th.c0
+            ad.CTv = ad.CT // debug 20231115. Solo tiene sentido una temperatura de disparo
         }
         //console.log("NCC", ad.CCL,ad.CCLv)
         //console.log("zNCC", ad.zCCL,ad.zCCLv)
@@ -4126,7 +4128,9 @@ function query_json(file, callback) {
         dataType: 'json',
         url: file,
         success: function(sond) {
-            callback(sond)
+            norm = obj_normalizer(sond)
+            //console.log("skew2tdd??", sond)
+            callback(norm)
         },
         error: function(xhr) { console.log("error: " + xhr) }
     });
@@ -4151,6 +4155,30 @@ function query_table(callback) {
         },
         error: function(xhr) { console.log("error: " + xhr) }
     });
+}
+
+
+/**
+ * Analyses input object and adapt to required format.
+ * Converts skewt object to tdd object
+ * 'data' type is examined to determine the style (tdd or skewt)
+ * @param callback
+ * @returns
+ */
+function obj_normalizer(obj){
+    console.log(obj)
+    if (Array.isArray(obj.data)==true){
+        //console.log('tdd')
+        return obj
+    } else {
+        //console.log('skewt')
+        obj.data = Object.values(obj.data)
+        for (d of obj.data){
+            d.t = d.T
+            //console.log(d)
+        }
+        return obj
+    }
 }
 
 
@@ -4320,7 +4348,7 @@ class TDDConfig {
     tmin = -35
     tmax = 45
     tinc = 5
-    tticks = d3.range(this.tmin - 100, this.tmax + 1, this.tinc)
+    tticks = s3.range(this.tmin - 100, this.tmax + 1, this.tinc)
     insposx = 50 // instability line position
 
     // Y axis definitions
@@ -4347,8 +4375,8 @@ class TDDConfig {
     // background
     bg_mixing = [0.2, 0.4, 0.6, 1, 1.5, 2, 3, 4, 5, 7, 9, 12, 16, 20, 28, 36, 48, 66] // mixing ratio (g/kg)  
     bg_mixing_ptop = 250
-    bg_tlines = d3.range(-120, this.tmax + 1, this.tinc)
-    bg_dryad = d3.range(this.tmin, 100, 5).concat(d3.range(100, 220, 10)) // potential temperatures
+    bg_tlines = s3.range(-120, this.tmax + 1, this.tinc)
+    bg_dryad = s3.range(this.tmin, 100, 5).concat(s3.range(100, 220, 10)) // potential temperatures
     bg_psead = [-20, -16, -12, -8, -4, 0, 4, 8, 12, 16, 20, 24, 28, 32, 36]
     //bg_dryad  = [30]
 
@@ -4559,7 +4587,7 @@ class TDD {
      */
     _build() {
         // main svg
-        this.svg = d3.select(this.id).append("svg")
+        this.svg = s3.select(this.id).append("svg")
             .attr("width", this.width)
             .attr("height", this.height)
             .attr("display", "block") // matches parent div height
@@ -4587,7 +4615,7 @@ class TDD {
         this.info = new InfoWindow(this, x_info, this.dims.info, this.scale)
 
         // loader object
-        this.loader = new Loaderd3({ width: 50, height: 50, x: 70, y: 50, container: ".svgtdd", id: "loadertdd" })
+        this.loader = new Loaderd3.{ width: 50, height: 50, x: 70, y: 50, container: ".svgtdd", id: "loadertdd" })
 
         // i/o
         this._io()
@@ -4646,7 +4674,8 @@ class TDD {
     /** */
     _onReaderLoad(event) {
         var obj = JSON.parse(event.target.result)
-        this.comp(obj)
+        norm = obj_normalizer(obj)
+        this.comp(norm)
     }
 
 
@@ -4809,7 +4838,7 @@ class TDD {
     destroy() {
         this.s = null
         this.svg.html(null)
-        d3.select("svg").remove();
+        s3.select("svg").remove();
     }
 
 
@@ -4982,11 +5011,11 @@ class InfoWindow extends AbstractDiagram {
 
                 MathJax.typeset()
 
-                d3.select(".closetdd").on("click", (function() { this.clear() }).bind(this))
+                s3.select(".closetdd").on("click", (function() { this.clear() }).bind(this))
 
                 // change path to img
-                if (d3.select(".infowindowimg").empty() == false) {
-                    d3.select(".infowindowimg").attr('src', img)
+                if (s3.select(".infowindowimg").empty() == false) {
+                    s3.select(".infowindowimg").attr('src', img)
                 }
             });
     }
@@ -5103,11 +5132,11 @@ class Hodograph extends AbstractDiagram {
         this.axes = this.main.append('g').attr("id", "hodoaxes")
 
         // u
-        this.x = d3.scaleLinear()
+        this.x = s3.scaleLinear()
             .range([0, this.width])
             .domain([-this.maxw, this.maxw])
 
-        this.ax = d3.axisBottom(this.x)
+        this.ax = s3.axisBottom(this.x)
             .tickSize(0)
             .ticks(0)
 
@@ -5116,11 +5145,11 @@ class Hodograph extends AbstractDiagram {
             .call(this.ax)
 
         // v
-        this.y = d3.scaleLinear()
+        this.y = s3.scaleLinear()
             .range([0, this.height])
             .domain([this.maxw, -this.maxw])
 
-        this.ay = d3.axisLeft(this.y)
+        this.ay = s3.axisLeft(this.y)
             .tickSize(0)
             .ticks(0)
 
@@ -5184,8 +5213,8 @@ class Hodograph extends AbstractDiagram {
             .style("pointer-events", "all")
 
         // events
-        d3.select('#hodoinc').on("click", (function(d) { this._inc() }).bind(this))
-        d3.select('#hododec').on("click", (function(d) { this._dec() }).bind(this))
+        s3.select('#hodoinc').on("click", (function(d) { this._inc() }).bind(this))
+        s3.select('#hododec').on("click", (function(d) { this._dec() }).bind(this))
     }
 
 
@@ -5217,8 +5246,8 @@ class Hodograph extends AbstractDiagram {
             this._build()
             //this._buttons()
             this.axes.remove()
-            d3.select('#hododec').remove()
-            d3.select('#hododectext').remove()
+            s3.select('#hododec').remove()
+            s3.select('#hododectext').remove()
         }
         else return
     }
@@ -5277,7 +5306,7 @@ class Hodograph extends AbstractDiagram {
 
             this.hodoline.append("path")
                 .data(tract)
-                .attr("d", d3.line()
+                .attr("d", s3.line()
                     .x(d => this.x(d.u * Th.MKNOT))
                     .y(d => this.y(d.v * Th.MKNOT))
                 )
@@ -5322,7 +5351,7 @@ class Hodograph extends AbstractDiagram {
         this.bunkers.append("text")
             .attr("x", this.x(s.BUNKERSRU * Th.MKNOT))
             .attr("y", this.y(s.BUNKERSRV * Th.MKNOT))
-            .text("LR")
+            .text("RM")
             .attr("dy", "-.30em")
             .attr("fill", "green")
             .style("font-size", this.fontsize + "px")
@@ -5394,12 +5423,12 @@ class Hodograph extends AbstractDiagram {
         //for (let p of poly[0]){
         //    parray.push([p.u, p.v])
         //}
-        //console.log(d3.polygonArea(parray)*2)
+        //console.log(s3.polygonArea(parray)*2)
 
         // plot area
         element.append("path")
             .data(poly)
-            .attr("d", d3.line()
+            .attr("d", s3.line()
                 .x(d => this.x(d.u * Th.MKNOT))
                 .y(d => this.y(d.v * Th.MKNOT))
             )
@@ -5413,8 +5442,8 @@ class Hodograph extends AbstractDiagram {
         this.currmaxw = this.maxw
         if (fit == true) {
             // find max value
-            let maxu = d3.max(data, d => Math.abs(d.u * Th.MKNOT))
-            let maxv = d3.max(data, d => Math.abs(d.v * Th.MKNOT))
+            let maxu = s3.max(data, d => Math.abs(d.u * Th.MKNOT))
+            let maxv = s3.max(data, d => Math.abs(d.v * Th.MKNOT))
             let max = Math.max(maxu, maxv)
             this.currmaxw = (Math.floor(max / 10) + 1) * 10
         }
@@ -5514,7 +5543,7 @@ class WindDiagram extends AbstractDiagram {
         let inc = (lnb - lnt) / (n - 1)
         let data = []
         let lvls = [] // keep track of exiting levels
-        for (let i in d3.range(n)) {
+        for (let i in s3.range(n)) {
             let lnp = lnt + i * inc
             let d = s.closest(Math.exp(lnp))
             if (lvls.includes(d.p)) continue
@@ -5548,10 +5577,10 @@ class WindDiagram extends AbstractDiagram {
         // hr
         this.hrline.append("path")
             .data([s.data])
-            .attr("d", d3.line()
+            .attr("d", s3.line()
                 .x(d => this.x((d.r / d.rw) * 100))
                 .y(d => this.newY(d.p))
-                .curve(d3.curveLinear)
+                .curve(s3.curveLinear)
             )
     }
 
@@ -5559,7 +5588,7 @@ class WindDiagram extends AbstractDiagram {
     /** */
     _barb_templates() {
         let barbdef = this.main.append('defs')
-        let speeds = d3.range(5, 175, 5);
+        let speeds = s3.range(5, 175, 5);
         let that = this
         speeds.forEach(function(d) {
             var thisbarb = barbdef.append('g').attr('id', 'barb' + d);
@@ -5626,12 +5655,12 @@ class WindDiagram extends AbstractDiagram {
         this.axes = this.main.append('g').attr("id", "axes")
 
         // pressure
-        this.y = d3.scaleLog()
+        this.y = s3.scaleLog()
             .range([0, this.height])
             .domain([this.ptop, this.pbot]);
         this.newY = this.y // used in tooltips
 
-        this.ay = d3.axisLeft(this.y)
+        this.ay = s3.axisLeft(this.y)
             .tickSize(0, 0)
             .ticks(0)
 
@@ -5639,11 +5668,11 @@ class WindDiagram extends AbstractDiagram {
             .call(this.ay);
 
         // hr
-        this.x = d3.scaleLinear()
+        this.x = s3.scaleLinear()
             .range([0, this.width])
             .domain([0, 100])
 
-        this.ax = d3.axisBottom(this.x)
+        this.ax = s3.axisBottom(this.x)
             .ticks(2)
             .tickSize(0, 0)
 
@@ -5719,8 +5748,8 @@ class Legend extends AbstractDiagram {
             .style("font-family", "Helvetica Neue,Helvetica,Arial,sans-serif") // adjustment for panel
             .html('<div id="infolegendgroup"></div><div id="ctrllegendgroup"></div>');
 
-        this.info = d3.select('#infolegendgroup')
-        this.ctrl = d3.select('#ctrllegendgroup')
+        this.info = s3.select('#infolegendgroup')
+        this.ctrl = s3.select('#ctrllegendgroup')
 
         this._add_controls()
     }
@@ -5852,21 +5881,21 @@ class Legend extends AbstractDiagram {
         tm += '<tr><td style="vertical-align:top">' + t + '</td><td style="vertical-align:top">' + tp + '</td></tr>'
         tm += '</table>'
 
-        d3.select('#infolegendgroup').html(tm)
+        s3.select('#infolegendgroup').html(tm)
 
 
         // tooltips
-        //d3.select('#mainhelp').classed("btnact", true)
-        //d3.select('#mainhelp').classed("btnact", !d3.select('#mainhelp').classed("btnact"))
-        //d3.select("td").on("click", (function(){ this.show_info() }).bind(this))
-        //d3.select("td").on("click", (function(){ this.show_info() }))
+        //s3.select('#mainhelp').classed("btnact", true)
+        //s3.select('#mainhelp').classed("btnact", !s3.select('#mainhelp').classed("btnact"))
+        //s3.select("td").on("click", (function(){ this.show_info() }).bind(this))
+        //s3.select("td").on("click", (function(){ this.show_info() }))
 
         // help callback
         let that = this
-        d3.selectAll(".tablelegend .ri").each(function(d, i) {
-            d3.select(this).on("click", function() {
-                let param = d3.select(this).select("td").attr("data-param")
-                param = param || d3.select(this).select("td").text()
+        s3.selectAll(".tablelegend .ri").each(function(d, i) {
+            s3.select(this).on("click", function() {
+                let param = s3.select(this).select("td").attr("data-param")
+                param = param || s3.select(this).select("td").text()
                 that.tdd.info.load(param)
             })
         })
@@ -6069,49 +6098,49 @@ class Legend extends AbstractDiagram {
         this.ctrl.html(t)
 
         // hide/show controls
-        d3.select('#togglectrlegend').on("click", (function() { this.toggle_ctrlegend() }).bind(this))
+        s3.select('#togglectrlegend').on("click", (function() { this.toggle_ctrlegend() }).bind(this))
 
         // lift btns handlers
-        d3.select('#Tliftlegend').on("click", (function() { this.lift_change('T') }).bind(this))
-        d3.select('#Tvliftlegend').on("click", (function() { this.lift_change('Tv') }).bind(this))
-        d3.select('#TTvliftlegend').on("click", (function() { this.lift_change('TTv') }).bind(this))
+        s3.select('#Tliftlegend').on("click", (function() { this.lift_change('T') }).bind(this))
+        s3.select('#Tvliftlegend').on("click", (function() { this.lift_change('Tv') }).bind(this))
+        s3.select('#TTvliftlegend').on("click", (function() { this.lift_change('TTv') }).bind(this))
         // parcel btns handlers
         for (let p of this.tdd.parcels) {
-            d3.select('.parcelbtn[value="' + p.value + '"]').on("click", (function() { this.parcel_change(p.value) }).bind(this))
+            s3.select('.parcelbtn[value="' + p.value + '"]').on("click", (function() { this.parcel_change(p.value) }).bind(this))
         }
         // lines and tools btns handlers
         for (let l of Object.values(this.tdd.lines)) {
-            d3.select('#' + l.name + 'linelegend').on("click", (function() { this.line_change(l) }).bind(this))
-            d3.select('#' + l.name + 'toollegend').on("click", (function() { this.tool_change(l) }).bind(this))
+            s3.select('#' + l.name + 'linelegend').on("click", (function() { this.line_change(l) }).bind(this))
+            s3.select('#' + l.name + 'toollegend').on("click", (function() { this.tool_change(l) }).bind(this))
         }
         // input handler
-        d3.select('#goinputlegend').on("click", (function() { this.parcel_input_change() }).bind(this))
-        d3.select('#pinputlegend').on("change", (function() { this._update_rhinput() }).bind(this))
-        d3.select('#tdinputlegend').on("change", (function() { this._update_rhinput() }).bind(this))
-        d3.select('#tinputlegend').on("change", (function() { this._update_rhinput() }).bind(this))
-        d3.select('#rhinputlegend').on("change", (function() { this._update_tdinput() }).bind(this))
+        s3.select('#goinputlegend').on("click", (function() { this.parcel_input_change() }).bind(this))
+        s3.select('#pinputlegend').on("change", (function() { this._update_rhinput() }).bind(this))
+        s3.select('#tdinputlegend').on("change", (function() { this._update_rhinput() }).bind(this))
+        s3.select('#tinputlegend').on("change", (function() { this._update_rhinput() }).bind(this))
+        s3.select('#rhinputlegend').on("change", (function() { this._update_tdinput() }).bind(this))
         // extra handler   
-        d3.select('#ftlevelslegend').on("click", (function() { this.visual_change('ftlevels') }).bind(this))
-        d3.select('#invtarealegend').on("click", (function() { this.visual_change('invtarea') }).bind(this))
-        d3.select('#hodoareaslegend').on("click", (function() { this.visual_change('hodoareas') }).bind(this))
-        d3.select('#dcapearealegend').on("click", (function() { this.visual_change('dcapearea') }).bind(this))
+        s3.select('#ftlevelslegend').on("click", (function() { this.visual_change('ftlevels') }).bind(this))
+        s3.select('#invtarealegend').on("click", (function() { this.visual_change('invtarea') }).bind(this))
+        s3.select('#hodoareaslegend').on("click", (function() { this.visual_change('hodoareas') }).bind(this))
+        s3.select('#dcapearealegend').on("click", (function() { this.visual_change('dcapearea') }).bind(this))
     }
 
 
     /** */
     toggle_ctrlegend() {
-        let elem = d3.select('#colapsectrlegend')
+        let elem = s3.select('#colapsectrlegend')
         let vis = elem.style('visibility')
         console.log(vis)
         if (vis == 'collapse') {
             elem.style('visibility', 'visible')
             elem.style('height', '')
-            //d3.select('.tablelegend').style("font-size", this.fonttable+"px")
+            //s3.select('.tablelegend').style("font-size", this.fonttable+"px")
 
         } else {
             elem.style('visibility', 'collapse')
             elem.style('height', '0px')
-            //d3.select('.tablelegend').style("font-size", this.fontfull+"px")
+            //s3.select('.tablelegend').style("font-size", this.fontfull+"px")
         }
     }
 
@@ -6121,42 +6150,42 @@ class Legend extends AbstractDiagram {
      */
     visual_change(id) {
         //console.log("visual_change", id)
-        let act = d3.select('#' + id + 'legend').classed("btnact")
+        let act = s3.select('#' + id + 'legend').classed("btnact")
         if (act) {
-            d3.select('#' + id + 'legend').classed("btnact", !act)
-            d3.select('#' + id).style('visibility', 'hidden')
+            s3.select('#' + id + 'legend').classed("btnact", !act)
+            s3.select('#' + id).style('visibility', 'hidden')
         } else {
-            d3.select('#' + id + 'legend').classed("btnact", !act)
-            d3.select('#' + id).style('visibility', 'visible')
+            s3.select('#' + id + 'legend').classed("btnact", !act)
+            s3.select('#' + id).style('visibility', 'visible')
         }
     }
 
 
     /** */
     _update_rhinput() {
-        let p0 = parseFloat(d3.select('#pinputlegend').property('value'))
-        let Td0 = parseFloat(d3.select('#tdinputlegend').property('value'))
-        let T0 = parseFloat(d3.select('#tinputlegend').property('value'))
+        let p0 = parseFloat(s3.select('#pinputlegend').property('value'))
+        let Td0 = parseFloat(s3.select('#tdinputlegend').property('value'))
+        let T0 = parseFloat(s3.select('#tinputlegend').property('value'))
         if (p0 > this.tdd.s.bot.p) {
             p0 = this.tdd.s.bot.p
-            d3.select('#pinputlegend').property('value', p0)
+            s3.select('#pinputlegend').property('value', p0)
         }
         if (Td0 > T0) {
             Td0 = T0
-            d3.select('#tdinputlegend').property('value', Td0)
+            s3.select('#tdinputlegend').property('value', Td0)
         }
-        d3.select('#rhinputlegend').property('value', Th.rhc(p0, T0, Td0))
+        s3.select('#rhinputlegend').property('value', Th.rhc(p0, T0, Td0))
     }
 
 
     /** */
     _update_tdinput() {
-        let p0 = parseFloat(d3.select('#pinputlegend').property('value'))
-        let RH = parseFloat(d3.select('#rhinputlegend').property('value'))
-        let T0 = parseFloat(d3.select('#tinputlegend').property('value'))
+        let p0 = parseFloat(s3.select('#pinputlegend').property('value'))
+        let RH = parseFloat(s3.select('#rhinputlegend').property('value'))
+        let T0 = parseFloat(s3.select('#tinputlegend').property('value'))
         let r0 = RH * Th.rwc(T0, p0) / 100.
         let Td0 = Th.tdc(p0, r0)
-        d3.select('#tdinputlegend').property('value', Td0)
+        s3.select('#tdinputlegend').property('value', Td0)
     }
 
 
@@ -6186,11 +6215,11 @@ class Legend extends AbstractDiagram {
 
         // lift button
         let lift = this.tdd.lift
-        d3.select('#' + lift + 'liftlegend').classed("btnact", true)
+        s3.select('#' + lift + 'liftlegend').classed("btnact", true)
 
         // parcel button
         let parcel = this.tdd.parcel
-        d3.select('.parcelbtn[value="' + parcel + '"]').classed("btnact", true)
+        s3.select('.parcelbtn[value="' + parcel + '"]').classed("btnact", true)
     }
 
 
@@ -6198,19 +6227,19 @@ class Legend extends AbstractDiagram {
     _set_parcel_inputs() {
         let p = this.tdd.get_parcel()
 
-        d3.select('#pinputlegend').property('value', p ? p.p0 : '')
-        d3.select('#tdinputlegend').property('value', p ? p.Td0 : '')
-        d3.select('#tinputlegend').property('value', p ? p.T0 : '')
-        d3.select('#rhinputlegend').property('value', p ? Th.rhc(p.p0, p.T0, p.Td0) : '')
+        s3.select('#pinputlegend').property('value', p ? p.p0 : '')
+        s3.select('#tdinputlegend').property('value', p ? p.Td0 : '')
+        s3.select('#tinputlegend').property('value', p ? p.T0 : '')
+        s3.select('#rhinputlegend').property('value', p ? Th.rhc(p.p0, p.T0, p.Td0) : '')
     }
 
 
     /** */
     parcel_input_change() {
         // retrive values
-        let p0 = parseFloat(d3.select('#pinputlegend').property('value'))
-        let Td0 = parseFloat(d3.select('#tdinputlegend').property('value'))
-        let T0 = parseFloat(d3.select('#tinputlegend').property('value'))
+        let p0 = parseFloat(s3.select('#pinputlegend').property('value'))
+        let Td0 = parseFloat(s3.select('#tdinputlegend').property('value'))
+        let T0 = parseFloat(s3.select('#tinputlegend').property('value'))
         //console.log(p0, Td0, T0)
         this.parcel_change('X', true, false)
         this.tdd.new_parcel(p0, T0, null, Td0, null)
@@ -6223,8 +6252,8 @@ class Legend extends AbstractDiagram {
      */
     lift_change(lift) {
         //console.log("lift_change", lift)
-        d3.select('#' + this.tdd.lift + 'liftlegend').classed("btnact", false) // previous btn
-        d3.select('#' + lift + 'liftlegend').classed("btnact", true)
+        s3.select('#' + this.tdd.lift + 'liftlegend').classed("btnact", false) // previous btn
+        s3.select('#' + lift + 'liftlegend').classed("btnact", true)
         this.tdd.lift = lift
         this.tdd.plot_parcel()
         //this.parcel_change(this.tdd.parcel, true)
@@ -6243,8 +6272,8 @@ class Legend extends AbstractDiagram {
 
         let active = this.tdd.parcel == level
         if (keepactive) active = false
-        let rect = d3.select('.parcelbtn[value="' + level + '"]')
-        d3.selectAll('.parcelgroup').classed("btnact", false)
+        let rect = s3.select('.parcelbtn[value="' + level + '"]')
+        s3.selectAll('.parcelgroup').classed("btnact", false)
         if (active) {
             rect.classed("btnact", false)
             this.tdd.parcel = null
@@ -6254,7 +6283,7 @@ class Legend extends AbstractDiagram {
         }
         //        else {
         //            if (this.tdd.parcel != null){
-        //                d3.select('.parcelbtn[value="'+(this.tdd.parcel).toString()+'"]')
+        //                s3.select('.parcelbtn[value="'+(this.tdd.parcel).toString()+'"]')
         //                    .classed("btnact", false)
         //            }
         //            rect.classed("btnact", true);
@@ -6278,13 +6307,13 @@ class Legend extends AbstractDiagram {
 
         let active = this.tdd.parcel == level
         if (keepactive) active = false
-        let rect = d3.select('.parcelbtn[value="' + level + '"]')
+        let rect = s3.select('.parcelbtn[value="' + level + '"]')
         if (active) {
             rect.classed("btnact", false)
             this.tdd.parcel = null
         } else {
             if (this.tdd.parcel != null) {
-                d3.select('.parcelbtn[value="' + (this.tdd.parcel).toString() + '"]')
+                s3.select('.parcelbtn[value="' + (this.tdd.parcel).toString() + '"]')
                     .classed("btnact", false)
             }
             rect.classed("btnact", true);
@@ -6314,14 +6343,14 @@ class Legend extends AbstractDiagram {
 
         // hide or show the elements
         if (lineactive) {
-            d3.select("#" + idline).style("opacity", 0);
-            d3.select('#' + idtool).style("opacity", 0);
-            d3.select("#" + idlinelegend).style("opacity", this.op);
-            d3.select("#" + idtoollegend).style("opacity", this.op);
+            s3.select("#" + idline).style("opacity", 0);
+            s3.select('#' + idtool).style("opacity", 0);
+            s3.select("#" + idlinelegend).style("opacity", this.op);
+            s3.select("#" + idtoollegend).style("opacity", this.op);
             this.tdd.lines[id].tooltip = false
         } else {
-            d3.select("#" + idline).style("opacity", 1);
-            d3.select("#" + idlinelegend).style("opacity", 1);
+            s3.select("#" + idline).style("opacity", 1);
+            s3.select("#" + idlinelegend).style("opacity", 1);
         }
         // update whether or not the elements are active
         this.tdd.lines[id].visible = !lineactive
@@ -6345,15 +6374,15 @@ class Legend extends AbstractDiagram {
 
         // hide or show the elements
         if (toolactive) {
-            d3.select("#" + idtoollegend).style("opacity", this.op);
-            d3.select('#' + idtool).style("opacity", 0);
+            s3.select("#" + idtoollegend).style("opacity", this.op);
+            s3.select('#' + idtool).style("opacity", 0);
         } else {
-            d3.select('#' + idtool).style("opacity", 1);
-            d3.select("#" + idtoollegend).style("opacity", 1);
+            s3.select('#' + idtool).style("opacity", 1);
+            s3.select("#" + idtoollegend).style("opacity", 1);
             if (lineactive == false) {
-                d3.select('#' + idtool).style("opacity", 1);
-                d3.select("#" + idline).style("opacity", 1);
-                d3.select("#" + idlinelegend).style("opacity", 1);
+                s3.select('#' + idtool).style("opacity", 1);
+                s3.select("#" + idline).style("opacity", 1);
+                s3.select("#" + idlinelegend).style("opacity", 1);
                 this.tdd.lines[id].visible = !lineactive
             }
         }
@@ -6375,7 +6404,7 @@ class Skewt extends AbstractDiagram {
     tmin = -35
     tmax = 45
     tinc = 5
-    tticks = d3.range(this.tmin - 100, this.tmax + 1, this.tinc)
+    tticks = s3.range(this.tmin - 100, this.tmax + 1, this.tinc)
     insposx = 50 // instability line position
 
     // Y axis definitions
@@ -6402,8 +6431,8 @@ class Skewt extends AbstractDiagram {
     // background
     bg_mixing = [0.2, 0.4, 0.6, 1, 1.5, 2, 3, 4, 5, 7, 9, 12, 16, 20, 28, 36, 48, 66] // mixing ratio (g/kg)  
     bg_mixing_ptop = 250
-    bg_tlines = d3.range(-120, this.tmax + 1, this.tinc)
-    bg_dryad = d3.range(this.tmin, 100, 5).concat(d3.range(100, 220, 10)) // potential temperatures
+    bg_tlines = s3.range(-120, this.tmax + 1, this.tinc)
+    bg_dryad = s3.range(this.tmin, 100, 5).concat(s3.range(100, 220, 10)) // potential temperatures
     bg_psead = [-20, -16, -12, -8, -4, 0, 4, 8, 12, 16, 20, 24, 28, 32, 36]
     //bg_dryad  = [30]
 
@@ -6461,10 +6490,10 @@ class Skewt extends AbstractDiagram {
         // clear lines
         for (let l of Object.keys(this.lines).reverse()) {
             //console.log89
-            d3.select('#' + l + 'line').html(null)
+            s3.select('#' + l + 'line').html(null)
             //this.fttext.append("g").attr("id", l+'label')
         }
-        //d3.select('#insthw').html(null)
+        //s3.select('#insthw').html(null)
     }
 
 
@@ -6495,8 +6524,8 @@ class Skewt extends AbstractDiagram {
         // rect
         let y = this.y(this.tdd.s.ps)
         let h = this.y(this.pbot) - y
-        d3.select('#ground').html(null)
-        d3.select('#ground').append('rect')
+        s3.select('#ground').html(null)
+        s3.select('#ground').append('rect')
             .attr('x', 0)
             .attr('y', y)
             .attr('width', this.width)
@@ -6507,15 +6536,15 @@ class Skewt extends AbstractDiagram {
 
     /** */
     clear_parcel() {
-        d3.select('#ftlevels').html(null)
-        d3.select('#dcapearea').html(null)
-        d3.select('#capearea').html(null)
-        d3.select('#capevarea').html(null)
-        d3.select('#cinarea').html(null)
-        d3.select('#cinvarea').html(null)
-        d3.select('#Tlift').html(null)
-        d3.select('#Tvlift').html(null)
-        d3.select('#rlift').html(null)
+        s3.select('#ftlevels').html(null)
+        s3.select('#dcapearea').html(null)
+        s3.select('#capearea').html(null)
+        s3.select('#capevarea').html(null)
+        s3.select('#cinarea').html(null)
+        s3.select('#cinvarea').html(null)
+        s3.select('#Tlift').html(null)
+        s3.select('#Tvlift').html(null)
+        s3.select('#rlift').html(null)
     }
 
 
@@ -6668,13 +6697,13 @@ class Skewt extends AbstractDiagram {
      * @param {*} cl 
      */
     area(data, top, param_left, param_right, cl = null) {
-        var area = d3.area()
+        var area = s3.area()
             .defined(d => d.p >= top)
             .y(d => this.y(d.p))
             .x0(d => this.skewx(d[param_left], d.p))
             .x1(d => this.skewx(d[param_right], d.p))
 
-        d3.select('#' + cl).append("path")
+        s3.select('#' + cl).append("path")
             .data([data])
             .attr("class", cl)
             .attr("d", area)
@@ -6765,13 +6794,13 @@ class Skewt extends AbstractDiagram {
         cl = cl || param + 'line'
         //console.log("line", param, cl)
         if (param == 'Tf') param = 'TSn'
-        d3.select('#' + cl).append("path")
+        s3.select('#' + cl).append("path")
             .data([data])
             .attr("class", cl)
-            .attr("d", d3.line()
+            .attr("d", s3.line()
                 .x(d => this.x(d[param], d.p))
                 .y(d => this.y(d.p))
-                .curve(d3.curveLinear)
+                .curve(s3.curveLinear)
             )
     }
 
@@ -6789,13 +6818,13 @@ class Skewt extends AbstractDiagram {
             param = 'TSn'
 
         }
-        d3.select('#' + cl).append("path")
+        s3.select('#' + cl).append("path")
             .data([data])
             .attr("class", cl)
-            .attr("d", d3.line()
+            .attr("d", s3.line()
                 .x(d => this.skewx(d[param], d.p))
                 .y(d => this.y(d.p))
-                .curve(d3.curveLinear)
+                .curve(s3.curveLinear)
             )
         // DEBUG
         // this.ftlines.append("g").attr("id", cl+'point').selectAll("circle")
@@ -6815,7 +6844,7 @@ class Skewt extends AbstractDiagram {
      */
     hide_line(param) {
         this.lines[param].visible = false
-        d3.select('#' + param + 'line').style("opacity", 0);
+        s3.select('#' + param + 'line').style("opacity", 0);
     }
 
 
@@ -6825,7 +6854,7 @@ class Skewt extends AbstractDiagram {
      */
     hide_tooltip(param) {
         this.lines[param].tooltip = false
-        d3.select('#' + param + 'label').style("opacity", 0);
+        s3.select('#' + param + 'label').style("opacity", 0);
     }
 
 
@@ -6837,7 +6866,7 @@ class Skewt extends AbstractDiagram {
      */
     line2p(p1, p2, cl = null) {
         cl = cl || 'rlift'
-        d3.select('#' + cl).append("line")
+        s3.select('#' + cl).append("line")
             //this.ftlines.append("g").attr("id", cl).append("line")
             .attr("x1", this.skewx(p1.T, p1.p))
             .attr("x2", this.skewx(p2.T, p2.p))
@@ -6940,10 +6969,10 @@ class Skewt extends AbstractDiagram {
 
         // add line tooltips
         for (let l of Object.values(this.lines)) {
-            d3.select('#' + l.name + 'label').append("circle")
+            s3.select('#' + l.name + 'label').append("circle")
                 .attr("r", 3)
                 .attr("class", l.name + 'legend') // for the color
-            d3.select('#' + l.name + 'label').append("text")
+            s3.select('#' + l.name + 'label').append("text")
                 .attr("x", l.x)
                 .attr("y", l.y)
                 .attr("dy", ".35em")
@@ -7036,7 +7065,7 @@ class Skewt extends AbstractDiagram {
             let x = l
             if (l == 'Tf') x = 'TSn'
             if (d[x] === undefined) continue
-            d3.select('#' + l + 'label')
+            s3.select('#' + l + 'label')
                 .attr("transform", "translate(" + this.skewx(d[x], d.p) + "," + this.y(d.p) + ")")
                 .select("text").text((d[x]).toFixed(1) + "°C");
         }
@@ -7066,7 +7095,7 @@ class Skewt extends AbstractDiagram {
     _zoom() {
 
         // Set the zoom and Pan features: how much you can zoom, on which part, and what to do when there is a zoom	      
-        var zoom = d3.zoom()
+        var zoom = s3.zoom()
             .scaleExtent([1., this.zoom_max])  // This control how much you can unzoom (x1.0) and zoom (x20)
             .extent([[0, 0], [this.width, this.height]])
             .translateExtent([[0, 0], [this.width, this.height]])
@@ -7112,7 +7141,7 @@ class Skewt extends AbstractDiagram {
         }
         // resize level arrows and reposition text
         this.ftlevels.selectAll('g').each((function(d, i, n) {
-            let elem = d3.select(n[i])
+            let elem = s3.select(n[i])
             //let id    = elem.attr('id')
             //let param = id.split('_')[1]
             let line = elem.select('line')
@@ -7177,10 +7206,10 @@ class Skewt extends AbstractDiagram {
             .enter().append("path")
             .datum(d => Thlines.mixing_ratio(d, this.bg_mixing_ptop, this.pbot, 30))
             .attr("class", "mixingbg")
-            .attr("d", d3.line()
+            .attr("d", s3.line()
                 .x(d => this.skewx(d.T, d.p))
                 .y(d => this.y(d.p))
-                .curve(d3.curveLinear)
+                .curve(s3.curveLinear)
             )
 
         // this.bglines.append("g").attr("id", "bgmixing").selectAll(".mixingbg")
@@ -7214,10 +7243,10 @@ class Skewt extends AbstractDiagram {
             .enter().append("path")
             .datum(d => Thlines.dry_adiab(d, this.ptop, 1000., 30))
             .attr("class", "dryadbg")
-            .attr("d", d3.line()
+            .attr("d", s3.line()
                 .x(d => this.skewx(d.T, d.p))
                 .y(d => this.y(d.p))
-                .curve(d3.curveLinear)
+                .curve(s3.curveLinear)
             )
 
         // DEBUG 
@@ -7226,10 +7255,10 @@ class Skewt extends AbstractDiagram {
         // .enter().append("path")
         // 	.datum(d => Thlines.dry_adiab(d, this.ptop, this.pbot, 1000))
         // 	.attr("class", "debug")
-        // 	.attr("d", d3.line()
+        // 	.attr("d", s3.line()
         // 		.x(d => this.skewx(d.T, d.p) ) 
         // 		.y(d => this.y(d.p) )
-        // 		.curve(d3.curveLinear)
+        // 		.curve(s3.curveLinear)
         //     )   
     }
 
@@ -7256,10 +7285,10 @@ class Skewt extends AbstractDiagram {
             bgpsead.append("path")
                 .data([data])
                 .attr("class", "pseadbg")
-                .attr("d", d3.line()
+                .attr("d", s3.line()
                     .x(d => this.skewx(d.T, d.p))
                     .y(d => this.y(d.p))
-                    .curve(d3.curveLinear)
+                    .curve(s3.curveLinear)
                 )
 
             bgpseadtext.append("text")
@@ -7283,25 +7312,25 @@ class Skewt extends AbstractDiagram {
         this.axes = this.main.append('g').attr("id", "axes").attr("clip-path", "url(#clipfull)")
 
         // pressure
-        this.y = d3.scaleLog()
+        this.y = s3.scaleLog()
             .range([0, this.height])
             .domain([this.ptop, this.pbot]);
         this.newY = this.y // used in tooltips
 
-        this.ay = d3.axisLeft(this.y)
+        this.ay = s3.axisLeft(this.y)
             .tickSize(0, 0)
             .tickValues(this.pticks)
-            .tickFormat(d3.format(".0d"))
+            .tickFormat(s3.format(".0d"))
 
         this.ayy = this.axes.append('g')
             .call(this.ay);
 
         // temperature
-        this.x = d3.scaleLinear()
+        this.x = s3.scaleLinear()
             .range([0, this.width])
             .domain([this.tmin, this.tmax])
 
-        this.ax = d3.axisBottom(this.x)
+        this.ax = s3.axisBottom(this.x)
             .tickValues(this.tticks)
             .tickSize(0, 0)
 
@@ -7348,12 +7377,12 @@ class Loaderd3 {
         this.duration = 800
         this.timer = false // ID value of the timer returned by the setTimeout() method
 
-        this.arc = d3.arc()
+        this.arc = s3.arc()
             .innerRadius(this.radius * 0.5)
             .outerRadius(this.radius * 0.9)
             .startAngle(0);
 
-        this.svg = d3.select(config.container).append("g")
+        this.svg = s3.select(config.container).append("g")
             .attr("id", config.id)
             .attr("width", config.width)
             .attr("height", config.height)
@@ -7373,10 +7402,10 @@ class Loaderd3 {
     spin() {
         //console.log("spin", this.background, this.duration)
         this.background.transition()
-            .ease(d3.easeLinear)
+            .ease(s3.easeLinear)
             .duration(this.duration)
             .attrTween("transform", function() {
-                return d3.interpolateString("rotate(0)", "rotate(360)");
+                return s3.interpolateString("rotate(0)", "rotate(360)");
             });
         //this.timer = setTimeout( (function(){this.spin()}).bind(this), this.duration); 
     }

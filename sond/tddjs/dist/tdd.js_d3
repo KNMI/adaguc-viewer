@@ -4615,7 +4615,7 @@ class TDD {
         this.info = new InfoWindow(this, x_info, this.dims.info, this.scale)
 
         // loader object
-        this.loader = new Loaderd3.{ width: 50, height: 50, x: 70, y: 50, container: ".svgtdd", id: "loadertdd" })
+        this.loader = new Loaderd3({ width: 50, height: 50, x: 70, y: 50, container: ".svgtdd", id: "loadertdd" })
 
         // i/o
         this._io()

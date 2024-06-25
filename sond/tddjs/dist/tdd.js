@@ -76,6 +76,9 @@ Ts < Td < Taw < Tw < T < Tv < Te < Tae
 */
 
 //Mod pluciag: Se cambia d3 por s3 por imcopatibilidad de las series temporales de adaguc
+//             No se utiliza el Th.math2met porque invierte la direccion del viento en adaguc
+//             Se introducen if para que calcule q en funcion de si tenemos rh o td
+//             Se introducen if para calcular el viento en funcion de si tenemos u,v o wD,wS
 
 //********************************************************************
 // CALSS TH **********************************************************
@@ -3014,14 +3017,19 @@ class Sounding extends Vertical {
     d.The = Th.thec(d.T, d.p, d.r)
     d.Thw = Th.thwc(d.T, d.p, d.r)
         // cota
-    d.TSn = Th.tsneF0(d.T, d.h, d.p)
-    d.Twsn = d.TSn * Math.pow((d.p * Th.c0) / ((Th.c0 + d.T) * Th.PSEA), 0.54)
-    if (d.Twsn < 0) d.Twsn = 0.
+        d.TSn = Th.tsneF0(d.T, d.h, d.p)
+        d.Twsn = d.TSn * Math.pow((d.p * Th.c0) / ((Th.c0 + d.T) * Th.PSEA), 0.54)
+        if (d.Twsn < 0) d.Twsn = 0.
         // wind speed and math direction
-        //d.wS = Math.sqrt(d.u * d.u + d.v * d.v)
-        //d.wD = Math.atan2(d.v, d.u)
-    d.u=d.wS*Math.cos(d.wD)
-    d.v=d.wS*Math.sin(d.wD)
+        if (d.wS == undefined && d.wD==undefined){ 
+          //calculo wS y wD apartir de u y v
+          d.wS = Math.sqrt(d.u * d.u + d.v * d.v)
+          d.wD = Math.atan2(d.v, d.u)
+        } else if (d.u==undefined && d.v==undefined){  
+          //Calculo de u y v apartir de ws,wd
+          d.u=d.wS*Math.cos(d.wD)
+          d.v=d.wS*Math.sin(d.wD)
+        } 
 	//d.zg = d.z - this.zs // height from ground
         // clean
         delete d.t
@@ -3055,7 +3063,6 @@ class Sounding extends Vertical {
         let d
         for (let i = this.data.length - 1; i >= 0; i--) {
             d = this.data[i]
-	    //console.log("D",d)
             Tv_half = (d.Tv + Tv) / 2.
             z += Th.hypsometric_ec(Tv_half, d.p, p)
             d.z = z
@@ -3632,7 +3639,8 @@ class Sounding extends Vertical {
             ad.CCTv = this.interp(ad.CCLv, 'Tv')
             ad.TCCLv = ad.CCTv // duplicated
             ad.zCCLv = this.interp(ad.CCLv, 'zg')
-            ad.CTv = (ad.CCTv + Th.c0) * Math.pow(this.bot.p / ad.CCLv, Th.XI) - Th.c0
+            // ad.CTv = (ad.CCTv + Th.c0) * Math.pow(this.bot.p / ad.CCLv, Th.XI) - Th.c0
+            ad.CTv = ad.CT // debug 20231115. Solo tiene sentido una temperatura de disparo
         }
         //console.log("NCC", ad.CCL,ad.CCLv)
         //console.log("zNCC", ad.zCCL,ad.zCCLv)
@@ -4152,12 +4160,13 @@ function query_json(file, callback) {
         dataType: 'json',
         url: file,
         success: function(sond) {
-            callback(sond)
+            norm = obj_normalizer(sond)
+            //console.log("skew2tdd??", sond)
+            callback(norm)
         },
         error: function(xhr) { console.log("error: " + xhr) }
     });
 }
-
 
 /**
  * 
@@ -4179,6 +4188,29 @@ function query_table(callback) {
     });
 }
 
+
+/** 
+ * Analyses input object and adapt to required format.
+ * Converts skewt object to tdd object
+ * 'data' type is examined to determine the style (tdd or skewt)
+ * @param callback
+ * @returns
+ */
+function obj_normalizer(obj){
+    console.log(obj)
+    if (Array.isArray(obj.data)==true){
+        //console.log('tdd')
+        return obj
+    } else {
+        //console.log('skewt')
+        obj.data = Object.values(obj.data)
+        for (d of obj.data){
+            d.t = d.T
+            //console.log(d)
+        }
+        return obj
+    }
+}
 
 /**
  * Parse Álvaro's skewt table and returns tdd data object.
@@ -4672,7 +4704,8 @@ class TDD {
     /** */
     _onReaderLoad(event) {
         var obj = JSON.parse(event.target.result)
-        this.comp(obj)
+        norm = obj_normalizer(obj)
+        this.comp(norm)
     }
 
 
@@ -4714,6 +4747,7 @@ class TDD {
         query_json(file, this.comp.bind(this))
     }
 
+    //Funcion para cargar los sondeos desde el adaguc-viewer
     load_temp(file){
         this.loadtime = null
         this.calctime = null
@@ -4721,7 +4755,7 @@ class TDD {
         this.loadstart = performance.now()
         this.loader.start() // show loader
         //this.calc_sounding(file)
-	this.comp(file)
+	    this.comp(file)
     }
 
 
@@ -4732,8 +4766,6 @@ class TDD {
         query_table(this.comp.bind(this))
     }
 
-
-    
 
     /**
      * Compute a sounding object and plot it
@@ -4759,8 +4791,6 @@ class TDD {
 
         // sounding
         let t0 = performance.now()
-        console.log("DATA",sond.data)
-        console.log("META",sond.meta)
         this.s = new Sounding(sond.data, sond.meta, this.low_level_parcels)
         this.s.start()
         this.s.COTA = this.s.COTANIE[this.cota]
@@ -5020,11 +5050,10 @@ class InfoWindow extends AbstractDiagram {
                     .style("font-size", this.fontsize + "px")
                     .html(response);
 
-                //MathJax.typeset()
+                MathJax.typeset()
 
                 s3.select(".closetdd").on("click", (function() { this.clear() }).bind(this))
 
-                //s3.select(".closetdd").on("click", (function() { console.log("CLOSE")} ))
                 // change path to img
                 if (s3.select(".infowindowimg").empty() == false) {
                     s3.select(".infowindowimg").attr('src', img)
@@ -5363,7 +5392,7 @@ class Hodograph extends AbstractDiagram {
         this.bunkers.append("text")
             .attr("x", this.x(s.BUNKERSRU * Th.MKNOT))
             .attr("y", this.y(s.BUNKERSRV * Th.MKNOT))
-            .text("LR")
+            .text("RM")
             .attr("dy", "-.30em")
             .attr("fill", "green")
             .style("font-size", this.fontsize + "px")
@@ -5850,7 +5879,7 @@ class Legend extends AbstractDiagram {
 
         //t += '<tr class="ri"><td data-param="MEAN">MEAN W06  </td><td class="tdr" colspan="2">' + round(s, 'WSM06', 1, Th.MKNOT) + '/' + rnd(Th.math2met(s.WDM06), 0) + '</td></tr>'
         t += '<tr class="ri"><td data-param="MEAN">MEAN W06  </td><td class="tdr" colspan="2">' + round(s, 'WSM06', 1, Th.MKNOT) + '/' + rnd((s.WDM06), 0) + '</td></tr>'
-	//t += '<tr class="ri"><td data-param="HEFF">HEFFTOP   </td><td class="tdr" colspan="2">'+round(s, 'HEFFTOP', 1)+'</td></tr>'
+        //t += '<tr class="ri"><td data-param="HEFF">HEFFTOP   </td><td class="tdr" colspan="2">'+round(s, 'HEFFTOP', 1)+'</td></tr>'
         //t += '<tr class="ri"><td data-param="HEFF">HEFFBAS   </td><td class="tdr" colspan="2">'+round(s, 'HEFFBAS', 1)+'</td></tr>'
         t += '<tr class="ri"><td data-param="HEFF">HEFF B/T  </td><td class="tdr" colspan="2">' + round(s, 'HEFFBAS', 1) + '/' + round(s, 'HEFFTOP', 1) + '</td></tr>'
 

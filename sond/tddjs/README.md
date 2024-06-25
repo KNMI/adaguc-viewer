@@ -1,5 +1,9 @@
 # Thermodynamic Diagrams in JavaScript - tddjs
 
+Libreria modificada para el adaguc-viewer.
+* Es necesario modificar la libreria d3-6.7.js ya que las serie temporales de adaguc utiliza otra version de la libreria d3.
+  (Se renombran todas las referencias a d3 como s3)
+ 
 
 ## Descripción
 
@@ -47,6 +51,11 @@ El directorio *vendor* incluye una copia de todo lo necesario que puede ser usad
 <script src="../vendor/mathjax.js"></script>
 ```
 
+Opcionalmente se puede inclir también la siguiente librería. No se usa por defecto.
+
+```
+<script src="../vendor/lambertw/lambertw.js"></script>
+```
 
 ## Cómo usarla
 
@@ -88,16 +97,16 @@ se prioriza el alto para establecer el ancho en función de la relación de aspe
 
 TDD(id, options={})
 
-* id: identificador del tag <div> donde quedará contenido el gráfico
-* options: {width: w, height: h} - objecto para especificar las dimensiones
+* id: identificador del tag <div> donde quedará contenido el gráfico.
+* options: {width: w, height: h} - objecto para especificar las dimensiones.
 
 
 TDD.load(model, index, date, run, step)
 
-* model: IFS, AIB, AIC
-* index: índice del punto en la matriz del modelo
-* date: fecha con formato AAAAMMDD
-* run: 0,6,12 o 18
+* model: IFS, AIB, AIC.
+* index: índice del punto en la matriz del modelo.
+* date: fecha con formato AAAAMMDD.
+* run: 0, 6, 12 o 18.
 * step: alcance: de 0 a 72 para Harmonie, de 0 a 90 para HRES-IFS.
 
 
@@ -133,13 +142,17 @@ Los datos suministrados por el servicio API REST de sondeos previstos tienen la 
     ...
 ]
 }
-```
 
+#Modificaciones para adaguc.
+Mod pluciag: Se cambia d3 por s3 por imcopatibilidad de las series temporales de adaguc que utilizan otra version del la libreria d3
+             No se utiliza el Th.math2met porque invierte la direccion del viento en adaguc
+             Se introducen if para que calcule q en funcion de si tenemos rh o td
+             Se introducen if para calcular el viento en funcion de si tenemos u,v o wD,wS
 
 ## Autor
 
 * **Marcos Gómez Molina** / mgomezm@aemet.es
-
+* **Álvaro Subias Díaz-Blanco** / asubiasd@aemet.es
 
 
 

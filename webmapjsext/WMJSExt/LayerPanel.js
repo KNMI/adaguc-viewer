@@ -235,6 +235,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
       if(isDefined(this.WMJSLayer.service)==false){
         return;
       }
+
       if(this.WMJSLayer.service.length==0)return;
       _this.setLoading("Reading GetCapabilities ...");
 
@@ -288,7 +289,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
           }
         }
       };
-      
+  
       var failed = function(msg2){
         let errorMessage = msg2;
         if(msg2.message){
@@ -423,7 +424,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
           _this.styleButton.loadStyles();
         }catch(e){
         }
-      
+
        var layerHasName = false; 
        if(isDefined(_this.name)){
          if(_this.name.length>0){
@@ -441,7 +442,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
          }else{
           _this.productButton.showService();
          }
-          }
+        }
           
         if(_this.WMJSLayer.WMJSService){
           _this.layerAbstractPanel.update(

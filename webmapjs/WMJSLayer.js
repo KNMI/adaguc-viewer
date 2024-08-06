@@ -216,10 +216,23 @@ export default class WMJSLayer {
   }
 
   handleReferenceTime (name, value) {
-    if (name === 'reference_time') {
+    if (name === 'reference_time' || name === 'forecast_reference_time' ) {
       let timeDim = this.getDimension('time');
       if (timeDim) {
         timeDim.__setStartTime(value);
+        if (!isDefined(timeDim.maxSize)){
+          timeDim.setMaxSize()
+        } 
+        console.log("TIME MAX DIM",timeDim.maxSize)
+        /*let request=this.service+"SERVICE=WMS&REQUEST=getmetadata&layer="+this.name+"&FORMAT=text"
+        await fetch(request).then(function(response) {
+          return response.text();
+        }).then(function(text) {
+          let modelo=text.substring(text.indexOf(":modelo"))
+          modelo=modelo.substring(modelo.indexOf("+")-1)
+          modelo=modelo.substring(0,modelo.indexOf('"'))
+          console.log(modelo)
+        });*/
         if (this.parentMaps && this.parentMaps.length > 0) {
           this.parentMaps[0].getListener().triggerEvent('ondimchange', 'time');
         }
@@ -289,7 +302,7 @@ export default class WMJSLayer {
 
     for (let j = 0; j < dimensions.length; j++) {
       let dim;
-      if (dimensions[j].attr.name.toLowerCase() === 'reference_time') {
+      if (dimensions[j].attr.name.toLowerCase().includes('reference_time') ) {
         hasRefTimeDimension = true;
         dim = new WMJSDimension({ linked: sync_layer });
       } else {
@@ -376,7 +389,11 @@ export default class WMJSLayer {
     }
     if (hasRefTimeDimension) {
       let refTimeDimension = layer.getDimension('reference_time');
-      this.handleReferenceTime('reference_time', refTimeDimension.getValue());
+      if (!isDefined(refTimeDimension)){
+        refTimeDimension = layer.getDimension('forecast_reference_time');
+      } 
+      
+      this.handleReferenceTime(refTimeDimension.name, refTimeDimension.getValue());
     }
   };
 

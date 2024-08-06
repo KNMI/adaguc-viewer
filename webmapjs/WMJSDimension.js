@@ -16,7 +16,10 @@ export default class WMJSDimension {
     this.defaultValue = undefined;
     this.parentLayer = undefined;
     this.timeRangeDuration = undefined;
+
+    //this.isForcastData = false;
     this.linked = sync_layer;
+    this.maxSize = undefined;
 
     /* Private starts with _ */
     this._initialized = false;
@@ -43,6 +46,8 @@ export default class WMJSDimension {
     this.getIndexForValue = this.getIndexForValue.bind(this);
     this.size = this.size.bind(this);
     this.clone = this.clone.bind(this);
+    this.setMaxSize = this.setMaxSize.bind(this);
+    //this.setIsForcastData =this.setIsForcastData(this,isForcastData);
 
     if (isDefined(config)) {
       if (isDefined(config.name)) { this.name = config.name; }
@@ -52,8 +57,17 @@ export default class WMJSDimension {
       if (isDefined(config.defaultValue)) { this.defaultValue = config.defaultValue; }
       if (isDefined(config.parentLayer)) { this.parentLayer = config.parentLayer; }
       if (isDefined(config.linked)) {this.linked = config.linked; }
+      //if (isDefined(config.isForcastData)) {this.isForcastData = config.isForcastData; }
     }
   }
+
+  //Si tenemos reference_time la dimension tiempo tendra un valor fijo de tamaño.
+  //Con esto lo establecemos.
+  setMaxSize(){
+    if (!isDefined(this.maxSize)){
+      this.maxSize=this.size()
+    } 
+  } 
 
   generateAllValues () {
     const vals = [];
@@ -106,6 +120,7 @@ export default class WMJSDimension {
     }
   }
 
+  
   reInitializeValues (values) {
     this._initialized = false;
     this.initialize(values);
@@ -385,7 +400,10 @@ export default class WMJSDimension {
     */
   size () {
     this.initialize();
-    if (this._type === 'timestartstopres') return this._timeRangeDurationDate.getTimeSteps();
+    if(isDefined(this.maxSize)) return this.maxSize
+    if (this._type === 'timestartstopres'){     
+      return this._timeRangeDurationDate.getTimeSteps();
+    } 
     if (this._type === 'timevalues' || this._type === 'anyvalue') {
       return this._allValues.length;
     }

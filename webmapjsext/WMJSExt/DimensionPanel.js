@@ -62,7 +62,6 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
     
     _this.setValue = function(value){
       if(value === _this.currentValue && _this.dimension.size() === _this.currentSize){
-        
         return;
       }
       
@@ -70,7 +69,7 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
     };
     
     _this._setValue = function(value){
-//       console.log("thisname="+_this.dimension.name+" value "+value);
+       //console.log("thisname="+_this.dimension.name+" value "+value);
       _this.currentValue = value;
       _this.currentSize = _this.dimension.size();
       try{
@@ -89,14 +88,17 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
             var earliest = parseISO8601DateToDate(_this.dimension.get(0));
             var latest = parseISO8601DateToDate(_this.dimension.get(_this.dimension.size()-1));
             if(curDate.getTime()<earliest.getTime()){
+              
               _this.dimensionValueLabel.setValueText(WMJSDateTooEarlyString);
               _this.layer.setDimension( _this.dimension.name,WMJSDateTooEarlyString);
               _this.currentIndex = 0;
             }else if(curDate.getTime()>latest.getTime()){
+              console.log(" o AQUI",value)
               _this.dimensionValueLabel.setValueText(WMJSDateTooLateString);
               _this.layer.setDimension( _this.dimension.name,WMJSDateTooLateString);
               _this.currentIndex = _this.dimension.size()-1;
             }else{
+              console.log(" O AQUI",value)
               _this.dimensionValueLabel.setValueText(WMJSDateOutSideRange);
               _this.layer.setDimension( _this.dimension.name,WMJSDateOutSideRange);
             }
@@ -138,7 +140,6 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
       if(hasTime != -1 && hasReferenceTime != -1){
         var timedim=_this.layer.getDimension(_this.dimensionPanels[hasTime].dimension.name);
         var reftimedim=_this.layer.getDimension(_this.dimensionPanels[hasReferenceTime].dimension.name);
-        
         if(timedim.getValue() < reftimedim.getValue() ){
           if(_this.dimensionPanels[hasReferenceTime].dimension.name == dimension.name){
             //console.log("time should be increased:  "+timedim.getValue() +"<"+ reftimedim.getValue());
@@ -160,6 +161,33 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
       _this.dimSlider.resumeEvents();
     };
     
+    _this.checkAjust = function(){
+      if (_this.dimension.name === "forecast_reference_time"){ 
+        let timeRangeDurationDate = _this.Parent.getDimensionPanel("time").dimension.values.split("/")[2] ;
+        let range=_this.Parent.getDimensionPanel("time").dimension.values.split("/")[2].replace("PT","")
+        range=parseInt(range.substring(0,range.length-1))
+        let mult=undefined;
+        if (timeRangeDurationDate[timeRangeDurationDate.length-1]==='S') mult=1*1000
+        if (timeRangeDurationDate[timeRangeDurationDate.length-1]==='M') mult=60*1000
+        if (timeRangeDurationDate[timeRangeDurationDate.length-1]==='H') mult=60*60*1000
+        if (timeRangeDurationDate[timeRangeDurationDate.length-1]==='D') mult=24*60*60*1000
+        let lasttime=_this.Parent.getDimensionPanel("time").currentValue
+        let firsttime=_this.dimension.currentValue
+        let date1 =  new Date(firsttime);
+        let date2 = new Date(lasttime);
+        let steps_time_reftime=(date2.getTime()-date1.getTime())/(range*mult)+1
+        if (steps_time_reftime>_this.Parent.getDimensionPanel("time").dimension.maxSize){
+          let diff=steps_time_reftime-_this.Parent.getDimensionPanel("time").dimension.maxSize
+          let newDate = new Date(date2-diff*range*mult)
+          console.log("REAJUSTATE!!! a",newDate.toISOString(),_this)
+          _this.Parent.getDimensionPanel("time").setValue(newDate)
+          //_this.Parent.parseLayer(false,undefined)
+          
+        } 
+        
+      }
+    }
+
     _this.sliderChanged = function(indexValue){
       var preAuto=_this.Parent.getUpdateStatus();
       _this.Parent.setUpdateStatus(false);
@@ -180,7 +208,7 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
       if(isDefined(_this.dateTimeWindow)){
         _this.dateTimeWindow.setDimension(this.dimension);
       }
-//       _this.checkReferenceTime(_this.dimension);
+      _this.checkReferenceTime(_this.dimension);
       _this.Parent.setUpdateStatus(preAuto);
     };
     
@@ -400,6 +428,7 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
               _this.Parent.setUpdateStatus(false);
               _this.dimSlider.setValue(_this.dimSlider.getValue()-1);
               _this.Parent.setUpdateStatus(preAuto);
+              //_this.checkAjust()
               }
             },
               {xtype:'button',text:'&gt;',width:20,height:22,handler:function(){
@@ -407,6 +436,7 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
               _this.Parent.setUpdateStatus(false);
               _this.dimSlider.setValue(_this.dimSlider.getValue()+1);
               _this.Parent.setUpdateStatus(preAuto);
+              //_this.checkAjust()
               }
             }
             ]

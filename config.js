@@ -933,7 +933,12 @@ var dataChooserConfigurationVISOR = [
     thumbnail:server + '/adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,Wind_V&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
     service:server + '/adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
     layer:'Wind_V'
-    },
+    },{
+    title:'Temperatura',
+    thumbnail:server + '/adagucserver?dataset=EMAS&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=overlay,Temp_V&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+    service:server + '/adagucserver?dataset=EMAS&&service=WMS&request=GetCapabilities',
+    layer:'Temp_V'
+    }
 
 ]
 

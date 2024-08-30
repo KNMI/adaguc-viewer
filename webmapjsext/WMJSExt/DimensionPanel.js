@@ -160,33 +160,6 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
       }
       _this.dimSlider.resumeEvents();
     };
-    
-    _this.checkAjust = function(){
-      if (_this.dimension.name === "forecast_reference_time"){ 
-        let timeRangeDurationDate = _this.Parent.getDimensionPanel("time").dimension.values.split("/")[2] ;
-        let range=_this.Parent.getDimensionPanel("time").dimension.values.split("/")[2].replace("PT","")
-        range=parseInt(range.substring(0,range.length-1))
-        let mult=undefined;
-        if (timeRangeDurationDate[timeRangeDurationDate.length-1]==='S') mult=1*1000
-        if (timeRangeDurationDate[timeRangeDurationDate.length-1]==='M') mult=60*1000
-        if (timeRangeDurationDate[timeRangeDurationDate.length-1]==='H') mult=60*60*1000
-        if (timeRangeDurationDate[timeRangeDurationDate.length-1]==='D') mult=24*60*60*1000
-        let lasttime=_this.Parent.getDimensionPanel("time").currentValue
-        let firsttime=_this.dimension.currentValue
-        let date1 =  new Date(firsttime);
-        let date2 = new Date(lasttime);
-        let steps_time_reftime=(date2.getTime()-date1.getTime())/(range*mult)+1
-        if (steps_time_reftime>_this.Parent.getDimensionPanel("time").dimension.maxSize){
-          let diff=steps_time_reftime-_this.Parent.getDimensionPanel("time").dimension.maxSize
-          let newDate = new Date(date2-diff*range*mult)
-          console.log("REAJUSTATE!!! a",newDate.toISOString(),_this)
-          _this.Parent.getDimensionPanel("time").setValue(newDate)
-          //_this.Parent.parseLayer(false,undefined)
-          
-        } 
-        
-      }
-    }
 
     _this.sliderChanged = function(indexValue){
       var preAuto=_this.Parent.getUpdateStatus();
@@ -428,7 +401,6 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
               _this.Parent.setUpdateStatus(false);
               _this.dimSlider.setValue(_this.dimSlider.getValue()-1);
               _this.Parent.setUpdateStatus(preAuto);
-              //_this.checkAjust()
               }
             },
               {xtype:'button',text:'&gt;',width:20,height:22,handler:function(){
@@ -436,7 +408,6 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
               _this.Parent.setUpdateStatus(false);
               _this.dimSlider.setValue(_this.dimSlider.getValue()+1);
               _this.Parent.setUpdateStatus(preAuto);
-              //_this.checkAjust()
               }
             }
             ]

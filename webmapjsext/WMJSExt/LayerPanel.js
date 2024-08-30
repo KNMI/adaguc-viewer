@@ -43,18 +43,29 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
     
     _this.reload = function(tm){
      
-      var timeDim=_this.getDimensionPanel("time").dimension
+      var timeDim=_this.getDimensionPanel("time").dimension 
+      var refDim=undefined
+      var refDimMaxValue=undefined
+      var dimPanel=_this.getDimensionPanel("forecast_reference_time")
+      if (isDefined(dimPanel)) { console.log(dimPanel)
+        refDim=dimPanel.dimension 
+        refDimMaxValue=refDim.currentValue
+      } 
       var dimMaxValue=timeDim.dimMaxValue
-      var currentValue=timeDim.currentValue
+      //var currentValue=timeDim.currentValue 
       var req=_this.WMJSLayer.service+"&service=WMS&request=GetCapabilities"
       var parser = new ol.format.WMSCapabilities()
       
-      var ready = function(lasttime){
+      var ready = function(lasttime,lastreftime){
         var webmapjs=_this.WMJSLayer.parentMaps[0] 
-        //console.log("Reload ON",timer,tm,_this.name,new Date(Date.now()).getHours()+":"+new Date(Date.now()).getMinutes());
-        //console.log(lasttime)
-        webmapjs.setDimension('time', lasttime, true); 
+        console.log("Reload ON");
+        if (isDefined(lasttime)) webmapjs.setDimension('time', lasttime, true); 
+        if (isDefined(lastreftime)){
+          console.log("Update for Reference_Time",new Date())
+          webmapjs.setDimension('forecast_reference_time', lastreftime, true); 
+        } 
       }
+      
       if (!req.includes("files") && autoupdate){ 
         try {  
         fetch(req).then(function(response) {
@@ -64,16 +75,31 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
           var capLayers = result.Capability.Layer.Layer
           for (let layer of capLayers) {
             if (layer.Name==_this.name) {
+              var timeDim=undefined
+              var refTimeDim=undefined
               for (let dim of layer.Dimension){
                 if (dim.name=="time" ){
-                  var timeLastValue=dim.default
-                    if (dimMaxValue!=timeLastValue){
-                        console.log("Update")
-                        //console.log(_this.getDimensionPanel("time").dimSlider)
-                        _this.parseLayer(true,ready(timeLastValue)) 
-                    }    
+                  timeDim=dim
+                } 
+                if(dim.name=="forecast_reference_time"){
+                  refTimeDim=dim    
                 }
               }
+              var timeLastValue=timeDim.default
+              var maxValue=timeDim.values.split("/")[1] 
+              if (isDefined(refTimeDim)){
+                var refMaxValue=refTimeDim.default
+                console.log("REF",refMaxValue,refDimMaxValue)
+                if (refDimMaxValue!=refMaxValue){
+                  _this.parseLayer(true,ready(timeLastValue,refMaxValue))
+                } 
+              } else {
+                console.log("TIME",maxValue,dimMaxValue,timeLastValue)
+                if (dimMaxValue!=maxValue){
+                  console.log("Update for Time",new Date())
+                  _this.parseLayer(true,ready(timeLastValue,undefined))
+                } 
+              }  
             }      
           } 
         })

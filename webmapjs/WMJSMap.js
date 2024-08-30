@@ -4159,16 +4159,18 @@ export default class WMJSMap {
 
     if (isDefined(dim) === false) {
       dim = { name: name, currentValue: value };
-      console.log("VOY")
       this.mapdimensions.push(dim);
     }
 
     if (isDefined(this.mainTimeSlider)) {
       this.mainTimeSlider.setValue(name, value);
     } 
-    //console.log("CUR",dim.currentValue)
-    //console.log("NEW",value)
-    if (dim.currentValue !== value) {  
+    
+    //console.log(name)
+    //console.log(dim.currentValue)
+    //console.log(value)
+
+    if (dim.currentValue !== value)  {  
       dim.currentValue = value;
       this._buildLayerDims();
       if (triggerEvent !== false) {

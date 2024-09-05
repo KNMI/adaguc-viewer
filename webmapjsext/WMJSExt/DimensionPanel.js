@@ -29,15 +29,17 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
       error("WMJSExtDimensionPanel: getValueForIndex "+defaultIndex+" failed");
     }
     
-    
-    
+
+
+    //NOTA: Hacer que el slider se cree con el tamaño correcto siempre.
+    //Rehacer un metodo que de el size bien.
     _this.dimSlider = Ext.create('Ext.slider.Single',{
       width:50,useTips:false,
       region:'center',
       value:defaultIndex,minValue:0,maxValue:(_this.dimension.size() - 1),increment:1,
       listeners:{
         drag:{fn:function(t){_this.sliderChanged(t.getValue());}},
-                                 change:{fn:function(t){_this.sliderChanged(t.getValue());}}
+        change:{fn:function(t){_this.sliderChanged(t.getValue());}}
       }
     });
     
@@ -58,8 +60,7 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
       //  drag:{fn:function(t){_this.sliderChanged(t.getValue());}},
       //                           change:{fn:function(t){_this.sliderChanged(t.getValue());}}
       });
-    
-    
+
     _this.setValue = function(value){
       if(value === _this.currentValue && _this.dimension.size() === _this.currentSize){
         return;
@@ -88,7 +89,7 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
             var earliest = parseISO8601DateToDate(_this.dimension.get(0));
             var latest = parseISO8601DateToDate(_this.dimension.get(_this.dimension.size()-1));
             if(curDate.getTime()<earliest.getTime()){
-              
+              console.log("SOY YO",WMJSDateTooEarlyString)
               _this.dimensionValueLabel.setValueText(WMJSDateTooEarlyString);
               _this.layer.setDimension( _this.dimension.name,WMJSDateTooEarlyString);
               _this.currentIndex = 0;
@@ -119,8 +120,7 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
       _this.dimSlider.resumeEvents();
       
     }
-    
-    
+
     _this.checkReferenceTime = function(dimension){
       var hasReferenceTime = -1;
       var hasTime = -1;
@@ -137,26 +137,15 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
         }
       }
       _this.dimSlider.suspendEvents();
+      
       if(hasTime != -1 && hasReferenceTime != -1){
         var timedim=_this.layer.getDimension(_this.dimensionPanels[hasTime].dimension.name);
         var reftimedim=_this.layer.getDimension(_this.dimensionPanels[hasReferenceTime].dimension.name);
         if(timedim.getValue() < reftimedim.getValue() ){
-          if(_this.dimensionPanels[hasReferenceTime].dimension.name == dimension.name){
-            //console.log("time should be increased:  "+timedim.getValue() +"<"+ reftimedim.getValue());
-            var newValue = timedim.getValue();
-            do{
-              newValue = timedim.get(timedim.getIndexForValue(newValue)+1);
-            }while(newValue < reftimedim.getValue());
-            _this.dimensionPanels[hasTime].dimSlider.setValue(timedim.getIndexForValue(newValue),false);
-          }else if(_this.dimensionPanels[hasTime].dimension.name == dimension.name){
-            //console.log("reftime should be decreased:  "+timedim.getValue() +"<"+ reftimedim.getValue());
+            console.log("time should be increased:  "+timedim.getValue() +"<"+ reftimedim.getValue());
             var newValue = reftimedim.getValue();
-            do{
-              newValue = reftimedim.get(reftimedim.getIndexForValue(newValue)-1);
-            }while(newValue > reftimedim.getValue());
-            _this.dimensionPanels[hasReferenceTime].dimSlider.setValue(reftimedim.getIndexForValue(newValue),false);
+            _this.dimensionPanels[hasTime].dimSlider.setValue(timedim.getIndexForValue(newValue)+1,false);
           }
-        }
       }
       _this.dimSlider.resumeEvents();
     };
@@ -176,12 +165,14 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
       
       _this.layer.setDimension(_this.dimension.name,_this.getValue());
       //alert(54);
-      _this.layer.draw("DimensionPanel::sliderChanged");
+      
       
       if(isDefined(_this.dateTimeWindow)){
         _this.dateTimeWindow.setDimension(this.dimension);
       }
       _this.checkReferenceTime(_this.dimension);
+      
+      _this.layer.draw("DimensionPanel::sliderChanged");
       _this.Parent.setUpdateStatus(preAuto);
     };
     

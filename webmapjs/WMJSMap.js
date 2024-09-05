@@ -1611,7 +1611,6 @@ export default class WMJSMap {
     //console.log(layer)
     this.layers.push(layer);
     let done = (layerCallback) => {
-      console.log("LAYER",layerCallback)
       for (let j = 0; j < layerCallback.dimensions.length; j++) {
         let mapDim = this.getDimension(layerCallback.dimensions[j].name);
         if (isDefined(mapDim)) {
@@ -4163,6 +4162,7 @@ export default class WMJSMap {
     }
 
     if (isDefined(this.mainTimeSlider)) {
+      console.log("MAINTIMESLIDDER DEFINED")
       this.mainTimeSlider.setValue(name, value);
     } 
     

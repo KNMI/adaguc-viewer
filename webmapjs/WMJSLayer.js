@@ -5,6 +5,7 @@ import WMJSDimension from './WMJSDimension.js';
 import WMJSProjection from './WMJSProjection.js';
 import WMJSBBOX from './WMJSBBOX.js';
 import WMJSGetServiceFromStore from './WMJSGetServiceFromStore.js';
+import {ParseISOTimeRangeDuration } from './WMJSTime.js';
 export default class WMJSLayer {
   init () {
     this.autoupdate = auto_load;
@@ -217,22 +218,18 @@ export default class WMJSLayer {
 
   handleReferenceTime (name, value) {
     if (name === 'reference_time' || name === 'forecast_reference_time' ) {
-      let timeDim = this.getDimension('time');
+      let timeDim = this.getDimension('time')
       if (timeDim) {
+        //Calculamos el rango de tiempos de las pasadas.
+        let refDim = this.getDimension(name);
+        let lastRef=refDim.dimMaxValue
+        let lastTim=timeDim.dimMaxValue
+        let step=timeDim.values.split("/")[2] 
+        let steps=new ParseISOTimeRangeDuration(lastRef+"/"+lastTim+"/"+step).timeSteps
         timeDim.__setStartTime(value);
         if (!isDefined(timeDim.maxSize)){
-          timeDim.setMaxSize()
+          timeDim.setMaxSize(steps)
         } 
-        console.log("TIME MAX DIM",timeDim.maxSize)
-        /*let request=this.service+"SERVICE=WMS&REQUEST=getmetadata&layer="+this.name+"&FORMAT=text"
-        await fetch(request).then(function(response) {
-          return response.text();
-        }).then(function(text) {
-          let modelo=text.substring(text.indexOf(":modelo"))
-          modelo=modelo.substring(modelo.indexOf("+")-1)
-          modelo=modelo.substring(0,modelo.indexOf('"'))
-          console.log(modelo)
-        });*/
         if (this.parentMaps && this.parentMaps.length > 0) {
           this.parentMaps[0].getListener().triggerEvent('ondimchange', 'time');
         }
@@ -250,7 +247,6 @@ export default class WMJSLayer {
     if (isDefined(dim) === false) { return; }
     if (isDefined(value) === false) { return; }
     dim.setValue(value);
-
     this.handleReferenceTime(name, value);
 
     if (dim.linked === true) {
@@ -392,7 +388,6 @@ export default class WMJSLayer {
       if (!isDefined(refTimeDimension)){
         refTimeDimension = layer.getDimension('forecast_reference_time');
       } 
-      
       this.handleReferenceTime(refTimeDimension.name, refTimeDimension.getValue());
     }
   };

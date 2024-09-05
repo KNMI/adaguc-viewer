@@ -30,6 +30,7 @@ export default class WMJSDimension {
 
     /* Deprecated starts with __ */
     this.__setStartTime = this.__setStartTime.bind(this);
+    this.__setStart_EndTime = this.__setStart_EndTime (this); 
 
     this.generateAllValues = this.generateAllValues.bind(this);
     this.reInitializeValues = this.reInitializeValues.bind(this);
@@ -47,6 +48,7 @@ export default class WMJSDimension {
     this.size = this.size.bind(this);
     this.clone = this.clone.bind(this);
     this.setMaxSize = this.setMaxSize.bind(this);
+    this.getMaxSize = this.getMaxSize.bind(this);
     //this.setIsForcastData =this.setIsForcastData(this,isForcastData);
 
     if (isDefined(config)) {
@@ -62,11 +64,17 @@ export default class WMJSDimension {
   }
 
   //Si tenemos reference_time la dimension tiempo tendra un valor fijo de tamaño.
+  //Solo se establecera una vez de tal forma que no pueda cambiar
   //Con esto lo establecemos.
-  setMaxSize(){
+  setMaxSize(size){
     if (!isDefined(this.maxSize)){
-      this.maxSize=this.size()
+      this.maxSize=size
     } 
+  } 
+
+  //Si somos time y tenemos reference_time debemos devolver un el tamaño limitado por reference_time
+  getMaxSize(){
+    return this.maxSize
   } 
 
   generateAllValues () {
@@ -120,6 +128,19 @@ export default class WMJSDimension {
     }
   }
 
+  __setStart_EndTime (_val) {
+    if (!this._initialized) {
+      this.initialize();
+    }
+    let val = _val;
+    if (!val || val.length === 0) {
+      this.reInitializeValues(this.values);
+      this.setClosestValue(true); /* TODO: Check, was timeDim. */
+      console.log('returning');
+      return;
+    }
+    
+  }
   
   reInitializeValues (values) {
     this._initialized = false;
@@ -401,7 +422,7 @@ export default class WMJSDimension {
   size () {
     this.initialize();
     if(isDefined(this.maxSize)) return this.maxSize
-    if (this._type === 'timestartstopres'){     
+    if (this._type === 'timestartstopres'){  
       return this._timeRangeDurationDate.getTimeSteps();
     } 
     if (this._type === 'timevalues' || this._type === 'anyvalue') {

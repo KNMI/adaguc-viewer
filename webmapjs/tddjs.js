@@ -222,6 +222,7 @@ class tddjs {
 
 try{
   WMJSExtApplications["Sondeo"]=tddjs;
+  WMJSExtApplications["VertProfiles"]=tddjs;
 }catch(e){}
 
 function createXHR (){ 

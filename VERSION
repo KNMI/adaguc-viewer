@@ -22,7 +22,8 @@ AEMET 1.2.1.1
 			-Se mejora el codigo interno.
 			-Se permiten varias ventanas de sondeos simultaneas.
 24-06-2024: pluciag: Se modifica la libreria tdd.js para quitar las cabeceras OBSERVACION o Nombre del modelo y que calcule a r en funcion de si se lee q o no.
-25-06-2024: pluciag: Se actualiza la libreria tdd.js para tener la ultima version (adaptada) y se añade licencia.
-06-08-2024: pluciag: Se modifica para que entienda que si hay dimension forecast_reference_time debe limitar la dimension tiempo.
+25-06-2024: AEMET 1.1.2: pluciag: Se actualiza la libreria tdd.js para tener la ultima version (adaptada) y se añade licencia. "Estable"
+06-08-2024: AEMET 1.2.0: pluciag: Se modifica para que entienda que si hay dimension forecast_reference_time debe limitar la dimension tiempo.
 30-08-2024: AEMET 1.2.1: pluciag: Se actualiza el autoupdate para que si hay forecast_reference_time sea esta la que dispare la actualización.
 05-09-2024: AEMET 1.2.1.1: pluciag: Se mejora y se corrigen fallos al manejar la dimension forecast_reference_time.
+06-09-2024: AEMET 1.2.1.2: pluciag: Se añade el nombre en inglés VertProfiles a la aplicacion Sondeo.

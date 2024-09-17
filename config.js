@@ -486,7 +486,8 @@ var dataChooserConfigurationECMWFHRES = [
 
 ];
 
-var dataChooserConfigurationNWP = [ {title:'Ceiling_ground_00',
+var dataChooserConfigurationNWP = [
+      {title:'Ceiling_ground_00',
       thumbnail:server + '/adagucserver?dataset=IFS-HRES_Cloudiness&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Ceiling_Ground_IFS_HRES_00,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IFS-HRES_Cloudiness&',
       layer:'Ceiling_Ground_IFS_HRES_00'
@@ -502,11 +503,13 @@ var dataChooserConfigurationNWP = [ {title:'Ceiling_ground_00',
       thumbnail:server + '/adagucserver?dataset=IFS-HRES_Cloudiness&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Medium_Clouds_IFS_HRES_00,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IFS-HRES_Cloudiness&',
       layer:'Medium_Clouds_IFS_HRES_00'
-},{title:'IR108_00',
+},
+/*{title:'IR108_00',
       thumbnail:server + '/adagucserver?dataset=IFS-HRES_Pseudoimages&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108_IFS_00,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IFS-HRES_Pseudoimages&',
       layer:'IR108_IFS_00'
-},{title:'Enhanced_IR108_00',
+},
+{title:'Enhanced_IR108_00',
       thumbnail:server + '/adagucserver?dataset=IFS-HRES_Pseudoimages&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Enhanced_IR108_IFS_00,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IFS-HRES_Pseudoimages&',
       layer:'Enhanced_IR108_IFS_00'
@@ -514,7 +517,8 @@ var dataChooserConfigurationNWP = [ {title:'Ceiling_ground_00',
       thumbnail:server + '/adagucserver?dataset=IFS-HRES_Pseudoimages&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV62_IFS_00,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IFS-HRES_Pseudoimages&',
       layer:'WV62_IFS_00'
-},{title:'Boundary_Layer_Height_00',
+},*/
+{title:'Boundary_Layer_Height_00',
       thumbnail:server + '/adagucserver?dataset=IFS-HRES_Turbulence&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Boundary_Layer_Height_IFS-HRES_00,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IFS-HRES_Turbulence&',
       layer:'Boundary_Layer_Height_IFS-HRES_00'
@@ -522,7 +526,7 @@ var dataChooserConfigurationNWP = [ {title:'Ceiling_ground_00',
       thumbnail:server + '/adagucserver?dataset=IFS-HRES_Turbulence&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=SFC_TURB_IFS-HRES_00,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IFS-HRES_Turbulence&',
       layer:'SFC_TURB_IFS-HRES_00'
-},{title:'TI1_00',
+},/*{title:'TI1_00',
       thumbnail:server + '/adagucserver?dataset=IFS-HRES_Turbulence&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=TI1_IFS-HRES_00,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IFS-HRES_Turbulence&',
       layer:'TI1_IFS-HRES_00'
@@ -530,7 +534,8 @@ var dataChooserConfigurationNWP = [ {title:'Ceiling_ground_00',
       thumbnail:server + '/adagucserver?dataset=IFS-HRES_Turbulence&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=TI2_IFS-HRES_00,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IFS-HRES_Turbulence&',
       layer:'TI2_IFS-HRES_00'
-},{title:'Ceiling_ground_12',
+},*/
+{title:'Ceiling_ground_12',
       thumbnail:server + '/adagucserver?dataset=IFS-HRES_Cloudiness&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Ceiling_Ground_IFS_HRES_12,overlay&WIDTH=412&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IFS-HRES_Cloudiness&',
       layer:'Ceiling_Ground_IFS_HRES_12'
@@ -546,7 +551,8 @@ var dataChooserConfigurationNWP = [ {title:'Ceiling_ground_00',
       thumbnail:server + '/adagucserver?dataset=IFS-HRES_Cloudiness&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Medium_Clouds_IFS_HRES_12,overlay&WIDTH=412&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IFS-HRES_Cloudiness&',
       layer:'Medium_Clouds_IFS_HRES_12'
-},{title:'IR108_12',
+},
+/*{title:'IR108_12',
       thumbnail:server + '/adagucserver?dataset=IFS-HRES_Pseudoimages&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=IR108_IFS_12,overlay&WIDTH=412&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IFS-HRES_Pseudoimages&',
       layer:'IR108_IFS_12'
@@ -558,7 +564,8 @@ var dataChooserConfigurationNWP = [ {title:'Ceiling_ground_00',
       thumbnail:server + '/adagucserver?dataset=IFS-HRES_Pseudoimages&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=WV62_IFS_12,overlay&WIDTH=412&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IFS-HRES_Pseudoimages&',
       layer:'WV62_IFS_12'
-},{title:'Boundary_Layer_Height_12',
+},*/
+{title:'Boundary_Layer_Height_12',
       thumbnail:server + '/adagucserver?dataset=IFS-HRES_Turbulence&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=Boundary_Layer_Height_IFS-HRES_12,overlay&WIDTH=412&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IFS-HRES_Turbulence&',
       layer:'Boundary_Layer_Height_IFS-HRES_12'
@@ -566,7 +573,8 @@ var dataChooserConfigurationNWP = [ {title:'Ceiling_ground_00',
       thumbnail:server + '/adagucserver?dataset=IFS-HRES_Turbulence&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=SFC_TURB_IFS-HRES_12,overlay&WIDTH=412&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IFS-HRES_Turbulence&',
       layer:'SFC_TURB_IFS-HRES_12'
-},{title:'TI1_12',
+},
+/*{title:'TI1_12',
       thumbnail:server + '/adagucserver?dataset=IFS-HRES_Turbulence&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=TI1_IFS-HRES_12,overlay&WIDTH=412&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IFS-HRES_Turbulence&',
       layer:'TI1_IFS-HRES_12'
@@ -574,7 +582,38 @@ var dataChooserConfigurationNWP = [ {title:'Ceiling_ground_00',
       thumbnail:server + '/adagucserver?dataset=IFS-HRES_Turbulence&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=TI2_IFS-HRES_12,overlay&WIDTH=412&HEIGHT=350&CRS=EPSG:4326&BBOX=25,-20,46,10&FORMAT=image/png&TRANSPARENT=TRUE&',
       service:server + '/adagucserver?dataset=IFS-HRES_Turbulence&',
       layer:'TI2_IFS-HRES_12'
-}];
+}*/
+];
+
+var dataChooserConfigurationHARMONIE_AIB = [
+{
+      title:'Medium sea level pressure',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=medium_sea_level_pressure,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=29,-20,49,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIB&',
+      layer:'medium_sea_level_pressure',
+      abs:'MEDIUM SEA LEVEL PRESSURE',
+},
+]
+var dataChooserConfigurationHARMONIE_AIC = [
+{
+      title:'Medium sea level pressure',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIC&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=medium_sea_level_pressure,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=23,-25,32,-5&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIC&',
+      layer:'medium_sea_level_pressure',
+      abs:'MEDIUM SEA LEVEL PRESSURE',
+},
+]
+
+var dataChooserConfigurationHARMONIE_AIN = [
+{
+      title:'Medium sea level pressure',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=medium_sea_level_pressure,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=29,-20,49,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIN&',
+      layer:'medium_sea_level_pressure',
+      abs:'MEDIUM SEA LEVEL PRESSURE',
+},
+]
+
 
 //----------------------------------- CARPETA OBS -----------------------------------------------------
 //CONTENIDO de subcarpeta Sondeo
@@ -2842,18 +2881,18 @@ var dataChooserConfigurationFoldersMSG = [
 
 //----------------------------------------CARPETA NWP --------------------------------------------------
 //Contenido carpeta del menu NWP
-var dataChooserConfigurationFoldersNWP = [
-  {
-  title:"NWP",
-  thumbnail:'./img/open-file-folder.png',
-  dataChooserConfiguration: dataChooserConfigurationNWP
-  }
-]
+//var dataChooserConfigurationFoldersNWP = [
+//  {
+//  title:"NWP",
+//  thumbnail:'./img/open-file-folder.png',
+//  dataChooserConfiguration: dataChooserConfigurationNWP
+//  }
+//]
 //---------------------------------------FIN CARPETA NWP ------------------------------------------------
 //
-//----------------------------------------CARPETA ECMWF --------------------------------------------------
-//Contenido carpeta del menu ECMWF
-var dataChooserConfigurationFoldersECMWF = [
+//----------------------------------------CARPETA MENU NWP --------------------------------------------------
+//Contenido carpeta del menu NWP
+var dataChooserConfigurationFoldersNWP = [
   {
   title:"ECMWF",
   thumbnail:'./img/open-file-folder.png',
@@ -2864,6 +2903,22 @@ var dataChooserConfigurationFoldersECMWF = [
   thumbnail:'./img/open-file-folder.png',
   dataChooserConfiguration: dataChooserConfigurationECMWFHRES
   },
+  {
+  title:"HARMONIE_AIB",
+  thumbnail:'./img/open-file-folder.png',
+  dataChooserConfiguration: dataChooserConfigurationHARMONIE_AIB
+  },
+  {
+  title:"HARMONIE_AIC",
+  thumbnail:'./img/open-file-folder.png',
+  dataChooserConfiguration: dataChooserConfigurationHARMONIE_AIC
+  },
+  {
+  title:"HARMONIE_AIN",
+  thumbnail:'./img/open-file-folder.png',
+  dataChooserConfiguration: dataChooserConfigurationHARMONIE_AIN
+  },
+
   {
   title:"NWP",
   thumbnail:'./img/open-file-folder.png',
@@ -2884,7 +2939,7 @@ var dataChooser =[
 var folderChooser =[
  { 
    title: "NWP",
-   dataChooserConfigurationFolder: dataChooserConfigurationFoldersECMWF
+   dataChooserConfigurationFolder: dataChooserConfigurationFoldersNWP
  },
  {
    title: "MSG",

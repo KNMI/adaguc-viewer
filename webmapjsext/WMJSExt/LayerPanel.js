@@ -852,7 +852,20 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
             var dates = [];
             
             var maxIndex = timeDim.size();
-            var startIndex = maxIndex-24;//_this.WMJSLayer.parentMaps[0].getMaxNumberOfAnimations();
+            var refTimeDim=undefined
+            for(var j=0;j<_this.WMJSLayer.dimensions.length;j++){
+               if (_this.WMJSLayer.dimensions[j].name.includes("reference_time") ){
+                 refTimeDim=_this.WMJSLayer.dimensions[j]
+               }
+            }
+            var startIndex = undefined
+            if (isDefined(refTimeDim)){
+              refMaxValue=refTimeDim.currentValue
+              console.log("START",refMaxValue)
+              startIndex=timeDim.getIndexForValue(refMaxValue)
+            } else {  
+              startIndex = maxIndex-24;//_this.WMJSLayer.parentMaps[0].getMaxNumberOfAnimations();
+            } 
             var stopIndex = maxIndex;
             
             var currentIndex = timeDim.getIndexForValue(timeDim.currentValue);

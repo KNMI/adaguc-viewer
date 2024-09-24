@@ -85,7 +85,7 @@ class tddjs {
         
         let servtxt=webmapjs.layers[webmapjs.layers.length - j - 1].service;
         let layername=webmapjs.layers[webmapjs.layers.length - j - 1].name
-        if(servtxt.includes("TEMP") || servtxt.includes("IASI_KRR") || layername == "sond_station" ){
+        if(servtxt.includes("TEMP") || servtxt.includes("KRR") || layername == "sond_station" ){
           myLayers.push(webmapjs.layers[webmapjs.layers.length - j - 1])
           //myLayer = webmapjs.layers[webmapjs.layers.length - j - 1];
         } else if (servtxt.includes("ECMWF") || servtxt.includes("HARMONIE") ) {
@@ -100,7 +100,7 @@ class tddjs {
        
       for (let i in myLayers){
         console.log(i,myLayers.length)
-        if (myLayers[i].service.includes("HARMONIE") ||  myLayers[i].service.includes("ECMWF") || myLayers[i].service.includes("TEMP") || myLayers[i].service.includes("IASI_KRR") || myLayers[i].name == "sond_station" ) {
+        if (myLayers[i].service.includes("HARMONIE") ||  myLayers[i].service.includes("ECMWF") || myLayers[i].service.includes("TEMP") || myLayers[i].service.includes("KRR") || myLayers[i].name == "sond_station" ) {
           console.log("MYLAYER_TEXT",myLayers[i].name )
           let myLayer=myLayers[i]; 
           //console.log("LAYER",myLayer)    
@@ -314,7 +314,7 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callback) {
     request += "&QUERY_LAYERS=" +'p,z,t,td,windSpd,windDir,eVSS' + "&INFO_FORMAT=" + "application/json";
     rm += "&QUERY_LAYERS=" +'station_name,ps,alt,station_cname' +"&INFO_FORMAT=" + "application/json";
   } 
-  if (serv.includes("IASI_KRR")){
+  if (serv.includes("KRR")){
     request += "&QUERY_LAYERS=" +'air_temperature,dew_point_temperature' + "&INFO_FORMAT=" + "application/json";
     rm += "&QUERY_LAYERS=" +'surface_air_pressure,surface_air_temperature,surface_dew_point_temperature' +"&INFO_FORMAT=" + "application/json";
   } 
@@ -371,7 +371,7 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callback) {
             callback(null)
           }     
         } )
-      } else if (rm.includes("IASI-KRR")){
+      } else if (rm.includes("KRR")){
         getData_IASI(rl,meta,request,function(dat) {
           if (dat!=null){ 
             let tJson={"meta":meta,"data":dat}; 
@@ -619,7 +619,7 @@ function getMeta(rm,callback){
           let station
           let station_c
           let model="OBSERVACION"
-          if (rm.includes("IASI-KRR")) { station="IASI-KRR";station_c="";model="SAT-PROFILE"} 
+          if (rm.includes("KRR")) { station="IASI-KRR";station_c="";model="SAT-PROFILE"} 
           if (rm.includes("ECMWF")) {station="ECMWF";station_c="";model="MODEL";}
           if (rm.includes("HARMONIE")) {station="HARMONIE";station_c="";model="MODEL";}
           let ps
@@ -628,7 +628,7 @@ function getMeta(rm,callback){
           let tds
 
           for (let i=0;i<dats.length;i++){
-            //console.log(dats[i].standard_name )
+            console.log(dats[i].standard_name )
             if (dats[i].name=="station_name_backup" ){ 
               if (isDefined(station)) continue
               station=dats[i].data[key];   
@@ -653,13 +653,15 @@ function getMeta(rm,callback){
 
             if (dats[i].standard_name=="surface_air_temperature" ){
               if (isDefined(ts)) continue
-              ts=dats[i].data[2][key] -273.15
+              if (!isDefined(dats[i].data[2] )) ts=dats[i].data[key] -273.15 
+              else ts=dats[i].data[2][key] -273.15
               if (isNaN(ts)) ts=dats[i].data[2][key]-273.15
             }
 
             if (dats[i].standard_name=="surface_dew_point_temperature" ){
               if (isDefined(tds)) continue
-              tds=dats[i].data[2][key] -273.15
+              if (!isDefined(dats[i].data[2] )) tds=dats[i].data[key] -273.15 
+              else tds=dats[i].data[2][key] -273.15
               if (isNaN(tds)) tds=dats[i].data[2][key]-273.15
             }
 
@@ -674,7 +676,7 @@ function getMeta(rm,callback){
               if (isDefined(station_c)) continue
               station_c=dats[i].data[key]} 
           } 
-          console.log(station)
+          //console.log(station)
           if (isDefined(station) && (station != "nodata") ){         
             if (isNaN(zs)){
               zs=0.0

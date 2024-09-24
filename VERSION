@@ -28,3 +28,4 @@ AEMET 1.2.1.1
 05-09-2024: AEMET 1.2.1.1: pluciag: Se mejora y se corrigen fallos al manejar la dimension forecast_reference_time.
 06-09-2024: AEMET 1.2.1.2: pluciag: Se añade el nombre en inglés VertProfiles a la aplicacion Sondeo.
 17-09-2024: AEMET 1.2.1.3: pluciag: El boton play mostrara el loop de todo el bucle si existe el forecast_reference_time, 24 slots si no.
+24-09-2024: AEMET 1.2.1.4: pluciag: Se corrige la herramienta de sondeos tddjs para que solo busque la cadena KRR y que funcione con los dataset de KRR

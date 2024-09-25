@@ -592,6 +592,48 @@ var dataChooserConfigurationHARMONIE_AIB = [
       service:server + '/adagucserver?dataset=HARMONIE_AIB&',
       layer:'medium_sea_level_pressure',
       abs:'MEDIUM SEA LEVEL PRESSURE',
+},{
+      title:'10m Wind B/V',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_barbs_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=29,-20,49,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIB&',
+      layer:'10_meter_wind_barbs_vectors',
+      abs:'10 meter wind last hour (Barbs/Vectors)',
+
+},{
+      title:'10m Wind Kt',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_kt,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=29,-20,49,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIB&',
+      layer:'10_meter_wind_kt',
+      abs:'10 meter wind last hour (Knots)',
+
+},{
+      title:'10m Wind m/s',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=29,-20,49,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIB&',
+      layer:'10_meter_wind',
+      abs:'10 meter max gust last hour (m/s)',
+
+},{
+      title:'10m MaxGust B/V',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_max_gust_during_last_hour_barbs_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=29,-20,49,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIB&',
+      layer:'10_meter_max_gust_during_last_hour_barbs_vectors',
+      abs:'10 meter max gust last hour (Barbs/Vectors)',
+
+},{
+      title:'10m MaxGust Kt',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_max_gust_during_last_hour_kt,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=29,-20,49,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIB&',
+      layer:'10_meter_max_gust_during_last_hour_kt',
+      abs:'10 meter max gust last hour (Knots)',
+
+},{
+      title:'10m MaxGust m/s',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_max_gust_during_last_hour_ms,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=29,-20,49,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIB&',
+      layer:'10_meter_max_gust_during_last_hour_ms',
+      abs:'10 meter max gust last hour (m/s)',
+
 },
 ]
 var dataChooserConfigurationHARMONIE_AIC = [
@@ -601,6 +643,48 @@ var dataChooserConfigurationHARMONIE_AIC = [
       service:server + '/adagucserver?dataset=HARMONIE_AIC&',
       layer:'medium_sea_level_pressure',
       abs:'MEDIUM SEA LEVEL PRESSURE',
+},{
+      title:'10m Wind B/V',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIC&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_barbs_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=23,-25,31,-5&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIC&',
+      layer:'10_meter_wind_barbs_vectors',
+      abs:'10 meter max gust last hour (Barbs/Vectors)',
+
+},{
+      title:'10m Wind Kt',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIC&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_kt,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=23,-25,31,-5&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIC&',
+      layer:'10_meter_wind_kt',
+      abs:'10 meter max gust last hour (Knots)',
+
+},{
+      title:'10m Wind m/s',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIC&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=23,-25,31,-5&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIC&',
+      layer:'10_meter_wind',
+      abs:'10 meter max gust last hour (m/s)',
+
+},{
+      title:'10m MaxGust B/V',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIC&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_max_gust_during_last_hour_barbs_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=23,-25,31,-5&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIC&',
+      layer:'10_meter_max_gust_during_last_hour_barbs_vectors',
+      abs:'10 meter max gust last hour (Barbs/Vectors)',
+
+},{
+      title:'10m MaxGust Kt',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIC&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_max_gust_during_last_hour_kt,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=23,-25,31,-5&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIC&',
+      layer:'10_meter_max_gust_during_last_hour_kt',
+      abs:'10 meter max gust last hour (Knots)',
+
+},{
+      title:'10m MaxGust m/s',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIC&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_max_gust_during_last_hour_ms,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=23,-25,31,-5&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIC&',
+      layer:'10_meter_max_gust_during_last_hour_ms',
+      abs:'10 meter max gust last hour (m/s)',
+
 },
 ]
 
@@ -611,6 +695,49 @@ var dataChooserConfigurationHARMONIE_AIN = [
       service:server + '/adagucserver?dataset=HARMONIE_AIN&',
       layer:'medium_sea_level_pressure',
       abs:'MEDIUM SEA LEVEL PRESSURE',
+      
+},{
+      title:'10m Wind B/V',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_barbs_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=29,-20,49,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIN&',
+      layer:'10_meter_wind_barbs_vectors',
+      abs:'10 meter wind last hour (Barbs/Vectors)',
+
+},{
+      title:'10m Wind Kt',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind_kt,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=29,-20,49,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIN&',
+      layer:'10_meter_wind_kt',
+      abs:'10 meter wind last hour (Knots)',
+
+},{
+      title:'10m Wind m/s',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_wind,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=29,-20,49,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIN&',
+      layer:'10_meter_wind',
+      abs:'10 meter max gust last hour (m/s)',
+
+},{
+      title:'10m MaxGust B/V',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_max_gust_during_last_hour_barbs_vectors,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=29,-20,49,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIN&',
+      layer:'10_meter_max_gust_during_last_hour_barbs_vectors',
+      abs:'10 meter max gust last hour (Barbs/Vectors)',
+
+},{
+      title:'10m MaxGust Kt',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_max_gust_during_last_hour_kt,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=29,-20,49,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIN&',
+      layer:'10_meter_max_gust_during_last_hour_kt',
+      abs:'10 meter max gust last hour (Knots)',
+
+},{
+      title:'10m MaxGust m/s',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=10_meter_max_gust_during_last_hour_ms,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=29,-20,49,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIN&',
+      layer:'10_meter_max_gust_during_last_hour_ms',
+      abs:'10 meter max gust last hour (m/s)',
+
 },
 ]
 

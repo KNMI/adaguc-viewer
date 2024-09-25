@@ -861,7 +861,7 @@ Ext.define('webmapjsext.WMJSExt.LayerPanel',{
             var startIndex = undefined
             if (isDefined(refTimeDim)){
               refMaxValue=refTimeDim.currentValue
-              console.log("START",refMaxValue)
+              //console.log("START",refMaxValue)
               startIndex=timeDim.getIndexForValue(refMaxValue)
             } else {  
               startIndex = maxIndex-24;//_this.WMJSLayer.parentMaps[0].getMaxNumberOfAnimations();

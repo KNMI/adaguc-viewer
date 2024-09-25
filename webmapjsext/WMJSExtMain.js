@@ -5,7 +5,7 @@ var error = function (e) {
 var debug = function (e) {
   console.log(e);
 };
-var versionInfo = "ADAGUC viewer version AEMET 1.2.1.4";
+var versionInfo = "ADAGUC viewer version AEMET 1.2.1.5";
 var mainWebmapJS;
 
 function decimalFormatter(input, width) {
@@ -447,6 +447,22 @@ Ext.onReady(function () {
   var mouseDownX = 0;
   var mouseDownY = 0;
 
+  var appOptionMenuItems =[];
+  for (var j = 0; j < getFeatureInfoApplications.length; j++) {
+    let location = getFeatureInfoApplications[j];
+    appOptionMenuItems.push({
+    text: getFeatureInfoApplications[j].name,
+    iconCls: getFeatureInfoApplications[j].iconCls,
+    location: getFeatureInfoApplications[j].location,
+    handler: function () {
+      console.log(location)
+      eastPanelGFI.setApplication(location);
+      eastPanelGFI.hide();
+      eastPanelGFI.show();
+      },
+    });
+  } 
+
   var eastPanelGFI = Ext.create("Ext.panel.Panel", {
     region: "east",
     collapsible: true,
@@ -461,6 +477,11 @@ Ext.onReady(function () {
     title: "test",
 
     tbar: [
+      { xtype: "button", itemId: "buttonApp", iconCls: "button_settings_icon", menu: {
+        xtype: "menu",
+        items: appOptionMenuItems,
+      },
+      }, 
       { xtype: "label", text: "App", scale: "large", itemId: "paneltitle" },
       { xtype: "tbfill", scale: "large" },
       {

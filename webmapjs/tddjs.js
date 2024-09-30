@@ -85,7 +85,7 @@ class tddjs {
         
         let servtxt=webmapjs.layers[webmapjs.layers.length - j - 1].service;
         let layername=webmapjs.layers[webmapjs.layers.length - j - 1].name
-        if(servtxt.includes("TEMP") || servtxt.includes("KRR") || layername == "sond_station" ){
+        if(servtxt.includes("TEMP") || servtxt.includes("KRR") || servtxt.includes("KRF") || layername == "sond_station" ){
           myLayers.push(webmapjs.layers[webmapjs.layers.length - j - 1])
           //myLayer = webmapjs.layers[webmapjs.layers.length - j - 1];
         } else if (servtxt.includes("ECMWF") || servtxt.includes("HARMONIE") ) {
@@ -100,7 +100,7 @@ class tddjs {
        
       for (let i in myLayers){
         console.log(i,myLayers.length)
-        if (myLayers[i].service.includes("HARMONIE") ||  myLayers[i].service.includes("ECMWF") || myLayers[i].service.includes("TEMP") || myLayers[i].service.includes("KRR") || myLayers[i].name == "sond_station" ) {
+        if (myLayers[i].service.includes("HARMONIE") ||  myLayers[i].service.includes("ECMWF") || myLayers[i].service.includes("TEMP") || myLayers[i].service.includes("KRR") || myLayers[i].service.includes("KRF") || myLayers[i].name == "sond_station" ) {
           console.log("MYLAYER_TEXT",myLayers[i].name )
           let myLayer=myLayers[i]; 
           //console.log("LAYER",myLayer)    
@@ -155,7 +155,7 @@ class tddjs {
     var init = function () {
       //console.log("ALTO",element)
       element.html('<div id="load"></div><div id="info"></div><div id="table"></div>');
-      $("#info").html("Click on the map to load a profile.<br/> A Sounding,ECMWF Model or IASI-KRR layer loaded is necessary");
+      $("#info").html("Click on the map to load a profile.<br/> A Sounding,ECMWF Model or IASI-KRR/F layer loaded is necessary");
       //console.log('init sondeo');
       
       document.getElementById("info").addEventListener("click", function(ev) {
@@ -180,7 +180,7 @@ class tddjs {
              warr.splice(i,1)
              element.remove();
              if (warr.length==0){
-              $("#info").html("Click on the map to load a profile.<br/> A Sounding,ECMWF Model or IASI-KRR layer loaded is necessary");
+              $("#info").html("Click on the map to load a profile.<br/> A Sounding,ECMWF Model or IASI-KRR/F layer loaded is necessary");
            } 
             } 
           } 
@@ -314,7 +314,7 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callback) {
     request += "&QUERY_LAYERS=" +'p,z,t,td,windSpd,windDir,eVSS' + "&INFO_FORMAT=" + "application/json";
     rm += "&QUERY_LAYERS=" +'station_name,ps,alt,station_cname' +"&INFO_FORMAT=" + "application/json";
   } 
-  if (serv.includes("KRR")){
+  if (serv.includes("KRR") || serv.includes("KRF")){
     request += "&QUERY_LAYERS=" +'air_temperature,dew_point_temperature' + "&INFO_FORMAT=" + "application/json";
     rm += "&QUERY_LAYERS=" +'surface_air_pressure,surface_air_temperature,surface_dew_point_temperature' +"&INFO_FORMAT=" + "application/json";
   } 
@@ -371,7 +371,7 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callback) {
             callback(null)
           }     
         } )
-      } else if (rm.includes("KRR")){
+      } else if (rm.includes("KRR") || rm.includes("KRF") ){
         getData_IASI(rl,meta,request,function(dat) {
           if (dat!=null){ 
             let tJson={"meta":meta,"data":dat}; 
@@ -615,13 +615,14 @@ function getMeta(rm,callback){
           let day=date[0].replaceAll("-","");
           day=parseInt(day)
           let hour=parseInt(date[1].substring(0,2));
-          //console.log(day,hour)
+          
           let station
           let station_c
           let model="OBSERVACION"
-          if (rm.includes("KRR")) { station="IASI-KRR";station_c="";model="SAT-PROFILE"} 
+          if (rm.includes("KRR") || rm.includes("KRF") ) {hour=date[1].substring(0,5); station="IASI-KRR/F";station_c="";model="SAT-PROFILE"} 
           if (rm.includes("ECMWF")) {station="ECMWF";station_c="";model="MODEL";}
           if (rm.includes("HARMONIE")) {station="HARMONIE";station_c="";model="MODEL";}
+          //console.log(day,date[1].substring(0,5) )
           let ps
           let zs
           let ts

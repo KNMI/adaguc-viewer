@@ -30,3 +30,4 @@ AEMET 1.2.1.1
 17-09-2024: AEMET 1.2.1.3: pluciag: El boton play mostrara el loop de todo el bucle si existe el forecast_reference_time, 24 slots si no.
 24-09-2024: AEMET 1.2.1.4: pluciag: Se corrige la herramienta de sondeos tddjs para que solo busque la cadena KRR y que funcione con los dataset de KRR
 25-09-2024: AEMET 1.2.1.5: pluciag: Se crea un menu en el panel este para poder abrir las app desde ahí.
+25-09-2024: AEMET 1.2.1.6: pluciag: Se añade la etiqueta KRF para los sondeos de satelite y se muestra la hora con minutos para estos sondeos.

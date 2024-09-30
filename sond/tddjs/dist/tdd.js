@@ -5728,7 +5728,7 @@ class WindDiagram extends AbstractDiagram {
 class Legend extends AbstractDiagram {
 
     fval = "DD/MM/YYYY HH" // date format for run
-    frun = "DD/MM/YYYY HH" // date format for day
+    frun = "DD/MM/YYYY" // date format for day
     fonttitle = 15.0       // title font-size
     fonttable = 11.1 //10.8       // table font-size
     fontfull = 13
@@ -5830,13 +5830,16 @@ class Legend extends AbstractDiagram {
         //s.COTA = s.COTANIE[this.tdd.cota]
 
         // title
+        console.log("RUN",s.run,s.date)
         let run = moment.utc(s.date, "YYYY/MM/DD")
         run.add(s.run, 'hours')
+        
         let val = run.clone().add(parseInt(s.step), 'hours')
         let title = '<span class="titlelegend" style="font-size : ' + this.fonttitle + 'px">'
         if (s.name) { title += s.name + '<br>' }
         title += (s.lat).toFixed(2) + "  " + (s.lon).toFixed(2) + "  zs " + s.zs.toFixed(1) + " m"
-        title += '<br>' + run.format(this.frun) + " UTC. H+" + s.step
+        //title += '<br>' + run.format(this.frun) + " UTC. H+" + s.step
+        title += '<br>' + run.format(this.frun) +" "+ s.run + " UTC. H+" + s.step
         title += '<br>' + val.format(this.fval) + " UTC. " + s.model
         title += '</span>'
 

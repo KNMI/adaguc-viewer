@@ -224,8 +224,13 @@ export default class WMJSLayer {
         let refDim = this.getDimension(name);
         let lastRef=refDim.dimMaxValue
         let lastTim=timeDim.dimMaxValue
-        let step=timeDim.values.split("/")[2] 
-        let steps=new ParseISOTimeRangeDuration(lastRef+"/"+lastTim+"/"+step).timeSteps
+        let parseDate=timeDim.values.split("/")
+        let step="PT1M"
+        let steps=1
+        if (parseDate.length>2){ 
+          step=parseDate[2] 
+          steps=new ParseISOTimeRangeDuration(lastRef+"/"+lastTim+"/"+step).timeSteps
+        } 
         timeDim.__setStartTime(value);
         if (!isDefined(timeDim.maxSize)){
           timeDim.setMaxSize(steps)

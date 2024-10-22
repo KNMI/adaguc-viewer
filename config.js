@@ -634,6 +634,13 @@ var dataChooserConfigurationHARMONIE_AIB = [
       layer:'10_meter_max_gust_during_last_hour_ms',
       abs:'10 meter max gust last hour (m/s)',
 
+},{
+      title:'Total precipitation 1h',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIB&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_precipitation_during_last_hour,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=29,-20,49,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIB&',
+      layer:'total_precipitation_during_last_hour',
+      abs:'Total precipitation during last hour',
+
 },
 ]
 var dataChooserConfigurationHARMONIE_AIC = [
@@ -684,6 +691,13 @@ var dataChooserConfigurationHARMONIE_AIC = [
       service:server + '/adagucserver?dataset=HARMONIE_AIC&',
       layer:'10_meter_max_gust_during_last_hour_ms',
       abs:'10 meter max gust last hour (m/s)',
+
+},{
+      title:'Total precipitation 1h',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIC&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_precipitation_during_last_hour,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=23,-25,31,-5&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIC&',
+      layer:'total_precipitation_during_last_hour',
+      abs:'Total precipitation during last hour',
 
 },
 ]
@@ -737,6 +751,13 @@ var dataChooserConfigurationHARMONIE_AIN = [
       service:server + '/adagucserver?dataset=HARMONIE_AIN&',
       layer:'10_meter_max_gust_during_last_hour_ms',
       abs:'10 meter max gust last hour (m/s)',
+
+},{
+      title:'Total precipitation 1h',
+      thumbnail:server + '/adagucserver?dataset=HARMONIE_AIN&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=total_precipitation_during_last_hour,overlay&WIDTH=400&HEIGHT=350&CRS=EPSG:4326&BBOX=29,-20,49,10&FORMAT=image/png&TRANSPARENT=TRUE&',
+      service:server + '/adagucserver?dataset=HARMONIE_AIN&',
+      layer:'total_precipitation_during_last_hour',
+      abs:'Total precipitation during last hour',
 
 },
 ]

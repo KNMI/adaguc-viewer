@@ -2239,7 +2239,6 @@ export default class WMJSMap {
       this._drawReady();
       return;
     }
-
     this.callBack.triggerEvent("beforedraw");
 
     if (this.isAnimating === false) {
@@ -2372,7 +2371,6 @@ export default class WMJSMap {
                 continue;
               this.numBaseLayers++;
               request = this.buildWMSGetMapRequest(this.baseLayers[l]);
-
               if (request) {
                 this.divBuffer[this.newSwapBuffer].setSrc(
                   currentLayerIndex,
@@ -2413,7 +2411,6 @@ export default class WMJSMap {
           }
         }
       }
-
       if (this.baseLayers) {
         for (let l = 0; l < this.baseLayers.length; l++) {
           if (this.baseLayers[l].enabled) {
@@ -2434,12 +2431,10 @@ export default class WMJSMap {
           }
         }
       }
-
       this.flipBuffers();
       /* Make info HTML */
       // makeInfoHTML();
     };
-
     /* if layers are not ready yet, wait for them */
     if (this.layersBusy === 1) {
       if (
@@ -2463,7 +2458,6 @@ export default class WMJSMap {
       }
       return;
     }
-
     loadLayers();
     this.callBack.triggerEvent("ondrawready", this.map);
     this.loadLegendInline();

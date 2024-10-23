@@ -32,3 +32,4 @@ AEMET 1.2.1.1
 25-09-2024: AEMET 1.2.1.5: pluciag: Se crea un menu en el panel este para poder abrir las app desde ahí.
 25-09-2024: AEMET 1.2.1.6: pluciag: Se añade la etiqueta KRF para los sondeos de satelite y se muestra la hora con minutos para estos sondeos.
 22-10-2024: AEMET 1.2.2: pluciag: Se corrige el fallo al manejar un unico fichero con forcast_reference_time en WMJSLayer.handleReferenceTime() 
+23-10-2024: AEMET 1.2.3: pluciag: Se modifica el visor para que si se desfasa el reference_time, respecto al time, corrija el desfase. Ver DimensionPanel.checkReferenceTime().

@@ -1,3 +1,5 @@
+//import { DateInterval } from "../../webmapjs/WMJSTime";
+
 //Constructor for custom dimension panel
 Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
   extend   : 'Ext.panel.Panel',
@@ -39,7 +41,7 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
       value:defaultIndex,minValue:0,maxValue:(_this.dimension.size() - 1),increment:1,
       listeners:{
         drag:{fn:function(t){_this.sliderChanged(t.getValue());}},
-        change:{fn:function(t){_this.sliderChanged(t.getValue());}}
+        change:{fn:function(t){_this.sliderChanged(t.getValue());}},
       }
     });
     
@@ -63,9 +65,12 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
 
     _this.setValue = function(value){
       if(value === _this.currentValue && _this.dimension.size() === _this.currentSize){
+        if (_this.dimension.size() === _this.currentSize){
+          //console.log("DIMENSION",_this.dimension.size())
+          //console.log("Value",value)
+        } 
         return;
       }
-      
       return _this._setValue(value);
     };
     
@@ -109,17 +114,16 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
         _this.dimensionValueLabel.setValueText(WMJSDateOutSideRange);
         _this.layer.setDimension( _this.dimension.name,WMJSDateOutSideRange);
         _this.currentIndex = 0;
+        console.log("CATCH")
       }
-      
       _this.dimSlider.suspendEvents();
       
       _this.dimSlider.setValue(_this.currentIndex,false);
-      
       //_this.dimension.setValue(_this.dimension.getValueForIndex(_this.currentIndex));
       
       _this.dimSlider.resumeEvents();
       
-    }
+    } 
 
     _this.checkReferenceTime = function(dimension){
       var hasReferenceTime = -1;
@@ -137,7 +141,6 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
         }
       }
       _this.dimSlider.suspendEvents();
-      
       if(hasTime != -1 && hasReferenceTime != -1){
         var timedim=_this.layer.getDimension(_this.dimensionPanels[hasTime].dimension.name);
         var reftimedim=_this.layer.getDimension(_this.dimensionPanels[hasReferenceTime].dimension.name);
@@ -146,7 +149,52 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
             var newValue = reftimedim.getValue();
             _this.dimensionPanels[hasTime].dimSlider.setValue(timedim.getIndexForValue(newValue)+1,false);
           }
-      }
+
+         //Haremos una peticion al servidor a ver si el time y el reference_time son compatibles.
+        let projs=this.Parent.WMJSLayer.parentMaps[0].getBBOX()  
+        let crs = "&CRS=EPSG%3A3857"    
+        let BBOX="&BBOX="+projs.left+","+projs.bottom+","+projs.right+","+projs.top
+        //console.log("BBBOX",BBOX) 
+        let rq=this.Parent.WMJSLayer.service+"service=WMS&REQUEST=GetMap&FORMAT=image/png"
+
+        rq=rq+"&layers="+this.Parent.WMJSLayer.name
+        rq=rq+"&WIDTH=870&HEIGHT=919"+crs+BBOX+"&FORMAT=image/png&TRANSPARENT=TRUE&"
+        for (let i=0;i<this.Parent.WMJSLayer.dimensions.length;i++){
+          if (this.Parent.WMJSLayer.dimensions[i].name =="time" ){
+            rq=rq+"&time="+this.Parent.WMJSLayer.dimensions[i].currentValue
+          } 
+          if (this.Parent.WMJSLayer.dimensions[i].name.includes("reference_time") ){
+            rq=rq+"&DIM_forecast_reference_time="+this.Parent.WMJSLayer.dimensions[i].currentValue
+          }
+        } 
+        try{   
+          fetch(rq).then(function(response) {
+            if (response.status==200){
+              console.log("OK")
+            }else{
+              if (reftimedim.getValue()!=timedim.getValue()){ 
+                let current_r_t_sec=new Date(reftimedim.getValue()).getTime()
+                let default_r_t_sec=new Date(reftimedim.defaultValue).getTime()
+                let default_t_sec=new Date(timedim.defaultValue).getTime()
+                //Calculo el tiempo que se ha desplazado el r_t respecto a su defecto.
+                let jump=default_r_t_sec-current_r_t_sec
+                //Restamos al tiempo por defecto lo que se ha desplazado el ref_time
+                let jump_t_sec=default_t_sec-jump
+                let jump_time=new Date(jump_t_sec).toISOString()
+                //console.log(jump_time)
+                //console.log(response.status)
+                //console.log("NO SOMOS COMPATIBLES HAY QUE HACER ALGO")
+                _this.layer.setDimension(timedim.name,jump_time);
+                //_this._setValue(reftimedim.getValue() );
+                _this.dimensionPanels[hasTime].setValue(jump_time)
+                _this.layer.draw("DimensionPanel::sliderChanged");
+              }
+            }  ;
+          });
+        } catch (error) {
+          console.log("ERROR",error)
+        } 
+      }     
       _this.dimSlider.resumeEvents();
     };
 
@@ -171,7 +219,6 @@ Ext.define('webmapjsext.WMJSExt.DimensionPanel', {
         _this.dateTimeWindow.setDimension(this.dimension);
       }
       _this.checkReferenceTime(_this.dimension);
-      
       _this.layer.draw("DimensionPanel::sliderChanged");
       _this.Parent.setUpdateStatus(preAuto);
     };

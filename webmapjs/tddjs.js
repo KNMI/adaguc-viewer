@@ -85,7 +85,7 @@ class tddjs {
         
         let servtxt=webmapjs.layers[webmapjs.layers.length - j - 1].service;
         let layername=webmapjs.layers[webmapjs.layers.length - j - 1].name
-        if(servtxt.includes("TEMP") || servtxt.includes("KRR") || servtxt.includes("KRF") || layername == "sond_station" ){
+        if(servtxt.includes("TEMP") || servtxt.includes("KRR") || servtxt.includes("KRF") || servtxt.includes("ASV_FCT")|| layername == "sond_station" ){
           myLayers.push(webmapjs.layers[webmapjs.layers.length - j - 1])
           //myLayer = webmapjs.layers[webmapjs.layers.length - j - 1];
         } else if (servtxt.includes("ECMWF") || servtxt.includes("HARMONIE") ) {
@@ -100,7 +100,8 @@ class tddjs {
        
       for (let i in myLayers){
         console.log(i,myLayers.length)
-        if (myLayers[i].service.includes("HARMONIE") ||  myLayers[i].service.includes("ECMWF") || myLayers[i].service.includes("TEMP") || myLayers[i].service.includes("KRR") || myLayers[i].service.includes("KRF") || myLayers[i].name == "sond_station" ) {
+        if (myLayers[i].service.includes("HARMONIE") ||  myLayers[i].service.includes("ECMWF") || myLayers[i].service.includes("TEMP") || 
+           myLayers[i].service.includes("KRR") || myLayers[i].service.includes("KRF") || myLayers[i].service.includes("ASV_FCT") || myLayers[i].name == "sond_station" ) {
           console.log("MYLAYER_TEXT",myLayers[i].name )
           let myLayer=myLayers[i]; 
           //console.log("LAYER",myLayer)    
@@ -314,7 +315,7 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callback) {
     request += "&QUERY_LAYERS=" +'p,z,t,td,windSpd,windDir,eVSS' + "&INFO_FORMAT=" + "application/json";
     rm += "&QUERY_LAYERS=" +'station_name,ps,alt,station_cname' +"&INFO_FORMAT=" + "application/json";
   } 
-  if (serv.includes("KRR") || serv.includes("KRF")){
+  if (serv.includes("KRR") || serv.includes("KRF") || serv.includes("ASV_FCT")){
     request += "&QUERY_LAYERS=" +'air_temperature,dew_point_temperature' + "&INFO_FORMAT=" + "application/json";
     rm += "&QUERY_LAYERS=" +'surface_air_pressure,surface_air_temperature,surface_dew_point_temperature' +"&INFO_FORMAT=" + "application/json";
   } 
@@ -371,7 +372,7 @@ function getJSONdata(layer, webmapjs, x, y, format = "text/html", callback) {
             callback(null)
           }     
         } )
-      } else if (rm.includes("KRR") || rm.includes("KRF") ){
+      } else if (rm.includes("KRR") || rm.includes("KRF") || rm.includes("ASV_FCT") ){
         getData_IASI(rl,meta,request,function(dat) {
           if (dat!=null){ 
             let tJson={"meta":meta,"data":dat}; 
@@ -619,7 +620,7 @@ function getMeta(rm,callback){
           let station
           let station_c
           let model="OBSERVACION"
-          if (rm.includes("KRR") || rm.includes("KRF") ) {hour=date[1].substring(0,5); station="IASI-KRR/F";station_c="";model="SAT-PROFILE"} 
+          if (rm.includes("KRR") || rm.includes("KRF") || rm.includes("ASV_FCT") ) {hour=date[1].substring(0,5); station="IASI-KRR/F";station_c="";model="SAT-PROFILE"} 
           if (rm.includes("ECMWF")) {station="ECMWF";station_c="";model="MODEL";}
           if (rm.includes("HARMONIE")) {station="HARMONIE";station_c="";model="MODEL";}
           //console.log(day,date[1].substring(0,5) )

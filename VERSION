@@ -34,3 +34,4 @@ AEMET 1.2.1.1
 22-10-2024: AEMET 1.2.2: pluciag: Se corrige el fallo al manejar un unico fichero con forcast_reference_time en WMJSLayer.handleReferenceTime() 
 23-10-2024: AEMET 1.2.3: pluciag: Se modifica el visor para que si se desfasa el reference_time, respecto al time, corrija el desfase. Ver DimensionPanel.checkReferenceTime().
 09-12-2024: AEMET 1.2.4: pluciag: Se añade a la herramienta de sondeos la etiqueta ASV_FCT para los sondeos de modelos en los puntos polares.
+16-12-2024: AEMET 1.2.4.1: pluciag: Se añaden los pngs para la nube europea

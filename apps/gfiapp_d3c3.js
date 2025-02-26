@@ -284,6 +284,7 @@ var gfiapp_d3c3 = function (element, webmapjs) {
         if (key == "dim_member") value = "*";
         if (key == "dim_ensemble_member") value = "*";
         if (key == "dim_scenario") value = "*";
+        if (key == "dim_threshold") value = "*";
         if (key == "dim_percentile") value = "*";
         //console.log("B"+key+"="+value);
         GFIURL += key + "=" + URLEncode(value) + "&";

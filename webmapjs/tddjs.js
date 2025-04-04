@@ -620,7 +620,10 @@ function getMeta(rm,callback){
           let station
           let station_c
           let model="OBSERVACION"
-          if (rm.includes("KRR") || rm.includes("KRF") || rm.includes("ASV_FCT") ) {hour=date[1].substring(0,5); station="IASI-KRR/F";station_c="";model="SAT-PROFILE"} 
+          if (rm.includes("KRR") || rm.includes("KRF") || rm.includes("ASV_FCT") ) {hour=date[1].substring(0,5);station_c="";model="SAT-PROFILE"} 
+          if (rm.includes("KRR")){station="sSHAI IASI-KRR";}
+          if (rm.includes("KRF")){station="sSHAI IASI-KRF";}
+          if (rm.includes("ASV_FCT")){station="ECMWF forecast"} 
           if (rm.includes("ECMWF")) {station="ECMWF";station_c="";model="MODEL";}
           if (rm.includes("HARMONIE")) {station="HARMONIE";station_c="";model="MODEL";}
           //console.log(day,date[1].substring(0,5) )

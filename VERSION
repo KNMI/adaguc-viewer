@@ -35,4 +35,5 @@ AEMET 1.2.1.1
 23-10-2024: AEMET 1.2.3: pluciag: Se modifica el visor para que si se desfasa el reference_time, respecto al time, corrija el desfase. Ver DimensionPanel.checkReferenceTime().
 09-12-2024: AEMET 1.2.4: pluciag: Se añade a la herramienta de sondeos la etiqueta ASV_FCT para los sondeos de modelos en los puntos polares.
 16-12-2024: AEMET 1.2.4.1: pluciag: Se añaden los pngs para la nube europea
-04-03-2024: AEMET 1.2.4.2: pluciag: Se diferencion en los sondeos los nombre de KRR,KRF,ASV_FCT
+04-04-2025: AEMET 1.2.4.2: pluciag: Se diferencion en los sondeos los nombre de KRR,KRF,ASV_FCT
+04-04-2025: AEMET 1.2.4.3: pluciag: Se pone por defecto en la herramienta de sondeos que solo se visualice T y Td, y el ascenso se elabore sobre T

@@ -4463,9 +4463,9 @@ class TDD {
     // default visualization. x and y are the offset for the labels in the diagram class, so they don't overlap.
     lines = {
         'T': { id: 'T', name: 'T', visible: true, tooltip: true, x: 9, y: 0 },
-        'Td': { id: 'Td', name: 'Td', visible: true, tooltip: false, x: -35, y: 0 },
-        'Tw': { id: 'Tw', name: 'Tw', visible: true, tooltip: false, x: 0, y: 9 },
-        'Tv': { id: 'Tv', name: 'Tv', visible: true, tooltip: false, x: 9, y: 9 },
+        'Td': { id: 'Td', name: 'Td', visible: true, tooltip: true, x: -35, y: 0 },
+        'Tw': { id: 'Tw', name: 'Tw', visible: false, tooltip: false, x: 0, y: 9 },
+        'Tv': { id: 'Tv', name: 'Tv', visible: false, tooltip: false, x: 9, y: 9 },
         'Te': { id: 'Te', name: 'Te', visible: false, tooltip: false, x: 9, y: 0 },
         'Tf': { id: 'Tf', name: 'Tf', visible: false, tooltip: false, x: 9, y: -9 },
     }
@@ -4497,7 +4497,7 @@ class TDD {
     ]
     low_level_parcels = [] // list of mixing layers. Created from the "parcels" with numeric "value"
     parcel = 50           // default parcel
-    lift = 'Tv'         // default lift visualization: T,Tv,TTv
+    lift = 'T'         // default lift visualization: T,Tv,TTv
     cota = 'COTANIE1'   // default COTANIE1
 
     // sounding	object

@@ -37,3 +37,4 @@ AEMET 1.2.1.1
 16-12-2024: AEMET 1.2.4.1: pluciag: Se añaden los pngs para la nube europea
 04-04-2025: AEMET 1.2.4.2: pluciag: Se diferencion en los sondeos los nombre de KRR,KRF,ASV_FCT
 04-04-2025: AEMET 1.2.4.3: pluciag: Se pone por defecto en la herramienta de sondeos que solo se visualice T y Td, y el ascenso se elabore sobre T
+06-06-2025: AEMET 1.2.4.4: pluciag: Se cambia el logo de AEMET

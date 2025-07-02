@@ -66,7 +66,7 @@ var baseLayerConfiguration = [
     name: "knmi_animated_gif_background_europe_elevation_1km_combined",
     format: "image/png",
     title: "Radar baselayer",
-    enabled: true,
+    enabled: false,
     keepOnTop: true,
   },
 ];

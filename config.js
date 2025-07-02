@@ -51,6 +51,15 @@ var baseLayerConfiguration = [
     enabled: true,
     keepOnTop: true,
   },
+  {
+    service:
+      "https://geoservices.knmi.nl/adagucserver?dataset=knmi_animated_gif_baselayers&&service=WMS&request=GetCapabilities",
+    name: "knmi_animated_gif_background_europe_elevation_1km_combined",
+    format: "image/png",
+    title: "World country borders",
+    enabled: true,
+    keepOnTop: true,
+  },
 ];
 
 // var defaultProjection = {srs:'EPSG:4326',bbox:'-180,-90,180,90'};
@@ -73,7 +82,7 @@ var getFeatureInfoApplications = [
     iconCls: "button_getfeatureinfo",
     location: "apps/gfiapp_histogram.html",
   },
-  
+
   {
     name: "EProfile",
     iconCls: "button_getfeatureinfo",

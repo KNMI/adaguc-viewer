@@ -44,13 +44,6 @@ var baseLayerConfiguration = [
     enabled: false,
   },
   {
-    service: "https://geoservices.knmi.nl/cgi-bin/MODIS_Netherlands.cgi?",
-    name: "modis_250m_netherlands_8bit",
-    title: "Static Modis image of the Netherlands",
-    enabled: false,
-    format: "image/png",
-  },
-  {
     service: "https://geoservices.knmi.nl/wms?DATASET=baselayers&",
     name: "countryborders",
     format: "image/png",
@@ -59,10 +52,11 @@ var baseLayerConfiguration = [
     keepOnTop: true,
   },
   {
-    service: "https://geoservices.knmi.nl/cgi-bin/worldmaps.cgi?",
-    name: "nl_raster_latlon",
+    service:
+      "https://geoservices.knmi.nl/adagucserver?dataset=knmi_animated_gif_baselayers&&service=WMS&request=GetCapabilities",
+    name: "knmi_animated_gif_background_europe_elevation_1km_combined",
     format: "image/png",
-    title: "KNMI baselayer of the Netherlands",
+    title: "Radar baselayer",
     enabled: false,
     keepOnTop: false,
   },
@@ -82,6 +76,17 @@ var getFeatureInfoApplications = [
     name: "Time series mode",
     iconCls: "button_getfeatureinfo",
     location: "apps/gfiapp_d3c3.html",
+  },
+  {
+    name: "Histogram mode",
+    iconCls: "button_getfeatureinfo",
+    location: "apps/gfiapp_histogram.html",
+  },
+
+  {
+    name: "EProfile",
+    iconCls: "button_getfeatureinfo",
+    location: "apps/test_gfiapp_eprofile.html",
   },
   //,{name:'Glameps application',iconCls:'button_getfeatureinfo',location:'../gfiapps/GLAMEPS_gfiapp.html'}
 ];
@@ -106,7 +111,7 @@ var dataChooserConfiguration = [
   },
   {
     title: "KNMI: Dagelijks geinterpoleerde grids",
-    thumbnail: "img/knmi-grids",
+    thumbnail: "img/knmi-grids.png",
     service:
       "https://geoservices.knmi.nl/adagucserver?dataset=gridded_interpolations&",
     layer: "daily_temperature/INTER_OPER_R___TAVGD___L3__0005_prediction",
@@ -117,6 +122,37 @@ var dataChooserConfiguration = [
     service:
       "https://geoservices.knmi.nl/adagucserver?dataset=knmi_waarneemstations&",
     layer: "obs_temp",
+  },
+  {
+    title: "KNMI: Harmonie Model DINI",
+    thumbnail:
+      "https://geoservices.knmi.nl/adaguc-server?dataset=uwcw_ha43_dini_5p5km&SERVICE=WMS&&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=air_temperature_hagl,total_precipitation_rate_hagl,air_pressure_at_mean_sea_level_hagl&WIDTH=1000&HEIGHT=1000&CRS=EPSG%3A3857&STYLES=temperature_wow%2Fshaded&FORMAT=image/png",
+    service:
+      "https://geoservices.knmi.nl/adagucserver?dataset=uwcw_ha43_dini_5p5km&&service=WMS&request=GetCapabilities",
+    layer: "air_temperature_hagl",
+    srs: "EPSG:32661",
+    bbox: "-1426149.6740167392,-3952624.8700028625,4853185.34363064,13733.803609137563",
+    style: "temperature_wow/shadedcontour",
+  },
+  {
+    title: "KNMI: Harmonie Model NL",
+    thumbnail:
+      "https://geoservices.knmi.nl/adaguc-server?DATASET=uwcw_ha43_nl_2km&SERVICE=WMS&&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=air_temperature_hagl,total_precipitation_rate_hagl,air_pressure_at_mean_sea_level_hagl&WIDTH=1000&HEIGHT=1000&CRS=EPSG%3A3857&STYLES=temperature_wow%2Fshaded&FORMAT=image/png",
+    service:
+      "https://geoservices.knmi.nl/adagucserver?dataset=uwcw_ha43_nl_2km&&service=WMS&request=GetCapabilities",
+    srs: "EPSG:28992",
+    bbox: "-464237.8366878504,113616.90792712737,797134.670088837,910366.2084261273",
+    layer: "air_temperature_hagl",
+    style: "temperature_wow/shadedcontour",
+  },
+  {
+    title: "KNMI: Testdata set",
+    thumbnail:
+      "https://geoservices.knmi.nl/adaguc-server?DATASET=testdata&SERVICE=WMS&&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=testdata&WIDTH=1000&HEIGHT=1000&CRS=EPSG%3A32661&STYLES=testdata_style_manycontours%2Fnearestcontour&FORMAT=image/png",
+    service:
+      "https://geoservices.knmi.nl/adagucserver?dataset=testdata&&service=WMS&request=GetCapabilities",
+    layer: "testdata",
+    style: "testdata_style_manycontours/nearestcontour",
   },
 ];
 
@@ -130,12 +166,7 @@ var mapTypeConfiguration = [
       name: "WorldMap",
       type: "twms",
     },
-  } /*{ 
-    title: 'Mollweide (7399)', 
-    bbox: [-18157572.744146045,-11212941.682924412,18085661.018022258,11419683.192411266],
-    srs: 'EPSG:7399',
-    baselayer:{service:'https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2',type: 'wms'}
-  },*/,
+  },
   {
     title: "Robinson",
     bbox: [
@@ -242,41 +273,7 @@ var mapTypeConfiguration = [
       name: "OpenStreetMap_Service",
       type: "twms",
     },
-  } /*{ 
-    title: 'PDOK BRT NL', 
-    bbox: [-350000,125000,700000,900000],   
-    srs: 'EPSG:28992', 
-    baselayer:{service:'https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'streetmap',type: 'wms'}
-  },*/ /*{ 
-    title: 'Openstreetmap Schiphol', 
-    bbox: [515813.2988839851,6850485.5537392385,544160.8241851525,6869318.449956324],   
-    srs: 'EPSG:3857', 
-    baselayer:{service:'https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'streetmap',type: 'wms'}
-  }*/,
-
-  /*,{ 
-    title: 'The Netherlands (28992)', 
-    bbox: [-350000,125000,700000,900000 ],
-    srs: 'EPSG:28992',
-    baselayer:{service:'https://geoservices.knmi.nl/cgi-bin/bgmaps.cgi?',name:'naturalearth2',type: 'wms'}
-  },*/
-
-  /*,{ 
-    title: 'Schiphol Satellite + Aerial Mercator', 
-    bbox: [522402.16196646384,6852917.910540686,537831.8792436487,6863959.075064662],
-    srs: 'EPSG:3857',
-    baselayer:{service:'http://birdexp03.knmi.nl/cgi-bin/plieger/wmst.cgi?',name:'satellite'}
-  },{ 
-    title: 'Topographic Mercator in NL', 
-    bbox: [220000,6500000,1000000,7200000],
-    srs: 'EPSG:3857',
-    baselayer:{service:'http://birdexp03.knmi.nl/cgi-bin/plieger/wmst.cgi?',name:'topo'}
-  },{ 
-    title: 'Canvas Mercator in NL', 
-    bbox: [220000,6500000,1000000,7200000],
-    srs: 'EPSG:3857',
-    baselayer:{service:'http://birdexp03.knmi.nl/cgi-bin/plieger/wmst.cgi?',name:'canvas'}
-  }*/
+  },
 ];
 
 var defaultLanguage = { language: "en" }; // <-- Language for the ADAGUC viewer.
@@ -298,20 +295,11 @@ var requestProxy = "/impactportal/AdagucViewer?SERVICE=PROXY&";
 var requestProxy = "./webmapjs_php/MakeRequest.php?";
 var xml2jsonrequestURL = "./webmapjs_php/xml2jsonrequest.php?";
 
-getFeatureInfoApplications.push({
-  name: "EProfile",
-  iconCls: "button_getfeatureinfo",
-});
+// getFeatureInfoApplications.push({name:'EProfile',iconCls:'button_getfeatureinfo'});
 getFeatureInfoApplications.push({
   name: "AutoWMS",
   iconCls: "button_getfeatureinfo",
 });
-getFeatureInfoApplications.push({
-  name: "Histogram mode",
-  iconCls: "button_getfeatureinfo",
-  location: "apps/gfiapp_histogram.html",
-});
-getFeatureInfoApplications.open = "AutoWMS";
 // getFeatureInfoApplications.open = 'EProfile';
 // xml2jsonrequestURL = 'http://localhost:8080/adaguc-services/xml2json?'
 // autowmsURL = 'http://localhost:8080/adaguc-services/autowms?';
@@ -320,7 +308,7 @@ getFeatureInfoApplications.open = "AutoWMS";
 var WMJSTileRendererTileSettings = {
   WorldMap_Light_Grey_Canvas: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap_Light_Grey_Canvas/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap_Light_Grey_Canvas/EPSG3857/",
       minLevel: 0,
       maxLevel: 9,
       tileServerType: "osm",
@@ -329,7 +317,7 @@ var WMJSTileRendererTileSettings = {
   },
   OpenStreetMap_NL: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/OpenStreetMap_NL/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/OpenStreetMap_NL/EPSG3857/",
       minLevel: 0,
       maxLevel: 16,
       tileServerType: "osm",
@@ -338,14 +326,14 @@ var WMJSTileRendererTileSettings = {
   },
   OpenStreets_NL: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/OpenStreets_NL/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/OpenStreets_NL/EPSG3857/",
       minLevel: 0,
       maxLevel: 16,
       tileServerType: "osm",
       copyRight: "OpenStreetMap - contributors | Ingmapping",
     },
     "EPSG:28992": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/OpenStreets_NL/EPSG28992/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/OpenStreets_NL/EPSG28992/",
       minLevel: 0,
       maxLevel: 16,
       tileServerType: "osm",
@@ -354,7 +342,7 @@ var WMJSTileRendererTileSettings = {
   },
   Positron_NL: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/Positron_NL/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/Positron_NL/EPSG3857/",
       minLevel: 0,
       maxLevel: 16,
       tileServerType: "osm",
@@ -363,7 +351,7 @@ var WMJSTileRendererTileSettings = {
   },
   Positron_NL_NoLabels: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/Positron_NL_NoLabels/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/Positron_NL_NoLabels/EPSG3857/",
       minLevel: 0,
       maxLevel: 16,
       tileServerType: "osm",
@@ -372,7 +360,7 @@ var WMJSTileRendererTileSettings = {
   },
   Klokantech_Basic_NL: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/Klokantech_Basic_NL/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/Klokantech_Basic_NL/EPSG3857/",
       minLevel: 0,
       maxLevel: 16,
       tileServerType: "osm",
@@ -381,7 +369,7 @@ var WMJSTileRendererTileSettings = {
   },
   Klokantech_Basic_NL_NoLabels: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/Klokantech_Basic_NL_NoLabels/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/Klokantech_Basic_NL_NoLabels/EPSG3857/",
       minLevel: 0,
       maxLevel: 16,
       tileServerType: "osm",
@@ -390,7 +378,7 @@ var WMJSTileRendererTileSettings = {
   },
   OSM_Blossom_NL: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/OSM_Blossom_NL/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/OSM_Blossom_NL/EPSG3857/",
       minLevel: 0,
       maxLevel: 16,
       tileServerType: "osm",
@@ -399,14 +387,14 @@ var WMJSTileRendererTileSettings = {
   },
   WorldMap: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG3857/",
       minLevel: 0,
       maxLevel: 9,
       tileServerType: "osm",
       copyRight: "Natural Earth II | Ingmapping",
     },
     "TODO__EPSG:4326": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap/EPSG4326/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG4326/",
       minLevel: 0,
       maxLevel: 9,
       origX: -180,
@@ -416,42 +404,42 @@ var WMJSTileRendererTileSettings = {
       copyRight: "Natural Earth II | Ingmapping",
     },
     "EPSG:3411": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap/EPSG3411/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG3411/",
       minLevel: 3,
       maxLevel: 9,
       tileServerType: "osm",
       copyRight: "Natural Earth II | Ingmapping",
     },
     "EPSG:28992": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap/EPSG28992/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG28992/",
       minLevel: 5,
       maxLevel: 9,
       tileServerType: "osm",
       copyRight: "Natural Earth II | Ingmapping",
     },
     "EPSG:3412": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap/EPSG3412/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG3412/",
       minLevel: 3,
       maxLevel: 9,
       tileServerType: "osm",
       copyRight: "Natural Earth II | Ingmapping",
     },
     "EPSG:32661": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap/EPSG32661/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG32661/",
       minLevel: 4,
       maxLevel: 9,
       tileServerType: "osm",
       copyRight: "Natural Earth II | Ingmapping",
     },
     "EPSG:54030": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap/EPSG54030/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG54030/",
       minLevel: 3,
       maxLevel: 9,
       tileServerType: "osm",
       copyRight: "Natural Earth II | Ingmapping",
     },
-    "EPSG:3575": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap/EPSG3575/",
+    "EPSG:3575-disabled": {
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG3575/",
       minLevel: 5,
       maxLevel: 9,
       tileServerType: "osm",
@@ -460,7 +448,7 @@ var WMJSTileRendererTileSettings = {
   },
   OSM_Antarctica: {
     "EPSG:3412": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/OSM_Antarctica/EPSG3412/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/OSM_Antarctica/EPSG3412/",
       minLevel: 1,
       maxLevel: 7,
       origX: -3000000,
@@ -567,7 +555,7 @@ var WMJSTileRendererTileSettings = {
   },
   NaturalEarth2: {
     "EPSG:3411": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG3411/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG3411/",
       minLevel: 1,
       maxLevel: 6,
       origX: -12400000,
@@ -577,7 +565,7 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:3412": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG3412/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG3412/",
       minLevel: 1,
       maxLevel: 6,
       origX: -12400000,
@@ -587,7 +575,7 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:3575": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG3575/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG3575/",
       minLevel: 1,
       maxLevel: 6,
       origX: -13000000,
@@ -597,14 +585,14 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG3857/",
       minLevel: 1,
       maxLevel: 7,
       tileServerType: "wmst",
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:4258": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG4326/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG4326/",
       minLevel: 1,
       maxLevel: 6,
       origX: -180,
@@ -614,7 +602,7 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:4326": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG4326/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG4326/",
       minLevel: 1,
       maxLevel: 6,
       origX: -180,
@@ -624,7 +612,7 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:28992": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG28992/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG28992/",
       minLevel: 1,
       maxLevel: 5,
       origX: -2999000,
@@ -634,7 +622,7 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:32661": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG32661/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG32661/",
       minLevel: 1,
       maxLevel: 7,
       origX: -5000000,
@@ -644,7 +632,7 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:54030": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG54030/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG54030/",
       minLevel: 1,
       maxLevel: 7,
       origX: -17000000,

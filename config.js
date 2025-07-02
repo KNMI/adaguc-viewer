@@ -286,7 +286,7 @@ getFeatureInfoApplications.push({
 var WMJSTileRendererTileSettings = {
   WorldMap_Light_Grey_Canvas: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap_Light_Grey_Canvas/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap_Light_Grey_Canvas/EPSG3857/",
       minLevel: 0,
       maxLevel: 9,
       tileServerType: "osm",
@@ -295,7 +295,7 @@ var WMJSTileRendererTileSettings = {
   },
   OpenStreetMap_NL: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/OpenStreetMap_NL/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/OpenStreetMap_NL/EPSG3857/",
       minLevel: 0,
       maxLevel: 16,
       tileServerType: "osm",
@@ -304,14 +304,14 @@ var WMJSTileRendererTileSettings = {
   },
   OpenStreets_NL: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/OpenStreets_NL/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/OpenStreets_NL/EPSG3857/",
       minLevel: 0,
       maxLevel: 16,
       tileServerType: "osm",
       copyRight: "OpenStreetMap - contributors | Ingmapping",
     },
     "EPSG:28992": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/OpenStreets_NL/EPSG28992/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/OpenStreets_NL/EPSG28992/",
       minLevel: 0,
       maxLevel: 16,
       tileServerType: "osm",
@@ -320,7 +320,7 @@ var WMJSTileRendererTileSettings = {
   },
   Positron_NL: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/Positron_NL/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/Positron_NL/EPSG3857/",
       minLevel: 0,
       maxLevel: 16,
       tileServerType: "osm",
@@ -329,7 +329,7 @@ var WMJSTileRendererTileSettings = {
   },
   Positron_NL_NoLabels: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/Positron_NL_NoLabels/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/Positron_NL_NoLabels/EPSG3857/",
       minLevel: 0,
       maxLevel: 16,
       tileServerType: "osm",
@@ -338,7 +338,7 @@ var WMJSTileRendererTileSettings = {
   },
   Klokantech_Basic_NL: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/Klokantech_Basic_NL/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/Klokantech_Basic_NL/EPSG3857/",
       minLevel: 0,
       maxLevel: 16,
       tileServerType: "osm",
@@ -347,7 +347,7 @@ var WMJSTileRendererTileSettings = {
   },
   Klokantech_Basic_NL_NoLabels: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/Klokantech_Basic_NL_NoLabels/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/Klokantech_Basic_NL_NoLabels/EPSG3857/",
       minLevel: 0,
       maxLevel: 16,
       tileServerType: "osm",
@@ -356,7 +356,7 @@ var WMJSTileRendererTileSettings = {
   },
   OSM_Blossom_NL: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/OSM_Blossom_NL/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/OSM_Blossom_NL/EPSG3857/",
       minLevel: 0,
       maxLevel: 16,
       tileServerType: "osm",
@@ -365,14 +365,14 @@ var WMJSTileRendererTileSettings = {
   },
   WorldMap: {
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG3857/",
       minLevel: 0,
       maxLevel: 9,
       tileServerType: "osm",
       copyRight: "Natural Earth II | Ingmapping",
     },
     "TODO__EPSG:4326": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap/EPSG4326/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG4326/",
       minLevel: 0,
       maxLevel: 9,
       origX: -180,
@@ -382,42 +382,42 @@ var WMJSTileRendererTileSettings = {
       copyRight: "Natural Earth II | Ingmapping",
     },
     "EPSG:3411": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap/EPSG3411/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG3411/",
       minLevel: 3,
       maxLevel: 9,
       tileServerType: "osm",
       copyRight: "Natural Earth II | Ingmapping",
     },
     "EPSG:28992": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap/EPSG28992/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG28992/",
       minLevel: 5,
       maxLevel: 9,
       tileServerType: "osm",
       copyRight: "Natural Earth II | Ingmapping",
     },
     "EPSG:3412": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap/EPSG3412/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG3412/",
       minLevel: 3,
       maxLevel: 9,
       tileServerType: "osm",
       copyRight: "Natural Earth II | Ingmapping",
     },
     "EPSG:32661": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap/EPSG32661/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG32661/",
       minLevel: 4,
       maxLevel: 9,
       tileServerType: "osm",
       copyRight: "Natural Earth II | Ingmapping",
     },
     "EPSG:54030": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap/EPSG54030/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG54030/",
       minLevel: 3,
       maxLevel: 9,
       tileServerType: "osm",
       copyRight: "Natural Earth II | Ingmapping",
     },
     "EPSG:3575-disabled": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/WorldMap/EPSG3575/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG3575/",
       minLevel: 5,
       maxLevel: 9,
       tileServerType: "osm",
@@ -426,7 +426,7 @@ var WMJSTileRendererTileSettings = {
   },
   OSM_Antarctica: {
     "EPSG:3412": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/OSM_Antarctica/EPSG3412/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/OSM_Antarctica/EPSG3412/",
       minLevel: 1,
       maxLevel: 7,
       origX: -3000000,
@@ -533,7 +533,7 @@ var WMJSTileRendererTileSettings = {
   },
   NaturalEarth2: {
     "EPSG:3411": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG3411/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG3411/",
       minLevel: 1,
       maxLevel: 6,
       origX: -12400000,
@@ -543,7 +543,7 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:3412": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG3412/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG3412/",
       minLevel: 1,
       maxLevel: 6,
       origX: -12400000,
@@ -553,7 +553,7 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:3575": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG3575/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG3575/",
       minLevel: 1,
       maxLevel: 6,
       origX: -13000000,
@@ -563,14 +563,14 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:3857": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG3857/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG3857/",
       minLevel: 1,
       maxLevel: 7,
       tileServerType: "wmst",
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:4258": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG4326/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG4326/",
       minLevel: 1,
       maxLevel: 6,
       origX: -180,
@@ -580,7 +580,7 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:4326": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG4326/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG4326/",
       minLevel: 1,
       maxLevel: 6,
       origX: -180,
@@ -590,7 +590,7 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:28992": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG28992/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG28992/",
       minLevel: 1,
       maxLevel: 5,
       origX: -2999000,
@@ -600,7 +600,7 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:32661": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG32661/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG32661/",
       minLevel: 1,
       maxLevel: 7,
       origX: -5000000,
@@ -610,7 +610,7 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:54030": {
-      home: "https://knmi-geoweb-assets.s3-eu-west-1.amazonaws.com/NaturalEarth2/EPSG54030/",
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG54030/",
       minLevel: 1,
       maxLevel: 7,
       origX: -17000000,

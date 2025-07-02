@@ -67,7 +67,7 @@ var baseLayerConfiguration = [
     format: "image/png",
     title: "Radar baselayer",
     enabled: false,
-    keepOnTop: true,
+    keepOnTop: false,
   },
 ];
 

@@ -56,15 +56,6 @@ var baseLayerConfiguration = [
       "https://geoservices.knmi.nl/adagucserver?dataset=knmi_animated_gif_baselayers&&service=WMS&request=GetCapabilities",
     name: "knmi_animated_gif_background_europe_elevation_1km_combined",
     format: "image/png",
-    title: "World country borders",
-    enabled: true,
-    keepOnTop: true,
-  },
-  {
-    service:
-      "https://geoservices.knmi.nl/adagucserver?dataset=knmi_animated_gif_baselayers&&service=WMS&request=GetCapabilities",
-    name: "knmi_animated_gif_background_europe_elevation_1km_combined",
-    format: "image/png",
     title: "Radar baselayer",
     enabled: false,
     keepOnTop: false,
@@ -131,6 +122,37 @@ var dataChooserConfiguration = [
     service:
       "https://geoservices.knmi.nl/adagucserver?dataset=knmi_waarneemstations&",
     layer: "obs_temp",
+  },
+  {
+    title: "KNMI: Harmonie Model DINI",
+    thumbnail:
+      "https://geoservices.knmi.nl/adaguc-server?dataset=uwcw_ha43_dini_5p5km&SERVICE=WMS&&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=air_temperature_hagl,total_precipitation_rate_hagl,air_pressure_at_mean_sea_level_hagl&WIDTH=1000&HEIGHT=1000&CRS=EPSG%3A3857&STYLES=temperature_wow%2Fshaded&FORMAT=image/png",
+    service:
+      "https://geoservices.knmi.nl/adagucserver?dataset=uwcw_ha43_dini_5p5km&&service=WMS&request=GetCapabilities",
+    layer: "air_temperature_hagl",
+    srs: "EPSG:32661",
+    bbox: "-1426149.6740167392,-3952624.8700028625,4853185.34363064,13733.803609137563",
+    style: "temperature_wow/shadedcontour",
+  },
+  {
+    title: "KNMI: Harmonie Model NL",
+    thumbnail:
+      "https://geoservices.knmi.nl/adaguc-server?DATASET=uwcw_ha43_nl_2km&SERVICE=WMS&&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=air_temperature_hagl,total_precipitation_rate_hagl,air_pressure_at_mean_sea_level_hagl&WIDTH=1000&HEIGHT=1000&CRS=EPSG%3A3857&STYLES=temperature_wow%2Fshaded&FORMAT=image/png",
+    service:
+      "https://geoservices.knmi.nl/adagucserver?dataset=uwcw_ha43_nl_2km&&service=WMS&request=GetCapabilities",
+    srs: "EPSG:28992",
+    bbox: "-464237.8366878504,113616.90792712737,797134.670088837,910366.2084261273",
+    layer: "air_temperature_hagl",
+    style: "temperature_wow/shadedcontour",
+  },
+  {
+    title: "KNMI: Testdata set",
+    thumbnail:
+      "https://geoservices.knmi.nl/adaguc-server?DATASET=testdata&SERVICE=WMS&&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=testdata&WIDTH=1000&HEIGHT=1000&CRS=EPSG%3A32661&STYLES=testdata_style_manycontours%2Fnearestcontour&FORMAT=image/png",
+    service:
+      "https://geoservices.knmi.nl/adagucserver?dataset=testdata&&service=WMS&request=GetCapabilities",
+    layer: "testdata",
+    style: "testdata_style_manycontours/nearestcontour",
   },
 ];
 
@@ -282,6 +304,8 @@ getFeatureInfoApplications.push({
 // xml2jsonrequestURL = 'http://localhost:8080/adaguc-services/xml2json?'
 // autowmsURL = 'http://localhost:8080/adaguc-services/autowms?';
 // getFeatureInfoApplications.push({name:'AutoWMS',iconCls:'button_getfeatureinfo'});
+
+getFeatureInfoApplications.open = "AutoWMS";
 
 var WMJSTileRendererTileSettings = {
   WorldMap_Light_Grey_Canvas: {

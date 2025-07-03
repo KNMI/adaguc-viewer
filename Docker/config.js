@@ -91,6 +91,8 @@ var getFeatureInfoApplications = [
   //,{name:'Glameps application',iconCls:'button_getfeatureinfo',location:'../gfiapps/GLAMEPS_gfiapp.html'}
 ];
 
+getFeatureInfoApplications.open = "AutoWMS";
+
 var dataChooserConfiguration = [
   {
     title: "KNMI realtime precipitation radar",

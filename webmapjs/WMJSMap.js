@@ -1676,7 +1676,7 @@ export default class WMJSMap {
       if (
         (this.srs === "EPSG:4326" ||
           this.srs === "EPSG:4258" ||
-          this.srs === "EPSG:32661") &&
+          this.srs === "EPSG:32661" || this.srs === "EPSG:3035") &&
         layer.wms130bboxcompatibilitymode === false
       ) {
         request +=

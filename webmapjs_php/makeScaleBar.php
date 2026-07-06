@@ -152,6 +152,7 @@
   if($projection=="EPSG:4326")$units="degrees";
   if($projection=="EPSG:28992")$units="meter";
   if($projection=="EPSG:32661")$units="meter";
+  if($projection=="EPSG:5041")$units="meter";
   if($projection=="EPSG:3857")$units="meter";
   if($projection=="EPSG:900913")$units="meter";
   if($projection=="EPSG:102100")$units="meter";

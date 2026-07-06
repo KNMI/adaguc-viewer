@@ -108,7 +108,8 @@ var dataChooserConfiguration = [
   {
     title: "KNMI: Actuele 10min observaties",
     thumbnail: "img/knmi-10mobs.png",
-    service: "https://geoservices.knmi.nl/wms?DATASET=OBS&",
+    service:
+      "https://geoservices.knmi.nl/wms?dataset=10-minute-in-situ-meteorological-observations&",
     layer: "10M/ta",
   },
   {
@@ -123,28 +124,17 @@ var dataChooserConfiguration = [
     thumbnail: "img/knmi-waarneemstations.png",
     service:
       "https://geoservices.knmi.nl/adagucserver?dataset=knmi_waarneemstations&",
-    layer: "obs_temp",
+    layer: "WMO_station_names",
   },
   {
     title: "KNMI: Harmonie Model DINI",
     thumbnail:
-      "https://geoservices.knmi.nl/adaguc-server?dataset=uwcw_ha43_dini_5p5km&SERVICE=WMS&&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=air_temperature_hagl,total_precipitation_rate_hagl,air_pressure_at_mean_sea_level_hagl&WIDTH=1000&HEIGHT=1000&CRS=EPSG%3A3857&STYLES=temperature_wow%2Fshaded&FORMAT=image/png",
+      "https://geoservices.knmi.nl/adaguc-server?dataset=uwcw-ha-det-dini-5p5km&SERVICE=WMS&&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=air_temperature_hagl,total_precipitation_rate_gl,air_pressure_msl&WIDTH=1000&HEIGHT=1000&CRS=EPSG%3A3857&STYLES=temperature_wow_shaded&FORMAT=image/png",
     service:
-      "https://geoservices.knmi.nl/adagucserver?dataset=uwcw_ha43_dini_5p5km&&service=WMS&request=GetCapabilities",
+      "https://geoservices.knmi.nl/adagucserver?dataset=uwcw-ha-det-dini-5p5km&&service=WMS&request=GetCapabilities",
     layer: "air_temperature_hagl",
     srs: "EPSG:32661",
     bbox: "-1426149.6740167392,-3952624.8700028625,4853185.34363064,13733.803609137563",
-    style: "temperature_wow/shadedcontour",
-  },
-  {
-    title: "KNMI: Harmonie Model NL",
-    thumbnail:
-      "https://geoservices.knmi.nl/adaguc-server?DATASET=uwcw_ha43_nl_2km&SERVICE=WMS&&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=air_temperature_hagl,total_precipitation_rate_hagl,air_pressure_at_mean_sea_level_hagl&WIDTH=1000&HEIGHT=1000&CRS=EPSG%3A3857&STYLES=temperature_wow%2Fshaded&FORMAT=image/png",
-    service:
-      "https://geoservices.knmi.nl/adagucserver?dataset=uwcw_ha43_nl_2km&&service=WMS&request=GetCapabilities",
-    srs: "EPSG:28992",
-    bbox: "-464237.8366878504,113616.90792712737,797134.670088837,910366.2084261273",
-    layer: "air_temperature_hagl",
     style: "temperature_wow/shadedcontour",
   },
   {
@@ -155,6 +145,30 @@ var dataChooserConfiguration = [
       "https://geoservices.knmi.nl/adagucserver?dataset=testdata&&service=WMS&request=GetCapabilities",
     layer: "testdata",
     style: "testdata_style_manycontours/nearestcontour",
+  },
+  {
+    title: "KNMI: Demo AHN stylings",
+    thumbnail:
+      "https://geoservices.knmi.nl/adagucserver?dataset=284_discreteclasseswithnearest&&service=WMS&request=getmap&format=image/png&layers=AHN-mv100&width=400&CRS=EPSG:4326&STYLES=&EXCEPTIONS=INIMAGE&showlegend=true&0.21431912284023524",
+    service:
+      "https://geoservices.knmi.nl/adagucserver?dataset=284_discreteclasseswithnearest&&service=WMS&request=GetCapabilities",
+    layer: "AHN-mv100",
+  },
+  {
+    title: "KNMI: Demo Generic Renderer",
+    thumbnail:
+      "https://geoservices.knmi.nl/adagucserver?dataset=adaguc.tests.wikgeneric&&service=WMS&request=getmap&format=image/png&layers=air_temperature_haglhillshaded&width=400&CRS=EPSG:4326&STYLES=&EXCEPTIONS=INIMAGE&showlegend=true&0.7653549176636124",
+    service:
+      "https://geoservices.knmi.nl/adagucserver?dataset=adaguc.tests.wikgeneric&&service=WMS&request=GetCapabilities",
+    layer: "air_pressure_msl_hillshaded",
+  },
+  {
+    title: "KNMI: Demo solar terminator",
+    thumbnail:
+      "https://geoservices.knmi.nl/adaguc-server?DATASET=solarterminator&SERVICE=WMS&&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=solarterminator&WIDTH=300&HEIGHT=200&CRS=EPSG%3A4326&BBOX=-180,-90,180,90&STYLES=solt_twilight_bilinear&FORMAT=image/png&TRANSPARENT=TRUE&&time=2026-07-06T07%3A00%3A00Z&0.23307570242751863",
+    service:
+      "https://geoservices.knmi.nl/adagucserver?dataset=solarterminator&&service=WMS&request=GetCapabilities",
+    layer: "solarterminator",
   },
 ];
 

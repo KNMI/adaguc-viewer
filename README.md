@@ -10,19 +10,19 @@ This viewer is best used with adaguc-server and adaguc-services, please check ht
 
 # Quickstart adaguc-viewer with Docker
 
-There is a docker image available from openearth/adaguc-viewer. It can be used to install and run adaguc-viewer in minutes.
+There is a docker image available from knmiadaguc/adaguc-viewer. It can be used to install and run adaguc-viewer in minutes.
 
 Follow these steps to get your own adaguc-viewer working:
 
 ```
-docker pull openearth/adaguc-viewer
-docker run -e ADAGUCSERVICES_AUTOWMS="http://localhost:8090/adaguc-services/autowms?" -p 8091:80 --name my-adaguc-viewer -d openearth/adaguc-viewer
+docker pull knmiadaguc/adaguc-viewer
+docker run -e ADAGUCSERVICES_AUTOWMS="http://localhost:8090/adaguc-services/autowms?" -p 8091:80 --name my-adaguc-viewer -d knmiadaguc/adaguc-viewer
 ```
 
 Or use the following if you have started your adaguc-server with HTTPS:
 
 ```
-docker run -e ADAGUCSERVICES_AUTOWMS="https://`hostname`:8443/adaguc-services/autowms?" -p 8091:80 --name my-adaguc-viewer -d openearth/adaguc-viewer
+docker run -e ADAGUCSERVICES_AUTOWMS="https://`hostname`:8443/adaguc-services/autowms?" -p 8091:80 --name my-adaguc-viewer -d knmiadaguc/adaguc-viewer
 ```
 
 Visit http://localhost:8091/adaguc-viewer/

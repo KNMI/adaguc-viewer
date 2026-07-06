@@ -618,24 +618,24 @@ export default class WMJSMap {
       if (geoNamesURL) {
         this.geoNamesURL = geoNamesURL;
       }
-    } catch (e) {}
+    } catch (e) { }
     try {
       if (defaultUsernameSearch) {
         this.defaultUsernameSearch = defaultUsernameSearch;
       }
-    } catch (e) {}
+    } catch (e) { }
 
     try {
       if (xml2jsonrequestURL) {
         this.setXML2JSONURL(xml2jsonrequestURL);
       }
-    } catch (e) {}
+    } catch (e) { }
 
     try {
       if (WMJSTileRendererTileSettings) {
         this.setWMJSTileRendererTileSettings(WMJSTileRendererTileSettings);
       }
-    } catch (e) {}
+    } catch (e) { }
     if (!this.mainElement) {
       return;
     }
@@ -739,9 +739,9 @@ export default class WMJSMap {
         .addClass("webmapjs_searchboxdiv")
         .html(
           "<input class='webmapjs_locationfield' type='text' name='searchtextfield'" +
-            " id='searchtextfield' placeholder=" +
-            I18n.place_search_term.text +
-            " />",
+          " id='searchtextfield' placeholder=" +
+          I18n.place_search_term.text +
+          " />",
           {
             mousedown: (event) => {
               event.stopPropagation();
@@ -1004,9 +1004,9 @@ export default class WMJSMap {
               : "";
             ctx.fillText(
               "Layer with title " +
-                this.canvasErrors[j].linkedInfo.layer.title +
-                " failed to load" +
-                message,
+              this.canvasErrors[j].linkedInfo.layer.title +
+              " failed to load" +
+              message,
               mx + 5,
               my + 11 + j * 15
             );
@@ -1142,6 +1142,7 @@ export default class WMJSMap {
           if (this.srs === "EPSG:4326") units = "degrees";
           if (this.srs === "EPSG:28992") units = "meter";
           if (this.srs === "EPSG:32661") units = "meter";
+          if (this.srs === "EPSG:5041") units = "meter";
           if (this.srs === "EPSG:3857") units = "meter";
           if (this.srs === "EPSG:900913") units = "meter";
           if (this.srs === "EPSG:102100") units = "meter";
@@ -1186,7 +1187,7 @@ export default class WMJSMap {
             10,
             parseInt(
               Math.log((this.bbox.right - this.bbox.left) / this.width) /
-                Math.log(10)
+              Math.log(10)
             ) - 2
           );
         if (roundingFactor < 1) roundingFactor = 1;
@@ -1218,11 +1219,11 @@ export default class WMJSMap {
           let yText = Math.round(llCoord.y * roundingFactor) / roundingFactor;
           ctx.fillText(
             "Lat/Lon: (" +
-              yText.toFixed(2) +
-              ", " +
-              xText.toFixed(2) +
-              ") " +
-              " degrees",
+            yText.toFixed(2) +
+            ", " +
+            xText.toFixed(2) +
+            ") " +
+            " degrees",
             5,
             this.height - 38
           );
@@ -1673,7 +1674,9 @@ export default class WMJSMap {
       request += "CRS=" + URLEncode(this.srs) + "&";
 
       if (
-        this.srs === "EPSG:4326" &&
+        (this.srs === "EPSG:4326" ||
+          this.srs === "EPSG:4258" ||
+          this.srs === "EPSG:32661") &&
         layer.wms130bboxcompatibilitymode === false
       ) {
         request +=
@@ -2132,8 +2135,8 @@ export default class WMJSMap {
             if (animationList.length > maxAnimationSteps) {
               error(
                 "Too many animations given, max is " +
-                  maxAnimationSteps +
-                  " animating last steps only"
+                maxAnimationSteps +
+                " animating last steps only"
               );
               animationList = animationList.splice(-maxAnimationSteps);
             }
@@ -2633,7 +2636,7 @@ export default class WMJSMap {
         this.pinchBox.top;
       this.bbox.top =
         (newyt / this.height) *
-          (this.this.pinchBox.bottom - this.pinchBox.top) +
+        (this.this.pinchBox.bottom - this.pinchBox.top) +
         this.pinchBox.top;
       let aspect =
         (this.pinchBox.right - this.pinchBox.left) /
@@ -3930,10 +3933,10 @@ export default class WMJSMap {
     debug(I18n.debug_searching_location.text);
     debug(
       '<a target="_blank" href="' +
-        urlKNMIGeoNames +
-        '">' +
-        urlKNMIGeoNames +
-        "</a>",
+      urlKNMIGeoNames +
+      '">' +
+      urlKNMIGeoNames +
+      "</a>",
       false
     );
 
@@ -4173,10 +4176,10 @@ export default class WMJSMap {
     }
     error(
       "Unable to find the correct bbox with current map projection " +
-        this.srs +
-        " for layer " +
-        layer.title +
-        ". Using default bbox instead."
+      this.srs +
+      " for layer " +
+      layer.title +
+      ". Using default bbox instead."
     );
     this.zoomTo(this.defaultBBOX);
     this.draw("zoomTolayer");

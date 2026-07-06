@@ -52,6 +52,10 @@ export const WMJSProj4Defs = [
     '+proj=stere +lat_0=90 +lat_ts=90 +lon_0=0 +k=0.994 +x_0=2000000 +y_0=2000000 +ellps=WGS84 +datum=WGS84 +units=m +no_defs'
   ],
   [
+    'EPSG:5041',
+    '+proj=stere +lat_0=90 +lon_0=0 +k=0.994 +x_0=2000000 +y_0=2000000 +datum=WGS84 +units=m +no_defs +type=crs'
+  ],
+  [
     'EPSG:102100',
     '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs'
   ]
@@ -69,5 +73,6 @@ export const epsgDescriptionLookup = {
   'EPSG:25831': 'ETRS89 / UTM zone 31N',
   'EPSG:25832': 'ETRS89 / UTM zone 32N',
   'EPSG:28992': 'Dutch Amersfoort / RD New',
-  'EPSG:32661': 'Polar Stereographic WGS 84 / UPS North'
+  'EPSG:32661': 'Polar Stereographic WGS 84 / UPS North',
+  'EPSG:5041': 'Polar Stereographic WGS 84 / UPS North'
 };

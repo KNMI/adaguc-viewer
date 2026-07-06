@@ -254,12 +254,25 @@ var mapTypeConfiguration = [
   },
 
   {
-    title: "Europe stereographic",
+    title: "Europe stereographic - 32661",
     bbox: [
       -2776118.977564746, -6499490.259201691, 9187990.785775745,
       971675.53185069,
     ],
     srs: "EPSG:32661",
+    baselayer: {
+      service: "",
+      name: "NaturalEarth2",
+      type: "twms",
+    },
+  },
+  {
+    title: "Europe stereographic - 5041",
+    bbox: [
+      -2776118.977564746, -6499490.259201691, 9187990.785775745,
+      971675.53185069,
+    ],
+    srs: "EPSG:5041",
     baselayer: {
       service: "",
       name: "NaturalEarth2",
@@ -441,6 +454,13 @@ var WMJSTileRendererTileSettings = {
       copyRight: "Natural Earth II | Ingmapping",
     },
     "EPSG:32661": {
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG32661/",
+      minLevel: 4,
+      maxLevel: 9,
+      tileServerType: "osm",
+      copyRight: "Natural Earth II | Ingmapping",
+    },
+    "EPSG:5041": {
       home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG32661/",
       minLevel: 4,
       maxLevel: 9,
@@ -638,6 +658,16 @@ var WMJSTileRendererTileSettings = {
       copyRight: "NPS - Natural Earth II",
     },
     "EPSG:32661": {
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG32661/",
+      minLevel: 1,
+      maxLevel: 7,
+      origX: -5000000,
+      origY: 4000000,
+      resolution: 58593.75,
+      tileServerType: "wmst",
+      copyRight: "NPS - Natural Earth II",
+    },
+    "EPSG:5041": {
       home: "https://geoweb-maps-assets.pmc.knmi.cloud/NaturalEarth2/EPSG32661/",
       minLevel: 1,
       maxLevel: 7,

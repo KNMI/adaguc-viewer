@@ -447,6 +447,13 @@ var WMJSTileRendererTileSettings = {
       tileServerType: "osm",
       copyRight: "Natural Earth II | Ingmapping",
     },
+    "EPSG:5041": {
+      home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG32661/",
+      minLevel: 4,
+      maxLevel: 9,
+      tileServerType: "osm",
+      copyRight: "Natural Earth II | Ingmapping",
+    },
     "EPSG:54030": {
       home: "https://geoweb-maps-assets.pmc.knmi.cloud/WorldMap/EPSG54030/",
       minLevel: 3,
